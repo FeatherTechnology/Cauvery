@@ -133,7 +133,7 @@ function swalAlert(response) {
             title: response,
             icon: 'success',
             confirmButtonText: 'OK',
-            confirmButtonColor: '#009688',
+            confirmButtonColor: '#0C70AB',
             showConfirmButton: true
         });
     } else if (response.includes('Error')) {
@@ -141,7 +141,7 @@ function swalAlert(response) {
             title: response,
             icon: 'error',
             confirmButtonText: 'OK',
-            confirmButtonColor: '#009688',
+            confirmButtonColor: '#0C70AB',
             showConfirmButton: true
         });
     }

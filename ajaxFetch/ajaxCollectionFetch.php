@@ -139,9 +139,9 @@ foreach ($result as $row) {
     $id     = $row['req_id'];
 
     if ($_POST["CustomerStatus"] != '') {
-        $action = "<a href='collection&upd=$id&cusidupd=$cus_id&duestatus=due_nill' title='Edit details' ><button class='btn btn-success' style='background-color:#009688;'>View</button></a>";
+        $action = "<a href='collection&upd=$id&cusidupd=$cus_id&duestatus=due_nill' title='Edit details' ><button class='btn btn-success' style='background-color:#0C70AB;'>View</button></a>";
     } else {
-        $action = "<a href='collection&upd=$id&cusidupd=$cus_id' title='Edit details' ><button class='btn btn-success' style='background-color:#009688;'>View</button></a>";
+        $action = "<a href='collection&upd=$id&cusidupd=$cus_id' title='Edit details' ><button class='btn btn-success' style='background-color:#0C70AB;'>View</button></a>";
     }
 
     $sub_array[] = $action;

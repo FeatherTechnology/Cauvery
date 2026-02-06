@@ -148,7 +148,7 @@ if (isset($_POST["bal_amt"])) {
                     $connect->query("UPDATE `customer_status` SET `cus_id`='$cus_id',`sub_status`='$subStatus',`bal_amnt`='$balAmnt',`insert_login_id`='$user_id',`created_date`='$current_date' WHERE `req_id`='".$row['req_id']."' ");
                     
                     ?></td>
-                <td><?php echo "<span class='btn btn-success collection-window' style='font-size: 17px;position: relative;top: 0px; background-color:#009688;";
+                <td><?php echo "<span class='btn btn-success collection-window' style='font-size: 17px;position: relative;top: 0px; background-color:#0C70AB;";
                     if ($row['cus_status'] == '16') {
                         echo 'display:none';
                     } //|| $row['cus_status']== '15' || $closed_sts[$i-1] == 'true'

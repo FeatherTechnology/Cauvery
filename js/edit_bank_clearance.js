@@ -92,7 +92,7 @@ function getClearanceTable() {
                         title: response,
                         icon: 'warning',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
 
                     $('.bank_clr_table').hide();

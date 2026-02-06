@@ -23,7 +23,7 @@ $(document).ready(function () {
                 icon: 'warning',
                 title: 'Missing Dates',
                 text: 'Please select both From and To dates before Search.',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
         }
     });

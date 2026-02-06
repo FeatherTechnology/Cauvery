@@ -704,7 +704,7 @@ function OnLoadFunctions() {
 				icon: 'question',
 				showConfirmButton: true,
 				showCancelButton: true,
-				confirmButtonColor: '#009688',
+				confirmButtonColor: '#0C70AB',
 				cancelButtonColor: '#cc4444',
 				cancelButtonText: 'No',
 				confirmButtonText: 'Yes'
@@ -905,14 +905,14 @@ function updateNocTable() {
                 title: 'Submitted',
                 icon: 'success',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
         } else {
             Swal.fire({
                 title: 'Error While Submitting',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
         }
 

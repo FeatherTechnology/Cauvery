@@ -316,7 +316,7 @@ $(document).ready(function () {
                             title: 'Fingerprint Matching',
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         $('#fingerValidation').val('1');
                         $("#hand_type").text('Done').attr('class', 'text-success');
@@ -329,7 +329,7 @@ $(document).ready(function () {
                                 title: 'Fingerprint Not Matching',
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                             $(this).removeAttr('disabled');
                         }
@@ -1748,7 +1748,7 @@ function performLoanCalculation(callback){
             title: 'Please Fill out Loan Info!',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
         });
 
         event.preventDefault();

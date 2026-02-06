@@ -19,7 +19,7 @@ $(document).ready(function () {
                 icon: 'warning',
                 title: 'Missing Details',
                 text: 'Please select both Taluk and Loan Category before Search.',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
         }
     });

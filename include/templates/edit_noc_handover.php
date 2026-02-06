@@ -1,8 +1,8 @@
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - NOC Handover
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - NOC Handover
 	</div>
 </div><br>
 
@@ -109,7 +109,7 @@
 				icon: 'question',
 				showConfirmButton: true,
 				showCancelButton: true,
-				confirmButtonColor: '#009688',
+				confirmButtonColor: '#0C70AB',
 				cancelButtonColor: '#cc4444',
 				cancelButtonText: 'No',
 				confirmButtonText: 'Yes'
@@ -145,7 +145,7 @@
 						Swal.fire({
 							title: 'Received Successfully!',
 							icon: 'success',
-							confirmButtonColor: '#009688',
+							confirmButtonColor: '#0C70AB',
 							confirmButtonText: 'OK'
 						}).then(() => {
 							window.location = 'edit_noc_handover';

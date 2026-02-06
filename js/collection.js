@@ -202,7 +202,7 @@ $(document).ready(function () {
         text: "Are you sure to Submit?",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#009688",
+        confirmButtonColor: "#0C70AB",
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes",
       }).then(function (result) {
@@ -727,7 +727,7 @@ function OnLoadFunctions(cus_id) {
                 imageHeight: 210,
                 imageAlt: "Custom image",
                 showCancelButton: true,
-                confirmButtonColor: "#009688",
+                confirmButtonColor: "#0C70AB",
                 cancelButtonColor: "#d33",
                 cancelButtonText: "No",
                 confirmButtonText: "Yes",
@@ -805,7 +805,7 @@ function OnLoadFunctions(cus_id) {
                       title: "Moved To Error!",
                       icon: "success",
                       showConfirmButton: true,
-                      confirmButtonColor: "#009688",
+                      confirmButtonColor: "#0C70AB",
                       confirmButtonText: "OK"
                   }).then((result) => {
                       if (result.isConfirmed) {
@@ -820,7 +820,7 @@ function OnLoadFunctions(cus_id) {
                     title: "Error While Moving!",
                     icon: "error",
                     showConfirmButton: false,
-                    // confirmButtonColor: '#009688'
+                    // confirmButtonColor: '#0C70AB'
                   });
                 }
               },
@@ -847,7 +847,7 @@ function OnLoadFunctions(cus_id) {
                         title: "Moved To Legal!",
                         icon: "success",
                         showConfirmButton: true,
-                        confirmButtonColor: "#009688",
+                        confirmButtonColor: "#0C70AB",
                         confirmButtonText: "OK"
                     }).then((result) => {
                         // Redirect only if OK is clicked
@@ -863,7 +863,7 @@ function OnLoadFunctions(cus_id) {
                     title: "Error While Moving!",
                     icon: "error",
                     showConfirmButton: false,
-                    // confirmButtonColor: '#009688'
+                    // confirmButtonColor: '#0C70AB'
                   });
                 }
               },
@@ -890,7 +890,7 @@ function OnLoadFunctions(cus_id) {
                         title: "Moved To Sub Status!",
                         icon: "success",
                         showConfirmButton: true,
-                        confirmButtonColor: "#009688",
+                        confirmButtonColor: "#0C70AB",
                         confirmButtonText: "OK"
                     }).then((result) => {
                         // Redirect only if OK is clicked
@@ -906,7 +906,7 @@ function OnLoadFunctions(cus_id) {
                     title: "Error While Moving!",
                     icon: "error",
                     showConfirmButton: false,
-                    // confirmButtonColor: '#009688'
+                    // confirmButtonColor: '#0C70AB'
                   });
                 }
               },
@@ -932,7 +932,7 @@ function OnLoadFunctions(cus_id) {
               title: "Moved To Closed!",
               icon: "success", // corrected typo from "succes" to "success"
               showConfirmButton: true,
-              confirmButtonColor: "#009688",
+              confirmButtonColor: "#0C70AB",
               confirmButtonText: "OK"
           }).then((result) => {
               // Redirect only if OK is clicked
@@ -1187,7 +1187,7 @@ function printCollection(coll_id) {
     imageHeight: 210,
     imageAlt: "Custom image",
     showCancelButton: true,
-    confirmButtonColor: "#009688",
+    confirmButtonColor: "#0C70AB",
     cancelButtonColor: "#d33",
     cancelButtonText: "No",
     confirmButtonText: "Yes",
@@ -1369,7 +1369,7 @@ function swarlErrorAlert(response) {
     title: response,
     icon: "error",
     confirmButtonText: "Ok",
-    confirmButtonColor: "#009688",
+    confirmButtonColor: "#0C70AB",
   });
 }
 function swarlInfoAlert(title, text) {
@@ -1379,7 +1379,7 @@ function swarlInfoAlert(title, text) {
     icon: "info",
     showConfirmButton: true,
     showCancelButton: true,
-    confirmButtonColor: "#009688",
+    confirmButtonColor: "#0C70AB",
     cancelButtonColor: "#cc4444",
     cancelButtonText: "No",
     confirmButtonText: "Yes",
@@ -1394,7 +1394,7 @@ function swarlSuccessAlert(response, callback) {
     title: response,
     icon: "success",
     confirmButtonText: "Ok",
-    confirmButtonColor: "#009688",
+    confirmButtonColor: "#0C70AB",
     timerProgressBar: true,
     timer: 2000,
     showConfirmButton: false,

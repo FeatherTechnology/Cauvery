@@ -9,7 +9,7 @@
 	<link rel="shortcut icon" href="img/fav.png" />
 
 	<!-- Title -->
-	<title>Marudham Capitals </title>
+	<title>Cauvery Capitals </title>
 
 
 	<!-- *************
@@ -152,7 +152,7 @@
 		/* style for dropdown in list windows */
 		.dropbtn {
 			color: white;
-			/* background-color: #009688; */
+			/* background-color: #0C70AB; */
 			/* padding: 10px; */
 			font-size: 10px;
 			border: none;

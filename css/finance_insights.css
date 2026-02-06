@@ -77,7 +77,7 @@ table tr td:not(:first-child) {
 }
 
 .toggle-button.active:not(#by_user) {
-    background-color: #009688;
+    background-color: #0C70AB;
     color: white;
 }
 

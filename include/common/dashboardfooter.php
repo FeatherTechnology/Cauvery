@@ -12,7 +12,7 @@
         top: 100px;
         width: 50px;
         height: 50px;
-        background-color: #009688;
+        background-color: #0C70AB;
         color: white;
         border-radius: 50%;
         font-size: 24px;
@@ -1726,39 +1726,39 @@
             resetTimers(); // Reset again after AJAX completes
         });
 
-        // function moneyFormatIndia(num) {
-        //     var isNegative = false;
-        //     if (num < 0) {
-        //         isNegative = true;
-        //         num = Math.abs(num);
-        //     }
+        function moneyFormatIndia(num) {
+            var isNegative = false;
+            if (num < 0) {
+                isNegative = true;
+                num = Math.abs(num);
+            }
 
-        //     // 🔹 Split decimal part (minimal addition)
-        //     num = num.toString();
-        //     var parts = num.split('.');
-        //     var intPart = parts[0];
-        //     var decPart = parts.length > 1 ? '.' + parts[1] : '';
+            // 🔹 Split decimal part (minimal addition)
+            num = num.toString();
+            var parts = num.split('.');
+            var intPart = parts[0];
+            var decPart = parts.length > 1 ? '.' + parts[1] : '';
 
-        //     var explrestunits = "";
-        //     if (intPart.length > 3) {
-        //         var lastthree = intPart.substr(intPart.length - 3);
-        //         var restunits = intPart.substr(0, intPart.length - 3);
-        //         restunits = (restunits.length % 2 == 1) ? "0" + restunits : restunits;
-        //         var expunit = restunits.match(/.{1,2}/g);
-        //         for (var i = 0; i < expunit.length; i++) {
-        //             if (i == 0) {
-        //                 explrestunits += parseInt(expunit[i]) + ",";
-        //             } else {
-        //                 explrestunits += expunit[i] + ",";
-        //             }
-        //         }
-        //         var thecash = explrestunits + lastthree + decPart;
-        //     } else {
-        //         var thecash = intPart + decPart;
-        //     }
+            var explrestunits = "";
+            if (intPart.length > 3) {
+                var lastthree = intPart.substr(intPart.length - 3);
+                var restunits = intPart.substr(0, intPart.length - 3);
+                restunits = (restunits.length % 2 == 1) ? "0" + restunits : restunits;
+                var expunit = restunits.match(/.{1,2}/g);
+                for (var i = 0; i < expunit.length; i++) {
+                    if (i == 0) {
+                        explrestunits += parseInt(expunit[i]) + ",";
+                    } else {
+                        explrestunits += expunit[i] + ",";
+                    }
+                }
+                var thecash = explrestunits + lastthree + decPart;
+            } else {
+                var thecash = intPart + decPart;
+            }
 
-        //     return isNegative ? "-" + thecash : thecash;
-        // }
+            return isNegative ? "-" + thecash : thecash;
+        }
 
         function searchFunction(table_name) {
             let DACC = <?php echo DACC; ?>;

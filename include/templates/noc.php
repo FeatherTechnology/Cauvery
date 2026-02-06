@@ -34,8 +34,8 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - NOC
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - NOC
 	</div>
 </div><br>
 <div class="text-right" style="margin-right: 25px;">

@@ -111,7 +111,7 @@ foreach ($result as $row) {
     if ($close_cnt > 0) { //if any one of the request got closed then that can be moved to noc straight
         $action = "<button class='btn btn-outline-secondary Move_to_noc' data-value='$ii_cus_id' data-id='$id'><span class = 'icon-arrow_forward'></span></button>";
     } else {
-        $action = "<a href='closed&upd=$id&cusidupd=$cus_id' title='Edit details' ><button class='btn btn-success' style='background-color:#009688;'>Close </button></a>";
+        $action = "<a href='closed&upd=$id&cusidupd=$cus_id' title='Edit details' ><button class='btn btn-success' style='background-color:#0C70AB;'>Close </button></a>";
     }
 
 

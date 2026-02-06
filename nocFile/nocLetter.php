@@ -68,7 +68,7 @@ $closed_date = date('d-m-Y',strtotime($row['closed_date']));
             <p>Respected Sir,</p>
             <p>We are pleased to confirm that there are no outstanding dues towards the captioned loan and the loan amount (<?php echo $loan_amt; ?>) dispersed under the said loan ID: <?php echo $loan_id; ?> has been closed in our books on closed date (<?php echo $closed_date; ?>). The agreement signed by you with this regards stands terminated. Terminated documents are enclosed with this letter.</p>
             <br>
-            <p>Thank you once again for selecting MARUDHAM CAPITALS as your preferred partner in helping you accomplish your financial goals.</p>
+            <p>Thank you once again for selecting CAUVERY CAPITALS as your preferred partner in helping you accomplish your financial goals.</p>
         </div>
         <div class="footer" style="text-align: right;">
             <p>Yours sincerely,</p>

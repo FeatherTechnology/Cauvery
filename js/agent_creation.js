@@ -756,7 +756,7 @@ function validateAgentGroup(ag_name) {
                     title: 'Agent Group Name Already Exist, Please Select Group Name!',
                     icon: 'error',
                     showConfirmButton: true,
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0C70AB'
                 });
                 check = "yes";
             } else {
@@ -818,7 +818,7 @@ function validateAgentForm() {
             title: 'Please Fill out Mandatory fields!',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
         });
         return false;
     }

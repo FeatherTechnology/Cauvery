@@ -57,7 +57,7 @@ $(document).ready(function () {
                                 text: 'Concern has been Closed Successfully.',
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688',
+                                confirmButtonColor: '#0C70AB',
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 // Redirect only if OK is clicked

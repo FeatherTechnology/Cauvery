@@ -418,7 +418,7 @@ if (sizeof($getUser) > 0) {
 	/* On mouse-over */
 	.sidenav a:hover,
 	.dropdown-btn1:hover {
-		color: #2f958bd9;
+		color: #0c70ab;
 	}
 
 	.sidenav a,
@@ -439,13 +439,13 @@ if (sizeof($getUser) > 0) {
 	/* On mouse-over */
 	.sidenav a:hover,
 	.dropdown-btn:hover {
-		color: #2f958bd9;
+		color: #0c70ab;
 	}
 
 	/* On mouse-over */
 	.sidenav a:hover,
 	.dropdown-btn1:hover {
-		color: #2f958bd9;
+		color: #0c70ab;
 	}
 
 	/* Main content */
@@ -494,12 +494,12 @@ if (sizeof($getUser) > 0) {
 </style>
 
 <!-- Sidebar wrapper start -->
-<nav id="sidebar" class="sidebar-wrapper" style="background-color:#009688;">
+<nav id="sidebar" class="sidebar-wrapper" style="background-color:#0C70AB;">
 
 	<!-- Sidebar brand start  -->
-	<div class="sidebar-brand" style="background-color: #009688">
+	<div class="sidebar-brand" style="background-color: #0C70AB">
 		<a href="home_page" class="logo">
-			<h2 class="ml-1" style="color: white; font-family: 'Maiandra GD', sans-serif;">MARUDHAM CAPITALS</h2>
+			<h2 class="ml-1" style="color: white; font-family: 'Maiandra GD', sans-serif;">CAUVERY CAPITALS</h2>
 		</a>
 	</div>
 

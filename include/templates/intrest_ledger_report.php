@@ -1,8 +1,8 @@
 <link rel="stylesheet" type="text/css" href="css/ledger_report.css">
 <br><br>
 <div class="page-header">
-    <div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-        Marudham Capitals - Interest Ledger View
+    <div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+        Cauvery Capitals - Interest Ledger View
     </div>
 
 </div><br>

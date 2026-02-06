@@ -72,8 +72,8 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-    <div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-        Marudham Capitals - Concern Solution
+    <div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+        Cauvery Capitals - Concern Solution
     </div>
 </div><br>
 <div class="text-right" style="margin-right: 25px;">

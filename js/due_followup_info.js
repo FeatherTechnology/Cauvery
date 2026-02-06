@@ -223,7 +223,7 @@ function fingerprintTable() {//To Get family member's name are required for scan
                 if (hand == '') { //prevent if hand is not selected
                     $(this).prev().css('border-color', 'red');
                 } else {
-                    $(this).prev().css('border-color', '#009688')
+                    $(this).prev().css('border-color', '#0C70AB')
 
                     showOverlay();//loader start
 

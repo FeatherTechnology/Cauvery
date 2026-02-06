@@ -56,7 +56,7 @@ $(document).ready(function () {
                 title: 'Please Fill out Loan Info!',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return;
         }
@@ -220,7 +220,7 @@ $(document).ready(function () {
         icon: 'question',
         showConfirmButton: true,
         showCancelButton: true,
-        confirmButtonColor: '#009688',
+        confirmButtonColor: '#0C70AB',
         cancelButtonColor: '#cc4444',
         cancelButtonText: 'No',
         confirmButtonText: 'Yes'
@@ -278,7 +278,7 @@ $(document).ready(function () {
                             title: result.response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688',
+                            confirmButtonColor: '#0C70AB',
                             confirmButtonText: 'OK'
                         }).then((swalResult) => {
                             // Redirect only when OK is clicked
@@ -1524,6 +1524,6 @@ function swarlErrorAlert(response) {
     title: response,
     icon: "error",
     confirmButtonText: "Ok",
-    confirmButtonColor: "#009688",
+    confirmButtonColor: "#0C70AB",
   });
 }

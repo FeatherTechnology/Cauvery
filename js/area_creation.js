@@ -136,7 +136,7 @@ $(document).ready(function () {
                 title: 'Please Fill out Mandatory fields!',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
         }
     })
@@ -846,7 +846,7 @@ function swaparea(area_id,states,districts,taluks,pincodes) {
                         title: 'Area Updated',
                         icon: 'success',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                    closeSwapmodel();
                     $('#swap_area_model_box .btn-secondary').click();
@@ -856,7 +856,7 @@ function swaparea(area_id,states,districts,taluks,pincodes) {
                         title: 'Area Not Updated',
                         icon: 'error',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 }
 
@@ -877,7 +877,7 @@ function validateAreaForm() {
             title: 'Please Fill out Mandatory fields!',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
         });
         return false; // validation failed
     }

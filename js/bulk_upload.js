@@ -46,14 +46,14 @@ function uploadExcelToDB() {
                     text: response,
                     icon: 'success',
                     showConfirmButton: true,
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0C70AB'
                 });
             } else if (response.includes('completed')) {
                 Swal.fire({
                     html: response,
                     icon: 'error',
                     showConfirmButton: true,
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0C70AB'
                 });
             } else if (response.includes('Format')) {
                 Swal.fire({
@@ -61,7 +61,7 @@ function uploadExcelToDB() {
                     text: response,
                     icon: 'error',
                     showConfirmButton: true,
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0C70AB'
                 });
             }
         }

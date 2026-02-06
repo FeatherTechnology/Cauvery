@@ -11,8 +11,8 @@
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - Collection
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - Collection
 	</div>
 </div><br>
 <!-- Page header end -->
@@ -30,7 +30,7 @@
 						<div class="dropdown">
 							<button class="border-0 bg-transparent" type="button" id="filterDropdown" data-bs-toggle="dropdown"
 								aria-expanded="false">
-								<i class="fa fa-filter" style="color:#009688; font-size:30px; margin-right: 10px;"></i>
+								<i class="fa fa-filter" style="color:#0C70AB; font-size:30px; margin-right: 10px;"></i>
 							</button>
 							<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
 								<li>
@@ -111,7 +111,7 @@
 				imageHeight: 210,
 				imageAlt: 'Custom image',
 				showCancelButton: true,
-				confirmButtonColor: '#009688',
+				confirmButtonColor: '#0C70AB',
 				cancelButtonColor: '#d33',
 				cancelButtonText: 'No',
 				confirmButtonText: 'Yes'

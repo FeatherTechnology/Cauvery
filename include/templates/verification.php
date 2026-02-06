@@ -332,12 +332,12 @@ $sub_area_topbar = isset($sub_area_name) && $sub_area_name != '' ? $sub_area_nam
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - <?php if (isset($pge) && $pge == '1') { ?>Verification <?php } else { ?> Approval <?php } ?>
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - <?php if (isset($pge) && $pge == '1') { ?>Verification <?php } else { ?> Approval <?php } ?>
 	</div>
 </div><br>
 <div class="page-header sticky-top" id="navbar" style="display: none;" data-toggle="toggle">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
 		Customer Name - <?php if (isset($cus_name)) {
 							echo $cus_name;
 						} ?>

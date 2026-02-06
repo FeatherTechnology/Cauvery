@@ -1150,7 +1150,7 @@ $(document).ready(function () {
             Swal.fire({
               title: 'Feedback Label Deleted!',
               icon: 'success',
-              confirmButtonColor: '#009688'
+              confirmButtonColor: '#0C70AB'
             });
             cusfeedbacklist();
 
@@ -1159,14 +1159,14 @@ $(document).ready(function () {
               title: 'Already Used!',
               text: 'This feedback label is already used in Customer Feedback.',
               icon: 'warning',
-              confirmButtonColor: '#009688'
+              confirmButtonColor: '#0C70AB'
             });
 
           } else {
             Swal.fire({
               title: 'Error Occurred!',
               icon: 'error',
-              confirmButtonColor: '#009688'
+              confirmButtonColor: '#0C70AB'
             });
           }
         },
@@ -1220,7 +1220,7 @@ function showErrorAlert(message) {
     title: message,
     icon: "error",
     showConfirmButton: true,
-    confirmButtonColor: "#009688",
+    confirmButtonColor: "#0C70AB",
   });
 }
 $(function () {
@@ -4897,7 +4897,7 @@ function doc_submit_validation() {
       title: "Please Complete Customer Profile!",
       icon: "error",
       showConfirmButton: true,
-      confirmButtonColor: "#009688",
+      confirmButtonColor: "#0C70AB",
     });
     event.preventDefault();
     validation = false;
@@ -5082,7 +5082,7 @@ $("#refresh_cal").click(function () {
       title: 'Loan amount must be greater than zero',
       icon: 'error',
       showConfirmButton: true,
-      confirmButtonColor: '#009688'
+      confirmButtonColor: '#0C70AB'
     });
     return;
   }
@@ -5094,7 +5094,7 @@ $("#refresh_cal").click(function () {
       title: 'Customer limit exceeded..!',
       icon: 'error',
       showConfirmButton: true,
-      confirmButtonColor: '#009688'
+      confirmButtonColor: '#0C70AB'
     });
     return;
   }
@@ -5105,7 +5105,7 @@ $("#refresh_cal").click(function () {
       title: 'Please Fill out Loan Info!',
       icon: 'error',
       showConfirmButton: true,
-      confirmButtonColor: '#009688'
+      confirmButtonColor: '#0C70AB'
     });
     return;
   }
@@ -5565,7 +5565,7 @@ function getLoaninfo(sub_cat_id) {
               title: 'Customer limit exceeded..!',
               icon: 'error',
               showConfirmButton: true,
-              confirmButtonColor: '#009688'
+              confirmButtonColor: '#0C70AB'
             });
               $("#loan_amt").val("");
             }
@@ -5700,13 +5700,13 @@ function dueChartList(req_id, cus_id) {
         text: "Do you want to print this collection?",
         // icon: 'question',
         // showConfirmButton: true,
-        // confirmButtonColor: '#009688',
+        // confirmButtonColor: '#0C70AB',
         imageUrl: "img/printer.png",
         imageWidth: 300,
         imageHeight: 210,
         imageAlt: "Custom image",
         showCancelButton: true,
-        confirmButtonColor: "#009688",
+        confirmButtonColor: "#0C70AB",
         cancelButtonColor: "#d33",
         cancelButtonText: "No",
         confirmButtonText: "Yes",
@@ -6818,7 +6818,7 @@ function loan_calc_validation() {
       title: "Please Complete Customer Profile!",
       icon: "error",
       showConfirmButton: true,
-      confirmButtonColor: "#009688",
+      confirmButtonColor: "#0C70AB",
     });
     event.preventDefault();
     validation = false;
@@ -6988,7 +6988,7 @@ function fingerprintTable() {//To Get family member's name are required for scan
         if (hand == '') { //prevent if hand is not selected
           $(this).prev().css('border-color', 'red');
         } else {
-          $(this).prev().css('border-color', '#009688')
+          $(this).prev().css('border-color', '#0C70AB')
           showOverlay();//loader start
           $(this).attr('disabled', true);
           setTimeout(() => {
@@ -7034,7 +7034,7 @@ function storeFingerprints(fdata, hand, cus_id, cus_name) {//stores the current 
   $.post('updateFile/storeFingerprints.php', { 'fdata': fdata, 'hand': hand, 'cus_id': cus_id, 'cus_name': cus_name }, function (response) {
     if (response.includes('Successfully')) {
       Swal.fire({
-        title: response, icon: 'success', confirmButtonColor: '#009688'
+        title: response, icon: 'success', confirmButtonColor: '#0C70AB'
       })
     }
   }, 'json')
@@ -7088,28 +7088,28 @@ function submitfeedbackname() {
             title: 'Feedback Label Inserted...!',
             icon: 'success',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
           });
         } else if (response.includes(' Updated')) {
           Swal.fire({
             title: 'Feedback Label Updated...!',
             icon: 'success',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
           });
         } else if (response.includes('Already')) {
           Swal.fire({
             title: 'Feedback Label Already Existed',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
           });
         } else if (response.includes('Failed')) {
           Swal.fire({
             title: 'Error Occures',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
           });
         }
         $("#feedbackname").val('');

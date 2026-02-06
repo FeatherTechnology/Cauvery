@@ -6,8 +6,8 @@ $bank_details = $getuser['bank_details'];
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - Financial Insights
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - Financial Insights
 	</div>
 </div><br>
 

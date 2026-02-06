@@ -6,8 +6,8 @@
 
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - Search
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - Search
 	</div>
 </div><br>
 
@@ -68,7 +68,7 @@
 									<div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12"></div>
 									<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
 										<div class="form-group">
-											<button type="button" class='form-control btn btn-success scanBtn' style='background-color:#009688; margin-top: 17px; height: 35px;' onclick="event.preventDefault()" title='Put Your Thumb'><i class="material-icons" id="icon-flipped">&#xe90d;</i>&nbsp;Scan</button>
+											<button type="button" class='form-control btn btn-success scanBtn' style='background-color:#0C70AB; margin-top: 17px; height: 35px;' onclick="event.preventDefault()" title='Put Your Thumb'><i class="material-icons" id="icon-flipped">&#xe90d;</i>&nbsp;Scan</button>
 											<input type="hidden" class="form-control" id="search_fingerprint" name="search_fingerprint"> <!-- finger print value from Device when scanning.-->
 											<input type="hidden" class="form-control" id="fingerprint_person_id" name="fingerprint_person_id">
 										</div>
@@ -430,7 +430,7 @@
 	}
 
 	.selector-item_radio:checked+.selector-item_label {
-		background-color: #009688;
+		background-color: #0C70AB;
 		color: #ffff;
 		box-shadow: 0 0 4px rgba(0, 0, 0, .5), 0 2px 4px rgba(0, 0, 0, .5);
 		transform: translateY(-2px);

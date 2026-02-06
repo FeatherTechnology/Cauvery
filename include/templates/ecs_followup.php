@@ -36,8 +36,8 @@ if($idupd>0)
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - ECS Follow Up &nbsp; -- &nbsp;
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - ECS Follow Up &nbsp; -- &nbsp;
 
 		Customer Name - <?php if (isset($cus_name)) { echo $cus_name;} ?>
 		,&nbsp;&nbsp;Cus ID - <?php if (isset($cus_id)) { echo $cus_id; } ?>

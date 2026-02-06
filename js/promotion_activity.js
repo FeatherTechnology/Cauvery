@@ -258,7 +258,7 @@ $(document).ready(function () {
                 title: 'Table cannot be empty.',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return;
         }
@@ -321,7 +321,7 @@ $(document).ready(function () {
             Swal.fire({
                 title: 'Please enter Event Name!',
                 icon: 'error',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return;
         }
@@ -329,7 +329,7 @@ $(document).ready(function () {
             Swal.fire({
                 title: 'Please select at least one Area!',
                 icon: 'error',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return;
         }
@@ -361,7 +361,7 @@ $(document).ready(function () {
             Swal.fire({
                 title: 'Please enter a valid mobile number!',
                 icon: 'error',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return;
         }
@@ -370,7 +370,7 @@ $(document).ready(function () {
             Swal.fire({
                 title: 'Please fill all fields!',
                 icon: 'error',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return;
         }
@@ -419,7 +419,7 @@ $(document).ready(function () {
                 Swal.fire({
                     title: res.message,
                     icon: 'success',
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0C70AB'
                 });
             }
         });
@@ -1141,7 +1141,7 @@ function swarlErrorAlert(response) {
         title: response,
         icon: 'error',
         confirmButtonText: 'Ok',
-        confirmButtonColor: '#009688'
+        confirmButtonColor: '#0C70AB'
     });
 }
 
@@ -1152,7 +1152,7 @@ function swarlInfoAlert(title, text) {
         icon: 'info',
         showConfirmButton: true,
         showCancelButton: true,
-        confirmButtonColor: '#009688',
+        confirmButtonColor: '#0C70AB',
         cancelButtonColor: '#cc4444',
         cancelButtonText: 'No',
         confirmButtonText: 'Yes'
@@ -1168,7 +1168,7 @@ function swarlSuccessAlert(response, callback) {
         title: response,
         icon: 'success',
         confirmButtonText: 'Ok',
-        confirmButtonColor: '#009688'
+        confirmButtonColor: '#0C70AB'
     }).then((result) => {
         if (result.isConfirmed && typeof callback === 'function') {
             callback();

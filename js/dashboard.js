@@ -152,7 +152,7 @@ function getSubAreaList(branch_id) {
                             title: 'Error',
                             text: 'No Sub Area for this Branch!',
                             icon: 'error',
-                            confirmButtonColor: '#009688',
+                            confirmButtonColor: '#0C70AB',
                         }).then(function () {
                             $('#branch_id').val('');
                         })

@@ -42,7 +42,7 @@ $(document).ready(function () {
                 icon: 'warning',
                 title: 'Missing Dates',
                 text: 'Please select To dates before downloading.',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return;
         }
@@ -75,7 +75,7 @@ $(document).ready(function () {
                         icon: 'info',
                         title: 'No Data Found',
                         text: 'No records found for the selected date range.',
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 }
             },

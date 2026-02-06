@@ -77,7 +77,7 @@ function callOnClickEvents() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688',
+                                confirmButtonColor: '#0C70AB',
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 if (result.isConfirmed) {
@@ -201,7 +201,7 @@ function warningSwal(title, text) {
         html: text,
         icon: 'warning',
         showConfirmButton: true,
-        confirmButtonColor: '#009688', // warning color (orange/yellow)
+        confirmButtonColor: '#0C70AB', // warning color (orange/yellow)
         confirmButtonText: 'OK'
     });
 }
@@ -212,7 +212,7 @@ function successSwal(title, text) {
         html: text,
         icon: 'success',
         showConfirmButton: true,
-        confirmButtonColor: '#009688', // your success green
+        confirmButtonColor: '#0C70AB', // your success green
         confirmButtonText: 'OK'
     }).then((result) => {
         // Reload only if OK is clicked
@@ -270,7 +270,7 @@ function swarlSuccessAlert(response, callback) {
         title: response,
         icon: 'success',
         confirmButtonText: 'Ok',
-        confirmButtonColor: '#009688'
+        confirmButtonColor: '#0C70AB'
     }).then((result) => {
         if(result.isConfirmed && typeof callback === 'function'){
             callback();
