@@ -3867,7 +3867,7 @@ CREATE TABLE `company_creation` (
 --
 
 INSERT INTO `company_creation` (`company_id`, `company_name`, `address1`, `address2`, `state`, `district`, `taluk`, `place`, `pincode`, `website`, `mailid`, `mobile`, `whatsapp`, `landline`, `status`, `insert_user_id`, `update_user_id`, `created_date`, `updated_date`) VALUES
-(1, 'Marudham Capitals', '1, Kasthuri bai  st, Vandavasi', '', 'TamilNadu', 'Tiruvannamalai', 'Vandavasi', 'Vandavasi', '604408', 'www.marudhamcapitals.com', 'mail@marudhamcapitals.com', '9842152211', '9842152211', '', '0', 1, NULL, '2023-10-05 20:05:04', '2023-10-05 20:05:04');
+(1, 'Cauvery Capitals', '1, Kasthuri bai  st, Vandavasi', '', 'TamilNadu', 'Tiruvannamalai', 'Vandavasi', 'Vandavasi', '604408', 'www.marudhamcapitals.com', 'mail@marudhamcapitals.com', '9842152211', '9842152211', '', '0', 1, NULL, '2023-10-05 20:05:04', '2023-10-05 20:05:04');
 
 -- --------------------------------------------------------
 

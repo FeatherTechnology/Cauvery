@@ -166,7 +166,7 @@ if (sizeof($getLoanCalculation) > 0) {
 	}
 
 	input:checked+.slider {
-		background-color: #009688;
+		background-color: #0C70AB;
 	}
 
 	input:focus+.slider {
@@ -192,12 +192,12 @@ if (sizeof($getLoanCalculation) > 0) {
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - Loan Issue
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - Loan Issue
 	</div>
 </div><br>
 <div class="page-header sticky-top" id="navbar" style="display: none;" data-toggle="toggle">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
 		Customer Name - <?php if (isset($cus_name)) {
 							echo $cus_name;
 						} ?>
@@ -930,7 +930,7 @@ if (sizeof($getLoanCalculation) > 0) {
 												<input type="hidden" class="form-control" id="compare_finger" name="compare_finger"> <!--Already Store in Finger Print Table... when select fam name above the finger print will be shown here to compare. -->
 												<input type="hidden" class="form-control" id="ack_fingerprint" name="ack_fingerprint"> <!-- finger print value from Device when scanning.-->
 												<input type="hidden" class="form-control" id="fingerValidation" name="fingerValidation"> <!-- set val as 1 when finger Print Matching becuz to use for finger print validation if submit click.-->
-												<button type="button" class='btn btn-success scanBtn' style='background-color: #009688;margin-top: 19px;' onclick="event.preventDefault()" title='Put Your Thumb' tabindex='58'><i class="material-icons" id="icon-flipped"> &#xe90d; </i>&nbsp;Scan</button>
+												<button type="button" class='btn btn-success scanBtn' style='background-color: #0C70AB;margin-top: 19px;' onclick="event.preventDefault()" title='Put Your Thumb' tabindex='58'><i class="material-icons" id="icon-flipped"> &#xe90d; </i>&nbsp;Scan</button>
 												<span class="text-danger" id="hand_type" style="position: relative;top: 12px;"> </span>
 											</div>
 										</div>

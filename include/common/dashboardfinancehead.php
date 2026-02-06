@@ -10,7 +10,7 @@
 		<link rel="shortcut icon" href="img/fav.png" />
 
 		<!-- Title -->
-		<title>Marudham Capitals </title>
+		<title>Cauvery Capitals </title>
 
 
 			<!-- Required meta tags -->

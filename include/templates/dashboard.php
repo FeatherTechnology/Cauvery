@@ -288,7 +288,7 @@ $getValues = $userObj->getDataForDashboard($mysqli, $userid);
 				</div>
 				<div class="row cards-row" style="display:flex;justify-content:center;">
 					<div class="col-12">
-						<div class="card" style="border:3px solid #009688">
+						<div class="card" style="border:3px solid #0C70AB">
 							<div class="card-body">
 								<div class="radio-container">
 									<div class="selector">
@@ -388,7 +388,7 @@ $getValues = $userObj->getDataForDashboard($mysqli, $userid);
 				</div>
 				<div class="row cards-row" style="display:flex;justify-content:center;">
 					<div class="col-12">
-						<div class="card" style="border:3px solid #009688">
+						<div class="card" style="border:3px solid #0C70AB">
 							<div class="card-body">
 								<div class="radio-container">
 									<div class="selector">
@@ -488,7 +488,7 @@ $getValues = $userObj->getDataForDashboard($mysqli, $userid);
 				</div>
 				<div class="row cards-row" style="display:flex;justify-content:center;">
 					<div class="col-12">
-						<div class="card" style="border:3px solid #009688">
+						<div class="card" style="border:3px solid #0C70AB">
 							<div class="card-body">
 								<div class="radio-container">
 									<div class="selector">
@@ -588,7 +588,7 @@ $getValues = $userObj->getDataForDashboard($mysqli, $userid);
 				</div>
 				<div class="row cards-row" style="display:flex;justify-content:center;">
 					<div class="col-12">
-						<div class="card" style="border:3px solid #009688">
+						<div class="card" style="border:3px solid #0C70AB">
 							<div class="card-body">
 								<div class="radio-container">
 									<div class="selector">
@@ -688,7 +688,7 @@ $getValues = $userObj->getDataForDashboard($mysqli, $userid);
 				</div>
 				<div class="row cards-row" style="display:flex;justify-content:center;">
 					<div class="col-12">
-						<div class="card" style="border:3px solid #009688">
+						<div class="card" style="border:3px solid #0C70AB">
 							<div class="card-body">
 								<div class="radio-container">
 									<div class="selector">
@@ -825,7 +825,7 @@ $getValues = $userObj->getDataForDashboard($mysqli, $userid);
 				</div>
 				<div class="row cards-row" style="display:flex;justify-content:center;">
 					<div class="col-12" id="col_chart_part" style="display: none;">
-						<div class="card" style="border:3px solid #009688">
+						<div class="card" style="border:3px solid #0C70AB">
 							<div class="card-body">
 								<div class="radio-container">
 									<div class="selector">
@@ -921,7 +921,7 @@ $getValues = $userObj->getDataForDashboard($mysqli, $userid);
 				</div>
 				<div class="row cards-row" style="display:flex;justify-content:center;">
 					<div class="col-12">
-						<div class="card" style="border:3px solid #009688;padding:10px;">
+						<div class="card" style="border:3px solid #0C70AB;padding:10px;">
 							<div class="card-header">
 								<div class="card-title">Month's Closed Status</div>
 							</div>

@@ -508,7 +508,7 @@ function submitValidation() {
                 title: 'Please Fill out Mandatory fields!',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return false;
         } else if (whatsapp != '' && whatsapp.length < 10) {

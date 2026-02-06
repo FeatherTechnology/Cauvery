@@ -442,7 +442,7 @@ function OnLoadFunctions() {
                                         title: 'Fingerprint Matching',
                                         icon: 'success',
                                         showConfirmButton: true,
-                                        confirmButtonColor: '#009688'
+                                        confirmButtonColor: '#0C70AB'
                                     });
                                 } else {
                                     if (res.data.ErrorCode != "0") {
@@ -453,7 +453,7 @@ function OnLoadFunctions() {
                                             title: 'Fingerprint Not Matching',
                                             icon: 'error',
                                             showConfirmButton: true,
-                                            confirmButtonColor: '#009688'
+                                            confirmButtonColor: '#0C70AB'
                                         });
                                         $(this).removeAttr('disabled');
                                     }
@@ -579,7 +579,7 @@ function updateNocTable() {
                 title: 'Submitted',
                 icon: 'success',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             }).then((result) => {
                 if (result.isConfirmed) {
                     OnLoadFunctions();
@@ -590,7 +590,7 @@ function updateNocTable() {
                 title: 'Error While Submitting',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
         }
 

@@ -210,7 +210,7 @@ function OnLoadFunctions(req_id, cus_id) {
                                 imageHeight: 210,
                                 imageAlt: 'Custom image',
                                 showCancelButton: true,
-                                confirmButtonColor: '#009688',
+                                confirmButtonColor: '#0C70AB',
                                 cancelButtonColor: '#d33',
                                 cancelButtonText: 'No',
                                 confirmButtonText: 'Yes'

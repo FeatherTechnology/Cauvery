@@ -84,7 +84,7 @@ function callOnClickEvents() {
                         title: 'Customer Limit',
                         text: `Customer Limit is set to ${moneyFormatIndia(cus_limit)}. Do you want to Approve?`,
                         showCancelButton: true,
-                        confirmButtonColor: '#009688',
+                        confirmButtonColor: '#0C70AB',
                         cancelButtonColor: '#d33',
                         cancelButtonText: 'No',
                         confirmButtonText: 'Yes'
@@ -104,7 +104,7 @@ function callOnClickEvents() {
                                             title: response,
                                             icon: 'success',
                                             showConfirmButton: true,
-                                            confirmButtonColor: '#009688',
+                                            confirmButtonColor: '#0C70AB',
                                             confirmButtonText: 'OK'
                                         }).then((result) => {
                                             // Re-enable button regardless
@@ -191,7 +191,7 @@ function warningSwal(title, text) {
         html: text,
         icon: 'warning',
         showConfirmButton: true,
-        confirmButtonColor: '#009688', // warning color (orange/yellow)
+        confirmButtonColor: '#0C70AB', // warning color (orange/yellow)
         confirmButtonText: 'OK'
     });
 }
@@ -202,7 +202,7 @@ function successSwal(title, text) {
         html: text,
         icon: 'success',
         showConfirmButton: true,
-        confirmButtonColor: '#009688', // your success green
+        confirmButtonColor: '#0C70AB', // your success green
         confirmButtonText: 'OK'
     }).then((result) => {
         // Reload only if OK is clicked

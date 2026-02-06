@@ -68,7 +68,7 @@ $media_path = ($m->rowCount() > 0) ? $m->fetch()['media_path'] : "";
         }
         ?>
     <?php } else { ?>
-        <img src='img/logo.png' class='media-style'>
+        <img src='img/cauvery_capitals_logo.jpeg' class='media-style'>
     <?php } ?>
 </div>
 

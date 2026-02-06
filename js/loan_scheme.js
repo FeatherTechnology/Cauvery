@@ -127,7 +127,7 @@ $(document).ready(function () {
                 title: 'Please Fill out Mandatory fields!',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return false;
         }
@@ -207,7 +207,7 @@ $(document).ready(function () {
                 title: 'Please Fill out Mandatory fields!',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return false;
         }
@@ -287,7 +287,7 @@ $(document).ready(function () {
                 title: 'Please Fill out Mandatory fields!',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
             return false;
         }

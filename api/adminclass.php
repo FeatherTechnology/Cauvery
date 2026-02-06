@@ -8198,7 +8198,7 @@ class admin
 		}
 
 		for ($i = 0; $i < count($cus_name); $i++) {
-			// $message = "Dear ".$cus_name[$i].", today is a special day for you. Marudham Capitals wishes you 'Happy birthday'.-MARUDM";
+			// $message = "Dear ".$cus_name[$i].", today is a special day for you. Cauvery Capitals wishes you 'Happy birthday'.-MARUDM";
 			// $templateid	= ''; //FROM DLT PORTAL.
 			// // Account details
 			// $apiKey = '';

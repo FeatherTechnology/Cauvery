@@ -703,7 +703,7 @@ $(document).ready(function () {
             Swal.fire({
               title: 'Feedback Label Deleted!',
               icon: 'success',
-              confirmButtonColor: '#009688'
+              confirmButtonColor: '#0C70AB'
             });
             cusfeedbacklist();
 
@@ -712,14 +712,14 @@ $(document).ready(function () {
               title: 'Already Used!',
               text: 'This feedback label is already used in Customer Feedback.',
               icon: 'warning',
-              confirmButtonColor: '#009688'
+              confirmButtonColor: '#0C70AB'
             });
 
           } else {
             Swal.fire({
               title: 'Error Occurred!',
               icon: 'error',
-              confirmButtonColor: '#009688'
+              confirmButtonColor: '#0C70AB'
             });
           }
         },
@@ -3265,7 +3265,7 @@ function setTempDocumentEvents() {
                                     title: response,
                                     icon: 'success',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 })
                                 resetSignedDocList(req_id, cus_id);// to reset the current status of the signed list
                                 resetChequeList(req_id, cus_id);// to reset the current status of the cheque list
@@ -3277,7 +3277,7 @@ function setTempDocumentEvents() {
                                     title: response,
                                     icon: 'error',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 });
                             }
                         }
@@ -3306,7 +3306,7 @@ function setTempDocumentEvents() {
                                     title: response,
                                     icon: 'success',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 })
                                 resetSignedDocList(req_id, cus_id);// to reset the current status of the document history
                                 resetChequeList(req_id, cus_id);// to reset the current status of the cheque list
@@ -3318,7 +3318,7 @@ function setTempDocumentEvents() {
                                     title: response,
                                     icon: 'error',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 });
                             }
                         }
@@ -3584,7 +3584,7 @@ function updateMortEndorse(id, req_id) {
                         title: response,
                         icon: 'success',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     })
                     getDocumentHistory();// to reset the current status of the document history
                 } else if (response.includes('Error')) {
@@ -3592,7 +3592,7 @@ function updateMortEndorse(id, req_id) {
                         title: response,
                         icon: 'error',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 }
             }
@@ -3628,7 +3628,7 @@ function updateMortEndorse(id, req_id) {
                             title: result.response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
 
                         var docUpdName = result.doc_upd_name;
@@ -3648,7 +3648,7 @@ function updateMortEndorse(id, req_id) {
                             title: result.response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -3782,7 +3782,7 @@ function getFingerPrintDetails(cus_id, cus_name) {
                 if (hand == '') { //prevent if hand is not selected
                     $(this).prev().css('border-color', 'red');
                 } else {
-                    $(this).prev().css('border-color', '#009688')
+                    $(this).prev().css('border-color', '#0C70AB')
 
                     showOverlay();//loader start
 
@@ -3831,7 +3831,7 @@ function getFingerPrintDetails(cus_id, cus_name) {
         $.post('updateFile/storeFingerprints.php', { 'fdata': fdata, 'hand': hand, 'cus_id': cus_id, 'cus_name': cus_name }, function (response) {
             if (response.includes('Successfully')) {
                 Swal.fire({
-                    title: response, icon: 'success', confirmButtonColor: '#009688'
+                    title: response, icon: 'success', confirmButtonColor: '#0C70AB'
                 })
             }
         }, 'json')
@@ -4650,7 +4650,7 @@ function submitCustomerOldData() {
                     icon: 'success',
                     title: response,
                     showConfirmButton: true,
-                    confirmButtonColor: '#009688',
+                    confirmButtonColor: '#0C70AB',
                     timer: 2000,
                     timerProgressBar: true,
                 });
@@ -4661,7 +4661,7 @@ function submitCustomerOldData() {
                     icon: 'error',
                     title: response,
                     showConfirmButton: true,
-                    confirmButtonColor: '#009688',
+                    confirmButtonColor: '#0C70AB',
                     timer: 2000,
                     timerProgressBar: true,
                 })
@@ -4836,28 +4836,28 @@ function submitfeedbackname() {
                         title: 'Feedback Label Inserted...!',
                         icon: 'success',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 } else if (response.includes(' Updated')) {
                     Swal.fire({
                         title: 'Feedback Label Updated...!',
                         icon: 'success',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 } else if(response.includes('Already')){
                     Swal.fire({
                         title: 'Feedback Label Already Existed',
                         icon: 'error',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 }else if(response.includes('Failed')){
                     Swal.fire({
                         title: 'Error Occures',
                         icon: 'error',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 }
         $("#feedbackname").val('');

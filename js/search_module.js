@@ -148,7 +148,7 @@ $(document).ready(function () {
                             title: `Fingerprint Matched: ${matchedCustomer.cus_name}`,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         }).then(() => {
                             // Trigger search only after clicking OK
                             $('#search').trigger('click');
@@ -158,7 +158,7 @@ $(document).ready(function () {
                             title: 'No Match Found',
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }else{
@@ -166,7 +166,7 @@ $(document).ready(function () {
                         title: 'Error While getting Fingerprint',
                         icon: 'error',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 }
 
@@ -313,7 +313,7 @@ function customerStatusOnClickEvents() {
                     imageHeight: 210,
                     imageAlt: 'Custom image',
                     showCancelButton: true,
-                    confirmButtonColor: '#009688',
+                    confirmButtonColor: '#0C70AB',
                     cancelButtonColor: '#d33',
                     cancelButtonText: 'No',
                     confirmButtonText: 'Yes'

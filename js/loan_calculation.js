@@ -223,6 +223,6 @@ function swalError(title, text) {
 		icon: 'warning',
 		title: title,
 		text: text,
-		confirmButtonColor: '#009688',
+		confirmButtonColor: '#0C70AB',
 	});
 }

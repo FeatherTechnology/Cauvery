@@ -1255,7 +1255,7 @@ function fingerprintTable() {//To Get family member's name are required for scan
                 if (hand == '') { //prevent if hand is not selected
                     $(this).prev().css('border-color', 'red');
                 } else {
-                    $(this).prev().css('border-color', '#009688')
+                    $(this).prev().css('border-color', '#0C70AB')
 
                     showOverlay();//loader start
 
@@ -2555,7 +2555,7 @@ function doc_submit_validation() {
             title: 'Please Complete Customer Profile!',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
         });
         event.preventDefault();
         validation = false;
@@ -4108,7 +4108,7 @@ function performLoanCalculation(callback) {
             title: 'Please Fill out Loan Info!',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
         });
         return;
     }
@@ -4183,7 +4183,7 @@ function loan_calc_validation(submit_btn) {
             title: 'Please Complete Customer Profile!',
             icon: 'error',
             showConfirmButton: true,
-            confirmButtonColor: '#009688'
+            confirmButtonColor: '#0C70AB'
         });
         isValid = false;
     }

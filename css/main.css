@@ -36,11 +36,11 @@ body.authentication {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #009688;
+  background: #0C70AB;
 }
 
 body.countdown {
-  background: #009688;
+  background: #0C70AB;
 }
 
 /*************** Loading ***************/
@@ -492,12 +492,12 @@ a.bg-pink:focus {
 .header .toggle-btns #toggle-sidebar i {
   font-size: 1rem;
   font-weight: 600;
-  color: #2f958bd9;
+  color: #0c70ab;
 }
 
 .header .toggle-btns #pin-sidebar:hover,
 .header .toggle-btns #toggle-sidebar:hover {
-  background: #009688;
+  background: #0C70AB;
   border: 1px solid black;
   border-bottom: 1px solid black;
 }
@@ -564,7 +564,7 @@ a.bg-pink:focus {
   line-height: 20px;
   width: 240px;
   border: 0;
-  background: #009688;
+  background: #0C70AB;
   -webkit-border-radius: 50px;
   -moz-border-radius: 50px;
   border-radius: 50px;
@@ -574,7 +574,7 @@ a.bg-pink:focus {
 
 .custom-search .search-query:focus {
   outline: none;
-  color: #009688;
+  color: #0C70AB;
   background: #ffffff;
   width: 280px;
 }
@@ -613,7 +613,7 @@ a.bg-pink:focus {
 
 .header-actions>li>a>i {
   font-size: 1.2rem;
-  color: #009688;
+  color: #0C70AB;
 }
 
 .header-actions>li>a .count-label {
@@ -626,7 +626,7 @@ a.bg-pink:focus {
   font-size: .6rem;
   font-weight: 600;
   text-align: center;
-  background: #009688;
+  background: #0C70AB;
   border-bottom: 1px solid black;
   color: #ffffff;
   -webkit-border-radius: 30px;
@@ -861,7 +861,7 @@ ul.header-tasks:last-child {
 }
 
 .header-profile-actions a:hover {
-  background: #009688;
+  background: #0C70AB;
   color: #ffffff;
 }
 
@@ -6765,14 +6765,14 @@ button:focus {
 
 .btn-primary {
   color: #ffffff;
-  background-color: #009688;
-  border-color: #009688;
+  background-color: #0C70AB;
+  border-color: #0C70AB;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:hover {
   color: #ffffff;
-  background-color: #009688;
+  background-color: #0C70AB;
   border-color: black;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
@@ -6780,31 +6780,31 @@ button:focus {
 .btn-primary:focus,
 .btn-primary.focus {
   box-shadow: 0 0 0 0.2rem rgba(236, 183, 108, 0.35);
-  background-color: #009688;
-  border-color: #009688;
+  background-color: #0C70AB;
+  border-color: #0C70AB;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary.disabled,
 .btn-primary:disabled {
   color: #ffffff;
-  background-color: #2f958bd9;
-  border-color: #2f958bd9;
+  background-color: #0c70ab;
+  border-color: #0c70ab;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:not(:disabled):not(.disabled):active,
 .btn-primary:not(:disabled):not(.disabled).active {
   color: #ffffff;
-  background-color: #009688;
-  border-color: #009688;
+  background-color: #0C70AB;
+  border-color: #0C70AB;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .show>.btn-primary.dropdown-toggle {
   color: #ffffff;
-  background-color: #009688;
-  border-color: #009688;
+  background-color: #0C70AB;
+  border-color: #0C70AB;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
@@ -7804,8 +7804,8 @@ button:focus {
 }
 
 .custom-control-input:checked~.custom-control-label::before {
-  background: #009688;
-  border-color: #009688;
+  background: #0C70AB;
+  border-color: #0C70AB;
 }
 
 .custom-control.custom-switch .custom-control-label::after {
@@ -7930,11 +7930,11 @@ button:focus {
 }
 
 .form-control:hover {
-  border: 1px solid #2f958bd9;
+  border: 1px solid #0c70ab;
 }
 
 .form-control:focus {
-  border-color: #2f958bd9;
+  border-color: #0c70ab;
   box-shadow: none;
 }
 
@@ -8175,7 +8175,7 @@ label {
 }
 
 .modal .modal-header {
-  background: #2f958bd9;
+  background: #0c70ab;
   color: #ffffff;
   border: 0;
   -webkit-border-radius: 3px 3px 0 0;

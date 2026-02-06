@@ -204,7 +204,7 @@ function OnLoadFunctions(req_id, cus_id) {
                                 imageHeight: 210,
                                 imageAlt: 'Custom image',
                                 showCancelButton: true,
-                                confirmButtonColor: '#009688',
+                                confirmButtonColor: '#0C70AB',
                                 cancelButtonColor: '#d33',
                                 cancelButtonText: 'No',
                                 confirmButtonText: 'Yes'
@@ -392,7 +392,7 @@ function swarlErrorAlert(response) {
         title: response,
         icon: 'error',
         confirmButtonText: 'Ok',
-        confirmButtonColor: '#009688'
+        confirmButtonColor: '#0C70AB'
     });
 }
 function swarlInfoAlert(title, text) {
@@ -402,7 +402,7 @@ function swarlInfoAlert(title, text) {
         icon: 'info',
         showConfirmButton: true,
         showCancelButton: true,
-        confirmButtonColor: '#009688',
+        confirmButtonColor: '#0C70AB',
         cancelButtonColor: '#cc4444',
         cancelButtonText: 'No',
         confirmButtonText: 'Yes'
@@ -417,7 +417,7 @@ function swarlSuccessAlert(response, callback) {
         title: response,
         icon: 'success',
         confirmButtonText: 'Ok',
-        confirmButtonColor: '#009688'
+        confirmButtonColor: '#0C70AB'
     }).then( (result) => {
         if(result.isConfirmed && typeof callback === 'function'){
             callback();

@@ -1,8 +1,8 @@
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - Concern Creation
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - Concern Creation
 	</div>
 </div><br>
 
@@ -134,7 +134,7 @@ if (isset($_SESSION["userid"])) {
 			html: text,
 			icon: 'warning',
 			showConfirmButton: true,
-			confirmButtonColor: '#009688', // warning color (orange/yellow)
+			confirmButtonColor: '#0C70AB', // warning color (orange/yellow)
 			confirmButtonText: 'OK'
 		});
 	}
@@ -144,7 +144,7 @@ if (isset($_SESSION["userid"])) {
 			title: title,
 			html: text,
 			icon: 'success',
-			confirmButtonColor: '#009688',
+			confirmButtonColor: '#0C70AB',
 			confirmButtonText: 'OK'
 		}).then((result) => {
 			if (result.isConfirmed) {
@@ -159,7 +159,7 @@ if (isset($_SESSION["userid"])) {
 			text: text,
 			icon: 'question',
 			showCancelButton: true,
-			confirmButtonColor: '#009688',
+			confirmButtonColor: '#0C70AB',
 			cancelButtonColor: '#d33',
 			cancelButtonText: 'No',
 			confirmButtonText: 'Yes'

@@ -71,7 +71,7 @@ function callOnClickEvents() {
                 icon: 'question',
                 showConfirmButton: true,
                 showCancelButton: true,
-                confirmButtonColor: '#009688',
+                confirmButtonColor: '#0C70AB',
                 cancelButtonColor: '#cc4444',
                 cancelButtonText: 'No',
                 confirmButtonText: 'Yes'
@@ -98,7 +98,7 @@ function callOnClickEvents() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688',
+                                confirmButtonColor: '#0C70AB',
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 // Redirect only if OK is clicked
@@ -114,7 +114,7 @@ function callOnClickEvents() {
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                     }
@@ -140,7 +140,7 @@ function removeLoanFromList(req_id) {
                     title: 'Success!',
                     text: result.message,
                     icon: 'success',
-                    confirmButtonColor: '#009688',
+                    confirmButtonColor: '#0C70AB',
                     timer: 1500, // Auto-close after 1.5 seconds
                     showConfirmButton: false
                 }).then(function () {
@@ -173,7 +173,7 @@ function warningSwal(title, text) {
         html: text,
         icon: 'warning',
         showConfirmButton: true,
-        confirmButtonColor: '#009688', // warning color (orange/yellow)
+        confirmButtonColor: '#0C70AB', // warning color (orange/yellow)
         confirmButtonText: 'OK'
     });
 }
@@ -184,7 +184,7 @@ function successSwal(title, text) {
         html: text,
         icon: 'success',
         showConfirmButton: true,
-        confirmButtonColor: '#009688', // your success green
+        confirmButtonColor: '#0C70AB', // your success green
         confirmButtonText: 'OK'
     }).then((result) => {
         // Reload only if OK is clicked

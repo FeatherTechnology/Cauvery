@@ -78,7 +78,7 @@ function callOnClickEvents() {
                                 html: `<p style="font-size: 20px;"> The Loan ID is: <b>${result.loanid}</b><br> The Doc ID is: <b>${result.docid}</b> </p>`,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688',
+                                confirmButtonColor: '#0C70AB',
                                 confirmButtonText: 'OK'
                             }).then((swalResult) => {
                                 // Redirect only if user clicks OK
@@ -108,7 +108,7 @@ function callOnClickEvents() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688',
+                                confirmButtonColor: '#0C70AB',
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 // Redirect only if OK is clicked
@@ -124,7 +124,7 @@ function callOnClickEvents() {
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                     }

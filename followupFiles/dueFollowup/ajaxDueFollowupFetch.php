@@ -80,7 +80,7 @@ if ($payable > 0) {
             'line' => $row['area_line'],
             'mobile' => $row['mobile1'],
             'sub_status' => isset($follow_cus_sts) ? $follow_cus_sts : '',
-            'action' => "<a href='due_followup&upd={$row['req_id']}&cusidupd=$cus_id' title='Edit details'><button class='btn btn-success' style='background-color:#009688;'>View Loans</button></a>",
+            'action' => "<a href='due_followup&upd={$row['req_id']}&cusidupd=$cus_id' title='Edit details'><button class='btn btn-success' style='background-color:#0C70AB;'>View Loans</button></a>",
             'last_paid_date' => $date_range,
             'hint' => $hint,
             'comm_err' => $comm_err,

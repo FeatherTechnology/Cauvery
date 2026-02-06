@@ -229,7 +229,7 @@ foreach ($result as $row) {
         $finalData['line'] = $row['line_name'],
         $finalData['mobile'] = $row['mobile1'],
         $finalData['status_priority'] = $cus_status,
-        $finalData['action'] = "<a href='ecs_followup&upd={$row['req_id']}&cusidupd=$cus_id&cussts=$sub_status_url&cummDate=$commdate' title='Edit details'><button class='btn btn-success' style='background-color:#009688;'>View Loans</button></a>",
+        $finalData['action'] = "<a href='ecs_followup&upd={$row['req_id']}&cusidupd=$cus_id&cussts=$sub_status_url&cummDate=$commdate' title='Edit details'><button class='btn btn-success' style='background-color:#0C70AB;'>View Loans</button></a>",
         $finalData['comm_err'] = $comm_err,
         $finalData['comm_dat'] = $comm_date
     ];

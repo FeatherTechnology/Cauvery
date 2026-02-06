@@ -34,8 +34,8 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - NOC Handover
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - NOC Handover
 	</div>
 </div><br>
 <div class="text-right" style="margin-right: 25px;">
@@ -574,7 +574,7 @@ if (sizeof($getCustomerReg) > 0) {
 										<input type="hidden" class="form-control" id="compare_finger" name="compare_finger" value='' readonly>
 										<input type="hidden" class="form-control" id="ack_fingerprint" name="ack_fingerprint" value='' readonly>
 										<input type="text" class="form-control" value='' readonly style="visibility:hidden;">
-										<button type="button" class='btn btn-success scanBtn' id="" name="" style='background-color:#009688;margin-top: -50px;width: auto;' onclick="event.preventDefault()" title='Put Your Thumb' tabindex='44'><i class="material-icons" id="icon-flipped">&#xe90d;</i>&nbsp;Scan</button>
+										<button type="button" class='btn btn-success scanBtn' id="" name="" style='background-color:#0C70AB;margin-top: -50px;width: auto;' onclick="event.preventDefault()" title='Put Your Thumb' tabindex='44'><i class="material-icons" id="icon-flipped">&#xe90d;</i>&nbsp;Scan</button>
 										<span class="text-danger scanBtnCheck" style="display:none">Please Scan fingerprint</span>
 									</div>
 								</div>

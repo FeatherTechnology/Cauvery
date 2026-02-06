@@ -154,7 +154,7 @@ if (sizeof($getLoanCalculation) > 0) {
     }
 
     input:checked+.slider {
-        background-color: #009688;
+        background-color: #0C70AB;
     }
 
     input:focus+.slider {
@@ -180,12 +180,12 @@ if (sizeof($getLoanCalculation) > 0) {
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-    <div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-        Marudham Capitals - Loan Issue
+    <div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+        Cauvery Capitals - Loan Issue
     </div>
 </div><br>
 <div class="page-header sticky-top" id="navbar" style="display: none;" data-toggle="toggle">
-    <div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
+    <div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
         Customer Name - <?php if (isset($cus_name)) {
                             echo $cus_name;
                         } ?>

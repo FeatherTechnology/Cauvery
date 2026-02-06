@@ -536,7 +536,7 @@ function submitCashTally(i) {
                                     title: response,
                                     icon: 'success',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 })
                                 getOpeningDate();
                             } else if (response.includes('Error')) {
@@ -544,7 +544,7 @@ function submitCashTally(i) {
                                     title: response,
                                     icon: 'error',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 });
                             }
                         }
@@ -558,7 +558,7 @@ function submitCashTally(i) {
             //         html: 'Please check: <br>1.Bank Collection <br> 2.Hand & Bank Issued<br> has submitted before Closing!',
             //         icon: 'error',
             //         showConfirmButton: true,
-            //         confirmButtonColor: '#009688'
+            //         confirmButtonColor: '#0C70AB'
             //     });
 
             // }
@@ -883,7 +883,7 @@ function collectBtnClick(button) {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             }).then(function (result) {
                                 if (result.isConfirmed) {
                                     var user_id = $('#user_id_rec').val();
@@ -908,7 +908,7 @@ function collectBtnClick(button) {
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         getClosingBalance();
@@ -986,21 +986,21 @@ function getBankCollectionDetails(bank_id) {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                     } else if (response.includes('Error')) {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else if (response.includes('Already')) {
                         Swal.fire({
                             title: response,
                             icon: 'info',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     //  $('#bank_credit_amt').val('');
@@ -1094,14 +1094,14 @@ function getBankDepositDetails() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                         } else if (response.includes('Error')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         $('#to_bank_bdep').val('');
@@ -1192,7 +1192,7 @@ function receivecdBtnClick(bdep_id1) {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                         } else if (response.includes('Already')) {
                             Swal.fire({
@@ -1200,20 +1200,20 @@ function receivecdBtnClick(bdep_id1) {
                                 text: 'Please close this module',
                                 icon: 'warning',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }else if (response.includes('Mismatched')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'warning',
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }else{
                            Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             }); 
                         }
                         $('#closeCdModal').trigger('click');
@@ -1379,20 +1379,20 @@ function getCashWithdrawalDetails() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         } else if (response.includes('Mismatched')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'warning',
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         } else {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         getCashWithdrawalDetails();
@@ -1480,14 +1480,14 @@ function receivebwdBtnClick(bwd_id1) {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                         } else if (response.includes('Error')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         } else if (response.includes('Already')) {
                             Swal.fire({
@@ -1495,7 +1495,7 @@ function receivebwdBtnClick(bwd_id1) {
                                 text: 'Please close this module',
                                 icon: 'warning',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         $('#closebwdModal').trigger('click');
@@ -1697,7 +1697,7 @@ function getHandExchangeInputs() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                             getHandExchangeInputs();
                         } else if (response.includes('Error')) {
@@ -1705,7 +1705,7 @@ function getHandExchangeInputs() {
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         getClosingBalance();
@@ -1757,7 +1757,7 @@ function getHandExchangeInputs() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                             $('#user_id_hed').val(''); $('#user_type_hed').val(''); $('#remark_hed').val(''); $('#amt_hed').val('');
                             getHandExchangeInputs();
@@ -1766,7 +1766,7 @@ function getHandExchangeInputs() {
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         } else if (response.includes('Already')) {
                             Swal.fire({
@@ -1774,7 +1774,7 @@ function getHandExchangeInputs() {
                                 text: 'Please close this module',
                                 icon: 'warning',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
 
@@ -1860,21 +1860,21 @@ function hexCollectBtnClick(hex_id1) {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                     } else if (response.includes('Error')) {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else if (response.includes('Debited')) {
                         Swal.fire({
                             title: response,
                             icon: 'info',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     $('#closeHexchangeModal').trigger('click');
@@ -2005,7 +2005,7 @@ function getBankExchangeInputs() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                             getClosingBalance();
                             getBankExchangeInputs()
@@ -2013,14 +2013,14 @@ function getBankExchangeInputs() {
                             Swal.fire({
                                 title: response,
                                 icon: 'warning',
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         } else {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                     }
@@ -2102,7 +2102,7 @@ function bexCollectBtnClick(bex_id1) {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                             $('#closebexchangeModal').trigger('click');
                             getClosingBalance();
@@ -2111,14 +2111,14 @@ function bexCollectBtnClick(bex_id1) {
                             Swal.fire({
                                 title: response,
                                 icon: 'warning',
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         } else {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                     }
@@ -2200,14 +2200,14 @@ function getHotherincomeDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                     } else if (response.includes('Error')) {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getHotherincomeDetails();
@@ -2318,7 +2318,7 @@ function getBotherincomeDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     getBotherincomeDetails();
                     getClosingBalance();
@@ -2326,14 +2326,14 @@ function getBotherincomeDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -2405,14 +2405,14 @@ function getHissuedTable() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                         } else if (response.includes('Error')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         getHissuedTable();
@@ -2471,14 +2471,14 @@ function getBissuedTable() {
                                     title: response,
                                     icon: 'success',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 })
                             } else if (response.includes('Error')) {
                                 Swal.fire({
                                     title: response,
                                     icon: 'error',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0C70AB'
                                 });
                             }
                             getBissuedTable();
@@ -2530,14 +2530,14 @@ function getHexpenseTable() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                         } else if (response.includes('Error')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         getHexpenseTable();
@@ -2693,14 +2693,14 @@ function hexpenseModalBtnClick() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                         } else if (response.includes('Error')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         getHexpenseTable();
@@ -2777,14 +2777,14 @@ function getBexpenseTable() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             })
                         } else if (response.includes('Error')) {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                         getBexpenseTable();
@@ -2970,7 +2970,7 @@ function bexpenseModalBtnClick() {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                             getBexpenseTable();
                             $('#closebexpModal').trigger('click');
@@ -2980,14 +2980,14 @@ function bexpenseModalBtnClick() {
                             Swal.fire({
                                 title: response,
                                 icon: 'warning',
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         } else {
                             Swal.fire({
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0C70AB'
                             });
                         }
                     }
@@ -3099,7 +3099,7 @@ function getCHinvDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getCHinvDetails();
                     } else if (response.includes('Error')) {
@@ -3107,7 +3107,7 @@ function getCHinvDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -3187,7 +3187,7 @@ function getDHinvDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getDHinvDetails();
                     } else if (response.includes('Error')) {
@@ -3195,7 +3195,7 @@ function getDHinvDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -3312,7 +3312,7 @@ function getCBinvDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getCBinvDetails();
                         getClosingBalance();
@@ -3320,14 +3320,14 @@ function getCBinvDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -3429,7 +3429,7 @@ function getDBinvDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getDBinvDetails();
                         getClosingBalance();
@@ -3437,14 +3437,14 @@ function getDBinvDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -3551,7 +3551,7 @@ function getCHdepDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getCHdepDetails();
                     } else if (response.includes('Error')) {
@@ -3559,7 +3559,7 @@ function getCHdepDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -3639,7 +3639,7 @@ function getDHdepDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getDHdepDetails();
                     } else if (response.includes('Error')) {
@@ -3647,7 +3647,7 @@ function getDHdepDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -3763,7 +3763,7 @@ function getCBDepDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getCBDepDetails();
                         getClosingBalance();
@@ -3771,14 +3771,14 @@ function getCBDepDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -3879,7 +3879,7 @@ function getDBDepDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getDBDepDetails();
                         getClosingBalance();
@@ -3888,14 +3888,14 @@ function getDBDepDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -4002,7 +4002,7 @@ function getCHelDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getCHelDetails();
                     } else if (response.includes('Error')) {
@@ -4010,7 +4010,7 @@ function getCHelDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -4090,7 +4090,7 @@ function getDHelDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getDHelDetails();
                     } else if (response.includes('Error')) {
@@ -4098,7 +4098,7 @@ function getDHelDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -4210,7 +4210,7 @@ function getCBelDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getCBelDetails();
                         getClosingBalance();
@@ -4218,14 +4218,14 @@ function getCBelDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -4325,7 +4325,7 @@ function getDBelDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getDBelDetails();
                         getClosingBalance();
@@ -4333,14 +4333,14 @@ function getDBelDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -4690,21 +4690,21 @@ function getExfDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getExfDetails();
                     }else if (response.includes('Mismatched')) {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -4799,7 +4799,7 @@ function getCHagDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getCHagDetails();
                     } else if (response.includes('Error')) {
@@ -4807,7 +4807,7 @@ function getCHagDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -4874,7 +4874,7 @@ function getDHagDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         })
                         getDHagDetails();
                     } else if (response.includes('Error')) {
@@ -4882,7 +4882,7 @@ function getDHagDetails() {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                     getClosingBalance();
@@ -4999,7 +4999,7 @@ function getCBagDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getCBagDetails();
                         getClosingBalance();
@@ -5007,14 +5007,14 @@ function getCBagDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
@@ -5109,7 +5109,7 @@ function getDBagDetails() {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                         getDBagDetails();
                         getClosingBalance();
@@ -5117,14 +5117,14 @@ function getDBagDetails() {
                         Swal.fire({
                             title: response,
                             icon: 'warning',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     } else {
                         Swal.fire({
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }

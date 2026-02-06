@@ -58,8 +58,8 @@ if(isset($_POST['lusername'])) {
 						<div class="login-screen">
 							<div class="login-box">
 								<a href="#" class="login-logo">
-									<h3 style="color: #009688; position: relative;left: 41px;font-weight: bolder;">MARUDHAM CAPITALS</h3>
-									<!-- <img src="img/logo.png" alt="Auction Dashboard" /> -->
+									<h3 style="color: #0C70AB; position: relative;left: 41px;font-weight: bolder;">CAUVERY CAPITALS</h3>
+									<!-- <img src="img/cauvery_capitals_logo.jpeg" alt="Auction Dashboard" /> -->
 								</a>
 								<span class="text-danger" id="cinnocheck">
 									<!-- <input type="hidden" id="err_msg" value=' -->

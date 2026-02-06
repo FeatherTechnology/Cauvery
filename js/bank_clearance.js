@@ -191,7 +191,7 @@ function submitUpload() {
                     title: 'Statement Uploaded!',
                     html: `Total Rows Inserted : <b>${res.inserted}</b>`,
                     icon: 'success',
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0C70AB'
                 }).then(() => {
                     $('#close_upd_modal').trigger('click');
                     location.reload();
@@ -209,7 +209,7 @@ function submitUpload() {
                         ${res.message}
                     `,
                     icon: 'error',
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0C70AB'
                 }).then(() => {
                     $('#close_upd_modal').trigger('click');
                 });
@@ -234,7 +234,7 @@ function warningSwal(title, text) {
         title: title,
         html: text,
         icon: 'warning',
-        confirmButtonColor: '#009688'
+        confirmButtonColor: '#0C70AB'
     });
 }
 
@@ -243,6 +243,6 @@ function successSwal(title, text) {
         title: title,
         html: text,
         icon: 'success',
-        confirmButtonColor: '#009688'
+        confirmButtonColor: '#0C70AB'
     }).then(() => location.reload());
 }

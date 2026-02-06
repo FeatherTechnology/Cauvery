@@ -263,7 +263,7 @@ foreach ($result as $row) {
         $finalData['mobile'] = $row['mobile1'],
         $finalData['status_priority'] = $cus_status,
         $finalData['responsible_status'] = $row['responsible_status'],
-        $finalData['action'] = "<a href='due_followup&upd={$row['req_id']}&cusidupd=$cus_id&cussts=$sub_status_url&cummDate=$commdate&res_sts=$res_sts' title='Edit details'><button class='btn btn-success' style='background-color:#009688;'>View Loans</button></a>",
+        $finalData['action'] = "<a href='due_followup&upd={$row['req_id']}&cusidupd=$cus_id&cussts=$sub_status_url&cummDate=$commdate&res_sts=$res_sts' title='Edit details'><button class='btn btn-success' style='background-color:#0C70AB;'>View Loans</button></a>",
         $finalData['last_paid_date'] = $last_paid_date,
         $finalData['paid_status'] = $paid_status,
         $finalData['hint'] = $hint,

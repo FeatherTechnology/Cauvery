@@ -10,9 +10,9 @@
 <link rel="stylesheet" type="text/css" href="css/ledger_report.css">
 <br><br>
 <div class="page-header">
-	<div style="background-color:#2f958bd9; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		<!-- Marudham Capitals - Customer Status Report   name changes to  Collection Status Report-->
-		Marudham Capitals - Collection Status Report
+	<div style="background-color:#0c70ab; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		<!-- Cauvery Capitals - Customer Status Report   name changes to  Collection Status Report-->
+		Cauvery Capitals - Collection Status Report
 	</div>
 </div><br>
 
@@ -53,7 +53,7 @@
 					<option value='2'>Pending</option>
 					<option value='3'>OD</option>
 				</select>
-				<input type="button" id='reset_btn' name='reset_btn' class="toggle-button" style="background-color: #2f958bd9;color:white" value='Search'>
+				<input type="button" id='reset_btn' name='reset_btn' class="toggle-button" style="background-color: #0c70ab;color:white" value='Search'>
 			</div>
 
 			<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">

@@ -8,8 +8,8 @@
 
 	.filter-btn {
 		color: #ffffff;
-		background-color: #009688;
-		border-color: #009688;
+		background-color: #0C70AB;
+		border-color: #0C70AB;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 		border-radius: 3px;
 		border: 1px solid transparent;
@@ -21,8 +21,8 @@
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#009688; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Marudham Capitals - ECS Follow Up
+	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+		Cauvery Capitals - ECS Follow Up
 	</div>
 </div>
 <br><br>
