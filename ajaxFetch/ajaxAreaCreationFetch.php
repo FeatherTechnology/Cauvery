@@ -9,12 +9,11 @@ if (isset($_SESSION["userid"])) {
 $column = array(
     'ac.area_creation_id',
     'alc.area_name',
-    'ac.sub_area',
     'ac.taluk',
     'ac.district',
     'ac.state',
     'ac.pincode',
-    'ac.area_creation_id',
+    'ac.area_creation_id'
     // 'ac.status'
 );
 
@@ -24,7 +23,6 @@ JOIN area_list_creation alc ON alc.area_id = ac.area_name_id WHERE 1 ";
 if (isset($_POST['search']) && $_POST['search'] != "") {
 
     $query .= "and (alc.area_name LIKE '%" . $_POST['search'] . "%' 
-            OR ac.sub_area LIKE '%" . $_POST['search'] . "%' 
             OR ac.taluk LIKE '%" . $_POST['search'] . "%' 
             OR ac.district LIKE '%" . $_POST['search'] . "%' 
             OR ac.state LIKE '%" . $_POST['search'] . "%' 
@@ -55,13 +53,6 @@ foreach ($result as $row) {
 
     $sub_array[] = $sno;
     $sub_array[] = $row["area_name"];
-
-    $sub_area_id = rtrim($row['sub_area'], ' , ') ?? '';
-    $getsubareaQry = "SELECT GROUP_CONCAT(sub_area_name) AS sub_area_name from sub_area_list_creation where sub_area_id IN ($sub_area_id) and status = 0 ";
-    $res = $connect->query($getsubareaQry);
-    $row1 = $res->fetch();
-
-    $sub_array[] = $row1["sub_area_name"] ?? '';
     $sub_array[] = $row['taluk'];
     $sub_array[] = $row['district'];
     $sub_array[] = $row['state'];
@@ -74,8 +65,9 @@ foreach ($result as $row) {
     // }
     $id   = $row['area_creation_id'];
 
-    $action = "<a href='area_creation&upd=$id' title='Edit details'><span class='icon-border_color'></span></a>&nbsp;&nbsp;</a>";
-// <a href='area_creation&del=$id' title='Delete details' class='delete_area'><span class='icon-trash-2'></span>
+    $action = "<a href='area_creation&upd=$id' title='Edit details'><span class='icon-border_color'></span></a>&nbsp;&nbsp</a>"; 
+	// <a href='area_creation&del=$id' title='Delete details' class='delete_area'><span class='icon-trash-2'></span>";
+
     $sub_array[] = $action;
     $data[]      = $sub_array;
     $sno = $sno + 1;

@@ -1,18 +1,12 @@
-//Sub Area Multi select initialization
-const intance = new Choices('#sub_area1', {
-    removeItemButton: true,
-    noChoicesText: 'Select Sub Area',
-    allowHTML: true
-});
 
 // Document is ready
 $(document).ready(function () {
 
     $("#state").change(function () {
         var StateSelected = $(this).val();
-        getDistrictDropdown(StateSelected," ");
+        getDistrictDropdown(StateSelected);
     });
-    $("#swap_states").change(function () {
+ $("#swap_states").change(function () {
         var StateSelected = $(this).val();
         getDistrictDropdown(StateSelected,'swap');
     });
@@ -34,27 +28,12 @@ $(document).ready(function () {
         resetAreaTable(talukselected);
     })
 
-    $('#area').change(function () {
-        var areaselected = $('#area').val();
-        getAreaBasedSubArea(areaselected);
-        resetSubAreaTable(areaselected);
-    })
-
     $('#add_area').click(function () {
         var taluk = $('#taluk1').val();
         if (taluk == '') {
             alert('Please Select Taluk Name');
         } else {
             $('#add_area').attr({ "data-toggle": "modal", "data-target": ".add_area" });
-        }
-    })
-
-    $('#add_sub_area').click(function () {
-        var area = $('#area').val();
-        if (area == '') {
-            alert('Please Select Area Name');
-        } else {
-            $('#add_sub_area').attr({ "data-toggle": "modal", "data-target": ".add_sub_area" });
         }
     })
 
@@ -106,18 +85,20 @@ $(document).ready(function () {
     });
 
     //on submit add sub area list to hidden input
-   $('#submit_area_creation').click(function(event) {
-    if (validateAreaForm()) {
-        let confirmAction = confirm("Are you sure you want to submit Area Creation?");
-        if (!confirmAction) {
+    $('#submit_area_creation').click(function () {
+           // Confirmation before submit
+        if (validateAreaForm()) {
+           let confirmAction = confirm("Are you sure you want to submit Area Creation?");
+            if (!confirmAction) {
+                event.preventDefault();
+                return false; 
+            }
+        }else{
             event.preventDefault();
-            return false; 
+            return false;
         }
-    } else {
-        event.preventDefault();
-        return false;
-    }
-});
+
+    })
 
     $('#swap_area_creation').click(function () {
         var area_id   = $("#swap_area_id").val();
@@ -136,7 +117,7 @@ $(document).ready(function () {
                 title: 'Please Fill out Mandatory fields!',
                 icon: 'error',
                 showConfirmButton: true,
-                confirmButtonColor: '#0C70AB'
+                confirmButtonColor: '#0c70ab'
             });
         }
     })
@@ -153,29 +134,31 @@ $(function () {
         var taluk_upd = $('#taluk_upd').val(); if (taluk_upd != '') { $('#taluk1').val(taluk_upd); $('#add_area').attr({ "data-toggle": "modal", "data-target": ".add_area" }) }
         var area_upd = $('#area_upd').val();
 
-        getDistrictDropdown(state_upd," ");
-        getTalukDropdown(district_upd," ");
+        getDistrictDropdown(state_upd, " ");
+        getTalukDropdown(district_upd , " ");
 
         getTalukBasedArea(taluk_upd);
         resetAreaTable(taluk_upd);
 
-        getAreaBasedSubArea(area_upd);
-        resetSubAreaTable(area_upd);
     }
 })
 
 //get district dropdown
 function getDistrictDropdown(StateSelected,value) {
-
-    var optionsList;
+    var optionsList = [];
     var htmlString = "<option value='Select District'>Select District</option>";
-    {
-        var TamilNadu = ["Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode", "Kancheepuram", "Kanniyakumari", "Karur", "Madurai", "Nagapattinam",
-            "Namakkal", "Nilgiris", "Perambalur", "Pudukottai", "Ramanathapuram", "Salem", "Sivagangai", "Thanjavur", "Theni", "Thiruvallur", "Tiruvannamalai", "Thiruvarur",
-            "Thoothukudi", "Tiruchirappalli", "Thirunelveli", "Vellore", "Viluppuram", "Virudhunagar", "Ariyalur", "Krishnagiri", "Tiruppur", "Chengalpattu", "Kallakurichi",
-            "Ranipet", "Tenkasi", "Tirupathur", "Mayiladuthurai"];
-        var Puducherry = ["Puducherry"];
-    }//District list
+
+    // District list
+    var TamilNadu = [
+        "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode", "Kancheepuram", "Kanniyakumari",
+        "Karur", "Madurai", "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukottai", "Ramanathapuram",
+        "Salem", "Sivagangai", "Thanjavur", "Theni", "Thiruvallur", "Tiruvannamalai", "Thiruvarur", "Thoothukudi",
+        "Tiruchirappalli", "Thirunelveli", "Vellore", "Viluppuram", "Virudhunagar", "Ariyalur", "Krishnagiri",
+        "Tiruppur", "Chengalpattu", "Kallakurichi", "Ranipet", "Tenkasi", "Tirupathur", "Mayiladuthurai"
+    ];
+    var Puducherry = ["Puducherry"];
+
+    // Pick districts based on state
     switch (StateSelected) {
         case "TamilNadu":
             optionsList = TamilNadu;
@@ -188,206 +171,133 @@ function getDistrictDropdown(StateSelected,value) {
             break;
     }
 
+    // ✅ Sort options alphabetically before appending
+    optionsList.sort();
+
     var district_upd = $('#district_upd').val();
     for (var i = 0; i < optionsList.length; i++) {
         var selected = '';
-        if (district_upd != '' && district_upd == optionsList[i]) { selected = "selected"; }
-        htmlString = htmlString + "<option value='" + optionsList[i] + "' " + selected + " >" + optionsList[i] + "</option>";
+        if (district_upd !== '' && district_upd === optionsList[i]) {
+            selected = "selected";
+        }
+        htmlString += "<option value='" + optionsList[i] + "' " + selected + ">" + optionsList[i] + "</option>";
     }
-    if(value =='swap'){
+  if(value =='swap'){
         $("#swap_district").html(htmlString);
-     sortDropdownAlphabetically("#swap_district");
     }else{
+    // ✅ Append final HTML
     $("#district").html(htmlString);
-    sortDropdownAlphabetically("#district");
-
-    }
 }
+}
+
 
 //get Taluk Dropdown
 function getTalukDropdown(DistSelected,value) {
-    var optionsList;
+    var optionsList = [];
     var htmlString = "<option value='Select Taluk'>Select Taluk</option>";
-    {
-        var Chennai = ["Alandur", "Ambattur", "Aminjikarai", "Ayanavaram", "Egmore", "Guindy", "Madhavaram", "Madhuravoyal", "Mambalam", "Mylapore", "Perambur", "Purasavakkam", "Sholinganallur", "Thiruvottriyur", "Tondiarpet", "Velacherry"];
-        var Coimbatore = ["Aanaimalai", "Annur", "Coimbatore(North)", "Coimbatore(South)", "Kinathukadavu", "Madukarai", "Mettupalayam", "Perur", "Pollachi", "Sulur", "Valparai"];
-        var Cuddalore = ["Cuddalore", "Bhuvanagiri", "Chidambaram", "Kattumannarkoil", "Kurinjipadi", "Panruti", "Srimushnam", "Thittakudi", "Veppur", "Virudhachalam"];
-        var Dharmapuri = ["Dharmapuri", "Harur", "Karimangalam", "Nallampalli", "Palacode", "Pappireddipatti", "Pennagaram"];
-        var Dindigul = ["Atthur", "Dindigul (East)", "Dindigul (West)", "Guziliyamparai", "Kodaikanal", "Natham", "Nilakottai", "Oddanchatram", "Palani", "Vedasandur"];
-        var Erode = ["Erode", "Anthiyur", "Bhavani", "Gobichettipalayam", "Kodumudi", "Modakurichi", "Nambiyur", "Perundurai", "Sathiyamangalam", "Thalavadi"];
-        var Kancheepuram = ["Kancheepuram", "Kundrathur", "Sriperumbudur", "Uthiramerur", "Walajabad"];
-        var Kanniyakumari = ["Agasteeswaram", "Kalkulam", "Killiyur", "Thiruvatar", "Thovalai", "Vilavankodu"];
-        var Karur = ["Karur", "Aravakurichi", "Kadavur", "Krishnarayapuram", "Kulithalai", "Manmangalam", "Pugalur"];
-        var Madurai = ["Kallikudi", "Madurai (East)", "Madurai (North)", "Madurai (South)", "Madurai (West)", "Melur", "Peraiyur", "Thirumangalam", "Thiruparankundram", "Usilampatti", "Vadipatti"];
-        var Nagapattinam = ["Nagapattinam", "Kilvelur", "Thirukkuvalai", "Vedaranyam"];
-        var Namakkal = ["Namakkal", "Kholli Hills", "Kumarapalayam", "Mohanoor", "Paramathi Velur", "Rasipuram", "Senthamangalam", "Tiruchengode"];
-        var Nilgiris = ["Udagamandalam", "Coonoor", "Gudalur", "Kothagiri", "Kundah", "Pandalur"];
-        var Perambalur = ["Perambalur", "Alathur", "Kunnam", "Veppanthattai"];
-        var Pudukottai = ["Pudukottai", "Alangudi", "Aranthangi", "Avudiyarkoil", "Gandarvakottai", "Iluppur", "Karambakudi", "Kulathur", "Manamelkudi", "Ponnamaravathi", "Thirumayam", "Viralimalai"];
-        var Ramanathapuram = ["Ramanathapuram", "Kadaladi", "Kamuthi", "Kezhakarai", "Mudukulathur", "Paramakudi", "Rajasingamangalam", "Rameswaram", "Tiruvadanai"];
-        var Salem = ["Salem", "Attur", "Edapadi", "Gangavalli", "Kadaiyampatti", "Mettur", "Omalur", "Pethanayakanpalayam", "Salem South", "Salem West", "Sankari", "Vazhapadi", "Yercaud"];
-        var Sivagangai = ["Sivagangai", "Devakottai", "Ilayankudi", "Kalaiyarkovil", "Karaikudi", "Manamadurai", "Singampunari", "Thirupuvanam", "Tirupathur"];
-        var Thanjavur = ["Thanjavur", "Boothalur", "Kumbakonam", "Orathanadu", "Papanasam", "Pattukottai", "Peravurani", "Thiruvaiyaru", "Thiruvidaimaruthur"];
-        var Theni = ["Theni", "Aandipatti", "Bodinayakanur", "Periyakulam", "Uthamapalayam"];
-        var Thiruvallur = ["Thiruvallur", "Avadi", "Gummidipoondi", "Pallipattu", "Ponneri", "Poonamallee", "R.K. Pet", "Tiruthani", "Uthukottai"];
-        var Tiruvannamalai = ["Thiruvannamalai", "Arni", "Chengam", "Chetpet", "Cheyyar", "Jamunamarathur", "Kalasapakkam", "Kilpennathur", "Polur", "Thandramet", "Vandavasi", "Vembakkam"];
-        var Thiruvarur = ["Thiruvarur", "Kodavasal", "Koothanallur", "Mannargudi", "Nannilam", "Needamangalam", "Thiruthuraipoondi", "Valangaiman"];
-        var Thoothukudi = ["Thoothukudi", "Eral", "Ettayapuram", "Kayathar", "Kovilpatti", "Ottapidaram", "Sattankulam", "Srivaikundam", "Tiruchendur", "Vilathikulam"];
-        var Tiruchirappalli = ["Lalgudi", "Manachanallur", "Manapparai", "Marungapuri", "Musiri", "Srirangam", "Thottiam", "Thuraiyur", "Tiruchirapalli (West)", "Tiruchirappalli (East)", "Tiruverumbur"];
-        var Thirunelveli = ["Tirunelveli", "Ambasamudram", "Cheranmahadevi", "Manur", "Nanguneri", "Palayamkottai", "Radhapuram", "Thisayanvilai"];
-        var Vellore = ["Vellore", "Aanikattu", "Gudiyatham", "K V Kuppam", "Katpadi", "Pernambut"];
-        var Viluppuram = ["Villupuram", "Gingee", "Kandachipuram", "Marakanam", "Melmalaiyanur", "Thiruvennainallur", "Tindivanam", "Vanur", "Vikravandi"];
-        var Virudhunagar = ["Virudhunagar", "Aruppukottai", "Kariyapatti", "Rajapalayam", "Sathur", "Sivakasi", "Srivilliputhur", "Tiruchuli", "Vembakottai", "Watrap"];
-        var Ariyalur = ["Ariyalur", "Andimadam", "Sendurai", "Udaiyarpalayam"];
-        var Krishnagiri = ["Krishnagiri", "Anjetty", "Bargur", "Hosur", "Pochampalli", "Sulagiri", "Thenkanikottai", "Uthangarai"];
-        var Tiruppur = ["Avinashi", "Dharapuram", "Kangeyam", "Madathukkulam", "Oothukuli", "Palladam", "Tiruppur (North)", "Tiruppur (South)", "Udumalaipettai"];
-        var Chengalpattu = ["Chengalpattu", "Cheyyur", "Maduranthakam", "Pallavaram", "Tambaram", "Thirukalukundram", "Tiruporur", "Vandalur"];
-        var Kallakurichi = ["Kallakurichi", "Chinnaselam", "Kalvarayan Hills", "Sankarapuram", "Tirukoilur", "Ulundurpet"];
-        var Ranipet = ["Arakkonam", "Arcot", "Kalavai", "Nemili", "Sholingur", "Walajah"];
-        var Tenkasi = ["Tenkasi", "Alangulam", "Kadayanallur", "Sankarankovil", "Shenkottai", "Sivagiri", "Thiruvengadam", "Veerakeralampudur"];
-        var Tirupathur = ["Tirupathur", "Ambur", "Natrampalli", "Vaniyambadi"];
-        var Mayiladuthurai = ["Mayiladuthurai", "Kuthalam", "Sirkali", "Tharangambadi"];
-        var Puducherry = ["Puducherry", "Oulgaret", "Villianur", "Bahour", "Karaikal", "Thirunallar", "Mahe", "Yanam"];
 
-    }//taluk list
+    // Taluk list
+    var Chennai = ["Alandur", "Ambattur", "Aminjikarai", "Ayanavaram", "Egmore", "Guindy", "Madhavaram", "Madhuravoyal", "Mambalam", "Mylapore", "Perambur", "Purasavakkam", "Sholinganallur", "Thiruvottriyur", "Tondiarpet", "Velacherry"];
+    var Coimbatore = ["Aanaimalai", "Annur", "Coimbatore(North)", "Coimbatore(South)", "Kinathukadavu", "Madukarai", "Mettupalayam", "Perur", "Pollachi", "Sulur", "Valparai"];
+    var Cuddalore = ["Cuddalore", "Bhuvanagiri", "Chidambaram", "Kattumannarkoil", "Kurinjipadi", "Panruti", "Srimushnam", "Thittakudi", "Veppur", "Virudhachalam"];
+    var Dharmapuri = ["Dharmapuri", "Harur", "Karimangalam", "Nallampalli", "Palacode", "Pappireddipatti", "Pennagaram"];
+    var Dindigul = ["Atthur", "Dindigul (East)", "Dindigul (West)", "Guziliyamparai", "Kodaikanal", "Natham", "Nilakottai", "Oddanchatram", "Palani", "Vedasandur"];
+    var Erode = ["Erode", "Anthiyur", "Bhavani", "Gobichettipalayam", "Kodumudi", "Modakurichi", "Nambiyur", "Perundurai", "Sathiyamangalam", "Thalavadi"];
+    var Kancheepuram = ["Kancheepuram", "Kundrathur", "Sriperumbudur", "Uthiramerur", "Walajabad"];
+    var Kanniyakumari = ["Agasteeswaram", "Kalkulam", "Killiyur", "Thiruvatar", "Thovalai", "Vilavankodu"];
+    var Karur = ["Karur", "Aravakurichi", "Kadavur", "Krishnarayapuram", "Kulithalai", "Manmangalam", "Pugalur"];
+    var Madurai = ["Kallikudi", "Madurai (East)", "Madurai (North)", "Madurai (South)", "Madurai (West)", "Melur", "Peraiyur", "Thirumangalam", "Thiruparankundram", "Usilampatti", "Vadipatti"];
+    var Nagapattinam = ["Nagapattinam", "Kilvelur", "Thirukkuvalai", "Vedaranyam"];
+    var Namakkal = ["Namakkal", "Kholli Hills", "Kumarapalayam", "Mohanoor", "Paramathi Velur", "Rasipuram", "Senthamangalam", "Tiruchengode"];
+    var Nilgiris = ["Udagamandalam", "Coonoor", "Gudalur", "Kothagiri", "Kundah", "Pandalur"];
+    var Perambalur = ["Perambalur", "Alathur", "Kunnam", "Veppanthattai"];
+    var Pudukottai = ["Pudukottai", "Alangudi", "Aranthangi", "Avudiyarkoil", "Gandarvakottai", "Iluppur", "Karambakudi", "Kulathur", "Manamelkudi", "Ponnamaravathi", "Thirumayam", "Viralimalai"];
+    var Ramanathapuram = ["Ramanathapuram", "Kadaladi", "Kamuthi", "Kezhakarai", "Mudukulathur", "Paramakudi", "Rajasingamangalam", "Rameswaram", "Tiruvadanai"];
+    var Salem = ["Salem", "Attur", "Edapadi", "Gangavalli", "Kadaiyampatti", "Mettur", "Omalur", "Pethanayakanpalayam", "Salem South", "Salem West", "Sankari", "Vazhapadi", "Yercaud"];
+    var Sivagangai = ["Sivagangai", "Devakottai", "Ilayankudi", "Kalaiyarkovil", "Karaikudi", "Manamadurai", "Singampunari", "Thirupuvanam", "Tirupathur"];
+    var Thanjavur = ["Thanjavur", "Boothalur", "Kumbakonam", "Orathanadu", "Papanasam", "Pattukottai", "Peravurani", "Thiruvaiyaru", "Thiruvidaimaruthur"];
+    var Theni = ["Theni", "Aandipatti", "Bodinayakanur", "Periyakulam", "Uthamapalayam"];
+    var Thiruvallur = ["Thiruvallur", "Avadi", "Gummidipoondi", "Pallipattu", "Ponneri", "Poonamallee", "R.K. Pet", "Tiruthani", "Uthukottai"];
+    var Tiruvannamalai = ["Thiruvannamalai", "Arni", "Chengam", "Chetpet", "Cheyyar", "Jamunamarathur", "Kalasapakkam", "Kilpennathur", "Polur", "Thandramet", "Vandavasi", "Vembakkam"];
+    var Thiruvarur = ["Thiruvarur", "Kodavasal", "Koothanallur", "Mannargudi", "Nannilam", "Needamangalam", "Thiruthuraipoondi", "Valangaiman"];
+    var Thoothukudi = ["Thoothukudi", "Eral", "Ettayapuram", "Kayathar", "Kovilpatti", "Ottapidaram", "Sattankulam", "Srivaikundam", "Tiruchendur", "Vilathikulam"];
+    var Tiruchirappalli = ["Lalgudi", "Manachanallur", "Manapparai", "Marungapuri", "Musiri", "Srirangam", "Thottiam", "Thuraiyur", "Tiruchirapalli (West)", "Tiruchirappalli (East)", "Tiruverumbur"];
+    var Thirunelveli = ["Tirunelveli", "Ambasamudram", "Cheranmahadevi", "Manur", "Nanguneri", "Palayamkottai", "Radhapuram", "Thisayanvilai"];
+    var Vellore = ["Vellore", "Aanikattu", "Gudiyatham", "K V Kuppam", "Katpadi", "Pernambut"];
+    var Viluppuram = ["Villupuram", "Gingee", "Kandachipuram", "Marakanam", "Melmalaiyanur", "Thiruvennainallur", "Tindivanam", "Vanur", "Vikravandi"];
+    var Virudhunagar = ["Virudhunagar", "Aruppukottai", "Kariyapatti", "Rajapalayam", "Sathur", "Sivakasi", "Srivilliputhur", "Tiruchuli", "Vembakottai", "Watrap"];
+    var Ariyalur = ["Ariyalur", "Andimadam", "Sendurai", "Udaiyarpalayam"];
+    var Krishnagiri = ["Krishnagiri", "Anjetty", "Bargur", "Hosur", "Pochampalli", "Sulagiri", "Thenkanikottai", "Uthangarai"];
+    var Tiruppur = ["Avinashi", "Dharapuram", "Kangeyam", "Madathukkulam", "Oothukuli", "Palladam", "Tiruppur (North)", "Tiruppur (South)", "Udumalaipettai"];
+    var Chengalpattu = ["Chengalpattu", "Cheyyur", "Maduranthakam", "Pallavaram", "Tambaram", "Thirukalukundram", "Tiruporur", "Vandalur"];
+    var Kallakurichi = ["Kallakurichi", "Chinnaselam", "Kalvarayan Hills", "Sankarapuram", "Tirukoilur", "Ulundurpet"];
+    var Ranipet = ["Arakkonam", "Arcot", "Kalavai", "Nemili", "Sholingur", "Walajah"];
+    var Tenkasi = ["Tenkasi", "Alangulam", "Kadayanallur", "Sankarankovil", "Shenkottai", "Sivagiri", "Thiruvengadam", "Veerakeralampudur"];
+    var Tirupathur = ["Tirupathur", "Ambur", "Natrampalli", "Vaniyambadi"];
+    var Mayiladuthurai = ["Mayiladuthurai", "Kuthalam", "Sirkali", "Tharangambadi"];
+    var Puducherry = ["Puducherry", "Oulgaret", "Villianur", "Bahour", "Karaikal", "Thirunallar", "Mahe", "Yanam"];
+
+    // Pick taluks based on district
     switch (DistSelected) {
-        case "Ariyalur":
-            optionsList = Ariyalur;
-            break;
-        case "Chengalpattu":
-            optionsList = Chengalpattu;
-            break;
-        case "Chennai":
-            optionsList = Chennai;
-            break;
-        case "Coimbatore":
-            optionsList = Coimbatore;
-            break;
-        case "Dharmapuri":
-            optionsList = Dharmapuri;
-            break;
-        case "Erode":
-            optionsList = Erode;
-            break;
-        case "Cuddalore":
-            optionsList = Cuddalore;
-            break;
-        case "Dindigul":
-            optionsList = Dindigul;
-            break;
-        case "Kallakurichi":
-            optionsList = Kallakurichi;
-            break;
-        case "Kanniyakumari":
-            optionsList = Kanniyakumari;
-            break;
-        case "Krishnagiri":
-            optionsList = Krishnagiri;
-            break;
-        case "Nagapattinam":
-            optionsList = Nagapattinam;
-            break;
-        case "Perambalur":
-            optionsList = Perambalur;
-            break;
-        case "Ramanathapuram":
-            optionsList = Ramanathapuram;
-            break;
-        case "Salem":
-            optionsList = Salem;
-            break;
-        case "Tenkasi":
-            optionsList = Tenkasi;
-            break;
-        case "Theni":
-            optionsList = Theni;
-            break;
-        case "Thirunelveli":
-            optionsList = Thirunelveli;
-            break;
-        case "Thiruvarur":
-            optionsList = Thiruvarur;
-            break;
-        case "Tirupathur":
-            optionsList = Tirupathur;
-            break;
-        case "Tiruvannamalai":
-            optionsList = Tiruvannamalai;
-            break;
-        case "Vellore":
-            optionsList = Vellore;
-            break;
-        case "Virudhunagar":
-            optionsList = Virudhunagar;
-            break;
-        case "Kancheepuram":
-            optionsList = Kancheepuram;
-            break;
-        case "Karur":
-            optionsList = Karur;
-            break;
-        case "Madurai":
-            optionsList = Madurai;
-            break;
-        case "Namakkal":
-            optionsList = Namakkal;
-            break;
-        case "Pudukottai":
-            optionsList = Pudukottai;
-            break;
-        case "Ranipet":
-            optionsList = Ranipet;
-            break;
-        case "Sivagangai":
-            optionsList = Sivagangai;
-            break;
-        case "Thanjavur":
-            optionsList = Thanjavur;
-            break;
-        case "Nilgiris":
-            optionsList = Nilgiris;
-            break;
-        case "Thiruvallur":
-            optionsList = Thiruvallur;
-            break;
-        case "Thoothukudi":
-            optionsList = Thoothukudi;
-            break;
-        case "Tiruppur":
-            optionsList = Tiruppur;
-            break;
-        case "Tiruchirappalli":
-            optionsList = Tiruchirappalli;
-            break;
-        case "Viluppuram":
-            optionsList = Viluppuram;
-            break;
-        case "Mayiladuthurai":
-            optionsList = Mayiladuthurai;
-            break;
-        case "Puducherry":
-            optionsList = Puducherry;
-            break;
-        case "Select District":
-            optionsList = [];
-            break;
+        case "Ariyalur": optionsList = Ariyalur; break;
+        case "Chengalpattu": optionsList = Chengalpattu; break;
+        case "Chennai": optionsList = Chennai; break;
+        case "Coimbatore": optionsList = Coimbatore; break;
+        case "Dharmapuri": optionsList = Dharmapuri; break;
+        case "Erode": optionsList = Erode; break;
+        case "Cuddalore": optionsList = Cuddalore; break;
+        case "Dindigul": optionsList = Dindigul; break;
+        case "Kallakurichi": optionsList = Kallakurichi; break;
+        case "Kanniyakumari": optionsList = Kanniyakumari; break;
+        case "Krishnagiri": optionsList = Krishnagiri; break;
+        case "Nagapattinam": optionsList = Nagapattinam; break;
+        case "Perambalur": optionsList = Perambalur; break;
+        case "Ramanathapuram": optionsList = Ramanathapuram; break;
+        case "Salem": optionsList = Salem; break;
+        case "Tenkasi": optionsList = Tenkasi; break;
+        case "Theni": optionsList = Theni; break;
+        case "Thirunelveli": optionsList = Thirunelveli; break;
+        case "Thiruvarur": optionsList = Thiruvarur; break;
+        case "Tirupathur": optionsList = Tirupathur; break;
+        case "Tiruvannamalai": optionsList = Tiruvannamalai; break;
+        case "Vellore": optionsList = Vellore; break;
+        case "Virudhunagar": optionsList = Virudhunagar; break;
+        case "Kancheepuram": optionsList = Kancheepuram; break;
+        case "Karur": optionsList = Karur; break;
+        case "Madurai": optionsList = Madurai; break;
+        case "Namakkal": optionsList = Namakkal; break;
+        case "Pudukottai": optionsList = Pudukottai; break;
+        case "Ranipet": optionsList = Ranipet; break;
+        case "Sivagangai": optionsList = Sivagangai; break;
+        case "Thanjavur": optionsList = Thanjavur; break;
+        case "Nilgiris": optionsList = Nilgiris; break;
+        case "Thiruvallur": optionsList = Thiruvallur; break;
+        case "Thoothukudi": optionsList = Thoothukudi; break;
+        case "Tiruppur": optionsList = Tiruppur; break;
+        case "Tiruchirappalli": optionsList = Tiruchirappalli; break;
+        case "Viluppuram": optionsList = Viluppuram; break;
+        case "Mayiladuthurai": optionsList = Mayiladuthurai; break;
+        case "Puducherry": optionsList = Puducherry; break;
+        case "Select District": optionsList = []; break;
     }
+
+    // ✅ Sort before appending
+    optionsList.sort();
+
     var taluk_upd = $('#taluk_upd').val();
     for (var i = 0; i < optionsList.length; i++) {
         var selected = '';
-        if (taluk_upd != '' && taluk_upd == optionsList[i]) { selected = "selected"; }
-        htmlString = htmlString + "<option value='" + optionsList[i] + "' " + selected + " >" + optionsList[i] + "</option>";
+        if (taluk_upd !== '' && taluk_upd === optionsList[i]) {
+            selected = "selected";
+        }
+        htmlString += "<option value='" + optionsList[i] + "' " + selected + ">" + optionsList[i] + "</option>";
     }
-    
-    if(value =='swap'){
+if(value =='swap'){
         $("#swap_taluk").html(htmlString);
-        sortDropdownAlphabetically("#swap_taluk");
     }else{
-        $("#taluk").html(htmlString);
-        sortDropdownAlphabetically("#taluk");
-    }
-
+    $("#taluk").html(htmlString);}
 }
+
 
 //Get Taluk Based Area
 function getTalukBasedArea(talukselected) {
@@ -399,68 +309,38 @@ function getTalukBasedArea(talukselected) {
         dataType: 'json',
         success: function (response) {
 
-            var len = response.length;
+            // Sort the response first (by area_name)
+            response.sort(function (a, b) {
+                return a.area_name.localeCompare(b.area_name);
+            });
+
+            // Clear and add first option
             $("#area").empty();
-            $("#area").append("<option value=''>" + 'Select Area' + "</option>");
-            for (var i = 0; i < len; i++) {
+            $("#area").append("<option value='Select Area'>" + 'Select Area' + "</option>");
+
+            // Append sorted options
+            for (var i = 0; i < response.length; i++) {
                 var area_id = response[i]['area_id'];
                 var area_name = response[i]['area_name'];
-                var selected = '';
-                if (area_upd != '' && area_upd == area_id) {
-                    selected = 'selected';
-                }
-                $("#area").append("<option value='" + area_id + "' " + selected + ">" + area_name + "</option>");
-            }
-
-            $("#area_name").val('');
-            $("#area_id").val('');
-
-            // Sort area dropdown
-            sortDropdownAlphabetically("#area");
-        }
-    });
-}
-//Get Area Based Sub Area
-function getAreaBasedSubArea(area) {
-    var sub_area_upd = $('#sub_area_upd').val();
-    var values = sub_area_upd.split(',');
-
-    $.ajax({
-        url: 'areaCreation/ajaxGetSubAreaName.php',
-        type: 'post',
-        data: { 'area': area },
-        dataType: 'json',
-        success: function (response) {
-
-            var len = response.length;
-            intance.clearStore();
-            for (var i = 0; i < len; i++) {
-                var sub_area_id = response[i]['sub_area_id'];
-                var sub_area_name = response[i]['sub_area_name'];
                 var checked = response[i]['disabled'];
                 var selected = '';
-                if (sub_area_upd != '' && values.includes(sub_area_id.toString())) {
+
+                if (area_upd != '' && area_upd == area_id) {
                     selected = 'selected';
                     checked = false;
                 }
-                var items = [
-                    {
-                        value: sub_area_id,
-                        label: sub_area_name,
-                        selected: selected,
-                        disabled: checked,
-                    }
-                ];
 
-                intance.setChoices(items);
-                intance.init();
+                var disabledAttr = checked ? 'disabled' : '';
+                $("#area").append("<option value='" + area_id + "' " + selected + " " + disabledAttr + ">" + area_name + "</option>");
             }
 
-            $("#sub_area_name").val('');
-            $("#sub_area_id").val('');
+            // Reset linked fields
+            $("#area_name").val('');
+            $("#area_id").val('');
         }
     });
 }
+
 
 // ************************************************************************************************************************************************
 //Area Modal
@@ -554,31 +434,6 @@ function getAreaBasedSubArea(area) {
         });
     });
 
-    $("body").on("click", "#swap_areas", function (event) {
-        event.preventDefault(); // prevent default <a> behavior
-
-        var area_id = $(this).attr('value');
-
-        $.ajax({
-            url: 'areaCreation/swapArea.php',
-            type: 'POST',
-            dataType: 'json',
-            data: { "area_id": area_id },
-            cache: false,
-            success: function (response) {
-                // Populate modal fields
-                $("#swap_states").val(response.state);
-                $("#swap_area_id").val(response.area_name_id);
-                $("#pincodes").val(response.pincode);
-
-                // Populate dependent dropdowns
-                getDistrictDropdown(response.state,'swap');
-                getTalukDropdown(response.district,'swap');
-
-            }
-        });
-    });
-
     $("body").on("click", "#delete_area", function () {
         var isok = confirm("Do you want delete this Area?");
         if (isok == false) {
@@ -613,11 +468,33 @@ function getAreaBasedSubArea(area) {
             });
         }
     });
+      $("body").on("click", "#swap_areas", function (event) {
+        event.preventDefault(); // prevent default <a> behavior
+
+        var area_id = $(this).attr('value');
+
+        $.ajax({
+            url: 'areaCreation/swapArea.php',
+            type: 'POST',
+            dataType: 'json',
+            data: { "area_id": area_id },
+            cache: false,
+            success: function (response) {
+                // Populate modal fields
+                $("#swap_states").val(response.state);
+                $("#swap_area_id").val(response.area_name_id);
+                $("#pincodes").val(response.pincode);
+
+                // Populate dependent dropdowns
+                getDistrictDropdown(response.state,'swap');
+                getTalukDropdown(response.district,'swap');
+
+            }
+        });
+    });
 
     $(function () {
-        // Declare table variable to store the DataTable instance
-        var areaTable = $('#areaTable').DataTable({
-            ...getStateSaveConfig('areaTable'),
+        $('#areaTable').DataTable({
             "order": [[0, "desc"]],
             'processing': true,
             'iDisplayLength': 5,
@@ -632,13 +509,6 @@ function getAreaBasedSubArea(area) {
             dom: 'lBfrtip',
             buttons: [{
                 extend: 'excel',
-                action: function (e, dt, button, config) {
-                    var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-                    var dynamic = curDateJs('Area_table'); // or any base
-                    config.title = dynamic;      // for versions that use title as filename
-                    config.filename = dynamic;   // for html5 filename
-                    defaultAction.call(this, e, dt, button, config);
-                }
             },
             {
                 extend: 'colvis',
@@ -646,189 +516,19 @@ function getAreaBasedSubArea(area) {
             }
             ],
         });
-
-        // Pass the table variable to the initColVisFeatures function
-        initColVisFeatures(areaTable, 'areaTable');
     });
 
     function closeModal() {
-        var id = $("#id").val();
+        var area_id = $("#id").val();
         var taluk = $("#taluk").val();
-        if (id !== '') {
+        if (area_id !== '') {
             location.reload();
         }else{
             getTalukBasedArea(taluk); 
         }
-    } 
-}
-
-// ************************************************************************************************************************************************
-//Sub Area Modal 
-{
-    // Modal Box for Sub Area Name
-    $("#subareanameCheck").hide();
-    $(document).on("click", "#submiSubAreaBtn", function () {
-        var sub_area_id = $("#sub_area_id").val();
-        var sub_area_name = $("#sub_area_name").val();
-        var area_id_ref = $("#area").val();
-        if (sub_area_name != "") {
-            $.ajax({
-                url: 'areaCreation/ajaxInsertSubArea.php',
-                type: 'POST',
-                data: { "sub_area_name": sub_area_name, "sub_area_id": sub_area_id, 'area_id_ref': area_id_ref },
-                cache: false,
-                success: function (response) {
-                    var insresult = response.includes("Exists");
-                    var updresult = response.includes("Updated");
-                    if (insresult) {
-                        $('#subareaInsertNotOk').show();
-                        setTimeout(function () {
-                            $('#subareaInsertNotOk').fadeOut('fast');
-                        }, 2000);
-                    } else if (updresult) {
-                        $('#subareaUpdateOk').show();
-                        setTimeout(function () {
-                            $('#subareaUpdateOk').fadeOut('fast');
-                        }, 2000);
-                        $("#subAreaTable").remove();
-                        resetSubAreaTable(area_id_ref);
-                        $("#sub_area_name").val('');
-                        $("#sub_area_id").val('');
-                    }
-                    else {
-                        $('#subareaInsertOk').show();
-                        setTimeout(function () {
-                            $('#subareaInsertOk').fadeOut('fast');
-                        }, 2000);
-                        $("#subAreaTable").remove();
-                        resetSubAreaTable(area_id_ref);
-                        $("#sub_area_name").val('');
-                        $("#sub_area_id").val('');
-                    }
-                }
-            });
-        }
-        else {
-            $("#subareanameCheck").show();
-        }
-    });
-
-
-    function resetSubAreaTable(area) {
-        $.ajax({
-            url: 'areaCreation/ajaxResetSubAreaTable.php',
-            type: 'POST',
-            data: { 'area': area },
-            cache: false,
-            success: function (html) {
-                $("#updatedSubAreaTable").empty();
-                $("#updatedSubAreaTable").html(html);
-
-                $("#sub_area_name").val('');
-                $("#sub_area_id").val('');
-            }
-        });
-    }
-
-    $("#sub_area_name").keyup(function () {
-        var CTval = $("#sub_area_name").val();
-        if (CTval.length == '') {
-            $("#subareanameCheck").show();
-            return false;
-        } else {
-            $("#subareanameCheck").hide();
-        }
-    });
-
-    $("body").on("click", "#edit_sub_area", function () {
-        var sub_area_id = $(this).attr('value');
-        $("#sub_area_id").val(sub_area_id);
-        $.ajax({
-            url: 'areaCreation/ajaxEditSubArea.php',
-            type: 'POST',
-            data: { "sub_area_id": sub_area_id },
-            cache: false,
-            success: function (response) {
-                $("#sub_area_name").val(response);
-            }
-        });
-    });
-
-    $("body").on("click", "#delete_sub_area", function () {
-        var isok = confirm("Do you want delete this Sub Area?");
-        if (isok == false) {
-            return false;
-        } else {
-            var sub_area_id = $(this).attr('value');
-            var c_obj = $(this).parents("tr");
-            $.ajax({
-                url: 'areaCreation/ajaxDeleteSubArea.php',
-                type: 'POST',
-                data: { "sub_area_id": sub_area_id },
-                cache: false,
-                success: function (response) {
-                    var delresult = response.includes("Rights");
-                    if (delresult) {
-                        $('#subareaDeleteNotOk').show();
-                        setTimeout(function () {
-                            $('#subareaDeleteNotOk').fadeOut('fast');
-                        }, 2000);
-                    }
-                    else {
-                        c_obj.remove();
-                        $('#subareaDeleteOk').show();
-                        setTimeout(function () {
-                            $('#subareaDeleteOk').fadeOut('fast');
-                        }, 2000);
-
-                        $("#sub_area_name").val('');
-                        $("#sub_area_id").val('');
-                    }
-                }
-            });
-        }
-    });
-
-    $(function () {
-        // Declare table variable to store the DataTable instance
-        var subAreaTable = $('#subAreaTable').DataTable({
-            ...getStateSaveConfig('subAreaTable'),
-            "order": [[0, "desc"]],
-            'processing': true,
-            'iDisplayLength': 5,
-            "lengthMenu": [
-                [10, 25, 50, -1],
-                [10, 25, 50, "All"]
-            ],
-            dom: 'lBfrtip',
-            buttons: [{
-                extend: 'excel',
-                action: function (e, dt, button, config) {
-                    var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-                    var dynamic = curDateJs('SubArea_table'); // or any base
-                    config.title = dynamic;      // for versions that use title as filename
-                    config.filename = dynamic;   // for html5 filename
-                    defaultAction.call(this, e, dt, button, config);
-                }
-            },
-            {
-                extend: 'colvis',
-                collectionLayout: 'fixed four-column',
-            }
-            ],
-        });
-
-        // Pass the table variable to the initColVisFeatures function
-        initColVisFeatures(subAreaTable, 'subAreaTable');
-    });
-
-    function closeSubModal() {
-        var area = $('#area').val();
-        getAreaBasedSubArea(area)
     }
     
-}
-function closeSwapmodel() {
+    function closeSwapmodel() {
      var taluks = $('#taluk1').val();
         resetAreaTable(taluks);
 
@@ -846,7 +546,7 @@ function swaparea(area_id,states,districts,taluks,pincodes) {
                         title: 'Area Updated',
                         icon: 'success',
                         showConfirmButton: true,
-                        confirmButtonColor: '#0C70AB'
+                        confirmButtonColor: '#0c70ab'
                     });
                    closeSwapmodel();
                     $('#swap_area_model_box .btn-secondary').click();
@@ -856,39 +556,28 @@ function swaparea(area_id,states,districts,taluks,pincodes) {
                         title: 'Area Not Updated',
                         icon: 'error',
                         showConfirmButton: true,
-                        confirmButtonColor: '#0C70AB'
+                        confirmButtonColor: '#0c70ab'
                     });
                 }
 
             }
         });
 }    
-function validateAreaForm() {
-    var state = $('#state').val();
-    var district = $('#district').val();
-    var taluk = $('#taluk').val();
-    var area = $('#area').val();
-    var sub_area_list = intance.getValue();
-
-    if (state === 'SelectState' || district === 'Select District' || taluk === 'Select Taluk' || area === '' || sub_area_list.length === 0) {
-        Swal.fire({
-            timerProgressBar: true,
-            timer: 2000,
-            title: 'Please Fill out Mandatory fields!',
-            icon: 'error',
-            showConfirmButton: true,
-            confirmButtonColor: '#0C70AB'
-        });
-        return false; // validation failed
-    }
-
-    // Combine sub_area values into a single string
-    var sub_area = '';
-    for (var i = 0; i < sub_area_list.length; i++) {
-        if (i > 0) sub_area += ',';
-        sub_area += sub_area_list[i].value;
-    }
-    $('#sub_area').val(sub_area);
-
-    return true; // validation passed
 }
+function validateAreaForm() {
+    var state = $('#state').val(); var district = $('#district').val(); var taluk = $('#taluk').val(); var area = $('#area').val();
+        if (state == 'SelectState' || district == 'Select District' || taluk == 'Select Taluk' || area == 'Select Area') {
+            Swal.fire({
+                timerProgressBar: true,
+                timer: 2000,
+                title: 'Please Fill out Mandatory fields!',
+                icon: 'error',
+                showConfirmButton: true,
+                confirmButtonColor: '#0c70ab'
+            });
+            return false;
+        }
+         return true; // validation passed
+}
+
+// ************************************************************************************************************************************************

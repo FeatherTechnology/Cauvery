@@ -1,6 +1,5 @@
 <?php
 include('../ajaxconfig.php');
-include('../moneyFormatIndia.php');
 @session_start();
 
 if (isset($_SESSION["userid"])) {
@@ -10,7 +9,6 @@ if (isset($_SESSION["userid"])) {
 $column = array(
     'lc.loan_category_id',
     'lc.loan_category_name',
-    'lc.sub_category_name',
     'lc.loan_limit',
     'lc.status',
     'lc.status'
@@ -21,7 +19,6 @@ $query = "SELECT lc.*,lcc.loan_category_creation_name FROM loan_category lc JOIN
 if (isset($_POST['search']) && $_POST['search'] != "") {
 
     $query .= "and (lcc.loan_category_creation_name LIKE '%" . $_POST['search'] . "%'
-            OR lc.sub_category_name LIKE  '%" . $_POST['search'] . "%'
             OR lc.loan_limit LIKE  '%" . $_POST['search'] . "%') ";
 }
 
@@ -54,7 +51,6 @@ foreach ($result as $row) {
     }
 
     $sub_array[] = $row["loan_category_creation_name"];
-    $sub_array[] = $row['sub_category_name'];
     $sub_array[] = moneyFormatIndia($row['loan_limit']);
     $status      = $row['status'];
 
@@ -89,4 +85,30 @@ $output = array(
 );
 
 echo json_encode($output);
+?>
+
+<?php
+function moneyFormatIndia($num)
+{
+    $explrestunits = "";
+    if (strlen($num) > 3) {
+        $lastthree = substr($num, strlen($num) - 3, strlen($num));
+        $restunits = substr($num, 0, strlen($num) - 3);
+        $restunits = (strlen($restunits) % 2 == 1) ? "0" . $restunits : $restunits;
+        $expunit = str_split($restunits, 2);
+        for ($i = 0; $i < sizeof($expunit); $i++) {
+            if ($i == 0) {
+                $explrestunits .= (int)$expunit[$i] . ",";
+            } else {
+                $explrestunits .= $expunit[$i] . ",";
+            }
+        }
+        $thecash = $explrestunits . $lastthree;
+    } else {
+        $thecash = $num;
+    }
+    return $thecash;
+}
+
+
 ?>

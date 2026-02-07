@@ -1,7 +1,7 @@
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+	<div style="background-color:#0c70ab; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
 		Cauvery Capitals - Loan Category List
 	</div>
 </div><br>
@@ -19,6 +19,8 @@
 	<div class="row gutters">
 		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 			<div class="table-container">
+
+				<div id="hiddenExport" style="display:none;"></div>
 
 				<div class="table-responsive">
 					<?php
@@ -50,7 +52,6 @@
 							<tr>
 								<th width="50">S.No.</th>
 								<th>Loan Category Name</th>
-								<th>Sub Category Name</th>
 								<th>Loan Limit</th>
 								<th>Status</th>
 								<th>Action</th>

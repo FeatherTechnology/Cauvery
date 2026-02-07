@@ -1,8 +1,8 @@
 <!-- Page header start -->
- <!-- Area Creation Table -  Remove Active/Inactive Status ,it is not used anywhere. -->
+<!-- Area Creation Table -  Remove Active/Inactive Status ,it is not used anywhere. -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+	<div style="background-color:#0c70ab; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
 		Cauvery Capitals - Area List
 	</div>
 </div><br>
@@ -21,6 +21,8 @@
 	<div class="row gutters">
 		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 			<div class="table-container">
+
+				<div id="hiddenExport" style="display:none;"></div>
 
 				<div class="table-responsive">
 					<?php
@@ -43,7 +45,7 @@
 							<div class="alert alert-danger" role="alert">
 								<div class="alert-text">Area Creation Inactive Successfully!</div>
 							</div>
-					<?php
+						<?php
 						}*/
 					}
 					?>
@@ -52,13 +54,12 @@
 							<tr>
 								<th>S. No.</th>
 								<th>Area Name</th>
-								<th>Sub Area</th>
 								<th>Taluk</th>
 								<th>District</th>
 								<th>State</th>
 								<th>Pincode</th>
 								<!-- <th width="100px">Enabled / Disabled</th> -->
-								<!-- <th>Status</th>-->
+								<!-- <th>Status</th> -->
 								<th>Action</th>
 							</tr>
 						</thead>

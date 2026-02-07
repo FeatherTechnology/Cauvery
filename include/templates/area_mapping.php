@@ -114,7 +114,6 @@ if ($idupd > 0) {
 				$map_id                 	 = $getAreaMappingLine['map_id'];
 				$line_name          		     = $getAreaMappingLine['line_name'];
 				$area_id          		     = $getAreaMappingLine['area_id'];
-				$sub_area_id      			     = $getAreaMappingLine['sub_area_id'];
 				$company_id      			 = $getAreaMappingLine['company_id'];
 				$branch_id      			 = $getAreaMappingLine['branch_id'];
 				$cus_count1      			 = $getAreaMappingLine['cus_count'];
@@ -130,7 +129,6 @@ if ($idupd > 0) {
 				$map_id1                	 = $getAreaMappingGroup['map_id'];
 				$group_name          		     = $getAreaMappingGroup['group_name'];
 				$area_id1         		     = $getAreaMappingGroup['area_id'];
-				$sub_area_id1      			     = $getAreaMappingGroup['sub_area_id'];
 				$company_id1     			 = $getAreaMappingGroup['company_id'];
 				$branch_id1      			 = $getAreaMappingGroup['branch_id'];
 				$cus_count2      			 = $getAreaMappingGroup['cus_count'];
@@ -163,7 +161,7 @@ if (isset($_GET['type'])) {
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+	<div style="background-color:#0c70ab; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
 		Cauvery Capitals - Area Mapping
 	</div>
 </div><br>
@@ -193,8 +191,7 @@ if (isset($_GET['type'])) {
 		<input type="hidden" value="<?php if (isset($area_id)) echo $area_id; ?>" id="area_id_upd" name="area_id_upd">
 		<input type="hidden" value="<?php if (isset($area_id1)) echo $area_id1; ?>" id="area_id1_upd" name="area_id1_upd">
 		<input type="hidden" value="<?php if (isset($area_id2)) echo $area_id2; ?>" id="area_id2_upd" name="area_id2_upd">
-		<input type="hidden" value="<?php if (isset($sub_area_id)) echo $sub_area_id; ?>" id="sub_area_upd" name="sub_area_upd">
-		<input type="hidden" value="<?php if (isset($sub_area_id1)) echo $sub_area_id1; ?>" id="sub_area_upd1" name="sub_area_upd1">
+		<input type="hidden" value="<?php if (isset($cus_sts)) echo $cus_sts; ?>" id="cus_sts" name="cus_sts">
 
 		<!-- Row start -->
 		<div class="row gutters">
@@ -244,15 +241,6 @@ if (isset($_GET['type'])) {
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
 										<div class="form-group">
-											<label for="disabledInput">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-											<input type="hidden" id="sub_area" name="sub_area" value="">
-											<select class="form-control" id="sub_area_dummy" name="sub_area_dummy" multiple tabindex='5'>
-
-											</select>
-										</div>
-									</div>
-									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-										<div class="form-group">
 											<label for="cus_count1">Customer Count</label>&nbsp;<span class="text-danger">*</span>
 											<input type="text" class="form-control" id="cus_count1" name="cus_count1" value="<?php if(isset($cus_count1)) echo $cus_count1; ?>" readonly tabindex='6'>
 										</div>
@@ -263,7 +251,6 @@ if (isset($_GET['type'])) {
 											<input type="text" class="form-control" id="loan_count1" name="loan_count1" value="<?php if(isset($loan_count1)) echo $loan_count1; ?>" readonly tabindex='7'>
 										</div>
 									</div>
-
 								</div>
 							</div>
 						</div>
@@ -313,7 +300,7 @@ if (isset($_GET['type'])) {
 										<div class="form-group">
 											<label for="disabledInput">Area</label>&nbsp;<span class="text-danger">*</span>
 											<input type="hidden" id="area1" name="area1" value="">
-											<select tabindex="3"  class="form-control" id="area_dummy1" name="area_dummy1" multiple>
+											<select tabindex="3" class="form-control" id="area_dummy1" name="area_dummy1" multiple>
 												<option value="">Select Area</option>
 												<?php if (sizeof($areaList) > 0) {
 													for ($j = 0; $j < count($areaList); $j++) { ?>
@@ -330,15 +317,6 @@ if (isset($_GET['type'])) {
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
 										<div class="form-group">
-											<label for="disabledInput">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-											<input type="hidden" id="sub_area1" name="sub_area1" value="">
-											<select tabindex="4" class="form-control" id="sub_area_dummy1" name="sub_area_dummy1" multiple>
-
-											</select>
-										</div>
-									</div>
-									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-										<div class="form-group">
 											<label for="cus_count2">Customer Count</label>&nbsp;<span class="text-danger">*</span>
 											<input type="text" class="form-control" id="cus_count2" name="cus_count2" value="<?php if(isset($cus_count2)) echo $cus_count2; ?>" readonly tabindex='6'>
 										</div>
@@ -349,7 +327,6 @@ if (isset($_GET['type'])) {
 											<input type="text" class="form-control" id="loan_count2" name="loan_count2" value="<?php if(isset($loan_count2)) echo $loan_count2; ?>" readonly tabindex='7'>
 										</div>
 									</div>
-
 								</div>
 							</div>
 						</div>
@@ -367,7 +344,7 @@ if (isset($_GET['type'])) {
 				<!-- ************************************************************** Due Followup Mapping *************************************************************************************** -->
 				<div class="card duefollowup_mapping" <?php if (isset($type) and $type != 'duefollowup') { ?> style="display:none" <?php } ?>>
 					<div class="card-header">
-						<div class="card-title">General Info (Followup)</div>
+						<div class="card-title">General Info (Due Followup)</div>
 					</div>
 					<div class="card-body">
 						<div class="row ">
@@ -376,8 +353,8 @@ if (isset($_GET['type'])) {
 								<div class="row">
 									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
 										<div class="form-group">
-											<label for="duefollowup_name">Followup Name</label>&nbsp;<span class="text-danger">*</span>
-											<input type="text" name="duefollowup_name" id="duefollowup_name" value="<?php if (isset($duefollowup_name)) echo $duefollowup_name; ?>" placeholder="Enter Followup Name" class="form-control" tabindex="1">
+											<label for="duefollowup_name">Due Followup Name</label>&nbsp;<span class="text-danger">*</span>
+											<input type="text" name="duefollowup_name" id="duefollowup_name" value="<?php if (isset($duefollowup_name)) echo $duefollowup_name; ?>" placeholder="Enter Due Followup Name" class="form-control" tabindex="1">
 										</div>
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
@@ -396,6 +373,14 @@ if (isset($_GET['type'])) {
 											<span class="text-danger" style='display:none' id='branchName2Check'>Please select Branch name</span>
 										</div>
 									</div>
+									<!-- <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+										<label for="sub_status_mapping">Customer Status</label><span class="required">&nbsp;*</span>
+										<input type="hidden" name="customer_status" id="customer_status" value="">
+										<select class="form-control" id="sub_status_mapping" name="sub_status_mapping" multiple>
+											<option value="">Select Customer Status</option>
+										</select>
+										<span class='text-danger subStatusCheck' style="display:none">Please Select Customer Status</span>
+									</div> -->
 									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
 										<div class="form-group">
 											<label for="area_dummy2">Area</label>&nbsp;<span class="text-danger">*</span>

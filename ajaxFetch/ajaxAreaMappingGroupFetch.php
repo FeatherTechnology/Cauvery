@@ -8,7 +8,6 @@ $columns = [
     'c.company_name',
     'b.branch_name',
     'a.area_names',
-    's.sub_area_names',
     'agm.status',
     'agm.status'
 ];
@@ -25,13 +24,6 @@ $baseQuery = "
         JOIN area_list_creation alc ON agma.area_id = alc.area_id
         GROUP BY agma.group_map_id
     ) a ON agm.map_id = a.group_map_id
-    LEFT JOIN (
-        SELECT agmsa.group_map_id,
-               GROUP_CONCAT(salc.sub_area_name ORDER BY salc.sub_area_id SEPARATOR ', ') AS sub_area_names
-        FROM area_group_mapping_sub_area agmsa
-        JOIN sub_area_list_creation salc ON agmsa.sub_area_id = salc.sub_area_id
-        GROUP BY agmsa.group_map_id
-    ) s ON agm.map_id = s.group_map_id
     WHERE 1=1
 ";
 
@@ -45,7 +37,6 @@ if (!empty($_POST['search']['value'])) {
             OR c.company_name LIKE :search
             OR b.branch_name LIKE :search
             OR a.area_names LIKE :search
-            OR s.sub_area_names LIKE :search
         )
     ";
     $params[':search'] = $search;
@@ -86,7 +77,6 @@ $dataQuery = "
         c.company_name,
         b.branch_name,
         a.area_names,
-        s.sub_area_names,
         agm.status
     $baseQuery
     $orderBy
@@ -132,7 +122,6 @@ foreach ($rows as $row) {
         $row['company_name'],
         $row['branch_name'],
         $row['area_names'],
-        $row['sub_area_names'],
         $statusBadge,
         $action
     ];

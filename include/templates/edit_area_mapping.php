@@ -1,12 +1,13 @@
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-    <div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+    <div style="background-color:#0c70ab; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
 		Cauvery Capitals - Area Mapping List
 	</div>
 </div><br>
 <br><br>
 <!-- Page header end -->
+
 
 <!-- Main container start -->
 <div class="main-container">
@@ -22,6 +23,16 @@
 				<input type="radio" name="mapping_type" id="due_followup" value="duefollowup" <?php if(isset($_GET['type']) and $_GET['type'] == 'duefollowup') echo 'checked';?>></input><label for='due_followup' >&nbsp;&nbsp;Followup</label>
 			</div>
 		</div>
+		<!-- <div class="col-md-12 "> 
+			<div class="row">
+				<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"></div>
+				<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+					<div class="form-group" style="text-align:center;">
+						<label >Search</label><input type="text" id="filter" name="filter" class='form-control' width="50px">
+					</div>
+				</div>
+			</div>
+		</div> -->
 		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12"></div>
 		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 			<div class="table-container line_mapping" <?php if(isset($_GET['type']) and $_GET['type'] == 'line') {?> style="display:block"<?php }else{ ?> style="display:none"<?php } ?>>
@@ -30,6 +41,8 @@
 						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Line Mapping</button>
 					</a>
 				</div><br><br>
+
+				<div id="hiddenExport" style="display:none;"></div>
 				
 				<div class="table-responsive">
 					<?php
@@ -39,6 +52,7 @@
 					$mscid=$_GET['msc'];
 					if($mscid==1)
 					{ ?>
+					<!-- <script>alert('Area Mapping Added Successfully!')</script> -->
 					<div class="alert alert-success" role="alert">
 						<div class="alert-text">Area Mapping Added Successfully!</div>
 					</div> 
@@ -46,6 +60,7 @@
 					}
 					if($mscid==2)
 					{?>
+					<!-- <script>alert('Area Mapping Updated Successfully!')</script> -->
 					<div class="alert alert-success" role="alert">
 						<div class="alert-text">Area Mapping Updated Successfully!</div>
 					</div>
@@ -53,6 +68,7 @@
 					}
 					if($mscid==3)
 					{?>
+					<!-- <script>alert('Area Mapping Inactive Successfully!')</script> -->
 					<div class="alert alert-danger" role="alert">
 						<div class="alert-text">Area Mapping Inactive Successfully!</div>
 					</div>
@@ -68,7 +84,6 @@
 								<th>Company Name</th>
 								<th>Branch Name</th>
 								<th>Area Name</th>
-								<th>Sub Area</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
@@ -85,6 +100,10 @@
 						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Group Mapping</button>
 					</a>
 				</div><br><br>
+
+				<div id="hiddenExport" style="display:none;"></div>
+
+				<!-- <div class='form-control' style="background-color:#0c70ab;color:white;text-align:center;font-size:17px;border-radius:3px;">Group List</div><br> -->
 				<div class="table-responsive">
 					<?php
 					$mscid=0;
@@ -122,7 +141,6 @@
 								<th>Company Name</th>
 								<th>Branch Name</th>
 								<th>Area Name</th>
-								<th>Sub Area</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
@@ -137,9 +155,12 @@
 			<div class="table-container due_followup_mapping" <?php if(isset($_GET['type']) and $_GET['type'] == 'duefollowup') {?> style="display:block"<?php }else{ ?> style="display:none"<?php } ?>>
 				<div class="text-right" style="margin-right: 25px;">
 					<a href="area_mapping&type=duefollowup">
-						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Followup Mapping</button>
+						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Due Followup Mapping</button>
 					</a>
 				</div><br><br>
+
+				<div id="hiddenExport" style="display:none;"></div>
+				
 				<div class="table-responsive">
 					<?php
 					$mscid=0;
@@ -173,7 +194,7 @@
 						<thead>
 							<tr>
 								<th width="50">S. No.</th>
-								<th>Followup Name</th>
+								<th>Due Followup Name</th>
 								<th>Company Name</th>
 								<th>Branch Name</th>
 								<th>Area Name</th>

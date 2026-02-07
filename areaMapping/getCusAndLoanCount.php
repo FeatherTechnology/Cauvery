@@ -81,20 +81,20 @@ if (
     // JOIN acknowlegement_loan_calculation alc ON ii.req_id = alc.req_id , AND alc.loan_category = $loanCatId, AND alm.map_id IN ($mapId)
     // COUNT(DISTINCT ii.loan_id) AS loanCount
     $stmt = $connect->query("SELECT COUNT(DISTINCT ii.loan_id) AS loanCount
-FROM in_issue ii 
-JOIN acknowlegement_customer_profile acp ON ii.req_id = acp.req_id 
-JOIN customer_status cs ON ii.req_id = cs.req_id 
-JOIN area_list_creation al ON acp.area_confirm_area = al.area_id 
-LEFT JOIN closing_customer cc ON ii.req_id = cc.req_id
-JOIN acknowlegement_loan_calculation alc ON ii.req_id = alc.req_id
-WHERE acp.area_confirm_area IN ($areaid) 
-  AND alc.loan_category IN ($loanCatStr)
-  AND (
+    FROM in_issue ii 
+    JOIN acknowlegement_customer_profile acp ON ii.req_id = acp.req_id 
+    JOIN customer_status cs ON ii.req_id = cs.req_id 
+    JOIN area_list_creation al ON acp.area_confirm_area = al.area_id 
+    LEFT JOIN closing_customer cc ON ii.req_id = cc.req_id
+    JOIN acknowlegement_loan_calculation alc ON ii.req_id = alc.req_id
+    WHERE acp.area_confirm_area IN ($areaid) 
+    AND alc.loan_category IN ($loanCatStr)
+    AND (
         (cs.sub_status != 'Due Nil' AND cs.sub_status != 'Closed')
         OR ii.req_id IN ($dueNilReqIdStr)
         OR ii.req_id IN ($coll_DueNilReqIdStr)
-      )
-  AND DATE(ii.updated_date) < '$toDate_month_start';       
+    )
+    AND DATE(ii.updated_date) < '$toDate_month_start';       
     ");
     // while ($row1 = $stmt->fetch(PDO::FETCH_ASSOC)) {
     //     $loan_id = $row1['loan_id'];
@@ -115,11 +115,11 @@ WHERE acp.area_confirm_area IN ($areaid)
         JOIN acknowlegement_loan_calculation alc ON ii.req_id = alc.req_id
         WHERE acp.area_confirm_area IN ($areaid) 
         AND alc.loan_category IN ($loanCatStr)
-         AND (
+        AND (
         (cs.sub_status != 'Due Nil' AND cs.sub_status != 'Closed')
         OR ii.req_id IN ($dueNilReqIdStr)
         OR ii.req_id IN ($coll_DueNilReqIdStr)
-      )
+        )
         AND DATE(ii.updated_date) < '$toDate_month_start'
         
     ");
