@@ -1,8 +1,59 @@
 $(document).ready(function () {
 
-    $('#hand_cash_radio , .bank_cash_radio').click(function () {
-        hideAllCardsfunction();
-        var cash_type = $('input[name=cash_type]:checked').val();
+    $('input[name=accounts_type]').click(function () {
+        let accountsType = $(this).val();
+
+        if (accountsType == '1') { //Collection List
+            $("input[name='Coll_cash_type']").prop('checked', false);
+            $('#collectionTableDiv').empty();
+            $('.collection_card').show(); $('.issued_card').hide(); $('.expense_card').hide(); $('#other_transaction_card').hide();
+        } else if (accountsType == '2') { //Loan Issued
+            $("input[name='issued_cash_type']").prop('checked', false);
+            $('#issuedDiv').empty();
+            $('.collection_card').hide(); $('.issued_card').show(); $('.expense_card').hide(); $('#other_transaction_card').hide();
+        } else if (accountsType == '3') { //Expenses
+            $('#expenseDiv').empty();
+            $('#expense_add_button').hide();
+            $("input[name='expense_cash_type']").prop('checked', false);
+            $('.collection_card').hide(); $('.issued_card').hide(); $('.expense_card').show(); $('#other_transaction_card').hide();
+        } else if (accountsType == '4') { //Other Transaction
+            $("input[name='other_trans_cash_type']").prop('checked', false);
+            $('#credit_type').val('').trigger('change');
+            $('#debit_type').val('').trigger('change');
+            $('.collection_card').hide(); $('.issued_card').hide(); $('.expense_card').hide(); $('#other_transaction_card').show();
+        }
+    });
+    $("input[name='Coll_cash_type']").on("change", function () {
+        let val = $(this).val();
+        if(val==0){
+        getCollectionDetails();
+        }else if(val > 0){
+        getBankCollectionDetails(val);
+
+        }
+    });
+    $("input[name='issued_cash_type']").on("change", function () {
+        let val = $(this).val();
+        if(val==0){
+        getHissuedTable();
+        }else if(val > 0){
+        getBissuedTable();
+
+        }
+    });
+    $("input[name='expense_cash_type']").on("change", function () {
+        let val = $(this).val();
+        if(val==0){
+        getHexpenseTable();
+        }else if(val > 0){
+        getBexpenseTable();
+
+        }
+    });
+
+    $('#hands_cash_radio , #banks_cash_radio').click(function () {
+        // hideAllCardsfunction();
+        var cash_type = $('input[name=other_trans_cash_type]:checked').val();
         if (cash_type == '0') {//hand cash
             appendHandCreditDropdown();
             appendHandDebitDropdown();
@@ -31,20 +82,12 @@ $(document).ready(function () {
     $('#credit_type').change(function () {
         hideAllCardsfunction()
         var credit_type = $(this).val();
-        var cash_type = $('input[name=cash_type]:checked').val();
+        var cash_type = $('input[name=other_trans_cash_type]:checked').val();
 
         if (credit_type != '') {
 
             /////////////////////// For Collection Credit types ////////////////////////////
-            if (credit_type == 1 && cash_type == 0) {
-                // 1 means Collection and cash type is hand cash
-                $('.collection_card').show();
-                getCollectionDetails();
-            } else if (credit_type == 1 && cash_type > 0) {
-                // 1 means Collection and cash type is bank cash
-                $('.collection_card').show();
-                getBankCollectionDetails(cash_type);
-            } else if (credit_type == 5 && cash_type > 0) {
+            if (credit_type == 5 && cash_type > 0) {
                 // 5 means cash deposit and cash type is bank
                 $('.contra_card').show();
                 getCashDepositDetails(cash_type);
@@ -102,15 +145,13 @@ $(document).ready(function () {
                 getCBagDetails();
             }
 
-
-
         }
     })
 
     $('#debit_type').change(function () {
         hideAllCardsfunction()
         var debit_type = $(this).val();
-        var cash_type = $('input[name=cash_type]:checked').val();
+        var cash_type = $('input[name=other_trans_cash_type]:checked').val();
 
         if (debit_type != '') {
 
@@ -133,22 +174,6 @@ $(document).ready(function () {
                 //4 Means Exchange and cash type Bank cash
                 $('.exchange_card').show();
                 getBankExchangeInputs();
-            } else if (debit_type == 13 && cash_type == 0) {
-                //13 Means Issued and cash type Hand cash
-                $('.issued_card').show();
-                getHissuedTable();
-            } else if (debit_type == 13 && cash_type > 0) {
-                //13 Means Issued and cash type Bank cash
-                $('.issued_card').show();
-                getBissuedTable();
-            } else if (debit_type == 14 && cash_type == 0) {
-                //14 Means Issued and cash type Hand cash
-                $('.expense_card').show();
-                getHexpenseTable();
-            } else if (debit_type == 14 && cash_type > 0) {
-                //14 Means Issued and cash type Bank cash
-                $('.expense_card').show();
-                getBexpenseTable();
             } else if (debit_type == 9 && cash_type == 0) {
                 //9 Means Investment and cash type Hand cash
                 $('.inv_card').show();
@@ -216,14 +241,6 @@ $(document).ready(function () {
         } else if (sheet_type == 5) {
             $('#blncSheetDiv').empty()
             $('#IDE_Div').show()
-
-            // $('#IDE_type').change(function () {
-            //     let IDE_type_arr = { 1: 'inv', 2: 'dep', 3: 'el' };
-            //     let IDE_type = $(this).val();
-            //     let opt_for = IDE_type_arr[IDE_type];
-            //     $("#opt_for").val(opt_for);
-            // });
-
         } else if (sheet_type == 7) {
             $('#blncSheetDiv').empty()
             $('#ag_typeDiv').show()
@@ -320,47 +337,22 @@ $(document).ready(function () {
         }
     })
 
-    // $('#addUntracked').click(function () {
-    //     $.ajax({
-    //         url: 'accountsFile/cashtally/contra/getBankDetails.php',
-    //         data: {},
-    //         dataType: 'json',
-    //         type: 'post',
-    //         cache: false,
-    //         success: function (response) {
-    //             $('#bank_id_untracked').empty()
-    //             $('#bank_id_untracked').append(`<option value=''>Select Bank Name</option>`)
-    //             for (var i = 0; i < response.length; i++) {
-    //                 $('#bank_id_untracked').append(`<option value='` + response[i]['bank_id'] + `'>` + response[i]['bank_name'] + `</option>`)
-    //             }
-
-    //             $('#bank_id_untrackedCheck, #untracked_amtCheck').hide();
-    //         }
-    //     })
-    // })
-
-    // $('#submit_untracked').click(function () {
-    //     var bank_id = $('#bank_id_untracked').val(); var amt = $('#untracked_amt').val();
-    //     if (bank_id != '' && amt != '') {
-    //         $('#closeUntracked').trigger('click');
-    //         $('#bank_id_untracked').val(''); $('#untracked_amt').val('')
-    //         $('.untrkd').each(function () {
-    //             var valu = $(this).attr('id');
-    //             if (valu == 'untrkd' + bank_id) {
-    //                 $('#' + valu).text('(' + amt + ')')
-    //             }
-    //         })
-    //     } else {
-    //         if (bank_id == '') { $('#bank_id_untrackedCheck').show() } else { $('#bank_id_untrackedCheck').hide() }
-    //         if (amt == '') { $('#untracked_amtCheck').show() } else { $('#untracked_amtCheck').hide() }
-    //     }
-    // })
 
 })//Document ready END
 
 $(function () {// auto call function for fetching Opening and closing balance
 
     getOpeningDate(); // to get opening date
+    let allowedValues = $('#access').val(); 
+
+    let allowedArray = allowedValues.split(",").map(v => v.trim());
+
+    $(".selector-item").each(function () {
+        let val = $(this).data("value");
+        if ($.inArray(val.toString(), allowedArray) === -1) {
+            $(this).hide(); // hide items not in allowed list
+        }
+    });
 
 })
 
@@ -414,19 +406,6 @@ function getOpeningBalance() {
                 $('#bank_opening' + i).text(moneyFormatIndia(item['bank_opening']))
                 i++;
             })
-
-            // add yseterday's closing untracked amount to today's untracted opening
-            // if (response[0]['bank_untrkd'] != '' && response[0]['bank_untrkd'] != undefined) {
-
-            //     var untrkd_ids_op = $('#untrkd_ids_op').val().split(',');
-            //     var untrkd_op = response[0]['bank_untrkd'].split(','); var k = 0;
-            //     $.each(untrkd_ids_op, function (ind, val) {
-
-            //         $('#' + val).text('(' + untrkd_op[k] + ')')
-            //         k++
-            //     })
-            // }
-
             $('#agent_opening').text(moneyFormatIndia(response[0]['agent_opening']))
         }
     })
@@ -516,13 +495,6 @@ function submitCashTally(i) {
                     }
                     bank_cl = bank_cl.slice(0, -1);
 
-                    // var bank_untrkd = '';
-                    // var untrkd_ids = $('#untrkd_ids').val().split(',');
-                    // $.each(untrkd_ids, function (ind, val) {
-                    //     bank_untrkd += $('#' + val).text() + ',';
-                    // })
-                    // bank_untrkd = bank_untrkd.slice(0, -1);
-
                     var agent_cl = $('#agent_closing').text().replace(/,/g, '');
                     var formtosend = { op_date: op_date, opening_bal: opening_bal, hand_op: hand_op, bank_op: bank_op, agent_op: agent_op, closing_bal: closing_bal, hand_cl: hand_cl, bank_cl, agent_cl: agent_cl };
                     $.ajax({
@@ -552,16 +524,6 @@ function submitCashTally(i) {
                 } else {
                     return false;
                 }
-            // } else {
-            //     Swal.fire({
-            //         title: 'Submittion Error',
-            //         html: 'Please check: <br>1.Bank Collection <br> 2.Hand & Bank Issued<br> has submitted before Closing!',
-            //         icon: 'error',
-            //         showConfirmButton: true,
-            //         confirmButtonColor: '#0C70AB'
-            //     });
-
-            // }
         })
     } else {
         $('#submit_cash_tally').off('click');
@@ -639,24 +601,6 @@ function getFutureOpeningBalance() {
                 $('#bank_opening' + i).text(item['bank_opening'])
                 i++;
             })
-
-            // add yseterday's closing untracked amount to today's untracted opening
-            // if (response[0]['bank_untrkd'] != '' && response[0]['bank_untrkd'] != undefined) {
-
-            //     var untrkd_ids_op = $('#untrkd_ids_op').val().split(',');
-            //     var untrkd_op = response[0]['bank_untrkd'].split(','); var k = 0;
-            //     $.each(untrkd_ids_op, function (ind, val) {
-
-            //         $('#' + val).text('(' + untrkd_op[k] + ')')
-            //         k++
-            //     })
-            // }
-            // //remove closing date's untracked amount to zero on furture date
-            // var untrkd_ids = $('#untrkd_ids').val().split(',');
-            // $.each(untrkd_ids, function (ind, val) {
-            //     $('#' + val).text('(0)');
-            // })
-            //hide untracked adding button when future date is opening date
             $('#addUntracked').hide();
             $('#agent_opening').text(response[0]['agent_opening'])
         }
@@ -1248,7 +1192,7 @@ function cdValidation() {
 //reset Bank Deposit table when Cash Deposit modal closed
 function closCdModal() {
     //reset bank deposit modal
-    var cash_type = $('input[name=cash_type]:checked').val();
+    var cash_type = $('input[name=other_trans_cash_type]:checked').val();
     getCashDepositDetails(cash_type);
 }
 
@@ -1267,7 +1211,7 @@ function getCashWithdrawalDetails() {
         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
             <div class="form-group">
                 <label for="trans_id_cwd">Transaction ID</label>
-                <input type="text" id="trans_id_cwd" name="trans_id_cwd" class="form-control" placeholder="Enter Transaction ID"onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+                <input type="text" id="trans_id_cwd" name="trans_id_cwd" class="form-control" placeholder="Enter Transaction ID"onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
                 <span class="text-danger" id='trans_id_cwdCheck' style="display:none">Please Enter Transaction ID</span>
             </div>
         </div>
@@ -1337,7 +1281,7 @@ function getCashWithdrawalDetails() {
         }
     })
 
-    var bank_id = $('input[name=cash_type]:checked').val();
+    var bank_id = $('input[name=other_trans_cash_type]:checked').val();
 
     $.ajax({
         url: 'accountsFile/cashtally/contra/getBankDetails.php',
@@ -1922,7 +1866,7 @@ function getBankExchangeInputs() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
         <div class="form-group">
             <label for="trans_id_bex">Transaction ID</label>
-            <input type="text" id="trans_id_bex" name="trans_id_bex" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type="text" id="trans_id_bex" name="trans_id_bex" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id="trans_id_bexCheck" class="text-danger" style="display:none">Please Enter Transaction ID </span>
         </div>
     </div>
@@ -1957,7 +1901,7 @@ function getBankExchangeInputs() {
     $('#exchangeDiv').empty()
     $('#exchangeDiv').html(appendText);
 
-    var cash_type = $('input[name=cash_type]:checked').val();
+    var cash_type = $('input[name=other_trans_cash_type]:checked').val();
 
     $.ajax({
         url: 'accountsFile/cashtally/exchange/getBankExchangeInputs.php',
@@ -1975,18 +1919,6 @@ function getBankExchangeInputs() {
             for (var i = 1; i < response.length; i++) {
                 $('#to_bank_bex').append("<option value='" + response[i]['to_bank_id'] + "'>" + response[i]['to_bank_name'] + "</option>");
             }
-            //to fetch user name based on to bank id selected
-            // $('#to_bank_bex').change(function () {
-            //     var to_bank_id = $(this).val();
-            //     if (to_bank_id != '') {
-            //         for (var i = 1; i < response.length; i++) {
-            //             if (to_bank_id == response[i]['bank_user_id']) {
-            //                 $('#user_id_bex').val(response[i]['bank_user_id'])
-            //                 $('#user_name_bex').val(response[i]['bank_user_name'])
-            //             }
-            //         }
-            //     }
-            // })
         }
     }).then(function () {
         $('#submit_bex').click(function () {
@@ -2054,7 +1986,7 @@ function bankExchangeValidation() {
 
 //to get Bank exchange credit input table
 function getCreditBexchangeDetails() {
-    var bank_id = $('input[name=cash_type]:checked').val();
+    var bank_id = $('input[name=other_trans_cash_type]:checked').val();
     $.ajax({
         url: 'accountsFile/cashtally/exchange/getCreditBexchangeDetails.php',
         data: { 'bank_id': bank_id },
@@ -2258,7 +2190,7 @@ function getBotherincomeDetails() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
         <div class="form-group">
             <label for="trans_id">Transaction ID</label>
-            <input type='text' id="trans_id" name="trans_id" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type='text' id="trans_id" name="trans_id" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id='trans_idCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
         </div>
     </div>
@@ -2306,7 +2238,7 @@ function getBotherincomeDetails() {
     $('#submit_boti').click(function () {
         if (botiValidation() == 0) {
             var ref_code = $('#ref_code_boti').val(); var cat_info = $('#cat_info').val(); var trans_id = $('#trans_id').val(); var remark = $('#remark').val(); var amt = $('#amt').val();
-            var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text();
+            var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text();
             $.ajax({
                 url: 'accountsFile/cashtally/otherincome/submitBotherincome.php',
                 data: { 'bank_id': bank_id, 'ref_code': ref_code, 'cat_info': cat_info, 'trans_id': trans_id, 'remark': remark, 'amt': amt, 'op_date': op_date, 'sts': 'credit'},
@@ -2427,7 +2359,7 @@ function getHissuedTable() {
 
 //get table Details for Bank issued from loan issue tables and submit button
 function getBissuedTable() {
-    var bank_id = $('input[name=cash_type]:checked').val();
+    var bank_id = $('input[name=issued_cash_type]:checked').val();
     let op_date = $('#op_date').text();
     $.ajax({
         url: 'accountsFile/cashtally/issued/getBissuedTable.php',
@@ -2509,7 +2441,7 @@ function getHexpenseTable() {
         success: function (response) {
 
             $('.expense_card_header').empty();
-            $('.expense_card_header').html('Expense<button type="button" class="btn btn-primary" id="" name="" data-toggle="modal" data-target=".hexp_modal" style="padding: 5px 35px; float: right;" onclick="hexpenseModalBtnClick()"><span class="icon-add"></span></button>')
+            $('.expense_card_header').html('Expense<button type="button" class="btn btn-primary" id="expense_add_button" name="" data-toggle="modal" data-target=".hexp_modal" style="padding: 5px 35px; float: right;" onclick="hexpenseModalBtnClick()"><span class="icon-add"></span></button>')
 
             $('#expenseDiv').empty();
             $('#expenseDiv').removeClass('row');
@@ -2744,7 +2676,7 @@ function hexpenseValidation() {
 //To get inputs Details for Bank expense table 
 function getBexpenseTable() {
 
-    var bank_id = $('input[name=cash_type]:checked').val();
+    var bank_id = $('input[name=expense_cash_type]:checked').val();
     var op_date = $('#op_date').text();
     $.ajax({
         url: 'accountsFile/cashtally/expense/getBexpenseTable.php',
@@ -2754,7 +2686,7 @@ function getBexpenseTable() {
         success: function (response) {
 
             $('.expense_card_header').empty();
-            $('.expense_card_header').html('Expense<button type="button" class="btn btn-primary" id="" name="" data-toggle="modal" data-target=".bexp_modal" style="padding: 5px 35px; float: right;" onclick="bexpenseModalBtnClick()"><span class="icon-add"></span></button>')
+            $('.expense_card_header').html('Expense<button type="button" class="btn btn-primary" id="expense_add_button" name="" data-toggle="modal" data-target=".bexp_modal" style="padding: 5px 35px; float: right;" onclick="bexpenseModalBtnClick()"><span class="icon-add"></span></button>')
 
             $('#expenseDiv').empty();
             $('#expenseDiv').removeClass('row');
@@ -2846,7 +2778,7 @@ function bexpenseModalBtnClick() {
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
                         <div class="form-group">
                             <label for="trans_id_bexp">Transaction ID</label><span class='text-danger'>&nbsp;*</span>
-                            <input type='text' id="trans_id_bexp" name="trans_id_bexp" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+                            <input type='text' id="trans_id_bexp" name="trans_id_bexp" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=expense_cash_type]:checked').val(),dateField: '#trans_date'})">
                             <span id='trans_id_bexpCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
                         </div>
                     </div>
@@ -2896,7 +2828,7 @@ function bexpenseModalBtnClick() {
     $('#bexp_modalDiv').empty();
     $('#bexp_modalDiv').html(appendTxt);
 
-    var bank_id = $('input[name=cash_type]:checked').val();
+    var bank_id = $('input[name=expense_cash_type]:checked').val();
     $('#bank_id_bexp').val(bank_id);
 
     $.ajax({//For fetching Ref code
@@ -3256,7 +3188,7 @@ function getCBinvDetails() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="trans_id_binv">Transaction ID</label><span class="text-danger">&nbsp;*</span>
-            <input type="text" id="trans_id_binv" name="trans_id_binv" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type="text" id="trans_id_binv" name="trans_id_binv" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id='trans_id_binvCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
         </div>
     </div>
@@ -3299,7 +3231,7 @@ function getCBinvDetails() {
         if (await binvvalidation('cr') == 0) {
             var ref_code = $('#ref_code_binv').val(); var name = $('#name_binv').val(); var area = $('#area_binv').val(); var ident = $('#ident_binv').val();
             var trans_id = $('#trans_id_binv').val(); var remark = $('#remark_binv').val(); var amt = $('#amt_binv').val();
-            var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'credit';
+            var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'credit';
 
             $.ajax({
                 url: 'accountsFile/cashtally/investment/submitCBinvestment.php',
@@ -3373,7 +3305,7 @@ function getDBinvDetails() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="trans_id_binv">Transaction ID</label><span class="text-danger">&nbsp;*</span>
-            <input type="text" id="trans_id_binv" name="trans_id_binv" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type="text" id="trans_id_binv" name="trans_id_binv" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id='trans_id_binvCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
         </div>
     </div>
@@ -3416,7 +3348,7 @@ function getDBinvDetails() {
         if (await binvvalidation('db') == 0) {
             var ref_code = $('#ref_code_binv').val(); var name = $('#name_binv').val(); var area = $('#area_binv').val(); var ident = $('#ident_binv').val();
             var trans_id = $('#trans_id_binv').val(); var remark = $('#remark_binv').val(); var amt = $('#amt_binv').val();
-            var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit';
+            var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit';
 
             $.ajax({
                 url: 'accountsFile/cashtally/investment/submitDBinvestment.php',
@@ -3708,7 +3640,7 @@ function getCBDepDetails() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="trans_id_bdeposit">Transaction ID</label><span class="text-danger">&nbsp;*</span>
-            <input type="text" id="trans_id_bdeposit" name="trans_id_bdeposit" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type="text" id="trans_id_bdeposit" name="trans_id_bdeposit" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id='trans_id_bdepositCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
         </div>
     </div>
@@ -3750,7 +3682,7 @@ function getCBDepDetails() {
     $('#submit_bdeposit').click(async function () { //cr bank cash
         if (await bdepositvalidation('cr') == 0) {
             var ref_code = $('#ref_code_bdeposit').val(); var name = $('#name_bdeposit').val(); var area = $('#area_bdeposit').val(); var ident = $('#ident_bdeposit').val();
-            var trans_id = $('#trans_id_bdeposit').val(); var remark = $('#remark_bdeposit').val(); var amt = $('#amt_bdeposit').val(); var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts ='credit';
+            var trans_id = $('#trans_id_bdeposit').val(); var remark = $('#remark_bdeposit').val(); var amt = $('#amt_bdeposit').val(); var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts ='credit';
 
             $.ajax({
                 url: 'accountsFile/cashtally/deposit/submitCBdeposit.php',
@@ -3824,7 +3756,7 @@ function getDBDepDetails() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="trans_id_bdeposit">Transaction ID</label><span class="text-danger">&nbsp;*</span>
-            <input type="text" id="trans_id_bdeposit" name="trans_id_bdeposit" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type="text" id="trans_id_bdeposit" name="trans_id_bdeposit" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id='trans_id_bdepositCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
         </div>
     </div>
@@ -3866,7 +3798,7 @@ function getDBDepDetails() {
     $('#submit_bdeposit').click(async function () {  //dr bank cash
         if (await bdepositvalidation('db') == 0) {
             var ref_code = $('#ref_code_bdeposit').val(); var name = $('#name_bdeposit').val(); var area = $('#area_bdeposit').val(); var ident = $('#ident_bdeposit').val();
-            var trans_id = $('#trans_id_bdeposit').val(); var remark = $('#remark_bdeposit').val(); var amt = $('#amt_bdeposit').val(); var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text();
+            var trans_id = $('#trans_id_bdeposit').val(); var remark = $('#remark_bdeposit').val(); var amt = $('#amt_bdeposit').val(); var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text();
 
             $.ajax({
                 url: 'accountsFile/cashtally/deposit/submitDBdeposit.php',
@@ -4156,7 +4088,7 @@ function getCBelDetails() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="trans_id_bel">Transaction ID</label><span class="text-danger">&nbsp;*</span>
-            <input type="text" id="trans_id_bel" name="trans_id_bel" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type="text" id="trans_id_bel" name="trans_id_bel" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id='trans_id_belCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
         </div>
     </div>
@@ -4197,7 +4129,7 @@ function getCBelDetails() {
 
     $('#submit_bel').click(async function () { //credit bank cash
         if (await belvalidation() == 0) {
-            var ref_code = $('#ref_code_bel').val(); var name = $('#name_bel').val(); var area = $('#area_bel').val(); var ident = $('#ident_bel').val(); var trans_id = $('#trans_id_bel').val(); var remark = $('#remark_bel').val(); var amt = $('#amt_bel').val(); var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'credit';
+            var ref_code = $('#ref_code_bel').val(); var name = $('#name_bel').val(); var area = $('#area_bel').val(); var ident = $('#ident_bel').val(); var trans_id = $('#trans_id_bel').val(); var remark = $('#remark_bel').val(); var amt = $('#amt_bel').val(); var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'credit';
 
             $.ajax({
                 url: 'accountsFile/cashtally/el/submitCBel.php',
@@ -4271,7 +4203,7 @@ function getDBelDetails() {
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="trans_id_bel">Transaction ID</label><span class="text-danger">&nbsp;*</span>
-            <input type="text" id="trans_id_bel" name="trans_id_bel" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+            <input type="text" id="trans_id_bel" name="trans_id_bel" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
             <span id='trans_id_belCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
         </div>
     </div>
@@ -4312,7 +4244,7 @@ function getDBelDetails() {
 
     $('#submit_bel').click(async function () { //debit bank cash
         if (await belvalidation() == 0) {
-            var ref_code = $('#ref_code_bel').val(); var name = $('#name_bel').val(); var area = $('#area_bel').val(); var ident = $('#ident_bel').val(); var trans_id = $('#trans_id_bel').val(); var remark = $('#remark_bel').val(); var amt = $('#amt_bel').val(); var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit';
+            var ref_code = $('#ref_code_bel').val(); var name = $('#name_bel').val(); var area = $('#area_bel').val(); var ident = $('#ident_bel').val(); var trans_id = $('#trans_id_bel').val(); var remark = $('#remark_bel').val(); var amt = $('#amt_bel').val(); var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit';
 
             $.ajax({
                 url: 'accountsFile/cashtally/el/submitDBel.php',
@@ -4596,7 +4528,7 @@ function getExfDetails() {
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
                         <div class="form-group">
                             <label for="trans_id_exf">Transaction ID</label><span class='text-danger'>&nbsp;*</span>
-                            <input type="text" id="trans_id_exf" name="trans_id_exf" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+                            <input type="text" id="trans_id_exf" name="trans_id_exf" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
                             <span id='trans_id_exfCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
                         </div>
                     </div>
@@ -4632,7 +4564,7 @@ function getExfDetails() {
 
     $('#exfDiv').empty();
     $('#exfDiv').html(appendTxt);
-    var bank_id = $('input[name=cash_type]:checked').val();
+    var bank_id = $('input[name=other_trans_cash_type]:checked').val();
 
 
     $.ajax({//For fetching Ref code
@@ -4658,26 +4590,11 @@ function getExfDetails() {
         }
     })
 
-    // $.ajax({ // to get the uncleared transacton id on this user's bank accounts
-    //     url: 'accountsFile/cashtally/excessfund/getUnclearTransactionID.php',
-    //     data: { 'bank_id': bank_id },
-    //     dataType: 'json',
-    //     type: 'post',
-    //     cache: false,
-    //     success: function (response) {
-    //         $('#ucl_trans_id_exf').empty();
-    //         $('#ucl_trans_id_exf').append("<option value=''>Select Unclear Transaction ID</option>");
-    //         $.each(response, function (ind, val) {
-    //             $('#ucl_trans_id_exf').append("<option value='" + val['ucl_trans_id'] + "'>" + val['ucl_trans_id'] + "</option>")
-    //         })
-    //     }
-    // })
-
     $('#submit_exf').click(function () {
         if (exfValidation() == 0) {
             var ucl_ref_code_exf = $('#ucl_ref_code_exf').val(); var ref_code_exf = $('#ref_code_exf').val();
             var trans_id_exf = $('#trans_id_exf').val(); var remark_exf = $('#remark_exf').val(); var amt_exf = $('#amt_exf').val();
-            var username_exf = $('#username_exf').val(); var usertype_exf = $('#usertype_exf').val(); var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit';
+            var username_exf = $('#username_exf').val(); var usertype_exf = $('#usertype_exf').val(); var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit';
             var formtosend = { bank_id: bank_id, username_exf: username_exf, usertype_exf: usertype_exf, ucl_ref_code_exf: ucl_ref_code_exf, ref_code_exf: ref_code_exf, trans_id_exf: trans_id_exf, remark_exf: remark_exf, amt_exf: amt_exf, op_date: op_date, sts:sts };
             $.ajax({
                 url: 'accountsFile/cashtally/excessfund/submitExf.php',
@@ -4739,7 +4656,6 @@ function exfValidation() {
 
 
 /////////////////////////////////////////////////////// Excess Fund End ///////////////////////////////////////////////////////////////////////
-
 
 /////////////////////////////////////////////////////// Agent Start ///////////////////////////////////////////////////////////////////////
 
@@ -4935,7 +4851,7 @@ function getCBagDetails() {
             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
                 <div class="form-group">
                     <label for="trans_id_ag">Transaction ID</label><span class='text-danger'>&nbsp;*</span>
-                    <input type="text" id="trans_id_ag" name="trans_id_ag" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+                    <input type="text" id="trans_id_ag" name="trans_id_ag" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'credit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
                     <span id='trans_id_agCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
                 </div>
             </div>
@@ -4986,7 +4902,7 @@ function getCBagDetails() {
     $('#submit_ag').off('click');
     $('#submit_ag').click(function () {
         if (agBValidation() == 0) {
-            var ag_id = $('#ag_id').val(); var ref_code_ag = $('#ref_code_ag').val(); var trans_id_ag = $('#trans_id_ag').val(); var remark_ag = $('#remark_ag').val(); var amt_ag = $('#amt_ag').val(); var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'credit';
+            var ag_id = $('#ag_id').val(); var ref_code_ag = $('#ref_code_ag').val(); var trans_id_ag = $('#trans_id_ag').val(); var remark_ag = $('#remark_ag').val(); var amt_ag = $('#amt_ag').val(); var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'credit';
             var formtosend = { ag_id: ag_id, bank_id: bank_id, ref_code: ref_code_ag, trans_id: trans_id_ag, remark: remark_ag, amt: amt_ag, op_date: op_date, sts: sts };
             $.ajax({
                 url: 'accountsFile/cashtally/agent/submitCBag.php',
@@ -5044,7 +4960,7 @@ function getDBagDetails() {
             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
                 <div class="form-group">
                     <label for="trans_id_ag">Transaction ID</label><span class='text-danger'>&nbsp;*</span>
-                    <input type="text" id="trans_id_ag" name="trans_id_ag" class="form-control" placeholder="Enter Transaction ID"onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=cash_type]:checked').val(),dateField: '#trans_date'})">
+                    <input type="text" id="trans_id_ag" name="trans_id_ag" class="form-control" placeholder="Enter Transaction ID"onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=other_trans_cash_type]:checked').val(),dateField: '#trans_date'})">
                     <span id='trans_id_agCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
                 </div>
             </div>
@@ -5096,7 +5012,7 @@ function getDBagDetails() {
 
     $('#submit_ag').click(function () {
         if (agBValidation() == 0) {
-            var ag_id = $('#ag_id').val(); var ref_code_ag = $('#ref_code_ag').val(); var trans_id_ag = $('#trans_id_ag').val(); var remark_ag = $('#remark_ag').val(); var amt_ag = $('#amt_ag').val(); var bank_id = $('input[name=cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit'
+            var ag_id = $('#ag_id').val(); var ref_code_ag = $('#ref_code_ag').val(); var trans_id_ag = $('#trans_id_ag').val(); var remark_ag = $('#remark_ag').val(); var amt_ag = $('#amt_ag').val(); var bank_id = $('input[name=other_trans_cash_type]:checked').val(); var op_date = $('#op_date').text(); var sts = 'debit'
             var formtosend = { ag_id: ag_id, bank_id: bank_id, ref_code: ref_code_ag, trans_id: trans_id_ag, remark: remark_ag, amt: amt_ag, op_date: op_date, 'sts':sts };
             $.ajax({
                 url: 'accountsFile/cashtally/agent/submitDBag.php',

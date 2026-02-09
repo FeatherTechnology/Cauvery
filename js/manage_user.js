@@ -75,6 +75,12 @@ const updateScreen = new Choices('#update_screen', {
     noChoicesText: 'Select Update Screen',
     allowHTML: true
 });
+const cash_tally_access_select = new Choices('#cash_tally_access1', {
+    removeItemButton: true,
+    noChoicesText: 'Select Cash Tally Access',
+    allowHTML: true
+
+});
 
 // Document is ready
 $(document).ready(function () {
@@ -395,9 +401,11 @@ $(document).ready(function () {
         var cash_tally = document.querySelector('#cash_tally');
         if (cash_tally.checked) {
             getBankDetails();
-            $('.bank_details').show()
+            $('.bank_details').show();
+            $('.cash_tally_access').show()
         } else {
             $('.bank_details').hide()
+            $('.cash_tally_access').hide()
         }
     });
     $('#bank_clearance').click(function () {
@@ -502,6 +510,23 @@ $(document).ready(function () {
 			}
 		}
 	});
+    $('#cash_tally_access1').change(function () {
+        
+        var cash_tally_access1 = cash_tally_access_select.getValue();
+        var cash_tally_access = '';
+        for (var i = 0; i < cash_tally_access1.length; i++) {
+            if (i > 0) {
+                cash_tally_access += ',';
+            }
+            cash_tally_access += cash_tally_access1[i].value;
+        }
+        var arr = cash_tally_access.split(",");
+        arr.sort(function (a, b) { return a - b });
+        var sortedStr = arr.join(",");
+        $('#cash_tally_access').val('');
+        $('#cash_tally_access').val(sortedStr);
+
+    });
 });
 
 
@@ -603,6 +628,20 @@ $(function () {
             $('.bnk_clr_upl_acc_div').show()
         }else{
             $('.bnk_clr_upl_acc_div').hide()
+        }
+
+        var cash_tally = document.querySelector('#cash_tally');
+        if (cash_tally.checked) {
+            var cash_tally_access_upd = $('#cash_tally_access_upd').val();
+            if (cash_tally_access_upd) {
+                let selectedValues = cash_tally_access_upd.split(',');
+                selectedValues.forEach(value => {
+                    cash_tally_access_select.setChoiceByValue(value.trim());
+                });
+            }
+
+            $('.cash_tally_access').show()
+            $('.bank_details').show()
         }
 
         var mastermodule = document.getElementById('mastermodule');
@@ -1445,6 +1484,19 @@ function validation() {
     if (!cash_tally.checked) {
         $('#bank_details').val('')
     }
+    var cash_tally_access_selects = cash_tally_access_select.getValue();
+    if (!cash_tally.checked) {
+        $('#cash_tally_access').val('')
+    } else{
+        if(cash_tally_access_selects.length == 0){
+            event.preventDefault();
+            $('.cash_tally_access').show();
+            $('.cash_tally_accessCheck').show();
+            validation = false;
+        }else{
+            $('.cash_tally_accessCheck').hide();
+        }
+    }
     var bank_clearance = document.querySelector('#bank_clearance');
     if (!bank_clearance.checked) {
         $('#bnk_clr_upl_acc').val('')
@@ -1623,4 +1675,34 @@ function getRoleTypeBasedDetails(role, role_type) {
         $('.staff').show();
         getStaffName(role_type);
     }
+}
+
+function getcashTallyAccess() {
+    var cash_tally_access_upd = $('#cash_tally_access_upd').val().split(',');
+
+    const valueToLabelMap = {
+        '1': 'Collection',
+        '2': 'Loan Issued ',
+        '3': 'Expenses' ,
+        '4': 'Other Transaction' 
+    };
+    cash_tally_access_select.clearStore();
+
+    let items = [];
+
+    $.each(valueToLabelMap, function(val, label) {
+        let selected = '';
+
+        if (cash_tally_access_upd.includes(val)) {
+            selected = 'selected';
+        }
+
+        items.push({
+            value: val,  
+            label: label,
+            selected: selected 
+        });
+    });
+    cash_tally_access_select.setChoices(items);
+    cash_tally_access_select.init();
 }
