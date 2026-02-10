@@ -87,6 +87,7 @@ foreach ($result as $row) {
     }
 
     $role_type_id = $row['role_type'];
+
     if ($role_type_id == '11' and $role_id == '1') {
         $sub_array[] = 'Director';
     } else if ($role_type_id == '12' and $role_id == '1') {

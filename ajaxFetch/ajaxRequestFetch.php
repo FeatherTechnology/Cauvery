@@ -20,15 +20,13 @@ $column = [
     'rc.dor',
     'rc.cus_id',
     'cr.autogen_cus_id',
-    'rc.cus_name',
+    'CONCAT(rc.first_name, rc.last_name)',
     'bc.branch_name',
     'agm.group_name',
     'alm.line_name',
     'rc.mobile1',
     'a.area_name',
-    'sa.sub_area_name',
     'lcc.loan_category_creation_name',
-    'rc.sub_category',
     'rc.loan_amt',
     'rc.user_type',
     'rc.user_name',
@@ -44,9 +42,8 @@ $query = "SELECT DISTINCT
     rc.req_id,
     rc.dor,
     rc.cus_id,
-    rc.cus_name,
+    CONCAT(rc.first_name,' ', rc.last_name) AS customer_name,
     rc.mobile1,
-    rc.sub_category,
     rc.loan_amt,
     rc.user_type,
     rc.user_name,
@@ -57,7 +54,6 @@ $query = "SELECT DISTINCT
 
     cr.autogen_cus_id,
     a.area_name,
-    sa.sub_area_name,
     agm.group_name,
     bc.branch_name,
     alm.line_name,
@@ -67,13 +63,12 @@ $query = "SELECT DISTINCT
     FROM request_creation rc
     LEFT JOIN agent_creation ac ON ac.ag_id = rc.agent_id
     STRAIGHT_JOIN customer_register cr ON cr.cus_id = rc.cus_id
-    STRAIGHT_JOIN sub_area_list_creation sa ON sa.sub_area_id = rc.sub_area
-    STRAIGHT_JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = sa.sub_area_id
+    STRAIGHT_JOIN area_list_creation a ON a.area_id = rc.area
+    STRAIGHT_JOIN area_group_mapping_area agmsa ON agmsa.area_id = a.area_id
     STRAIGHT_JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
     STRAIGHT_JOIN branch_creation bc ON bc.branch_id = agm.branch_id
-    STRAIGHT_JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sa.sub_area_id
+    STRAIGHT_JOIN area_line_mapping_area almsa ON almsa.area_id = a.area_id
     STRAIGHT_JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
-    STRAIGHT_JOIN area_list_creation a ON a.area_id = rc.area
     STRAIGHT_JOIN loan_category_creation lcc ON lcc.loan_category_creation_id = rc.loan_category
     WHERE rc.status = 0 AND rc.cus_status < 14 AND rc.cus_status NOT IN (4,5,6,7,8,9)";
 
@@ -89,15 +84,13 @@ if (!empty($_POST['search'])) {
         rc.dor LIKE '%$search%' OR
         rc.cus_id LIKE '%$search%' OR
         cr.autogen_cus_id LIKE '%$search%' OR
-        rc.cus_name LIKE '%$search%' OR
+        CONCAT(rc.first_name,' ', rc.last_name) LIKE '%" . $_POST['search'] . "%'
         bc.branch_name LIKE '%$search%' OR
         agm.group_name LIKE '%$search%' OR
         alm.line_name LIKE '%$search%' OR
         ac.ag_name LIKE '%$search%' OR
         a.area_name LIKE '%$search%' OR
-        sa.sub_area_name LIKE '%$search%' OR
         lcc.loan_category_creation_name LIKE '%$search%' OR
-        rc.sub_category LIKE '%$search%' OR
         rc.loan_amt LIKE '%$search%' OR
         rc.user_type LIKE '%$search%' OR
         rc.responsible LIKE '%$search%' OR
@@ -148,15 +141,13 @@ foreach ($result as $row) {
     $sub[] = date('d-m-Y', strtotime($row['dor']));
     $sub[] = $row['cus_id'];
     $sub[] = $row['autogen_cus_id'];
-    $sub[] = $row['cus_name'];
+    $sub[] = $row['customer_name'];
     $sub[] = $row['branch_name'];
     $sub[] = $row['group_name'];
     $sub[] = $row['line_name'];
     $sub[] = $row['mobile1'];
     $sub[] = $row['area_name'];
-    $sub[] = $row['sub_area_name'];
     $sub[] = $row['loan_category_creation_name'];
-    $sub[] = $row['sub_category'];
     $sub[] = moneyFormatIndia($row['loan_amt']);
     $sub[] = $row['user_type'];
     $sub[] = $row['user_name'];

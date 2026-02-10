@@ -432,7 +432,6 @@ if($idupd>0)
 												<thead>
 													<tr>
 														<th>Loan Category</th>
-														<th>Sub Category</th>
 														<th>Scheme</th>
 														<th>Loan Payment</th>
 														<th>Responsible</th>

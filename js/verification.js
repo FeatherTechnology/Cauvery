@@ -84,8 +84,10 @@ $(document).ready(function () {
 
   function famNameList() {
     // To show family name for Data Check.
-    let req_id = $("#req_id").val();
-    var cus_name = $("#cus_name").val();
+
+    var first_name = $("#first_name").val();
+    var last_name = $("#last_name").val();
+    var cus_name = first_name + " " + last_name;
     var cus_id = $("#cus_id").val(); //customer id
 
     $.ajax({
@@ -124,7 +126,6 @@ $(document).ready(function () {
 
   function mobileList() {
     // To show Mobile No for Data Checking.
-    let req_id = $("#req_id").val();
     var mobile1 = $("#mobile1").val();
     var cus_id = $("#cus_id").val(); //customer id
 
@@ -166,8 +167,9 @@ $(document).ready(function () {
 
   function aadharList() {
     // To show Aadhar No for Data Checking.
-    let req_id = $("#req_id").val();
-    var cus_name = $("#cus_name").val(); //Customer name for display
+    var first_name = $("#first_name").val();
+    var last_name = $("#last_name").val();
+    var cus_name = first_name + " " + last_name; //Customer name for display
     var cus_id = $("#cus_id").val(); //customer adhar for
 
     $.ajax({
@@ -297,11 +299,6 @@ $(document).ready(function () {
     getTalukBasedArea(talukselected);
   });
 
-  $("#area").change(function () {
-    var areaselected = $("#area").val();
-    getAreaBasedSubArea(areaselected);
-  });
-
   $("#getlatlong").click(function () {
     event.preventDefault();
     navigator.geolocation.getCurrentPosition((position) => {
@@ -331,9 +328,9 @@ $(document).ready(function () {
     }
   };
 
-  $("#sub_area").change(function () {
-    var sub_area_id = $(this).val();
-    getGroupandLine(sub_area_id);
+  $("#area").change(function () {
+    var area_id = $(this).val();
+    getGroupandLine(area_id);
   });
 
   ///Customer Feedback
@@ -1225,8 +1222,6 @@ function showErrorAlert(message) {
 }
 $(function () {
   $(".icon-chevron-down1").parent().next("div").slideUp(); //To collapse all card on load
-nameFormatter('#cus_name');// To Show Namein Proper Format
-nameFormatter('#famname'); // 
   getImage(); // To show customer image when window onload.
 
   resetFamInfo(); //Call Family Info Table Initially.
@@ -1265,9 +1260,6 @@ nameFormatter('#famname'); //
     getTalukBasedArea(taluk_upd);
   }
   var area_upd = $("#area_upd").val();
-  if (area_upd != "") {
-    getAreaBasedSubArea(area_upd);
-  }
 
   var role_upd = $("#role_upd").val();
 
@@ -1382,11 +1374,21 @@ function getCustomerLoanCounts() {
   });
 }
 // Modal Box for Agent Group
-
+$("#famFirstnameCheck").hide();
+$("#famLastnameCheck").hide();
+$("#famrelationCheck").hide();
+$("#famremarkCheck").hide();
+$("#famaddressCheck").hide();
+$("#famageCheck").hide();
+$("#famaadharCheck").hide();
+$("#fammobileCheck").hide();
+$("#famoccCheck").hide();
+$("#famincomeCheck").hide();
 $(document).on("click", "#submitFamInfoBtn", function () {
   let req_id = $("#req_id").val();
   let cus_id = $("#cus_id").val();
-  let famname = $("#famname").val();
+  let fam_first_name = $("#fam_first_name").val();
+  let fam_last_name = $("#fam_last_name").val();
   let relationship = $("#relationship").val();
   let other_remark = $("#other_remark").val();
   let other_address = $("#other_address").val();
@@ -1400,7 +1402,8 @@ $(document).on("click", "#submitFamInfoBtn", function () {
   let authorize = $("#authorize").val();
 
   if (
-    famname != "" &&
+    fam_first_name != "" &&
+    fam_last_name != "" &&
     relationship != "" &&
     relation_aadhar != "" &&
     relation_Mobile != "" &&
@@ -1411,7 +1414,8 @@ $(document).on("click", "#submitFamInfoBtn", function () {
       url: "verificationFile/verification_family_submit.php",
       type: "POST",
       data: {
-        famname: famname,
+        fam_first_name: fam_first_name,
+        fam_last_name: fam_last_name,
         realtionship: relationship,
         other_remark: other_remark,
         other_address: other_address,
@@ -1453,10 +1457,16 @@ $(document).on("click", "#submitFamInfoBtn", function () {
       },
     });
   } else {
-    if (famname == "") {
-      $("#famnameCheck").show();
+    if (fam_first_name == "") {
+      $("#famFirstnameCheck").show();
     } else {
-      $("#famnameCheck").hide();
+      $("#famFirstnameCheck").hide();
+    }
+
+    if (fam_last_name == "") {
+      $("#famLastnameCheck").show();
+    } else {
+      $("#famLastnameCheck").hide();
     }
 
     if (relationship == "") {
@@ -1503,8 +1513,8 @@ function resetFamInfo() {
       $("#updatedFamTable").empty();
       $("#updatedFamTable").html(html);
 
-      $("#famname, #relationship, #other_remark, #other_address, #relation_age, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID,#authorize").val("");
-      $("#famnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famageCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
+      $("#fam_first_name, #fam_last_name, #relationship, #other_remark, #other_address, #relation_age, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID,#authorize").val("");
+      $("#famFirstnameCheck, #famLastnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famageCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
     },
   });
 }
@@ -1535,7 +1545,8 @@ $("body").on("click", "#verification_fam_edit", function () {
     cache: false,
     success: function (result) {
       $("#famID").val(result["id"]);
-      $("#famname").val(result["fname"]);
+      $("#fam_first_name").val(result["first_name"]);
+      $("#fam_last_name").val(result["last_name"]);
       $("#relationship").val(result["relation"]);
       $("#other_remark").val(result["remark"]);
       $("#other_address").val(result["address"]);
@@ -1553,7 +1564,8 @@ $("body").on("click", "#verification_fam_edit", function () {
         $("#remark").hide();
         $("#address").hide();
       }
-      $("#famnameCheck").hide();
+      $("#famFirstnameCheck").hide();
+      $("#famLastnameCheck").hide();
       $("#famrelationCheck").hide();
       $("#famremarkCheck").hide();
       $("#famaddressCheck").hide();
@@ -3364,39 +3376,6 @@ function getTalukBasedArea(talukselected) {
   });
 }
 
-//Get Area Based Sub Area
-function getAreaBasedSubArea(area) {
-  var sub_area_upd = $("#sub_area_upd").val();
-  $.ajax({
-    url: "requestFile/ajaxGetEnabledSubArea.php",
-    type: "post",
-    data: { area: area },
-    dataType: "json",
-    success: function (response) {
-      $("#sub_area").empty();
-      $("#sub_area").append("<option value='' >Select Sub Area</option>");
-      for (var i = 0; i < response.length; i++) {
-        var selected = "";
-        if (
-          sub_area_upd != undefined &&
-          sub_area_upd != "" &&
-          sub_area_upd == response[i]["sub_area_id"]
-        ) {
-          selected = "selected";
-        }
-        $("#sub_area").append(
-          "<option value='" +
-          response[i]["sub_area_id"] +
-          "' " +
-          selected +
-          ">" +
-          response[i]["sub_area_name"] +
-          " </option>"
-        );
-      }
-    },
-  });
-}
 
 //Customer Feedback Modal
 $("#feedbacklabelCheck").hide();
@@ -5232,10 +5211,10 @@ $("#submit_loan_calculation").click(function () {
 
 });
 
-function getGroupandLine(sub_area_id) {
+function getGroupandLine(area_id) {
   $.ajax({
     url: "verificationFile/getGroupandLine.php",
-    data: { sub_area_id: sub_area_id },
+    data: { area_id: area_id },
     dataType: "json",
     type: "post",
     cache: false,
@@ -6971,7 +6950,9 @@ function loan_calc_validation() {
   return validation;
 }
 function fingerprintTable() {//To Get family member's name are required for scanning fingerprint
-  var cus_name = $('#cus_name').val();
+    var first_name = $("#first_name").val();
+    var last_name = $("#last_name").val();
+    var cus_name = first_name + " " + last_name; //Customer name for display
   var cus_id = $('#cus_id').val();
   $.ajax({
     url: 'verificationFile/getNamesForFingerprint.php',
