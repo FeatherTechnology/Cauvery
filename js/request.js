@@ -387,14 +387,16 @@ function getCustomerDetails(cus_id) {
                 $('#mobile1').val(response['mobile1']);
                 $('#mobile2').val(response['mobile2']);
                 // Set radio + whatsapp number
-                if (response['mobile_whatsapp'] === 'mobile1') {
+                if (response['mobile_whatsapp'] == 'mobile1') {
                     $('#mobile1_radio').prop('checked', true);
                     $('#mobile2_radio').prop('checked', false);
                     mobileNumber = response['mobile1'];
-                } else if (response['mobile_whatsapp'] === 'mobile2') {
+                } else if (response['mobile_whatsapp'] == 'mobile2') {
                     $('#mobile2_radio').prop('checked', true);
                     $('#mobile1_radio').prop('checked', false);
                     mobileNumber = response['mobile2'];
+                }else{
+                   mobileNumber ='';
                 }
                 $('#whatsapp_no').val(mobileNumber);
                 $('#selected_mobile_radio').val(response['mobile_whatsapp']);

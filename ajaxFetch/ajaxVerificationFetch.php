@@ -102,7 +102,7 @@ if (!empty($_POST['search'])) {
         v.dor LIKE '%$search%' OR
         v.cus_id LIKE '%$search%' OR
         cr.autogen_cus_id LIKE '%$search%' OR
-        OR CONCAT(v.first_name,' ', v.last_name) LIKE '%" . $_POST['search'] . "%'
+        CONCAT(v.first_name,' ', v.last_name) LIKE '%$search%' OR
         bc.branch_name LIKE '%$search%' OR
         agm.group_name LIKE '%$search%' OR
         alm.line_name LIKE '%$search%' OR

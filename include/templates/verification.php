@@ -298,6 +298,7 @@ if (sizeof($getLoanCalculation) > 0) {
 		$verification_location = $getLoanCalculation['verification_location'];
 		$verify_remark = $getLoanCalculation['verify_remark'];
 		$cus_status_lc = $getLoanCalculation['cus_status'];
+	
 	}
 
 	//Get Loan calculation Category info for edit
@@ -1885,11 +1886,16 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 																											} elseif (isset($cus_id_lc)) {
 																												echo $cus_id_lc;
 																											} ?>'>
-			<input type="hidden" class="form-control" id="cus_name_loan" name="cus_name_loan" readonly value='<?php if (isset($cus_name_loan)) {
-																													echo $cus_name_loan;
-																												} elseif (isset($cus_name_lc)) {
-																													echo $cus_name_lc;
+            <input type="hidden" class="form-control" id="first_name_loan" name="first_name_loan" readonly value='<?php if (isset($first_name_loan)) {
+																													echo $first_name_loan;
+																												} elseif (isset($first_name_lc)) {
+																													echo $first_name_lc;
 																												} ?>'>
+			<input type="hidden" class="form-control" id="last_name_loan" name="last_name_loan" readonly value='<?php if (isset($last_name_loan)) {
+																													echo $last_name_loan;
+																												} elseif (isset($last_name_lc)) {
+																													echo $last_name_lc;
+																												} ?>'>										
 			<input type="hidden" class="form-control" id="cus_data_loan" name="cus_data_loan" readonly value='<?php if (isset($cus_data_loan)) {
 																													echo $cus_data_loan;
 																												} elseif (isset($cus_data_lc)) {
@@ -2091,10 +2097,15 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 											<div class="form-group">
 												<label for="cus_name_loan">Customer Name</label><span class="required">&nbsp;*</span>-->
-					<input type="hidden" class="form-control" id="cus_name_loan" name="cus_name_loan" readonly value='<?php if (isset($cus_name_loan)) {
-																															echo $cus_name_loan;
-																														} elseif (isset($cus_name_lc)) {
-																															echo $cus_name_lc;
+					<input type="hidden" class="form-control" id="first_name_loan" name="first_name_loan" readonly value='<?php if (isset($first_name_loan)) {
+																															echo $first_name_loan;
+																														} elseif (isset($first_name_lc)) {
+																															echo $first_name_lc;
+																														} ?>'>
+					<input type="hidden" class="form-control" id="last_name_loan" name="last_name_loan" readonly value='<?php if (isset($last_name_loan)) {
+																															echo $last_name_loan;
+																														} elseif (isset($last_name_lc)) {
+																															echo $last_name_lc;
 																														} ?>'>
 					<!--</div>
 										</div>

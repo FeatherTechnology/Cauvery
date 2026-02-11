@@ -2,10 +2,10 @@
 @session_start();
 include('..\ajaxconfig.php');
 include('..\moneyFormatIndia.php');
-include('..\user_based_sub_area_Ids.php');
+include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
-$sub_area_list = getUserSubAreaList($connect, 'loanissue');
+$area_list = getUserAreaList($connect, 'loanissue');
 
 if ($userid) {
     $stmt = $connect->prepare("SELECT role FROM user WHERE user_id = ?");
@@ -20,14 +20,12 @@ $column = [
     'a.dor',
     'a.cus_id',
     'cr.autogen_cus_id',
-    'a.cus_name',
+    'CONCAT(v.first_name, v.last_name)',
     'bc.branch_name',
     'agm.group_name',
     'alm.line_name',
     'a.area_name',
-    'sa.sub_area_name',
     'lcc.loan_category_creation_name',
-    'b.sub_category',
     'b.loan_amt',
     'a.user_type',
     'a.user_name',
@@ -43,7 +41,7 @@ $query = "SELECT DISTINCT
     a.dor, 
     a.cus_id, 
     cr.autogen_cus_id, 
-    a.cus_name, 
+    CONCAT(a.first_name,' ', a.last_name) AS cus_name,
     a.user_type, 
     a.user_name, 
     a.agent_id, 
@@ -52,10 +50,8 @@ $query = "SELECT DISTINCT
     a.req_id, 
     a.cus_status, 
     a.req_id, 
-    b.sub_category, 
     b.loan_amt, 
     ac.area_name, 
-    sa.sub_area_name, 
     agm.group_name, 
     bc.branch_name, 
     alm.line_name, 
@@ -66,18 +62,17 @@ $query = "SELECT DISTINCT
     JOIN customer_register cr ON a.cus_id = cr.cus_id
     JOIN acknowlegement_loan_calculation b on a.req_id=b.req_id 
     JOIN area_list_creation ac ON a.area = ac.area_id
-    JOIN sub_area_list_creation sa ON a.sub_area = sa.sub_area_id
-    JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = sa.sub_area_id
+    JOIN area_group_mapping_area agmsa ON agmsa.area_id = ac.area_id
     JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
     JOIN branch_creation bc ON agm.branch_id = bc.branch_id
-    JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sa.sub_area_id
+    JOIN area_line_mapping_area almsa ON almsa.area_id = ac.area_id
     JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
     JOIN loan_category_creation lcc ON lcc.loan_category_creation_id = b.loan_category
     WHERE a.status = 0 and (a.cus_status = 13) and a.issue_by IN (1, 2) "; // Move To Issue
 
 /* user-level restriction */
 if (!($userid == 1)) {
-    $query .= " AND a.sub_area IN ($sub_area_list)"; //show only Approved Verification in Acknowledgement. // 13 Move to Issue. // 14 Move To Collection.
+    $query .= " AND a.area IN ($area_list)"; //show only Approved Verification in Acknowledgement. // 13 Move to Issue. // 14 Move To Collection.
 }
 
 /* ---------------- SEARCH ---------------- */
@@ -87,15 +82,13 @@ if (!empty($_POST['search'])) {
         a.dor LIKE '%$search%' OR
         a.cus_id LIKE '%$search%' OR
         cr.autogen_cus_id LIKE '%$search%' OR
-        a.cus_name LIKE '%$search%' OR
+       CONCAT(a.first_name,' ', a.last_name) LIKE '%$search%' OR
         bc.branch_name LIKE '%$search%' OR
         agm.group_name LIKE '%$search%' OR
         alm.line_name LIKE '%$search%' OR
         ac.area_name LIKE '%$search%' OR
         a.mobile1 LIKE '%$search%' OR
-        sa.sub_area_name LIKE '%$search%' OR
         lcc.loan_category_creation_name LIKE '%$search%' OR
-        a.sub_category LIKE '%$search%' OR
         a.loan_amt LIKE '%$search%' OR
         a.user_type LIKE '%$search%' OR
         a.responsible LIKE '%$search%' OR
@@ -150,9 +143,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row["loan_category_creation_name"];
-    $sub_array[] = $row['sub_category'];
     $sub_array[] = moneyFormatIndia($row['loan_amt']);
 
     $req_id = $row['req_id'];

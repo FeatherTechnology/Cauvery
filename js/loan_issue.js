@@ -739,12 +739,11 @@ function getLc() {
     })
 }
 function getCategoryInfo() {
-    var sub_category_upd = $('#sub_category_upd').val();
-    var sub_cat = $('#sub_category').val();
+    var loan_category_upd = $('#loan_category_upd').val();
     var loan_category = $('#loan_category_lc').val();
     $.ajax({
         url: 'requestFile/getCategoryInfo.php',
-        data: { 'sub_cat': sub_cat, 'loan_category': loan_category },
+        data: { 'loan_category': loan_category },
         dataType: 'json',
         type: 'post',
         cache: false,
@@ -764,19 +763,19 @@ function getCategoryInfo() {
                 var category_content = $('#moduleTable tbody tr').html(); //To get the appended category list
 
                 var category_count = $('#moduleTable tbody tr').find('td').length;//To find input fields count
-                getCategoryInputs(category_count, category_content, sub_category_upd);
+                getCategoryInputs(category_count, category_content, loan_category_upd);
 
             }
         }
     });
 
 
-    function getCategoryInputs(category_count, category_content, sub_category_upd) {
+    function getCategoryInputs(category_count, category_content, loan_category_upd) {
 
         var req_id = $('#req_id').val();
         $.ajax({
             url: 'loanIssueFile/getCategoryInfoForIssue.php',
-            data: { 'req_id': req_id, 'sub_category_upd': sub_category_upd },
+            data: { 'req_id': req_id, 'loan_category_upd': loan_category_upd },
             dataType: 'json',
             type: 'post',
             cache: false,
@@ -799,15 +798,14 @@ function getCategoryInfo() {
 }
 //Get Category info From Request
 function profitCalculationInfo() {
-    var sub_cat = $('#sub_category').val();
     var profit_type = $('#profit_type').val();
     var due_method = $('#due_method_scheme').val();
     var loan_cat = $('#loan_category').val();
     if (profit_type != '') { //Call only if profit type autamatically set
-        profitCalAjax(profit_type, sub_cat, loan_cat); //Call for edit
+        profitCalAjax(profit_type, loan_cat); //Call for edit
     }
     if (due_method != '') {//Call only if due method autamatically set
-        schemeAjax(due_method, sub_cat); //Call for edit
+        schemeAjax(due_method, loan_cat); //Call for edit
     }
     setTimeout(function () {
         var scheme_name = $('#scheme_upd').val();
@@ -845,9 +843,8 @@ function profitCalculationInfo() {
         $('#maturity_month').val('');
 
         var profit_type = $(this).val();
-        var sub_cat = $('#sub_category').val();
         var loan_cat = $('#loan_category').val();
-        profitCalAjax(profit_type, sub_cat, loan_cat)
+        profitCalAjax(profit_type, loan_cat)
 
     });//Profit Type change event end
 
@@ -860,8 +857,8 @@ function profitCalculationInfo() {
             $('.day_scheme').hide();
         }
 
-        var sub_cat = $('#sub_category').val();
-        schemeAjax(due_method, sub_cat);
+        var loan_cat = $('#loan_category').val();
+        schemeAjax(due_method, loan_cat);
 
         $('#int_rate').val(''); $('#int_rate').attr('readonly', false);
         $('#due_period').val(''); $('#due_period').attr('readonly', false);
@@ -882,7 +879,7 @@ function profitCalculationInfo() {
 }
 
 //
-function profitCalAjax(profit_type, sub_cat, loan_cat) {
+function profitCalAjax(profit_type, loan_cat) {
     var profit_method_upd = $('#profit_method_upd').val()
     if ($('#int_rate_upd').val()) { var int_rate_upd = $('#int_rate_upd').val(); } else { var int_rate_upd = ''; }
     if ($('#due_period_upd').val()) { var due_period_upd = $('#due_period_upd').val(); } else { var due_period_upd = ''; }
@@ -894,7 +891,7 @@ function profitCalAjax(profit_type, sub_cat, loan_cat) {
         $('.scheme-calculation').hide();
         $.ajax({ // To show profit calculation infos based on sub category
             url: 'verificationFile/LoanCalculation/getProfitCalculationInfo.php',
-            data: { 'sub_cat': sub_cat, 'loan_cat': loan_cat },
+            data: { 'loan_cat': loan_cat },
             dataType: 'json',
             type: 'post',
             cache: false,
@@ -989,7 +986,7 @@ function profitCalAjax(profit_type, sub_cat, loan_cat) {
                     } else if (response["doc_charge_type"] == "percentage") {
                         type = "%";
                         $(".min-max-doc").text("* (" + response["document_charge_min"] + type + " - " + response["document_charge_max"] + type + ") "); // Set min-max values with % symbol after the numbers
-                    } 
+                    }
 
                     $("#doc_charge").attr("onChange", `let val = parseFloat($(this).val());let min = ${parseFloat(response["document_charge_min"])};let max = ${parseFloat(response["document_charge_max"])}; if (!isNaN(val)) { if(val > max){ alert("Enter Lesser Value"); $(this).val(""); } else if(val < min){ alert("Enter Higher Value"); $(this).val(""); } }else{ alert("Please enter a valid numeric value"); $(this).val("");}`); //To check value between rage
 
@@ -1021,11 +1018,11 @@ function profitCalAjax(profit_type, sub_cat, loan_cat) {
 }
 
 //
-function schemeAjax(due_method, sub_cat) {
+function schemeAjax(due_method, loan_cat) {
     var scheme_upd = $('#scheme_upd').val();
     $.ajax({ //To show scheme names based on sub category
         url: 'verificationFile/LoanCalculation/getSchemeNames.php',
-        data: { 'sub_cat': sub_cat, 'due_method': due_method },
+        data: { 'loan_cat': loan_cat, 'due_method': due_method },
         dataType: 'json',
         type: 'post',
         cache: false,
@@ -1113,11 +1110,11 @@ function schemeCalAjax(scheme_id) {
 
 //To Get Loan Calculation for After Interest
 function getLoanAfterInterest() {
-    var loan_amt   = $('#loan_amt').val().replace(/[, ]/g, '');
-    var int_rate   = $('#int_rate').val().replace(/[, ]/g, '');
+    var loan_amt = $('#loan_amt').val().replace(/[, ]/g, '');
+    var int_rate = $('#int_rate').val().replace(/[, ]/g, '');
     var due_period = $('#due_period').val().replace(/[, ]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[, ]/g, '');
-    var proc_fee   = $('#proc_fee').val().replace(/[, ]/g, '');
+    var proc_fee = $('#proc_fee').val().replace(/[, ]/g, '');
 
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
@@ -1188,11 +1185,11 @@ function getLoanAfterInterest() {
 
 //To Get Loan Calculation for Pre Interest
 function getLoanPreInterest() {
-    var loan_amt   = $('#loan_amt').val().replace(/[, ]/g, '');
-    var int_rate   = $('#int_rate').val().replace(/[, ]/g, '');
+    var loan_amt = $('#loan_amt').val().replace(/[, ]/g, '');
+    var int_rate = $('#int_rate').val().replace(/[, ]/g, '');
     var due_period = $('#due_period').val().replace(/[, ]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[, ]/g, '');
-    var proc_fee   = $('#proc_fee').val().replace(/[, ]/g, '');
+    var proc_fee = $('#proc_fee').val().replace(/[, ]/g, '');
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
 
@@ -1264,10 +1261,10 @@ function getLoanPreInterest() {
 
 //To Get Loan Calculation for Interest due type
 function getLoanInterest() {
-    var loan_amt   = $("#loan_amt").val().replace(/[, ]/g, '');
-    var int_rate   = $("#int_rate").val().replace(/[, ]/g, '');
+    var loan_amt = $("#loan_amt").val().replace(/[, ]/g, '');
+    var int_rate = $("#int_rate").val().replace(/[, ]/g, '');
     var doc_charge = $("#doc_charge").val().replace(/[, ]/g, '');
-    var proc_fee   = $("#proc_fee").val().replace(/[, ]/g, '');
+    var proc_fee = $("#proc_fee").val().replace(/[, ]/g, '');
 
     var calc_method = $("#calc_method").val();
 
@@ -1324,11 +1321,11 @@ function getLoanInterest() {
 }
 
 function getSchemeAfterIntreset() {
-    var loan_amt   = $('#loan_amt').val().replace(/[\s,]/g, '');
-    var int_rate   = $('#int_rate').val().replace(/[\s,]/g, '');
+    var loan_amt = $('#loan_amt').val().replace(/[\s,]/g, '');
+    var int_rate = $('#int_rate').val().replace(/[\s,]/g, '');
     var due_period = $('#due_period').val().replace(/[\s,]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[\s,]/g, '');
-    var proc_fee   = $('#proc_fee').val().replace(/[\s,]/g, '');
+    var proc_fee = $('#proc_fee').val().replace(/[\s,]/g, '');
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
     // principal amt as same as loan amt for after interest
@@ -1338,7 +1335,7 @@ function getSchemeAfterIntreset() {
     } else if (intreset_type.includes('%')) {
         var int_amt = (parseInt(loan_amt) * (parseFloat(int_rate) / 100)).toFixed(0); //Calculate interest rate 
     }
-    
+
     var tot_amt = parseInt(loan_amt) + parseFloat(int_amt); //Calculate total amount from principal/loan amt and interest rate
 
     var due_amt = parseInt(tot_amt) / parseInt(due_period);//To calculate due amt by dividing total amount and due period given on loan info
@@ -1401,11 +1398,11 @@ function getSchemeAfterIntreset() {
     checkBalance()
 }
 function getSchemePreIntreset() {
-    var loan_amt   = $('#loan_amt').val().replace(/[\s,]/g, '');
-    var int_rate   = $('#int_rate').val().replace(/[\s,]/g, '');
+    var loan_amt = $('#loan_amt').val().replace(/[\s,]/g, '');
+    var int_rate = $('#int_rate').val().replace(/[\s,]/g, '');
     var due_period = $('#due_period').val().replace(/[\s,]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[\s,]/g, '');
-    var proc_fee   = $('#proc_fee').val().replace(/[\s,]/g, '');
+    var proc_fee = $('#proc_fee').val().replace(/[\s,]/g, '');
 
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
@@ -1504,7 +1501,9 @@ function getAgentDetails() {
                 $('#cashAck').hide(); //hide cash acknowledgement if agent is the payer/ loan issue person
 
             } else {
-                var cus_name = $('#cus_name').val();
+                var first_name = $("#first_name").val();
+                var last_name = $("#last_name").val();
+                var cus_name = first_name + " " + last_name;
                 // $('#agent').val(cus_name);
                 $('#issue_to').val(cus_name);
                 $('.issued_to_type').text('* (Customer)');
@@ -1566,7 +1565,9 @@ function checkIssuedAmount(type) {
 function cashAckName() {
     let req_id = $('#req_id').val();
     let cus_id = $('#cus_id').val();
-    let cus_name = $('#cus_name').val();
+    var first_name = $("#first_name").val();
+    var last_name = $("#last_name").val();
+    var cus_name = first_name + " " + last_name;
 
     $.ajax({
         url: 'loanIssueFile/famnameForloanIssue.php',
@@ -1620,7 +1621,7 @@ function checkBalance() {
                     $('#submit_loanIssue').hide();
                 }
             } else {
-                var netcashamnt = $('#net_cash_cal').val(); 
+                var netcashamnt = $('#net_cash_cal').val();
                 $('#net_cash').val(netcashamnt);
 
             }
@@ -1634,14 +1635,14 @@ function checkBalance() {
 function loanIssueSumitValidation() {
     var issueMode = $('#issued_mode').val(); var paymenType = $('#payment_type').val(); var cash = $('#cash').val(); var guarentorName = $('#cash_guarentor_name').val();
     // var fingerMatch = $('#fingerValidation').val();
-    var ag_id = $('#agent_id').val(); 
+    var ag_id = $('#agent_id').val();
     // var bank_id = $('#bank_id').val();
-    var validation = true ;
+    var validation = true;
     //Check Issue Mode
     if (issueMode == '') {
         event.preventDefault();
         $('#issue').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#issue').hide();
     }
@@ -1650,7 +1651,7 @@ function loanIssueSumitValidation() {
     if (paymenType == '') {
         event.preventDefault();
         $('#pay_type').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#pay_type').hide();
     }
@@ -1660,7 +1661,7 @@ function loanIssueSumitValidation() {
         if (cash == '') {
             event.preventDefault();
             $('#cash_amnt').show();
-            validation = false ;
+            validation = false;
         } else {
             $('#cash_amnt').hide();
         }
@@ -1678,7 +1679,7 @@ function loanIssueSumitValidation() {
         if (!isAnyCheckboxChecked()) {
             event.preventDefault(); // Prevent form submission if no checkbox is checked
             alert('Please select Bank Info.'); // Show error message
-            validation = false ;
+            validation = false;
         }
     }
 
@@ -1687,7 +1688,7 @@ function loanIssueSumitValidation() {
             if (guarentorName == '') {
                 event.preventDefault();
                 $('#cash_guarentor').show();
-                validation = false ;
+                validation = false;
             } else {
                 $('#cash_guarentor').hide();
             }
@@ -1734,14 +1735,16 @@ function resetbankInfo() {
     });
 }
 
-function performLoanCalculation(callback){
+function performLoanCalculation(callback) {
     var intrest_rate = $("#int_rate").val();
     var doc_charge = $("#doc_charge").val();
     var proc_fee = $("#proc_fee").val();
     var due_period = $("#due_period").val();
     var profit_method = $("#profit_method").val();
+    var scheme_profit_method = $("#scheme_profit_method").val();
 
-    if( intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || profit_method == ""){
+
+    if (intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || (profit_method == "" && scheme_profit_method == "")) {
         Swal.fire({
             timerProgressBar: true,
             timer: 2000,
@@ -1760,23 +1763,23 @@ function performLoanCalculation(callback){
 
     if (profit_method == "after_intrest" && due_type == "EMI") {
         getLoanAfterInterest();
-        
+
     } else if (profit_method == 'pre_intrest') {
         getLoanPreInterest();
-        
+
     }
 
     if (due_type == 'Interest') {
         getLoanInterest();
-        
+
     }
 
     var scheme_profit_method = $('#scheme_profit_method').val(); // if profit method changes, due type is EMI
     if (scheme_profit_method == 'after_intrest') {
-        getSchemeAfterIntreset(); 
+        getSchemeAfterIntreset();
 
     } else if (scheme_profit_method == 'pre_intrest') {
-        getSchemePreIntreset(); 
+        getSchemePreIntreset();
 
     }
 

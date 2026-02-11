@@ -45,7 +45,7 @@ if (isset($_SESSION["userid"])) {
             <tr>
                 <td><?php echo $row['loan_id']; ?></td> <!-- id -->
                 <td><?php echo $row["loan_catrgory_name"]; ?></td> <!-- Loan Cat -->
-                <td><?php echo $row["sub_category"]; ?></td> <!-- Loan Sub Cat -->
+
                 <td>
                     <?php
                     if ($row["agent_id"] != '' || $row["agent_id"] != NULL) {

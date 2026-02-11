@@ -5222,8 +5222,11 @@ class admin
 		if (isset($_POST['cus_id_doc'])) {
 			$cus_id_doc = $_POST['cus_id_doc'];
 		}
-		if (isset($_POST['Customer_name'])) {
-			$Customer_name = $_POST['Customer_name'];
+		if (isset($_POST['doc_first_name'])) {
+			$first_name = $_POST['doc_first_name'];
+		}
+		if (isset($_POST['doc_last_name'])) {
+			$last_name = $_POST['doc_last_name'];
 		}
 		if (isset($_POST['cus_profile_id'])) {
 			$cus_profile_id = $_POST['cus_profile_id'];
@@ -5316,7 +5319,7 @@ class admin
 					// 	$doc_id = $initialapp;
 					// }
 
-					$insertQry = "INSERT INTO `verification_documentation`( `req_id`, `cus_id_doc`, `customer_name`, `cus_profile_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`, `cus_status`, `insert_login_id`,`created_date`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($Customer_name) . "','" . strip_tags($cus_profile_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','11','" . $userid . "',current_timestamp() )";
+					$insertQry = "INSERT INTO `verification_documentation`( `req_id`, `cus_id_doc`, `first_name`, `last_name`,`cus_profile_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`, `cus_status`, `insert_login_id`,`created_date`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "','" . strip_tags($cus_profile_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','11','" . $userid . "',current_timestamp() )";
 
 					$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 
@@ -5339,7 +5342,7 @@ class admin
 				}
 			}
 		} else {
-			$update_doc = " UPDATE `verification_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`customer_name`='" . strip_tags($Customer_name) . "',`cus_profile_id`='" . strip_tags($cus_profile_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`status`='0',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
+			$update_doc = " UPDATE `verification_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`first_name`='" . strip_tags($first_name) . "', `last_name`='" . strip_tags($last_name) . "',`cus_profile_id`='" . strip_tags($cus_profile_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`status`='0',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
 
 			$updDocResult = $mysqli->query($update_doc) or die("Error " . $mysqli->error);
 		}
@@ -5486,8 +5489,11 @@ class admin
 		if (isset($_POST['req_id'])) {
 			$req_id = $_POST['req_id'];
 		}
-		if (isset($_POST['cus_name_loan'])) {
-			$cus_name_loan = $_POST['cus_name_loan'];
+		if (isset($_POST['first_name_loan'])) {
+			$first_name = $_POST['first_name_loan'];
+		}
+		if (isset($_POST['last_name_loan'])) {
+			$last_name = $_POST['last_name_loan'];
 		}
 		if (isset($_POST['cus_data_loan'])) {
 			$cus_data_loan = $_POST['cus_data_loan'];
@@ -5500,9 +5506,6 @@ class admin
 		}
 		if (isset($_POST['loan_category'])) {
 			$loan_category = $_POST['loan_category'];
-		}
-		if (isset($_POST['sub_category'])) {
-			$sub_category = $_POST['sub_category'];
 		}
 		$category_info = [];
 		if (isset($_POST['category_info'])) {
@@ -5663,9 +5666,9 @@ class admin
 
 
 		if ($loan_cal_id > 0 and $loan_cal_id != '') {
-			$mysqli->query("UPDATE verification_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "', cus_name_loan = '" . strip_tags($cus_name_loan) . "', 
+			$mysqli->query("UPDATE verification_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "',first_name = '" . strip_tags($first_name) . "', last_name = '" . strip_tags($last_name) . "',
 			cus_data_loan = '" . strip_tags($cus_data_loan) . "', mobile_loan = '" . strip_tags($mobile_loan) . "', pic_loan = '" . strip_tags($pic_loan) . "', 
-				loan_category = '" . strip_tags($loan_category) . "', sub_category = '" . strip_tags($sub_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
+				loan_category = '" . strip_tags($loan_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
 				loan_amt = '" . strip_tags($loan_amt) . "', profit_type = '" . strip_tags($profit_type) . "', due_method_calc = '" . strip_tags($due_method_calc) . "', 
 				due_type = '" . strip_tags($due_type) . "', profit_method = '" . strip_tags($profit_method) . "', calc_method = '" . strip_tags($calc_method) . "', 
 				due_method_scheme = '" . strip_tags($due_method_scheme) . "',profit_method_scheme = '" . strip_tags($scheme_profit_method) . "', day_scheme = '" . strip_tags($day_scheme) . "', scheme_name = '" . strip_tags($scheme_name) . "', 
@@ -5689,13 +5692,12 @@ class admin
 			if ($qry->num_rows == 0) {
 				//this will filter out duplication entry in customer profile table
 
-				$mysqli->query("INSERT INTO verification_loan_calculation (`req_id`, `cus_id_loan`, `cus_name_loan`,`cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`, `sub_category`,
+				$mysqli->query("INSERT INTO verification_loan_calculation (`req_id`, `cus_id_loan`, `first_name`, `last_name`, `cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`,
 				`tot_value`, `ad_amt`, `loan_amt`, `profit_type`, `due_method_calc`, `due_type`, `profit_method`, `calc_method`, `due_method_scheme`,`profit_method_scheme`, `day_scheme`, `scheme_name`, 
 				`int_rate`, `due_period`, `doc_charge`, `proc_fee`, `loan_amt_cal`, `principal_amt_cal`, `int_amt_cal`, `tot_amt_cal`, `due_amt_cal`, `doc_charge_cal`, `proc_fee_cal`, `net_cash_cal`,
 				`due_start_from`, `maturity_month`, `collection_method`,  `communication`, `com_audio`, `verification_person`, `verification_location`,`verify_remark`, `cus_status`, `insert_login_id`,`create_date`) 
 				VALUES ('" . strip_tags($req_id) . "', '" . strip_tags($cus_id_loan) . "', 
-				'" . strip_tags($cus_name_loan) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "', 
-				'" . strip_tags($sub_category) . "', '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
+				'" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "',  '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
 				'" . strip_tags($due_method_calc) . "', '" . strip_tags($due_type) . "', '" . strip_tags($profit_method) . "', '" . strip_tags($calc_method) . "', '" . strip_tags($due_method_scheme) . "', 
 				'" . strip_tags($scheme_profit_method) . "','" . strip_tags($day_scheme) . "', '" . strip_tags($scheme_name) . "', '" . strip_tags($int_rate) . "', '" . strip_tags($due_period) . "', '" . strip_tags($doc_charge) . "', 
 				'" . strip_tags($proc_fee) . "', '" . strip_tags($loan_amt_cal) . "', '" . strip_tags($principal_amt_cal) . "', '" . strip_tags($int_amt_cal) . "', '" . strip_tags($tot_amt_cal) . "', 
@@ -5727,7 +5729,7 @@ class admin
 			$ad_per = 0;
 		}
 
-		$mysqli->query("UPDATE in_verification set `loan_category`='" . strip_tags($loan_category) . "',`sub_category`='" . strip_tags($sub_category) . "',`tot_value`='" . strip_tags($tot_value) . "',`ad_amt`='" . strip_tags($ad_amt) . "',`ad_perc`='" . strip_tags($ad_per) . "',`loan_amt`='" . strip_tags($loan_amt) . "',`due_period`='" . strip_tags($due_period) . "' where req_id ='" . strip_tags($req_id) . "' ");
+		$mysqli->query("UPDATE in_verification set `loan_category`='" . strip_tags($loan_category) . "',`tot_value`='" . strip_tags($tot_value) . "',`ad_amt`='" . strip_tags($ad_amt) . "',`ad_perc`='" . strip_tags($ad_per) . "',`loan_amt`='" . strip_tags($loan_amt) . "',`due_period`='" . strip_tags($due_period) . "' where req_id ='" . strip_tags($req_id) . "' ");
 
 		// $this->updateResponsible($mysqli, $req_id, $responsible);
 	}
@@ -5741,12 +5743,12 @@ class admin
 				$detailrecords['loan_cal_id'] = $row['loan_cal_id'];
 				// $detailrecords['req_id'] = $row['req_id'];
 				$detailrecords['cus_id_loan'] = $row['cus_id_loan'];
-				$detailrecords['cus_name_loan'] = $row['cus_name_loan'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['cus_data_loan'] = $row['cus_data_loan'];
 				$detailrecords['mobile_loan'] = $row['mobile_loan'];
 				$detailrecords['pic_loan'] = $row['pic_loan'];
 				$detailrecords['loan_category'] = $row['loan_category'];
-				$detailrecords['sub_category'] = $row['sub_category'];
 				$detailrecords['tot_value'] = $row['tot_value'];
 				$detailrecords['ad_amt'] = $row['ad_amt'];
 				$detailrecords['loan_amt'] = $row['loan_amt'];
@@ -5816,7 +5818,8 @@ class admin
 				$detailrecords['cus_Tableid'] = $row['id'];
 				$detailrecords['req_id'] = $row['req_id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['gender'] = $row['gender'];
 				$detailrecords['dob'] = $row['dob'];
 				$detailrecords['age'] = $row['age'];
@@ -5880,8 +5883,11 @@ class admin
 		if (isset($_POST['cus_id_doc'])) {
 			$cus_id_doc = $_POST['cus_id_doc'];
 		}
-		if (isset($_POST['Customer_name'])) {
-			$Customer_name = $_POST['Customer_name'];
+		if (isset($_POST['doc_first_name'])) {
+			$first_name = $_POST['doc_first_name'];
+		}
+		if (isset($_POST['doc_last_name'])) {
+			$last_name = $_POST['doc_last_name'];
 		}
 		if (isset($_POST['cus_profile_id'])) {
 			$cus_profile_id = $_POST['cus_profile_id'];
@@ -6111,12 +6117,12 @@ class admin
 				$qry = $mysqli->query("SELECT * From acknowlegement_documentation where req_id = $req_id");
 				if ($qry->num_rows == 0) {
 					//this will filter out duplication entry in customer profile table
-					$insertQry = "INSERT INTO `acknowlegement_documentation`( `req_id`, `cus_id_doc`, `customer_name`, `cus_profile_id`, `doc_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`,`doc_remarks`,`doc_sts`, `noc_replace_status`, `cus_status`, `insert_login_id`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($Customer_name) . "','" . strip_tags($cus_profile_id) . "','" . strip_tags($doc_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','" . strip_tags($doc_remark) . "','" . strip_tags($doc_sts) . "', '" . strip_tags($replace_status) . "', '11','" . $userid . "' )";
+					$insertQry = "INSERT INTO `acknowlegement_documentation`( `req_id`, `cus_id_doc`, `first_name`, `last_name`, `cus_profile_id`, `doc_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`,`doc_remarks`,`doc_sts`, `noc_replace_status`, `cus_status`, `insert_login_id`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "','" . strip_tags($cus_profile_id) . "','" . strip_tags($doc_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','" . strip_tags($doc_remark) . "','" . strip_tags($doc_sts) . "', '" . strip_tags($replace_status) . "', '11','" . $userid . "' )";
 
 					$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 				}
 			} else {
-				$update_doc = " UPDATE `acknowlegement_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`customer_name`='" . strip_tags($Customer_name) . "',`cus_profile_id`='" . strip_tags($cus_profile_id) . "',`doc_id`='" . strip_tags($doc_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`mortgage_name`='" . strip_tags($mortgage_name) . "',`mortgage_dsgn`='" . strip_tags($mortgage_dsgn) . "',`mortgage_nuumber`='" . strip_tags($mortgage_nuumber) . "',`reg_office`='" . strip_tags($reg_office) . "',`mortgage_value`='" . strip_tags($mortgage_value) . "',`mortgage_document`='" . strip_tags($mortgage_document) . "',`mortgage_document_upd`='" . strip_tags($mortgage_document_upd) . "',`mortgage_document_pending`='" . strip_tags($pendingchk) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`vehicle_reg_no`='" . strip_tags($vehicle_reg_no) . "',`endorsement_name`='" . strip_tags($endorsement_name) . "',`en_RC`='" . strip_tags($en_RC) . "',`Rc_document_upd`='" . strip_tags($Rc_document_upd) . "',`Rc_document_pending`='" . strip_tags($endorsependingchk) . "',`en_Key`='" . strip_tags($en_Key) . "',`doc_remarks`='" . strip_tags($doc_remark) . "',`doc_sts`='" . strip_tags($doc_sts) . "', `noc_replace_status` = '" . strip_tags($replace_status) . "', `status`='0',`submitted`='1',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
+				$update_doc = " UPDATE `acknowlegement_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`first_name`='" . strip_tags($first_name) . "', `last_name`='" . strip_tags($last_name) . "', `cus_profile_id`='" . strip_tags($cus_profile_id) . "',`doc_id`='" . strip_tags($doc_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`mortgage_name`='" . strip_tags($mortgage_name) . "',`mortgage_dsgn`='" . strip_tags($mortgage_dsgn) . "',`mortgage_nuumber`='" . strip_tags($mortgage_nuumber) . "',`reg_office`='" . strip_tags($reg_office) . "',`mortgage_value`='" . strip_tags($mortgage_value) . "',`mortgage_document`='" . strip_tags($mortgage_document) . "',`mortgage_document_upd`='" . strip_tags($mortgage_document_upd) . "',`mortgage_document_pending`='" . strip_tags($pendingchk) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`vehicle_reg_no`='" . strip_tags($vehicle_reg_no) . "',`endorsement_name`='" . strip_tags($endorsement_name) . "',`en_RC`='" . strip_tags($en_RC) . "',`Rc_document_upd`='" . strip_tags($Rc_document_upd) . "',`Rc_document_pending`='" . strip_tags($endorsependingchk) . "',`en_Key`='" . strip_tags($en_Key) . "',`doc_remarks`='" . strip_tags($doc_remark) . "',`doc_sts`='" . strip_tags($doc_sts) . "', `noc_replace_status` = '" . strip_tags($replace_status) . "', `status`='0',`submitted`='1',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
 
 				$updDocResult = $mysqli->query($update_doc) or die("Error " . $mysqli->error);
 			}
@@ -6188,7 +6194,8 @@ class admin
 			while ($row = $qry->fetch_assoc()) {
 				$detailrecords['cus_profile_id'] = $row['id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['area_confirm_area'] = $row['area_confirm_area'];
 				$detailrecords['cus_status'] = $row['cus_status'];
 
@@ -6295,7 +6302,8 @@ class admin
 		if ($mysqli->affected_rows > 0) {
 			while ($row = $qry->fetch_assoc()) {
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['cus_pic'] = $row['cus_pic'];
 				$detailrecords['cus_type'] = $row['cus_type'];
 				$detailrecords['mobile'] = $row['mobile1'];
@@ -6318,8 +6326,11 @@ class admin
 		if (isset($_POST['req_id'])) {
 			$req_id = $_POST['req_id'];
 		}
-		if (isset($_POST['cus_name_loan'])) {
-			$cus_name_loan = $_POST['cus_name_loan'];
+		if (isset($_POST['first_name'])) {
+			$first_name = $_POST['first_name'];
+		}
+		if (isset($_POST['last_name'])) {
+			$last_name = $_POST['last_name'];
 		}
 		if (isset($_POST['cus_data_loan'])) {
 			$cus_data_loan = $_POST['cus_data_loan'];
@@ -6333,9 +6344,7 @@ class admin
 		if (isset($_POST['loan_category_ack'])) {
 			$loan_category = $_POST['loan_category_ack'];
 		}
-		if (isset($_POST['sub_category_ack'])) {
-			$sub_category = $_POST['sub_category_ack'];
-		}
+
 		if (isset($_POST['category_info'])) {
 			$category_info = $_POST['category_info'];
 		}
@@ -6495,9 +6504,9 @@ class admin
 		}
 
 		if ($loan_cal_id > 0 and $loan_cal_id != '') {
-			$updateQry = $mysqli->query("UPDATE acknowlegement_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "', cus_name_loan = '" . strip_tags($cus_name_loan) . "', 
+			$updateQry = $mysqli->query("UPDATE acknowlegement_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "', `first_name`='" . strip_tags($first_name) . "', `last_name`='" . strip_tags($last_name) . "', 
 						cus_data_loan = '" . strip_tags($cus_data_loan) . "', mobile_loan = '" . strip_tags($mobile_loan) . "', pic_loan = '" . strip_tags($pic_loan) . "', 
-						loan_category = '" . strip_tags($loan_category) . "', sub_category = '" . strip_tags($sub_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
+						loan_category = '" . strip_tags($loan_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
 						loan_amt = '" . strip_tags($loan_amt) . "', profit_type = '" . strip_tags($profit_type) . "', due_method_calc = '" . strip_tags($due_method_calc) . "', 
 						due_type = '" . strip_tags($due_type) . "', profit_method = '" . strip_tags($profit_method) . "', calc_method = '" . strip_tags($calc_method) . "', 
 						due_method_scheme = '" . strip_tags($due_method_scheme) . "', profit_method_scheme = '" . strip_tags($scheme_profit_method) . "', day_scheme = '" . strip_tags($day_scheme) . "', scheme_name = '" . strip_tags($scheme_name) . "', 
@@ -6515,12 +6524,12 @@ class admin
 						'" . strip_tags($category_info[$i]) . "' )");
 			}
 		} else {
-			$insertQry = $mysqli->query("INSERT INTO acknowlegement_loan_calculation (`req_id`, `cus_id_loan`, `cus_name_loan`,`cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`, `sub_category`,
+			$insertQry = $mysqli->query("INSERT INTO acknowlegement_loan_calculation (`req_id`, `cus_id_loan`,`first_name`, `last_name`,`cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`,
 						`tot_value`, `ad_amt`, `loan_amt`, `profit_type`, `due_method_calc`, `due_type`, `profit_method`, `calc_method`, `due_method_scheme`, `profit_method_scheme`,`day_scheme`, `scheme_name`, 
 						`int_rate`, `due_period`, `doc_charge`, `proc_fee`, `loan_amt_cal`, `principal_amt_cal`, `int_amt_cal`, `tot_amt_cal`, `due_amt_cal`, `doc_charge_cal`, `proc_fee_cal`, `net_cash_cal`,
 						`due_start_from`, `maturity_month`, `collection_method`, `cus_status`, `insert_login_id`,`create_date`) VALUES ('" . strip_tags($req_id) . "', '" . strip_tags($cus_id_loan) . "', 
-						'" . strip_tags($cus_name_loan) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "', 
-						'" . strip_tags($sub_category) . "', '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
+						'" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "', 
+						 '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
 						'" . strip_tags($due_method_calc) . "', '" . strip_tags($due_type) . "', '" . strip_tags($profit_method) . "', '" . strip_tags($calc_method) . "', '" . strip_tags($due_method_scheme) . "', '" . strip_tags($scheme_profit_method) . "', 
 						'" . strip_tags($day_scheme) . "', '" . strip_tags($scheme_name) . "', '" . strip_tags($int_rate) . "', '" . strip_tags($due_period) . "', '" . strip_tags($doc_charge) . "', 
 						'" . strip_tags($proc_fee) . "', '" . strip_tags($loan_amt_cal) . "', '" . strip_tags($principal_amt_cal) . "', '" . strip_tags($int_amt_cal) . "', '" . strip_tags($tot_amt_cal) . "', 
@@ -6548,12 +6557,12 @@ class admin
 				$detailrecords['loan_cal_id'] = $row['loan_cal_id'];
 				// $detailrecords['req_id'] = $row['req_id'];
 				$detailrecords['cus_id_loan'] = $row['cus_id_loan'];
-				$detailrecords['cus_name_loan'] = $row['cus_name_loan'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['cus_data_loan'] = $row['cus_data_loan'];
 				$detailrecords['mobile_loan'] = $row['mobile_loan'];
 				$detailrecords['pic_loan'] = $row['pic_loan'];
 				$detailrecords['loan_category'] = $row['loan_category'];
-				$detailrecords['sub_category'] = $row['sub_category'];
 				$detailrecords['tot_value'] = $row['tot_value'];
 				$detailrecords['ad_amt'] = $row['ad_amt'];
 				$detailrecords['loan_amt'] = $row['loan_amt'];
@@ -7231,7 +7240,8 @@ class admin
 				$detailrecords['req_id'] = $row['req_ref_id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
 				// $detailrecords['cus_id'] = $row['cus_data']; //
-				$detailrecords['cus_name'] = $row['customer_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['dob'] = $row['dob'];
 				$detailrecords['age'] = $row['age'];
 				$detailrecords['gender'] = $row['gender'];

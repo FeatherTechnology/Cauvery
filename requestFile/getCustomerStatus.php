@@ -136,7 +136,6 @@ if ($result->rowCount() > 0) {
                 <th width="25" rowspan="2">S. No</th>
                 <th rowspan="2">Date</th>
                 <th rowspan="2">Loan Category</th>
-                <th rowspan="2">Sub Category</th>
                 <th rowspan="2">Amount</th>
                 <th colspan="3">Loan Status</th>
                 <th colspan="3">Document Status</th>
@@ -156,9 +155,9 @@ if ($result->rowCount() > 0) {
                 <th width="25">S. No</th>
                 <th>Date</th>
                 <th>Loan Category</th>
-                <th>Sub Category</th>
                 <th>Amount</th>
                 <th>Status</th>
+                <th>Sub Status</th>
                 <th>Remark</th>
             </tr>
         </thead>

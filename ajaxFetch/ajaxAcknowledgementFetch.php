@@ -2,10 +2,10 @@
 @session_start();
 include('..\ajaxconfig.php');
 include('..\moneyFormatIndia.php');
-include('..\user_based_sub_area_Ids.php');
+include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
-$sub_area_list = getUserSubAreaList($connect, 'acknowledgement');
+$area_list = getUserAreaList($connect, 'acknowledgement');
 
 if ($userid) {
     $stmt = $connect->prepare("SELECT role FROM user WHERE user_id = ?");
@@ -38,15 +38,13 @@ $column = [
     'v.dor',
     'v.cus_id',
     'cr.autogen_cus_id',
-    'v.cus_name',
+    'CONCAT(v.first_name, v.last_name)',
     'bc.branch_name',
     'agm.group_name',
     'alm.line_name',
     'v.mobile1',
     'a.area_name',
-    'sa.sub_area_name',
     'lcc.loan_category_creation_name',
-    'v.sub_category',
     'v.loan_amt',
     'v.user_type',
     'v.user_name',
@@ -61,9 +59,8 @@ $column = [
 $query = "SELECT DISTINCT
     v.req_id, 
     v.cus_id,
-    v.cus_name, 
+    CONCAT(v.first_name,' ', v.last_name) AS customer_name,
     v.mobile1, 
-    v.sub_category, 
     v.loan_amt, 
     v.user_type, 
     v.responsible, 
@@ -74,7 +71,6 @@ $query = "SELECT DISTINCT
     v.agent_id, 
     cr.autogen_cus_id, 
     a.area_name, 
-    sa.sub_area_name, 
     agm.group_name, 
     bc.branch_name, 
     alm.line_name, 
@@ -94,18 +90,17 @@ $query = "SELECT DISTINCT
     LEFT JOIN user u ON u.user_id = ia.inserted_user
     JOIN customer_register cr ON v.cus_id = cr.cus_id
     JOIN area_list_creation a ON v.area = a.area_id
-    JOIN sub_area_list_creation sa ON v.sub_area = sa.sub_area_id
-    JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = sa.sub_area_id
+    JOIN area_group_mapping_area agmsa ON agmsa.area_id = a.area_id
     JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
     JOIN branch_creation bc ON agm.branch_id = bc.branch_id
-    JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sa.sub_area_id
+    JOIN area_line_mapping_area almsa ON almsa.area_id = a.area_id
     JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
     JOIN loan_category_creation lcc ON lcc.loan_category_creation_id = v.loan_category
     WHERE v.status = 0 and v.cus_status IN (3,13)";
 
 /* user-level restriction */
 if (!($userid == 1)) {
-    $query .= " AND v.sub_area IN ($sub_area_list) AND v.loan_category IN ($ack_loan_cat)"; //show only Approved Verification in Acknowledgement. // 13 Move to Issue. 
+    $query .= " AND v.area IN ($area_list) AND v.loan_category IN ($ack_loan_cat)"; //show only Approved Verification in Acknowledgement. // 13 Move to Issue. 
 }
 
 /* ---------------- SEARCH ---------------- */
@@ -115,16 +110,14 @@ if (!empty($_POST['search'])) {
         v.dor LIKE '%$search%' OR
         v.cus_id LIKE '%$search%' OR
         cr.autogen_cus_id LIKE '%$search%' OR
-        v.cus_name LIKE '%$search%' OR
+        CONCAT(v.first_name,' ', v.last_name) LIKE '%$search%' OR
         bc.branch_name LIKE '%$search%' OR
         agm.group_name LIKE '%$search%' OR
         alm.line_name LIKE '%$search%' OR
         a.area_name LIKE '%$search%' OR
         v.mobile1 LIKE '%$search%' OR
         ac.ag_name LIKE '%$search%' OR
-        sa.sub_area_name LIKE '%$search%' OR
         lcc.loan_category_creation_name LIKE '%$search%' OR
-        v.sub_category LIKE '%$search%' OR
         v.loan_amt LIKE '%$search%' OR
         v.user_type LIKE '%$search%' OR
         v.responsible LIKE '%$search%' OR
@@ -191,15 +184,13 @@ foreach ($result as $row) {
     $sub[] = date('d-m-Y', strtotime($row['dor']));
     $sub[] = $row['cus_id'];
     $sub[] = $row['autogen_cus_id'];
-    $sub[] = $row['cus_name'];
+    $sub[] = $row['customer_name'];
     $sub[] = $row["branch_name"];
     $sub[] = $row['group_name'];
     $sub[] = $row['line_name'];
     $sub[] = $row['mobile1'];
     $sub[] = $row['area_name'];
-    $sub[] = $row['sub_area_name'];
     $sub[] = $row["loan_category_creation_name"];
-    $sub[] = $row['sub_category'];
     $sub[] = moneyFormatIndia($row['loan_amt']);
     $sub[] = $row['acknowledgement_user_type'];
     $sub[] = $row['acknowledgement_user_name'];
