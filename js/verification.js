@@ -3601,7 +3601,6 @@ function validation(event) {
   var district = $("#district1").val();
   var taluk = $("#taluk1").val();
   var area = $("#area").val();
-  var sub_area = $("#sub_area").val();
   var pic = $("#pic").val();
   var mobile1 = $("#mobile1").val();
   var mobile2 = $("#mobile2").val();
@@ -3777,13 +3776,6 @@ function validation(event) {
     validation = false;
   } else {
     $("#areaCheck").hide();
-  }
-  if (sub_area == "") {
-    event.preventDefault();
-    $("#subareaCheck").show();
-    validation = false;
-  } else {
-    $("#subareaCheck").hide();
   }
   if (cus_how_know == "") {
     event.preventDefault();
@@ -5050,7 +5042,70 @@ function onLoadEditFunction() {
   verificationPerson(); //To Select verification Person in Verification Info.//////
   // getLoanHistory();//to get loan history, as same as document history but here action buttons are changing
 }
+$("#loan_category").change(function () {
+  var loan_cat = $("#loan_category").val();
+  $.ajax({
+    url: "requestFile/getCategoryInfo.php",
+    data: { loan_category: loan_cat },
+    dataType: "json",
+    type: "post",
+    cache: false,
+    success: function (response) {
+      $("#moduleTable").empty();
+      $("#moduleTable").prepend("<tbody><tr>");
+      if (response.length != 0) {
+        var tb = 35;
+        for (var i = 0; i < response.length; i++) {
+          $("#moduleTable tbody tr").append(
+            `<td><label for="disabledInput">` +
+            response[i]["loan_category_ref_name"] +
+            `</label><span class="required">&nbsp;*</span><input type="text" class="form-control" id="category_info" name="category_info[]" 
+                    value='' tabindex='` +
+            tb +
+            `' required placeholder='Enter ` +
+            response[i]["loan_category_ref_name"] +
+            `'></td>`
+          );
+          $(".category_info").show();
+          tb++;
+        }
+        $("#moduleTable tbody tr").append(
+          `<td><button type="button" tabindex='` +
+          tb +
+          `' id="add_category_info[]" name="add_category_info" 
+                class="btn btn-primary add_category_info">Add</button> </td><td><span class='icon-trash-2 deleterow' id='deleterow' tabindex='` +
+          tb +
+          `'></span></td>
+                </tr></tbody>`
+        );
 
+        category_content = $("#moduleTable tbody").html(); //To get the appended category list
+
+        // unbind the event handler
+        $(document).off("click", ".add_category_info");
+        $(document).on("click", ".add_category_info", function () {
+          $("#moduleTable tbody").append(category_content);
+        });
+
+        // remove delete option for last child
+        $("#deleterow:last").filter(":last").removeClass("deleterow");
+
+        // unbind the event handler
+        $(document).off("click", ".deleterow");
+        $(document).on("click", ".deleterow", function () {
+          $(this).parent().parent().remove();
+        });
+      } else {
+        $(".category_info").hide();
+        
+      }
+    },
+  });
+  $("#tot_value").val("");
+  $("#ad_amt").val("");
+  $("#loan_amt").val("");
+  getLoaninfo(loan_cat);
+});
 $("#refresh_cal").click(function () {
   var customer_limit = parseFloat($("#customer_limit").val());
   var loan_amt = parseFloat($("#loan_amt").val().replace(/,/g, ''));
@@ -5387,7 +5442,7 @@ function getLoaninfo(loan_category) {
 
   $.ajax({
     url: "requestFile/getLoanInfo.php",
-    data: { loan_category: loan_category, cus_id: cus_id },
+    data: { loan_category_upd: loan_category, cus_id: cus_id },
     dataType: "json",
     type: "post",
     cache: false,

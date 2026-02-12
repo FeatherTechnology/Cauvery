@@ -49,9 +49,7 @@
 								<th>Group</th>
 								<th>Line</th>
 								<th>Area</th>
-								<th>Sub Area</th>
 								<th>Loan Category</th>
-								<th>Sub Category</th>
 								<th>Loan Amount</th>
 								<th>User Type</th>
 								<th>User</th>

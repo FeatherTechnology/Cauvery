@@ -10,13 +10,13 @@ if(isset($_POST['cus_name'])){
 }
 
 function getfamName($connect,$rel_id){
-    $qry1=$connect->query("SELECT famname FROM `verification_family_info` where id=$rel_id");
+    $qry1=$connect->query("SELECT CONCAT(first_name, ' ', last_name) AS famname FROM `verification_family_info` where id=$rel_id");
     $run=$qry1->fetch();
     return $run['famname'];
 }
 
 function getGuarentorName($connect,$req_id){
-    $qry1=$connect->query("SELECT famname FROM `verification_family_info` a JOIN `acknowlegement_customer_profile` b on b.guarentor_name = a.id where b.req_id=$req_id");
+    $qry1=$connect->query("SELECT CONCAT(a.first_name, ' ', a.last_name) AS famname FROM `verification_family_info` a JOIN `acknowlegement_customer_profile` b on b.guarentor_name = a.id where b.req_id=$req_id");
     $run=$qry1->fetch();
     return $run['famname'];
 }
@@ -46,7 +46,7 @@ function getGuarentorName($connect,$req_id){
                 <td><?php echo $i;$i++;?></td>
                 <td>Signed Document</td>
                 <td><?php if($row['sign_type'] == '0'){echo 'Customer'; $name=$cus_name;}elseif($row['sign_type'] == '1'){echo 'Guarentor';$name = getGuarentorName($connect,$req_id);}
-                            elseif($row['sign_type'] == '2'){echo 'Combined';}elseif($row['sign_type'] == '3'){echo 'Family Member'; $name = getfamName($connect,$rel_id);} ?></td>
+                            elseif($row['sign_type'] == '2'){echo 'Combined'; $name = getfamName($connect,$rel_id);}elseif($row['sign_type'] == '3'){echo 'Family Member'; $name = getfamName($connect,$rel_id);} ?></td>
                 <td><?php echo $name;?></td>
                 <td><?php echo $count;?></td>
                 <td><a href='<?php echo 'uploads/verification/signed_doc/'.$row['upload_doc_name'];?>' target="_blank"><?php echo $row['upload_doc_name'];?></a></td>

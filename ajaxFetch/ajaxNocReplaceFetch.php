@@ -1,3 +1,5 @@
+
+
 <?php
 @session_start();
 include('..\ajaxconfig.php');
@@ -15,39 +17,36 @@ if ($userid != 1) {  // super admin bypass
     $rowuser = $userQry->fetch();
 
     $accessType = $rowuser['noc_mapping_access'];
-    $sub_area_ids = [];
+    $area_ids = [];
 
     if ($accessType == 1) {
         // 🔹 Group-based access
         $group_ids = $rowuser['group_id'];
-        $qry = $connect->query("SELECT DISTINCT sub_area_id FROM area_group_mapping_sub_area WHERE group_map_id IN ($group_ids)");
-        $sub_area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
+        $qry = $connect->query("SELECT DISTINCT area_id FROM area_group_mapping_area WHERE group_map_id IN ($group_ids)");
+        $area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
     } elseif ($accessType == 2) {
         // 🔹 Line-based access
         $line_ids = $rowuser['line_id'];
-        $qry = $connect->query("SELECT DISTINCT sub_area_id FROM area_line_mapping_sub_area WHERE line_map_id IN ($line_ids)");
-        $sub_area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
+        $qry = $connect->query("SELECT DISTINCT area_id FROM area_line_mapping_area WHERE line_map_id IN ($line_ids)");
+        $area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
     } elseif ($accessType == 3) {
         // 🔹 Due Followup-based access
         $due_ids = $rowuser['due_followup_lines'];
         $qry = $connect->query("SELECT DISTINCT area_id FROM area_duefollowup_mapping_area WHERE duefollowup_map_id IN ($due_ids)");
-        $sub_area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
+        $area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
     }
 
     // Remove duplicates and store final list
-    $sub_area_list = implode(',', $sub_area_ids);
-    $colName = ($accessType == 3)
-        ? "cp.area_confirm_area"          // Due Followup
-        : "cp.area_confirm_subarea";      // Group/Line
+    $area_list = implode(',', $area_ids);
+    $colName =  "cp.area_confirm_area";      // Group/Line
 }
 
 $column = array(
     'n.noc_id',
     'n.cus_id',
     'cr.autogen_cus_id',
-    'cp.cus_name',
+    'cp.first_name',
     'ac.area_name',
-    'sa.sub_area_name',
     'bc.branch_name',
     'alm.line_name',
     'cp.mobile1',
@@ -56,36 +55,33 @@ $column = array(
 );
 
 if ($userid == 1) {
-    $query = "SELECT cr.autogen_cus_id, cp.cus_name, ac.area_name, sa.sub_area_name, alm.line_name, bc.branch_name, cp.mobile1, n.cus_id, n.req_id 
+    $query = "SELECT cr.autogen_cus_id, CONCAT(cp.first_name,' ',cp.last_name) AS cus_name, ac.area_name, alm.line_name, bc.branch_name, cp.mobile1, n.cus_id, n.req_id 
     FROM noc n 
     JOIN acknowlegement_customer_profile cp ON n.req_id = cp.req_id 
     JOIN customer_register cr ON cp.cus_id = cr.cus_id 
     JOIN area_list_creation ac ON cp.area_confirm_area = ac.area_id 
-    JOIN sub_area_list_creation sa ON cp.area_confirm_subarea = sa.sub_area_id 
-    JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sa.sub_area_id
+    JOIN area_line_mapping_area almsa ON almsa.area_id = ac.area_id
     JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id 
     JOIN branch_creation bc ON alm.branch_id = bc.branch_id 
     WHERE n.noc_replace_status = 1 ";
 } else {
-    $query = "SELECT cr.autogen_cus_id, cp.cus_name, ac.area_name, sa.sub_area_name, alm.line_name, bc.branch_name, cp.mobile1, n.cus_id, n.req_id 
+    $query = "SELECT cr.autogen_cus_id,CONCAT(cp.first_name,' ',cp.last_name) AS cus_name, ac.area_name, alm.line_name, bc.branch_name, cp.mobile1, n.cus_id, n.req_id 
     FROM noc n 
     JOIN acknowlegement_customer_profile cp ON n.req_id = cp.req_id 
     JOIN customer_register cr ON cp.cus_id = cr.cus_id 
     JOIN area_list_creation ac ON cp.area_confirm_area = ac.area_id 
-    JOIN sub_area_list_creation sa ON cp.area_confirm_subarea = sa.sub_area_id 
-    JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sa.sub_area_id
+    JOIN area_line_mapping_area almsa ON almsa.area_id = ac.area_id
     JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
     JOIN branch_creation bc ON alm.branch_id = bc.branch_id 
-    WHERE n.noc_replace_status = 1 AND $colName IN ($sub_area_list) ";
+    WHERE n.noc_replace_status = 1 AND $colName IN ($area_list) ";
 }
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
 
     $query .= " AND (n.cus_id LIKE '%" . $_POST['search'] . "%'
             OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-            OR cp.cus_name LIKE '%" . $_POST['search'] . "%'
+            OR CONCAT(cp.first_name,' ',cp.last_name) LIKE '%" . $_POST['search'] . "%'
             OR ac.area_name LIKE '%" . $_POST['search'] . "%'
-            OR sa.sub_area_name LIKE '%" . $_POST['search'] . "%'
             OR alm.line_name LIKE '%" . $_POST['search'] . "%'
             OR bc.branch_name LIKE '%" . $_POST['search'] . "%'
             OR cp.mobile1 LIKE '%" . $_POST['search'] . "%' ) ";
@@ -124,7 +120,6 @@ foreach ($result as $row) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row["branch_name"];
     $sub_array[] = $row['line_name'];
     $sub_array[] = $row['mobile1'];

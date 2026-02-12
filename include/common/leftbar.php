@@ -506,9 +506,9 @@ if (sizeof($getUser) > 0) {
 				<li class="home_page">
 					<a href="home_page"><i class='icon-home'></i>&nbsp;Home</a>
 				</li>
-				<li class="dashboard">
+				<!-- <li class="dashboard">
 					<a href="dashboard"><i class='icon-developer_board'></i>&nbsp;Dashboard</a>
-				</li>
+				</li> -->
 				<?php if ($mastermodule == 0) { ?>
 					<li class="sidebar-dropdown master">
 						<a href="javascript:void(0)">

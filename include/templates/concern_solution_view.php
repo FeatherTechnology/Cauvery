@@ -29,7 +29,6 @@ if (count($getConcernCreation) > 0) {
     $cus_id         = $getConcernCreation['cus_id'];
     $cus_name       = $getConcernCreation['cus_name'];
     $cus_area       = $getConcernCreation['cus_area'];
-    $cus_sub_area   = $getConcernCreation['cus_sub_area'];
     $cus_grp        = $getConcernCreation['cus_group'];
     $cus_line       = $getConcernCreation['cus_line'];
     $conDate        = $getConcernCreation['com_date'];
@@ -241,12 +240,6 @@ if (count($getConcernCreation) > 0) {
                                     </div>
                                 </div>
 
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-                                    <div class="form-group">
-                                        <label for="subarea">Sub Area</label><span class="required">&nbsp;*</span>
-                                        <input type="text" class="form-control" id="cus_sub_area" name="cus_sub_area" value="<?php if (isset($cus_sub_area)) echo $cus_sub_area; ?>" readonly tabindex='8'>
-                                    </div>
-                                </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">

@@ -6940,9 +6940,6 @@ class admin
 			if (isset($_POST['cus_area'])) {
 				$cus_area = $_POST['cus_area'];
 			}
-			if (isset($_POST['cus_sub_area'])) {
-				$cus_sub_area = $_POST['cus_sub_area'];
-			}
 			if (isset($_POST['cus_group'])) {
 				$cus_group = $_POST['cus_group'];
 			}
@@ -7013,9 +7010,9 @@ class admin
 				$com_code = $initialapp;
 			}
 
-		$insertQry = "INSERT INTO `concern_creation`( `raising_for`, `self_name`, `self_code`, `staff_name`, `staff_dept_name`, `staff_team_name`, `ag_name`, `ag_grp`, `cus_id`, `cus_name`, `cus_area`, `cus_sub_area`, `cus_group`, `cus_line`, `com_date`, `com_code`, `to_dept_name`, `com_sub`, `com_remark`, `role_type`, `staff_assign_to`, `insert_user_id`) VALUES('" . strip_tags($raising_for) . "','" . strip_tags($self_name) . "','" . strip_tags($self_code) . "','" . strip_tags($staff_name) . "',
+		$insertQry = "INSERT INTO `concern_creation`( `raising_for`, `self_name`, `self_code`, `staff_name`, `staff_dept_name`, `staff_team_name`, `ag_name`, `ag_grp`, `cus_id`, `cus_name`, `cus_area`, `cus_group`, `cus_line`, `com_date`, `com_code`, `to_dept_name`, `com_sub`, `com_remark`, `role_type`, `staff_assign_to`, `insert_user_id`) VALUES('" . strip_tags($raising_for) . "','" . strip_tags($self_name) . "','" . strip_tags($self_code) . "','" . strip_tags($staff_name) . "',
 				'" . strip_tags($staff_dept_name) . "', '" . strip_tags($staff_team_name) . "', '" . strip_tags($ag_name) . "', '" . strip_tags($ag_grp) . "','" . strip_tags($cus_id) . "',
-				'" . strip_tags($cus_name) . "','" . strip_tags($cus_area) . "','" . strip_tags($cus_sub_area) . "', '" . strip_tags($cus_group) . "', '" . strip_tags($cus_line) . "', 
+				'" . strip_tags($cus_name) . "','" . strip_tags($cus_area) . "','" . strip_tags($cus_group) . "', '" . strip_tags($cus_line) . "', 
 				'" . strip_tags($com_date) . "','" . strip_tags($com_code) . "','" . strip_tags($to_dept_name) . "',
 				'" . strip_tags($com_sub) . "','" . strip_tags($com_remark) . "','" . strip_tags($role_type) . "','" . strip_tags($staff_assign_to) . "','" . strip_tags($userid) . "')";
 
@@ -7051,7 +7048,6 @@ class admin
 			$detailrecords['cus_id'] = $row['cus_id'];
 			$detailrecords['cus_name'] = $row['cus_name'];
 			$detailrecords['cus_area'] = $row['cus_area'];
-			$detailrecords['cus_sub_area'] = $row['cus_sub_area'];
 			$detailrecords['cus_group'] = $row['cus_group'];
 			$detailrecords['cus_line'] = $row['cus_line'];
 			$detailrecords['com_date'] = $row['com_date'];
