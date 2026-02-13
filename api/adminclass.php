@@ -39,9 +39,7 @@ class admin
 			$detailrecords['mastermodule']              = strip_tags($row->mastermodule);
 			$detailrecords['company_creation']              = strip_tags($row->company_creation);
 			$detailrecords['branch_creation']              = strip_tags($row->branch_creation);
-			$detailrecords['loan_category']              = strip_tags($row->loan_category);
-			$detailrecords['loan_calculation']              = strip_tags($row->loan_calculation);
-			$detailrecords['loan_scheme']              = strip_tags($row->loan_scheme);
+			$detailrecords['loan_category']              = strip_tags($row->loan_category);;
 			$detailrecords['area_creation']              = strip_tags($row->area_creation);
 			$detailrecords['area_mapping']              = strip_tags($row->area_mapping);
 			$detailrecords['area_approval']              = strip_tags($row->area_approval);
@@ -322,24 +320,118 @@ class admin
 		if (isset($_POST['loan_category_name'])) {
 			$loan_category_name = $_POST['loan_category_name'];
 		}
-		if (isset($_POST['sub_category_name'])) {
-			$sub_category_name = $_POST['sub_category_name'];
-		}
 		if (isset($_POST['loan_limit'])) {
 			$loan_limit = str_replace([',', ' '], '', $_POST['loan_limit']);
+		}
+		if (isset($_POST['agent_loan'])) {
+			$agent_loan = $_POST['agent_loan'];
 		}
 		if (isset($_POST['loan_category_ref_name'])) {
 			$loan_category_ref_name = $_POST['loan_category_ref_name'];
 		}
 
-		$insertQry = "INSERT INTO loan_category(loan_category_name, sub_category_name,loan_limit, insert_user_id) 
-		VALUES('" . strip_tags($loan_category_name) . "','" . strip_tags($sub_category_name) . "','" . strip_tags($loan_limit) . "', '" . strip_tags($userid) . "' )";
+		if (isset($_POST['monthly_due_method'])) {
+			$due_method = $_POST['monthly_due_method'];
+		}
+		// if (isset($_POST['due_type'])) {
+		// 	$due_type = $_POST['due_type'];
+		// }
+		// if (isset($_POST['monthly_profit_method'])) {
+		// 	$profit_methods = $_POST['monthly_profit_method'];
+		// 	$profit_method = implode(",", $profit_methods);
+		// }
+		if (isset($_POST['monthly_duetype'])) {
+			$due_type = $_POST['monthly_duetype'];
+		}
+		if (isset($_POST['monthly_duetype']) && $_POST['monthly_duetype'] == 'emi') {
+			// EMI → take from select (array)
+			if (isset($_POST['monthly_profit_method'])) {
+				$profit_methods = $_POST['monthly_profit_method'];  // array
+				$profit_method = implode(",", $profit_methods); // store as CSV
+			}
+		} elseif (isset($_POST['monthly_duetype']) && $_POST['monthly_duetype'] == 'intrest') {
+			// Interest → take from readonly input
+			if (isset($_POST['int_profit_method'])) {
+				// since your readonly input value is "After Benefit", 
+				// but DB expects "after_intrest"
+				$profit_method = "after_intrest";
+			}
+		}
+		if (isset($_POST['calculate_method'])) {
+			$calculate_method = $_POST['calculate_method'];
+		}
+
+		if (isset($_POST['monthly_intrests_rate_min'])) {
+			$intrest_rate_min = $_POST['monthly_intrests_rate_min'];
+		}
+		if (isset($_POST['monthly_intrest_rate_max'])) {
+			$intrest_rate_max = $_POST['monthly_intrest_rate_max'];
+		}
+		if (isset($_POST['monthly_due_period_min'])) {
+			$due_period_min = $_POST['monthly_due_period_min'];
+		}
+		if (isset($_POST['monthly_due_period_max'])) {
+			$due_period_max = $_POST['monthly_due_period_max'];
+		}
+		if (isset($_POST['monthly_doc_charges_type'])) {
+			$doc_charge_type = $_POST['monthly_doc_charges_type'];
+		}
+		if (isset($_POST['monthly_document_charge_min'])) {
+			$document_charge_min = $_POST['monthly_document_charge_min'];
+		}
+		if (isset($_POST['monthly_document_charge_max'])) {
+			$document_charge_max = $_POST['monthly_document_charge_max'];
+		}
+		if (isset($_POST['proc_fees_type'])) {
+			$proc_fee_type = $_POST['proc_fees_type'];
+		}
+		if (isset($_POST['monthly_processing_fee_min'])) {
+			$processing_fee_min = $_POST['monthly_processing_fee_min'];
+		}
+		if (isset($_POST['monthly_processing_fee_max'])) {
+			$processing_fee_max = $_POST['monthly_processing_fee_max'];
+		}
+		if (isset($_POST['overdue_type'])) {
+			$overdue_type = $_POST['overdue_type'];
+		}
+		if (isset($_POST['monthly_overdues'])) {
+			$overdue = $_POST['monthly_overdues'];
+		}
+		if (isset($_POST['monthly_collection_info'])) {
+			$collection_info = $_POST['monthly_collection_info'];
+		}
+		if (isset($_POST['userid'])) {
+			$userid = $_POST['userid'];
+		}
+		$insertQry = "INSERT INTO loan_category(loan_category_name,loan_limit,agent_loan, insert_user_id) 
+		VALUES('" . strip_tags($loan_category_name) . "','" . strip_tags($loan_limit) . "','" . strip_tags($agent_loan) . "', '" . strip_tags($userid) . "' )";
 		$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 		$loan_category_id = $mysqli->insert_id;
 
 		for ($i = 0; $i < sizeof($loan_category_ref_name); $i++) {
 			$qry = $mysqli->query("INSERT INTO loan_category_ref(loan_category_ref_name, loan_category_id) 
 			VALUES('" . strip_tags($loan_category_ref_name[$i]) . "', '" . strip_tags($loan_category_id) . "') ");
+		}
+
+		if (!empty($_POST['monthly_intrests_rate_min'])) {
+
+			$loanInsert = "INSERT INTO loan_calculation(loan_category_id, loan_category, due_method, due_type, profit_method, calculate_method, intrest_rate_min,
+		intrest_rate_max, due_period_min, due_period_max,doc_charge_type, document_charge_min, document_charge_max, proc_fee_type,processing_fee_min, processing_fee_max,
+	    overdue_type , overdue, collection_info, insert_login_id)
+		VALUES('" . strip_tags($loan_category_id) . "','" . strip_tags($loan_category_name) . "', '" . strip_tags($due_method) . "','" . strip_tags($due_type) . "', '" . strip_tags($profit_method) . "', '" . strip_tags($calculate_method) . "',
+		 '" . strip_tags($intrest_rate_min) . "', '" . strip_tags($intrest_rate_max) . "',  '" . strip_tags($due_period_min) . "','" . strip_tags($due_period_max) . "', '" . strip_tags($doc_charge_type) . "','" . strip_tags($document_charge_min) . "',
+		'" . strip_tags($document_charge_max) . "','" . strip_tags($proc_fee_type) . "', '" . strip_tags($processing_fee_min) . "', '" . strip_tags($processing_fee_max) . "', '" . strip_tags($overdue_type) . "', '" . strip_tags($overdue) . "', '" . strip_tags($collection_info) . "', '" . strip_tags($userid) . "' )";
+			$insresult = $mysqli->query($loanInsert) or die("Error " . $mysqli->error);
+		}
+
+		if (isset($_POST['scheme_name'])) {
+			$selected_scheme_ids = array_map('intval', $_POST['scheme_name']);
+			$scheme_id_str = implode(",", $selected_scheme_ids);
+			$update_selected = "UPDATE `loan_scheme`SET `loan_category_id`= '$loan_category_id' ,`loan_category` = '$loan_category_name',`updated_date` = CURRENT_TIMESTAMP() WHERE `scheme_id` IN ($scheme_id_str);";
+			$mysqli->query($update_selected) or die("Error (selected update): " . $mysqli->error);
+
+			$update_unselected = "UPDATE `loan_scheme` SET `loan_category_id`= '',`loan_category` = '', `updated_date` = CURRENT_TIMESTAMP() WHERE `loan_category` = '$loan_category_name' AND `scheme_id` NOT IN ($scheme_id_str);";
+			$mysqli->query($update_unselected) or die("Error (unselected update): " . $mysqli->error);
 		}
 	}
 
@@ -355,8 +447,8 @@ class admin
 			$loan_categoryId      = $row->loan_category_id;
 			$detailrecords['loan_category_id']      = $row->loan_category_id;
 			$detailrecords['loan_category_name']    = $row->loan_category_name;
-			$detailrecords['sub_category_name']    = $row->sub_category_name;
 			$detailrecords['loan_limit']    = $row->loan_limit;
+			$detailrecords['agent_loan']    = $row->agent_loan;
 		}
 
 		$loan_categoryRefId = 0;
@@ -388,27 +480,158 @@ class admin
 		if (isset($_POST['loan_category_name'])) {
 			$loan_category_name = $_POST['loan_category_name'];
 		}
-		if (isset($_POST['sub_category_name'])) {
-			$sub_category_name = $_POST['sub_category_name'];
+		if (isset($_POST['loan_id_upd'])) {
+			$loan_cat_id = $_POST['loan_id_upd'];
 		}
 		if (isset($_POST['loan_limit'])) {
 			$loan_limit = str_replace([',', ' '], '', $_POST['loan_limit']);
+		}
+		if (isset($_POST['agent_loan'])) {
+			$agent_loan = $_POST['agent_loan'];
 		}
 		if (isset($_POST['loan_category_ref_name'])) {
 			$loan_category_ref_name = $_POST['loan_category_ref_name'];
 		}
 
-		$updateQry = 'UPDATE loan_category SET loan_category_name = "' . strip_tags($loan_category_name) . '", sub_category_name = "' . strip_tags($sub_category_name) . '",loan_limit = "' . strip_tags($loan_limit) . '", status = "0" WHERE loan_category_id = "' . mysqli_real_escape_string($mysqli, $id) . '" ';
+		if (isset($_POST['monthly_due_method'])) {
+			$due_method = $_POST['monthly_due_method'];
+		}
+		// if (isset($_POST['due_type'])) {
+		// 	$due_type = $_POST['due_type'];
+		// }
+		// if (isset($_POST['monthly_profit_method'])) {
+		// 	$profit_methods = $_POST['monthly_profit_method'];
+		// 	$profit_method = implode(",", $profit_methods);
+		// }
+		if (isset($_POST['monthly_duetype'])) {
+			$due_type = $_POST['monthly_duetype'];
+		}
+		if (isset($_POST['monthly_duetype']) && $_POST['monthly_duetype'] == 'emi') {
+			// EMI → take from select (array)
+			if (isset($_POST['monthly_profit_method'])) {
+				$profit_methods = $_POST['monthly_profit_method'];  // array
+				$profit_method = implode(",", $profit_methods); // store as CSV
+			}
+		} elseif (isset($_POST['monthly_duetype']) && $_POST['monthly_duetype'] == 'intrest') {
+			// Interest → take from readonly input
+			if (isset($_POST['int_profit_method'])) {
+				// since your readonly input value is "After Benefit", 
+				// but DB expects "after_intrest"
+				$profit_method = "after_intrest";
+			}
+		}
+		if (isset($_POST['calculate_method'])) {
+			$calculate_method = $_POST['calculate_method'];
+		}
+
+		if (isset($_POST['monthly_intrests_rate_min'])) {
+			$intrest_rate_min = $_POST['monthly_intrests_rate_min'];
+		}
+		if (isset($_POST['monthly_intrest_rate_max'])) {
+			$intrest_rate_max = $_POST['monthly_intrest_rate_max'];
+		}
+		if (isset($_POST['monthly_due_period_min'])) {
+			$due_period_min = $_POST['monthly_due_period_min'];
+		}
+		if (isset($_POST['monthly_due_period_max'])) {
+			$due_period_max = $_POST['monthly_due_period_max'];
+		}
+		if (isset($_POST['monthly_doc_charges_type'])) {
+			$doc_charge_type = $_POST['monthly_doc_charges_type'];
+		}
+		if (isset($_POST['monthly_document_charge_min'])) {
+			$document_charge_min = $_POST['monthly_document_charge_min'];
+		}
+		if (isset($_POST['monthly_document_charge_max'])) {
+			$document_charge_max = $_POST['monthly_document_charge_max'];
+		}
+		if (isset($_POST['proc_fees_type'])) {
+			$proc_fee_type = $_POST['proc_fees_type'];
+		}
+		if (isset($_POST['monthly_processing_fee_min'])) {
+			$processing_fee_min = $_POST['monthly_processing_fee_min'];
+		}
+		if (isset($_POST['monthly_processing_fee_max'])) {
+			$processing_fee_max = $_POST['monthly_processing_fee_max'];
+		}
+		if (isset($_POST['overdue_type'])) {
+			$overdue_type = $_POST['overdue_type'];
+		}else{
+			$overdue_type =" ";
+		}
+		if (isset($_POST['monthly_overdues'])) {
+			$overdue = $_POST['monthly_overdues'];
+		}
+		if (isset($_POST['monthly_collection_info'])) {
+			$collection_info = $_POST['monthly_collection_info'];
+		}
+		if (isset($_POST['userid'])) {
+			$userid = $_POST['userid'];
+		}
+		if (isset($_POST['id'])) {
+			$cat_id = $_POST['id'];
+		}
+		// if (isset($intrest_rate_max) && $_POST['loan_id_upd'] === '') {
+		// 	$loanInsert = "INSERT INTO loan_calculation(`loan_category_id`,loan_category, due_method, due_type, profit_method, calculate_method, intrest_rate_min,
+		// intrest_rate_max, due_period_min, due_period_max,doc_charge_type, document_charge_min, document_charge_max, proc_fee_type,processing_fee_min, processing_fee_max,
+		// overdue_type ,overdue, collection_info, insert_login_id)
+		// VALUES('" . strip_tags($id) . "','" . strip_tags($loan_category_name) . "', '" . strip_tags($due_method) . "','" . strip_tags($due_type) . "', '" . strip_tags($profit_method) . "', calculate_method = '" . strip_tags($calculate_method) . "',
+		//  '" . strip_tags($intrest_rate_min) . "', '" . strip_tags($intrest_rate_max) . "',  '" . strip_tags($due_period_min) . "','" . strip_tags($due_period_max) . "', '" . strip_tags($doc_charge_type) . "','" . strip_tags($document_charge_min) . "',
+		// '" . strip_tags($document_charge_max) . "','" . strip_tags($proc_fee_type) . "', '" . strip_tags($processing_fee_min) . "', '" . strip_tags($processing_fee_max) . "', overdue_type = '" . strip_tags($overdue_type) . "', '" . strip_tags($overdue) . "', '" . strip_tags($collection_info) . "', '" . strip_tags($userid) . "' )";
+
+		// 	$insresult = $mysqli->query($loanInsert) or die("Error " . $mysqli->error);
+		// }
+		$checkQry = "SELECT COUNT(*) as cnt FROM loan_calculation WHERE  loan_category_id = '" . strip_tags($cat_id) . "'";
+		$result = $mysqli->query($checkQry);
+		$row = $result->fetch_assoc();
+
+		if ($row['cnt'] == 0) {
+			// Insert only if not exists
+			$loanInsert = "INSERT INTO loan_calculation(`loan_category_id`, loan_category, due_method, due_type, profit_method, calculate_method, intrest_rate_min,
+        intrest_rate_max, due_period_min, due_period_max, doc_charge_type, document_charge_min, document_charge_max, proc_fee_type, processing_fee_min, processing_fee_max,
+        overdue_type, overdue, collection_info, insert_login_id)
+        VALUES('" . strip_tags($cat_id) . "','" . strip_tags($loan_category_name) . "', '" . strip_tags($due_method) . "','" . strip_tags($due_type) . "', '" . strip_tags($profit_method) . "', '" . strip_tags($calculate_method) . "',
+         '" . strip_tags($intrest_rate_min) . "', '" . strip_tags($intrest_rate_max) . "',  '" . strip_tags($due_period_min) . "','" . strip_tags($due_period_max) . "', '" . strip_tags($doc_charge_type) . "','" . strip_tags($document_charge_min) . "',
+        '" . strip_tags($document_charge_max) . "','" . strip_tags($proc_fee_type) . "', '" . strip_tags($processing_fee_min) . "', '" . strip_tags($processing_fee_max) . "', '" . strip_tags($overdue_type) . "', '" . strip_tags($overdue) . "', '" . strip_tags($collection_info) . "', '" . strip_tags($userid) . "' )";
+
+			$insresult = $mysqli->query($loanInsert) or die("Error " . $mysqli->error);
+		} else {
+			if (empty($intrest_rate_min) && empty($intrest_rate_max)) {
+            $deleteQuery = "DELETE FROM loan_calculation WHERE loan_cal_id = '" . strip_tags($loan_cat_id) . "'";
+            $delResult = $mysqli->query($deleteQuery) or die("Error " . $mysqli->error);
+            } else {
+
+			$loanInsert = "UPDATE loan_calculation SET loan_category_id = '" . strip_tags($cat_id) . "',loan_category = '" . strip_tags($loan_category_name) . "',due_method = '" . strip_tags($due_method) . "',due_type = '" . strip_tags($due_type) . "',profit_method = '" . strip_tags($profit_method) . "', calculate_method = '" . strip_tags($calculate_method) . "', intrest_rate_min = '" . strip_tags($intrest_rate_min) . "',intrest_rate_max = '" . strip_tags($intrest_rate_max) . "',due_period_min = '" . strip_tags($due_period_min) . "',due_period_max = '" . strip_tags($due_period_max) . "',doc_charge_type = '" . strip_tags($doc_charge_type) . "',document_charge_min = '" . strip_tags($document_charge_min) . "',document_charge_max = '" . strip_tags($document_charge_max) . "',proc_fee_type = '" . strip_tags($proc_fee_type) . "',processing_fee_min = '" . strip_tags($processing_fee_min) . "',processing_fee_max = '" . strip_tags($processing_fee_max) . "',overdue_type = '" . strip_tags($overdue_type) . "',overdue = '" . strip_tags($overdue) . "',collection_info = '" . strip_tags($collection_info) . "',insert_login_id = '" . strip_tags($userid) . "',updated_date = current_timestamp() WHERE loan_cal_id = '" . strip_tags($loan_cat_id) . "'";
+			$insresult = $mysqli->query($loanInsert) or die("Error " . $mysqli->error);
+			}
+		}
+
+		if (isset($_POST['scheme_name'])) {
+			$selected_scheme_ids = array_map('intval', $_POST['scheme_name']);
+			$scheme_id_str = implode(",", $selected_scheme_ids);
+			$update_selected = "UPDATE `loan_scheme`SET `loan_category_id`= '$cat_id',`loan_category` = '$loan_category_name',`updated_date` = CURRENT_TIMESTAMP() WHERE `scheme_id` IN ($scheme_id_str);";
+			$mysqli->query($update_selected) or die("Error (selected update): " . $mysqli->error);
+
+			$update_unselected = "UPDATE `loan_scheme` SET `loan_category_id`= '',`loan_category` = '', `updated_date` = CURRENT_TIMESTAMP() WHERE `loan_category` = '$loan_category_name' AND `scheme_id` NOT IN ($scheme_id_str);";
+			$mysqli->query($update_unselected) or die("Error (unselected update): " . $mysqli->error);
+		} else {
+			$update_unselected = "UPDATE `loan_scheme` SET `loan_category_id`= '', `loan_category` = '',`updated_date` = CURRENT_TIMESTAMP()  WHERE `loan_category` = '$loan_category_name'";
+			$mysqli->query($update_unselected) or die("Error (unselected update): " . $mysqli->error);
+		}
+
+
+		$updateQry = 'UPDATE loan_category SET loan_category_name = "' . strip_tags($loan_category_name) . '",loan_limit = "' . strip_tags($loan_limit) . '",agent_loan = "' . strip_tags($agent_loan) . '", status = "0" WHERE loan_category_id = "' . mysqli_real_escape_string($mysqli, $cat_id) . '" ';
 		$res = $mysqli->query($updateQry) or die("Error in in update Query!." . $mysqli->error);
 
-		$DeleterrRef = $mysqli->query("DELETE FROM loan_category_ref WHERE loan_category_id = '" . $id . "' ");
+		$DeleterrRef = $mysqli->query("DELETE FROM loan_category_ref WHERE loan_category_id = '" . $cat_id . "' ");
 
 		for ($i = 0; $i <= sizeof($loan_category_ref_name) - 1; $i++) {
 
-			$rrUpdaet = "INSERT INTO loan_category_ref(loan_category_id, loan_category_ref_name) VALUES('" . strip_tags($id) . "', '" . strip_tags($loan_category_ref_name[$i]) . "')";
+			$rrUpdaet = "INSERT INTO loan_category_ref(loan_category_id, loan_category_ref_name) VALUES('" . strip_tags($cat_id) . "', '" . strip_tags($loan_category_ref_name[$i]) . "')";
 			$updresult = $mysqli->query($rrUpdaet) or die("Error in in update Query!." . $mysqli->error);
 		}
 	}
+
 
 	//  Delete Loan Category
 	public function deleteLoanCategoryDetails($mysqli, $id, $userid)
@@ -687,14 +910,12 @@ class admin
 	// Get Loan Calculation
 	public function getLoanCalculation($mysqli, $id)
 	{
-		$loanSelect = "SELECT * FROM loan_calculation WHERE loan_cal_id='" . mysqli_real_escape_string($mysqli, $id) . "' ";
+		$loanSelect = "SELECT * FROM loan_calculation WHERE loan_category_id='" . mysqli_real_escape_string($mysqli, $id) . "' ";
 		$res = $mysqli->query($loanSelect) or die("Error in Get All Records" . $mysqli->error);
 		$detailrecords = array();
 		if ($mysqli->affected_rows > 0) {
 			$row = $res->fetch_object();
 			$detailrecords['loan_cal_id']        = $row->loan_cal_id;
-			$detailrecords['loan_category']      = $row->loan_category;
-			$detailrecords['sub_category']       = $row->sub_category;
 			$detailrecords['due_method']         = $row->due_method;
 			$detailrecords['due_type']           = $row->due_type;
 			$detailrecords['profit_method']      = $row->profit_method;
@@ -709,12 +930,8 @@ class admin
 			$detailrecords['proc_fee_type'] = $row->proc_fee_type;
 			$detailrecords['processing_fee_min'] = $row->processing_fee_min;
 			$detailrecords['processing_fee_max'] = $row->processing_fee_max;
-			$detailrecords['overdue_type']       = $row->overdue_type;
+			$detailrecords['overdue_type']            = $row->overdue_type;
 			$detailrecords['overdue']            = $row->overdue;
-			// $detailrecords['loan_limit']           = $row->loan_limit;
-			$detailrecords['due_date']           = $row->due_date;
-			$detailrecords['grace_period']       = $row->grace_period;
-			$detailrecords['penalty']            = $row->penalty;
 			$detailrecords['collection_info']    = $row->collection_info;
 		}
 		return $detailrecords;
@@ -844,19 +1061,6 @@ class admin
 				$j++;
 			}
 		}
-		// $selectQry = "SELECT * FROM area_list_creation JOIN sub_area_list_creation on area_list_creation.area_id = sub_area_list_creation.area_id_ref 
-		// JOIN area_line_mapping on FIND_IN_SET(sub_area_list_creation.sub_area_id, area_line_mapping.sub_area_id) > 0 WHERE area_list_creation.status= 0 and 
-		// sub_area_list_creation.status=0 and area_line_mapping.status=0 ";
-		// $res = $mysqli->query($selectQry) or die("Error in Get All Records".$mysqli->error);
-		// $detailrecords = array();$j=0;
-		// if ($mysqli->affected_rows>0)
-		// {
-		// 	while($row = $res->fetch_object()){
-		// 		$detailrecords[$j]['area_id']      = $row->area_id;
-		// 		$detailrecords[$j]['area_name']    = $row->area_name;
-		// 		$j++;
-		// 	}
-		// }
 
 		return $detailrecords;
 	}
@@ -884,9 +1088,7 @@ class admin
 		if (isset($_POST['area'])) {
 			$area_name_id = $_POST['area'];
 		}
-		if (isset($_POST['sub_area'])) {
-			$sub_area = $_POST['sub_area'];
-		}
+
 		if (isset($_POST['taluk'])) {
 			$taluk = $_POST['taluk'];
 		}
@@ -899,8 +1101,8 @@ class admin
 		if (isset($_POST['pincode'])) {
 			$pincode = $_POST['pincode'];
 		}
-		$insertQry = "INSERT INTO area_creation(area_name_id, sub_area, taluk, district, state, pincode, insert_login_id,created_date	)
-		VALUES('" . strip_tags($area_name_id) . "','" . strip_tags($sub_area) . "', '" . strip_tags($taluk) . "', '" . strip_tags($district) . "',
+		$insertQry = "INSERT INTO area_creation(area_name_id,  taluk, district, state, pincode, insert_login_id,created_date	)
+		VALUES('" . strip_tags($area_name_id) . "', '" . strip_tags($taluk) . "', '" . strip_tags($district) . "',
 			'" . strip_tags($state) . "',  '" . strip_tags($pincode) . "', '" . strip_tags($userid) . "',current_timestamp() )";
 		$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 	}
@@ -910,9 +1112,6 @@ class admin
 	{
 		if (isset($_POST['area'])) {
 			$area_name_id = $_POST['area'];
-		}
-		if (isset($_POST['sub_area'])) {
-			$sub_area = $_POST['sub_area'];
 		}
 		if (isset($_POST['taluk'])) {
 			$taluk = $_POST['taluk'];
@@ -929,7 +1128,7 @@ class admin
 		if (isset($_POST['enabledisable'])) {
 			$enabledisable = $_POST['enabledisable'];
 		}
-		$updateQry = "UPDATE area_creation set area_name_id='" . strip_tags($area_name_id) . "', sub_area='" . strip_tags($sub_area) . "', taluk='" . strip_tags($taluk) . "', 
+		$updateQry = "UPDATE area_creation set area_name_id='" . strip_tags($area_name_id) . "', taluk='" . strip_tags($taluk) . "', 
 		district= '" . strip_tags($district) . "', state='" . strip_tags($state) . "', pincode= '" . strip_tags($pincode) . "', enable= '" . strip_tags($enabledisable) . "', update_login_id='" . strip_tags($userid) . "', 
 		updated_date	 = current_timestamp(), status=0 WHERE area_creation_id = '" . $id . "' ";
 		$result = $mysqli->query($updateQry) or die("Error " . $mysqli->error);
@@ -945,7 +1144,6 @@ class admin
 			$row = $res->fetch_object();
 			$detailrecords['area_creation_id']      = $row->area_creation_id;
 			$detailrecords['area_name_id']    = $row->area_name_id;
-			$detailrecords['sub_area']    = $row->sub_area;
 			$detailrecords['taluk']    = $row->taluk;
 			$detailrecords['district']    = $row->district;
 			$detailrecords['state']       = $row->state;
@@ -954,6 +1152,7 @@ class admin
 		}
 		return $detailrecords;
 	}
+
 
 	//  Delete Area Creation
 	// public function deleteAreaCreation($mysqli, $id, $userid)
@@ -965,7 +1164,7 @@ class admin
 	// Get Loan caltegory list for loan calculation
 	public function getloanCategoryList($mysqli)
 	{
-		$loanCatSelect = "SELECT loan_category_id, loan_category_name, sub_category_name, status FROM loan_category GROUP BY loan_category_name";
+		$loanCatSelect = "SELECT loan_category_id, loan_category_name, status FROM loan_category GROUP BY loan_category_name";
 		$res = $mysqli->query($loanCatSelect) or die("Error in Get All Records" . $mysqli->error);
 		$detailrecords = array();
 		if ($mysqli->affected_rows > 0) {
@@ -973,7 +1172,6 @@ class admin
 			while ($row = $res->fetch_object()) {
 				$detailrecords[$i]['loan_category_id']      = $row->loan_category_id;
 				$detailrecords[$i]['loan_category_name_id']    = $row->loan_category_name;
-				$detailrecords[$i]['sub_category_name']    = $row->sub_category_name;
 				$detailrecords[$i]['loan_category_status']    = $row->status;
 
 				$Qry = "SELECT loan_category_creation_name FROM loan_category_creation WHERE loan_category_creation_id = '" . $detailrecords[$i]['loan_category_name_id'] . "' and status = 0 ";
@@ -1254,35 +1452,14 @@ class admin
 	// Get Area Creation
 	public function getLoanScheme($mysqli, $id)
 	{
-		$selectQry = "SELECT * FROM loan_scheme WHERE scheme_id='" . mysqli_real_escape_string($mysqli, $id) . "' ";
-		$res = $mysqli->query($selectQry) or die("Error in Get All Records" . $mysqli->error);
+		$selectQry = "SELECT * FROM loan_scheme WHERE loan_category_id ='" . mysqli_real_escape_string($mysqli, $id) . "' ";
+		$res = $mysqli->query($selectQry) or die("Error in Get All Records: " . $mysqli->error);
+
 		$detailrecords = array();
-		if ($mysqli->affected_rows > 0) {
-			$row = $res->fetch_object();
-			$detailrecords['scheme_id']      = $row->scheme_id;
-			$detailrecords['scheme_name']    = $row->scheme_name;
-			$detailrecords['short_name']    = $row->short_name;
-			$detailrecords['loan_category']    = $row->loan_category;
-			$detailrecords['sub_category']    = $row->sub_category;
-			$detailrecords['due_method']       = $row->due_method;
-			$detailrecords['profit_method']       = $row->profit_method;
-			$detailrecords['intrest_rate']       = $row->intrest_rate;
-			$detailrecords['total_due']       = $row->total_due;
-			$detailrecords['advance_due']       = $row->advance_due;
-			$detailrecords['due_period']       = $row->due_period;
-			$detailrecords['intreset_type']       = $row->intreset_type;
-			$detailrecords['intreset_min']       = $row->intreset_min;
-			$detailrecords['intreset_max']       = $row->intreset_max;
-			$detailrecords['doc_charge_type']       = $row->doc_charge_type;
-			$detailrecords['doc_charge_min']       = $row->doc_charge_min;
-			$detailrecords['doc_charge_max']       = $row->doc_charge_max;
-			$detailrecords['proc_fee_type']       = $row->proc_fee_type;
-			$detailrecords['proc_fee_min']       = $row->proc_fee_min;
-			$detailrecords['proc_fee_max']       = $row->proc_fee_max;
-			$detailrecords['due_date']       = $row->due_date;
-			$detailrecords['overdue']       = $row->overdue;
-			$detailrecords['grace_period']       = $row->grace_period;
-			$detailrecords['penalty']       = $row->penalty;
+		if ($res->num_rows > 0) {
+			while ($row = $res->fetch_assoc()) {
+				$detailrecords[] = $row; // Append each full row as an array
+			}
 		}
 		return $detailrecords;
 	}
@@ -1551,7 +1728,6 @@ class admin
 		$company_id  = $_POST['company_id'] ?? '';
 		$branch_id   = $_POST['branch']     ?? '';
 		$area_ids    = array_map('intval',explode(',',$_POST['area'])) ?? [];
-		$sub_area_ids= array_map('intval',explode(',',$_POST['sub_area'])) ?? [];
 		$cus_count   = $_POST['cus_count1']  ?? 0;
 		$loan_count  = $_POST['loan_count1'] ?? 0;
 
@@ -1593,20 +1769,6 @@ class admin
 					$stmtArea->execute();
 				}
 				$stmtArea->close();
-			}
-
-			/* 3️⃣ Insert sub-areas */
-			if (!empty($sub_area_ids)) {
-				$stmtSub = $mysqli->prepare("
-					INSERT INTO area_line_mapping_sub_area (line_map_id, sub_area_id)
-					VALUES (?, ?)
-				");
-
-				foreach ($sub_area_ids as $sub_area_id) {
-					$stmtSub->bind_param("ii", $line_map_id, $sub_area_id);
-					$stmtSub->execute();
-				}
-				$stmtSub->close();
 			}
 
 			// Commit if everything is fine
@@ -1688,7 +1850,6 @@ class admin
 		$company_id  = $_POST['company_id1'] ?? '';
 		$branch_id   = $_POST['branch1']     ?? '';
 		$area_ids    = array_map('intval',explode(',',$_POST['area1'])) ?? [];
-		$sub_area_ids= array_map('intval',explode(',',$_POST['sub_area1'])) ?? [];
 		$cus_count   = $_POST['cus_count2']  ?? 0;
 		$loan_count  = $_POST['loan_count2'] ?? 0;
 
@@ -1731,21 +1892,6 @@ class admin
 				}
 				$stmtArea->close();
 			}
-
-			/* 3️⃣ Insert sub-areas */
-			if (!empty($sub_area_ids)) {
-				$stmtSub = $mysqli->prepare("
-					INSERT INTO area_group_mapping_sub_area (group_map_id, sub_area_id)
-					VALUES (?, ?)
-				");
-
-				foreach ($sub_area_ids as $sub_area_id) {
-					$stmtSub->bind_param("ii", $group_map_id, $sub_area_id);
-					$stmtSub->execute();
-				}
-				$stmtSub->close();
-			}
-
 			// Commit if everything is fine
 			$mysqli->commit();
 
@@ -1763,7 +1909,6 @@ class admin
 		$company_id   = (int) ($_POST['company_id'] ?? 0);
 		$branch_id    = (int) ($_POST['branch'] ?? 0);
 		$area_ids    = array_map('intval',explode(',',$_POST['area'])) ?? [];
-		$sub_area_ids= array_map('intval',explode(',',$_POST['sub_area'])) ?? [];
 		$cus_count    = (int) ($_POST['cus_count1'] ?? 0);
 		$loan_count   = (int) ($_POST['loan_count1'] ?? 0);
 
@@ -1805,21 +1950,6 @@ class admin
 					$stmtArea->execute();
 				}
 				$stmtArea->close();
-			}
-
-			/* 3️⃣ Sync SUB-AREA mappings */
-			$mysqli->query("DELETE FROM area_line_mapping_sub_area WHERE line_map_id = $id");
-
-			if (!empty($sub_area_ids)) {
-				$stmtSub = $mysqli->prepare("
-					INSERT INTO area_line_mapping_sub_area (line_map_id, sub_area_id)
-					VALUES (?, ?)
-				");
-				foreach ($sub_area_ids as $sub_area_id) {
-					$stmtSub->bind_param("ii", $id, $sub_area_id);
-					$stmtSub->execute();
-				}
-				$stmtSub->close();
 			}
 
 			$mysqli->commit();
@@ -1895,7 +2025,6 @@ class admin
 		$company_id   = (int) ($_POST['company_id1'] ?? 0);
 		$branch_id    = (int) ($_POST['branch1'] ?? 0);
 		$area_ids    = array_map('intval',explode(',',$_POST['area1'])) ?? [];
-		$sub_area_ids= array_map('intval',explode(',',$_POST['sub_area1'])) ?? [];
 		$cus_count    = (int) ($_POST['cus_count2'] ?? 0);
 		$loan_count   = (int) ($_POST['loan_count2'] ?? 0);
 
@@ -1938,22 +2067,6 @@ class admin
 				}
 				$stmtArea->close();
 			}
-
-			/* 3️⃣ Sync SUB-AREA mappings */
-			$mysqli->query("DELETE FROM area_group_mapping_sub_area WHERE group_map_id = $id");
-
-			if (!empty($sub_area_ids)) {
-				$stmtSub = $mysqli->prepare("
-					INSERT INTO area_group_mapping_sub_area (group_map_id, sub_area_id)
-					VALUES (?, ?)
-				");
-				foreach ($sub_area_ids as $sub_area_id) {
-					$stmtSub->bind_param("ii", $id, $sub_area_id);
-					$stmtSub->execute();
-				}
-				$stmtSub->close();
-			}
-
 			$mysqli->commit();
 
 		} catch (Exception $e) {
@@ -1997,23 +2110,6 @@ class admin
 			$area_ids[] = $row['area_id'];
 		}
 		$detailrecords['area_id'] = implode(',', $area_ids);
-		$stmt->close();
-
-		/* 3️⃣ Get SUB-AREA IDs */
-		$stmt = $mysqli->prepare("
-			SELECT sub_area_id
-			FROM area_line_mapping_sub_area
-			WHERE line_map_id = ?
-		");
-		$stmt->bind_param("i", $id);
-		$stmt->execute();
-		$res = $stmt->get_result();
-
-		$sub_area_ids = [];
-		while ($row = $res->fetch_assoc()) {
-			$sub_area_ids[] = $row['sub_area_id'];
-		}
-		$detailrecords['sub_area_id'] = implode(',', $sub_area_ids);
 		$stmt->close();
 
 		return $detailrecords;
@@ -2094,23 +2190,6 @@ class admin
 			$area_ids[] = $row['area_id'];
 		}
 		$detailrecords['area_id'] = implode(',', $area_ids);
-		$stmt->close();
-
-		/* 3️⃣ Get SUB-AREA IDs */
-		$stmt = $mysqli->prepare("
-			SELECT sub_area_id
-			FROM area_group_mapping_sub_area
-			WHERE group_map_id = ?
-		");
-		$stmt->bind_param("i", $id);
-		$stmt->execute();
-		$res = $stmt->get_result();
-
-		$sub_area_ids = [];
-		while ($row = $res->fetch_assoc()) {
-			$sub_area_ids[] = $row['sub_area_id'];
-		}
-		$detailrecords['sub_area_id'] = implode(',', $sub_area_ids);
 		$stmt->close();
 
 		return $detailrecords;
@@ -2369,9 +2448,6 @@ class admin
 		if (isset($_POST['loan_category'])) {
 			$loan_category = $_POST['loan_category'];
 		}
-		if (isset($_POST['sub_category'])) {
-			$sub_category = $_POST['sub_category'];
-		}
 		$scheme = '';
 		if (isset($_POST['scheme'])) {
 			$scheme = $_POST['scheme'];
@@ -2404,11 +2480,11 @@ class admin
 			$more_info = $_POST['more_info'];
 		}
 
-		$insertQry = "INSERT INTO agent_creation(ag_code, ag_name,ag_group_id,company_id,branch_id, mail,state, district, taluk, place, pincode,loan_category,sub_category,scheme,loan_payment,
+		$insertQry = "INSERT INTO agent_creation(ag_code, ag_name,ag_group_id,company_id,branch_id, mail,state, district, taluk, place, pincode,loan_category,scheme,loan_payment,
 		responsible,collection_point,bank_name,bank_branch_name, acc_no,ifsc,holder_name,more_info,insert_login_id,created_date) 
 		VALUES('" . strip_tags($ag_code) . "','" . strip_tags($ag_name) . "','" . strip_tags($ag_group) . "','" . strip_tags($company_id) . "','" . strip_tags($branch_id) . "','" . strip_tags($mail) . "',
 		'" . strip_tags($state) . "', '" . strip_tags($district) . "','" . strip_tags($taluk) . "', 
-		'" . strip_tags($place) . "', '" . strip_tags($pincode) . "','" . strip_tags($loan_category) . "', '" . strip_tags($sub_category) . "',
+		'" . strip_tags($place) . "', '" . strip_tags($pincode) . "','" . strip_tags($loan_category) . "',
 		'" . strip_tags($scheme) . "', '" . strip_tags($loan_payment) . "','" . strip_tags($responsible) . "', '" . strip_tags($collection_point) . "',
 		'" . strip_tags($bank_name) . "', '" . strip_tags($bank_branch_name) . "','" . strip_tags($acc_no) . "', '" . strip_tags($ifsc) . "',
 		'" . strip_tags($holder_name) . "', '" . strip_tags($more_info) . "','" . strip_tags($userid) . "',current_timestamp )";
@@ -2443,7 +2519,6 @@ class admin
 			$detailrecords['place']    = $row->place;
 			$detailrecords['pincode']    = $row->pincode;
 			$detailrecords['loan_category']    = $row->loan_category;
-			$detailrecords['sub_category']    = $row->sub_category;
 			$detailrecords['scheme']    = $row->scheme;
 			$detailrecords['loan_payment']    = $row->loan_payment;
 			$detailrecords['responsible']    = $row->responsible;
@@ -2543,9 +2618,6 @@ class admin
 		if (isset($_POST['loan_category'])) {
 			$loan_category = $_POST['loan_category'];
 		}
-		if (isset($_POST['sub_category'])) {
-			$sub_category = $_POST['sub_category'];
-		}
 		$scheme = '';
 		if (isset($_POST['scheme'])) {
 			$scheme = $_POST['scheme'];
@@ -2583,7 +2655,7 @@ class admin
 		$updateQry = "UPDATE agent_creation SET ag_code = '" . strip_tags($ag_code) . "', ag_name = '" . strip_tags($ag_name) . "',ag_group_id = '" . strip_tags($ag_group) . "', 
 		company_id = '" . strip_tags($company_id) . "',branch_id = '" . strip_tags($branch_id) . "',mail='" . strip_tags($mail) . "',
 		state='" . strip_tags($state) . "', district='" . strip_tags($district) . "', taluk='" . strip_tags($taluk) . "', place='" . strip_tags($place) . "', 
-		pincode='" . strip_tags($pincode) . "',loan_category='" . strip_tags($loan_category) . "', sub_category='" . strip_tags($sub_category) . "', scheme ='" . strip_tags($scheme) . "',
+		pincode='" . strip_tags($pincode) . "',loan_category='" . strip_tags($loan_category) . "',scheme ='" . strip_tags($scheme) . "',
 		loan_payment='" . strip_tags($loan_payment) . "',responsible='" . strip_tags($responsible) . "',collection_point='" . strip_tags($collection_point) . "',
 		bank_name='" . strip_tags($bank_name) . "',acc_no='" . strip_tags($acc_no) . "',ifsc='" . strip_tags($ifsc) . "',bank_branch_name='" . strip_tags($bank_branch_name) . "',holder_name='" . strip_tags($holder_name) . "',
 		more_info='" . strip_tags($more_info) . "',status=0,update_login_id='" . strip_tags($userid) . "',updated_date= current_timestamp(), status = '0' WHERE ag_id= '" . strip_tags($id) . "' ";
@@ -2889,16 +2961,7 @@ class admin
 		} else {
 			$loan_category = 1;
 		}
-		if (isset($_POST['loan_calculation']) &&    $_POST['loan_calculation'] == 'Yes') {
-			$loan_calculation = 0;
-		} else {
-			$loan_calculation = 1;
-		}
-		if (isset($_POST['loan_scheme']) &&    $_POST['loan_scheme'] == 'Yes') {
-			$loan_scheme = 0;
-		} else {
-			$loan_scheme = 1;
-		}
+	
 		if (isset($_POST['area_creation']) &&    $_POST['area_creation'] == 'Yes') {
 			$area_creation = 0;
 		} else {
@@ -3444,7 +3507,7 @@ class admin
 			$sms_generation = 1;
 		}
 
-		$insertQry = "INSERT INTO user(`fullname`, `emailid`, `user_name`, `user_password`, `role`, `role_type`, `dir_id`, `ag_id`, `staff_id`, `company_id`, `branch_id`,`bank_access`,  `agentforstaff`, `line_id`, `group_id`, `download_access`, `report_access`,`home_access`, `pro_aty_access`, `promotion_activity_mapping_access`, `mastermodule`, `company_creation`, `branch_creation`, `loan_category`, `loan_calculation`, `loan_scheme`, `area_creation`, `area_mapping`, `area_approval`, `adminmodule`, `director_creation`, `agent_creation`, `staff_creation`, `manage_user`, `doc_mapping`, `bank_creation`, `requestmodule`, `request`, `request_list_access`, `verificationmodule`, `verification`,`ver_loan_cat`,`ver_group_id`, `approvalmodule`, `approval`,`app_loan_cat`, `acknowledgementmodule`, `acknowledgement`,`ack_loan_cat`, `loanissuemodule`, `loan_issue`, `collectionmodule`, `collection`, `collection_access`,`closedmodule`, `closed`, `nocmodule`, `noc`, `noc_handover`, `noc_replace_access`, `noc_mapping_access`, `doctrackmodule`, `doctrack`, `doc_rec_access`, `noc_replace`, `updatemodule`, `update_screen`, `update_screen_id`, `concernmodule`, `concern_creation`, `concern_solution`, `concern_feedback`, `accountsmodule`, `cash_tally`, `cash_tally_access`,`cash_tally_admin`, `bank_details`, `bank_clearance`,`bnk_clr_upl_acc`, `finance_insight`, `accounts_loan_issue`, `followupmodule`, `promotion_activity`, `loan_followup`, `confirmation_followup`, `due_followup`,`ecs_followup`, `due_followup_lines`, `reportmodule`,`work_report_module`,`monitor_report_module`,`analysis_report_module`,`accounts_report_module`, `ledger_report`, `request_report`, `cancel_revoke_report`, `cus_profile_report`, `loan_issue_report`, `collection_report`,`principal_interest_report`, `balance_report`, `due_list_report`, `in_closed_report`, `closed_report`, `confirmation_followup_report`, `agent_report`, `no_due_pay_report`,`other_trans_report`,`day_end_report`,`cash_tally_activity_report`, `due_followup_customer_count_report`, `commitment_report`, `customer_status_report`,`promotion_activity_report`, `cleared_report`,`events_report`, `area_loan_count_report`,`work_count_report`,`noc_handover_report`,`confirmation_count_report`, `concern_report`,`partners_report`,`reportmodule_intrest`,`intrest_ledger_report`,`intrest_loan_issue_report`,`intrest_collection_report`,`intrest_balance_report`,`intrest_closed_report`,`search_module`, `search`, `bulk_upload_module`, `bulk_upload`, `loan_track`, `sms_module`, `sms_generation`, `insert_login_id`, `created_date`) VALUES('" . strip_tags($full_name) . "', '" . strip_tags($email) . "', '" . strip_tags($user_name) . "', '" . strip_tags($user_password) . "', '" . strip_tags($role) . "', '" . strip_tags($role_type) . "', '" . strip_tags($dir_name) . "', '" . strip_tags($ag_name) . "', '" . strip_tags($staff_name) . "', '" . strip_tags($company_id) . "', '" . strip_tags($branch_id) . "', '" . strip_tags($bank_access) . "','" . strip_tags($agentforstaff) . "', '" . strip_tags($line) . "', '" . strip_tags($group) . "', '" . strip_tags($download_access) . "',  '" . strip_tags($report_access) . "','" . strip_tags($home_access) . "',   '" . strip_tags($pro_aty_access) . "',  '" . strip_tags($promotion_activity_mapping_access) . "', '" . strip_tags($mastermodule) . "', '" . strip_tags($company_creation) . "',  '" . strip_tags($branch_creation) . "', '" . strip_tags($loan_category) . "', '" . strip_tags($loan_calculation) . "', '" . strip_tags($loan_scheme) . "', '" . strip_tags($area_creation) . "',  '" . strip_tags($area_mapping) . "', '" . strip_tags($area_approval) . "', '" . strip_tags($adminmodule) . "', '" . strip_tags($director_creation) . "',  '" . strip_tags($agent_creation) . "', '" . strip_tags($staff_creation) . "', '" . strip_tags($manage_user) . "', '" . strip_tags($doc_mapping) . "', '" . strip_tags($bank_creation) . "', '" . strip_tags($requestmodule) . "', '" . strip_tags($request) . "',  '" . strip_tags($request_list_access) . "', '" . strip_tags($verificationmodule) . "', '" . strip_tags($verification) . "','" . strip_tags($ver_loan_cat) . "', '" . strip_tags($ver_group_id) . "', '" . strip_tags($approvalmodule) . "', '" . strip_tags($approval) . "','" . strip_tags($app_loan_cat) . "',  '" . strip_tags($acknowledgementmodule) . "', '" . strip_tags($acknowledgement) . "','" . strip_tags($ack_loan_cat) . "', '" . strip_tags($loanissuemodule) . "', '" . strip_tags($loan_issue) . "', '" . strip_tags($collectionmodule) . "', '" . strip_tags($collection) . "', '" . strip_tags($collection_access) . "', '" . strip_tags($closedmodule) . "', '" . strip_tags($closed) . "',  '" . strip_tags($nocmodule) . "', '" . strip_tags($noc) . "', '" . strip_tags($noc_handover) . "', '" . strip_tags($noc_replace_access) . "','" . strip_tags($noc_mapping_access) . "','" . strip_tags($doctrackmodule) . "', '" . strip_tags($doctrack) . "', '" . strip_tags($doc_rec_access) . "', '" . strip_tags($noc_replace) . "', '" . strip_tags($updatemodule) . "', '" . strip_tags($update_screen) . "', '" . strip_tags($update_screen_id) . "', '" . strip_tags($concernmodule) . "', '" . strip_tags($concernCreation) . "', '" . strip_tags($concernSolution) . "', '" . strip_tags($concernFeedback) . "',  '" . strip_tags($accountsmodule) . "', '" . strip_tags($cash_tally) . "','" . strip_tags($cash_tally_access) . "', '" . strip_tags($cash_tally_admin) . "', '" . strip_tags($bank_details) . "',  '" . strip_tags($bank_clearance) . "', '" . strip_tags($bnk_clr_upl_acc) . "', '" . strip_tags($finance_insight) . "', '" . strip_tags($accounts_loan_issue) . "', '" . strip_tags($followupmodule) . "', '" . strip_tags($promotion_activity) . "', '" . strip_tags($loan_followup) . "', '" . strip_tags($conf_followup) . "', '" . strip_tags($due_followup) . "','" . strip_tags($ecs_followup) . "', '" . strip_tags($due_follup_line) . "', '" . strip_tags($reportmodule) . "','" . strip_tags($work_report_module) . "','" . strip_tags($monitor_report_module) . "','" . strip_tags($analysis_report_module) . "','" . strip_tags($accounts_report_module) . "', '" . strip_tags($ledger_report) . "', '" . strip_tags($request_report) . "', '" . strip_tags($cancel_revoke_report) . "', '" . strip_tags($cus_profile_report) . "',  '" . strip_tags($loan_issue_report) . "',  '" . strip_tags($collection_report) . "', '" . strip_tags($principal_interest_report) . "',  '" . strip_tags($balance_report) . "',  '" . strip_tags($due_list_report) . "', '" . strip_tags($in_closed_report) . "', '" . strip_tags($closed_report) . "',  '" . strip_tags($confirmation_followup_report) . "',  '" . strip_tags($agent_report) . "', '" . strip_tags($no_due_pay_report) . "', '" . strip_tags($other_trans_report) . "','" . strip_tags($day_end_report) . "','" . strip_tags($cash_tally_activity_report) . "',  '" . strip_tags($due_followup_customer_count_report) . "' , '" . strip_tags($commitment_report) . "', '" . strip_tags($customer_status_report) . "' , '" . strip_tags($promotion_activity_report) . "',  '" . strip_tags($cleared_report) . "','" . strip_tags($events_report) . "','" . strip_tags($area_loan_count_report) . "', '" . strip_tags($work_count_report) . "','" . strip_tags($noc_handover_report) . "','" . strip_tags($confirmation_count_report) . "','" . strip_tags($concern_report) . "','" . strip_tags($partners_report) . "','" . strip_tags($reportmodule_intrest) . "','" . strip_tags($intrest_ledger_report) . "','" . strip_tags($intrest_loan_issue_report) . "','" . strip_tags($intrest_collection_report) . "','" . strip_tags($intrest_balance_report) . "','" . strip_tags($intrest_closed_report) . "', '" . strip_tags($searchmodule) . "',  '" . strip_tags($search_screen) . "', '" . strip_tags($bulk_upload_module) . "',  '" . strip_tags($bulk_upload) . "', '" . strip_tags($loan_track) . "', '" . strip_tags($sms_module) . "', '" . strip_tags($sms_generation) . "', '" . strip_tags($userid) . "', now() )";
+		$insertQry = "INSERT INTO user(`fullname`, `emailid`, `user_name`, `user_password`, `role`, `role_type`, `dir_id`, `ag_id`, `staff_id`, `company_id`, `branch_id`,`bank_access`,  `agentforstaff`, `line_id`, `group_id`, `download_access`, `report_access`,`home_access`, `pro_aty_access`, `promotion_activity_mapping_access`, `mastermodule`, `company_creation`, `branch_creation`, `loan_category`, `area_creation`, `area_mapping`, `area_approval`, `adminmodule`, `director_creation`, `agent_creation`, `staff_creation`, `manage_user`, `doc_mapping`, `bank_creation`, `requestmodule`, `request`, `request_list_access`, `verificationmodule`, `verification`,`ver_loan_cat`,`ver_group_id`, `approvalmodule`, `approval`,`app_loan_cat`, `acknowledgementmodule`, `acknowledgement`,`ack_loan_cat`, `loanissuemodule`, `loan_issue`, `collectionmodule`, `collection`, `collection_access`,`closedmodule`, `closed`, `nocmodule`, `noc`, `noc_handover`, `noc_replace_access`, `noc_mapping_access`, `doctrackmodule`, `doctrack`, `doc_rec_access`, `noc_replace`, `updatemodule`, `update_screen`, `update_screen_id`, `concernmodule`, `concern_creation`, `concern_solution`, `concern_feedback`, `accountsmodule`, `cash_tally`, `cash_tally_access`,`cash_tally_admin`, `bank_details`, `bank_clearance`,`bnk_clr_upl_acc`, `finance_insight`, `accounts_loan_issue`, `followupmodule`, `promotion_activity`, `loan_followup`, `confirmation_followup`, `due_followup`,`ecs_followup`, `due_followup_lines`, `reportmodule`,`work_report_module`,`monitor_report_module`,`analysis_report_module`,`accounts_report_module`, `ledger_report`, `request_report`, `cancel_revoke_report`, `cus_profile_report`, `loan_issue_report`, `collection_report`,`principal_interest_report`, `balance_report`, `due_list_report`, `in_closed_report`, `closed_report`, `confirmation_followup_report`, `agent_report`, `no_due_pay_report`,`other_trans_report`,`day_end_report`,`cash_tally_activity_report`, `due_followup_customer_count_report`, `commitment_report`, `customer_status_report`,`promotion_activity_report`, `cleared_report`,`events_report`, `area_loan_count_report`,`work_count_report`,`noc_handover_report`,`confirmation_count_report`, `concern_report`,`partners_report`,`reportmodule_intrest`,`intrest_ledger_report`,`intrest_loan_issue_report`,`intrest_collection_report`,`intrest_balance_report`,`intrest_closed_report`,`search_module`, `search`, `bulk_upload_module`, `bulk_upload`, `loan_track`, `sms_module`, `sms_generation`, `insert_login_id`, `created_date`) VALUES('" . strip_tags($full_name) . "', '" . strip_tags($email) . "', '" . strip_tags($user_name) . "', '" . strip_tags($user_password) . "', '" . strip_tags($role) . "', '" . strip_tags($role_type) . "', '" . strip_tags($dir_name) . "', '" . strip_tags($ag_name) . "', '" . strip_tags($staff_name) . "', '" . strip_tags($company_id) . "', '" . strip_tags($branch_id) . "', '" . strip_tags($bank_access) . "','" . strip_tags($agentforstaff) . "', '" . strip_tags($line) . "', '" . strip_tags($group) . "', '" . strip_tags($download_access) . "',  '" . strip_tags($report_access) . "','" . strip_tags($home_access) . "',   '" . strip_tags($pro_aty_access) . "',  '" . strip_tags($promotion_activity_mapping_access) . "', '" . strip_tags($mastermodule) . "', '" . strip_tags($company_creation) . "',  '" . strip_tags($branch_creation) . "', '" . strip_tags($loan_category) . "','" . strip_tags($area_creation) . "',  '" . strip_tags($area_mapping) . "', '" . strip_tags($area_approval) . "', '" . strip_tags($adminmodule) . "', '" . strip_tags($director_creation) . "',  '" . strip_tags($agent_creation) . "', '" . strip_tags($staff_creation) . "', '" . strip_tags($manage_user) . "', '" . strip_tags($doc_mapping) . "', '" . strip_tags($bank_creation) . "', '" . strip_tags($requestmodule) . "', '" . strip_tags($request) . "',  '" . strip_tags($request_list_access) . "', '" . strip_tags($verificationmodule) . "', '" . strip_tags($verification) . "','" . strip_tags($ver_loan_cat) . "', '" . strip_tags($ver_group_id) . "', '" . strip_tags($approvalmodule) . "', '" . strip_tags($approval) . "','" . strip_tags($app_loan_cat) . "',  '" . strip_tags($acknowledgementmodule) . "', '" . strip_tags($acknowledgement) . "','" . strip_tags($ack_loan_cat) . "', '" . strip_tags($loanissuemodule) . "', '" . strip_tags($loan_issue) . "', '" . strip_tags($collectionmodule) . "', '" . strip_tags($collection) . "', '" . strip_tags($collection_access) . "', '" . strip_tags($closedmodule) . "', '" . strip_tags($closed) . "',  '" . strip_tags($nocmodule) . "', '" . strip_tags($noc) . "', '" . strip_tags($noc_handover) . "', '" . strip_tags($noc_replace_access) . "','" . strip_tags($noc_mapping_access) . "','" . strip_tags($doctrackmodule) . "', '" . strip_tags($doctrack) . "', '" . strip_tags($doc_rec_access) . "', '" . strip_tags($noc_replace) . "', '" . strip_tags($updatemodule) . "', '" . strip_tags($update_screen) . "', '" . strip_tags($update_screen_id) . "', '" . strip_tags($concernmodule) . "', '" . strip_tags($concernCreation) . "', '" . strip_tags($concernSolution) . "', '" . strip_tags($concernFeedback) . "',  '" . strip_tags($accountsmodule) . "', '" . strip_tags($cash_tally) . "','" . strip_tags($cash_tally_access) . "', '" . strip_tags($cash_tally_admin) . "', '" . strip_tags($bank_details) . "',  '" . strip_tags($bank_clearance) . "', '" . strip_tags($bnk_clr_upl_acc) . "', '" . strip_tags($finance_insight) . "', '" . strip_tags($accounts_loan_issue) . "', '" . strip_tags($followupmodule) . "', '" . strip_tags($promotion_activity) . "', '" . strip_tags($loan_followup) . "', '" . strip_tags($conf_followup) . "', '" . strip_tags($due_followup) . "','" . strip_tags($ecs_followup) . "', '" . strip_tags($due_follup_line) . "', '" . strip_tags($reportmodule) . "','" . strip_tags($work_report_module) . "','" . strip_tags($monitor_report_module) . "','" . strip_tags($analysis_report_module) . "','" . strip_tags($accounts_report_module) . "', '" . strip_tags($ledger_report) . "', '" . strip_tags($request_report) . "', '" . strip_tags($cancel_revoke_report) . "', '" . strip_tags($cus_profile_report) . "',  '" . strip_tags($loan_issue_report) . "',  '" . strip_tags($collection_report) . "', '" . strip_tags($principal_interest_report) . "',  '" . strip_tags($balance_report) . "',  '" . strip_tags($due_list_report) . "', '" . strip_tags($in_closed_report) . "', '" . strip_tags($closed_report) . "',  '" . strip_tags($confirmation_followup_report) . "',  '" . strip_tags($agent_report) . "', '" . strip_tags($no_due_pay_report) . "', '" . strip_tags($other_trans_report) . "','" . strip_tags($day_end_report) . "','" . strip_tags($cash_tally_activity_report) . "',  '" . strip_tags($due_followup_customer_count_report) . "' , '" . strip_tags($commitment_report) . "', '" . strip_tags($customer_status_report) . "' , '" . strip_tags($promotion_activity_report) . "',  '" . strip_tags($cleared_report) . "','" . strip_tags($events_report) . "','" . strip_tags($area_loan_count_report) . "', '" . strip_tags($work_count_report) . "','" . strip_tags($noc_handover_report) . "','" . strip_tags($confirmation_count_report) . "','" . strip_tags($concern_report) . "','" . strip_tags($partners_report) . "','" . strip_tags($reportmodule_intrest) . "','" . strip_tags($intrest_ledger_report) . "','" . strip_tags($intrest_loan_issue_report) . "','" . strip_tags($intrest_collection_report) . "','" . strip_tags($intrest_balance_report) . "','" . strip_tags($intrest_closed_report) . "', '" . strip_tags($searchmodule) . "',  '" . strip_tags($search_screen) . "', '" . strip_tags($bulk_upload_module) . "',  '" . strip_tags($bulk_upload) . "', '" . strip_tags($loan_track) . "', '" . strip_tags($sms_module) . "', '" . strip_tags($sms_generation) . "', '" . strip_tags($userid) . "', now() )";
 
 		$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 	}
@@ -3538,16 +3601,6 @@ class admin
 			$loan_category = 0;
 		} else {
 			$loan_category = 1;
-		}
-		if (isset($_POST['loan_calculation']) &&    $_POST['loan_calculation'] == 'Yes') {
-			$loan_calculation = 0;
-		} else {
-			$loan_calculation = 1;
-		}
-		if (isset($_POST['loan_scheme']) &&    $_POST['loan_scheme'] == 'Yes') {
-			$loan_scheme = 0;
-		} else {
-			$loan_scheme = 1;
 		}
 		if (isset($_POST['area_creation']) &&    $_POST['area_creation'] == 'Yes') {
 			$area_creation = 0;
@@ -4095,7 +4148,7 @@ class admin
 			$sms_generation = 1;
 		}
 
-		$updateQry = "UPDATE `user` SET `fullname` = '" . strip_tags($full_name) . "', `emailid` = '" . strip_tags($email) . "', `user_name` = '" . strip_tags($user_name) . "', `user_password` = '" . strip_tags($user_password) . "', `role` = '" . strip_tags($role) . "', `role_type` = '" . strip_tags($role_type) . "', `dir_id` = '" . strip_tags($dir_name) . "',`ag_id` = '" . strip_tags($ag_name) . "', `staff_id` = '" . strip_tags($staff_name) . "', `company_id` = '" . strip_tags($company_id) . "', `branch_id` = '" . strip_tags($branch_id) . "', `bank_access` = '" . strip_tags($bank_access) . "', agentforstaff='" . strip_tags($agentforstaff) . "', `line_id` = '" . strip_tags($line) . "', `group_id` = '" . strip_tags($group) . "', `download_access` = '" . strip_tags($download_access) . "', `report_access` = '" . strip_tags($report_access) . "',`home_access` = '" . strip_tags($home_access) . "', `pro_aty_access` = '" . strip_tags($pro_aty_access) . "', `promotion_activity_mapping_access`='" . strip_tags($promotion_activity_mapping_access) . "', `mastermodule` = '" . strip_tags($mastermodule) . "', `company_creation` = '" . strip_tags($company_creation) . "', `branch_creation` = '" . strip_tags($branch_creation) . "', `loan_category` = '" . strip_tags($loan_category) . "', `loan_calculation` = '" . strip_tags($loan_calculation) . "', `loan_scheme` = '" . strip_tags($loan_scheme) . "', `area_creation` = '" . strip_tags($area_creation) . "', `area_mapping` = '" . strip_tags($area_mapping) . "', `area_approval` = '" . strip_tags($area_approval) . "', `adminmodule` = '" . strip_tags($adminmodule) . "', `director_creation` = '" . strip_tags($director_creation) . "', `agent_creation` = '" . strip_tags($agent_creation) . "', `staff_creation` = '" . strip_tags($staff_creation) . "', `manage_user` = '" . strip_tags($manage_user) . "', `doc_mapping`='" . strip_tags($doc_mapping) . "', `bank_creation`='" . strip_tags($bank_creation) . "', `requestmodule`='" . strip_tags($requestmodule) . "', `request`='" . strip_tags($request) . "', `request_list_access`='" . strip_tags($request_list_access) . "',`verificationmodule`='" . strip_tags($verificationmodule) . "', `verification`='" . strip_tags($verification) . "',`ver_loan_cat`='" . strip_tags($ver_loan_cat) . "',`ver_group_id`='" . strip_tags($ver_group_id) . "', `approvalmodule`='" . strip_tags($approvalmodule) . "', `approval`='" . strip_tags($approval) . "',`app_loan_cat`='" . strip_tags($app_loan_cat) . "',  `acknowledgementmodule`='" . strip_tags($acknowledgementmodule) . "', `acknowledgement`='" . strip_tags($acknowledgement) . "',`ack_loan_cat`='" . strip_tags($ack_loan_cat) . "',  `loanissuemodule`='" . strip_tags($loanissuemodule) . "', `loan_issue`='" . strip_tags($loan_issue) . "', `collectionmodule` = '" . strip_tags($collectionmodule) . "',  `collection` = '" . strip_tags($collection) . "',  `collection_access` = '" . strip_tags($collection_access) . "', `closedmodule` = '" . strip_tags($closedmodule) . "',  `closed` = '" . strip_tags($closed) . "',  `nocmodule` = '" . strip_tags($nocmodule) . "', `noc` = '" . strip_tags($noc) . "',`noc_handover` = '" . strip_tags($noc_handover) . "', `noc_replace_access` = '" . strip_tags($noc_replace_access) . "', `noc_mapping_access`='" . strip_tags($noc_mapping_access) . "', `doctrackmodule` = '" . strip_tags($doctrackmodule) . "', `doctrack` = '" . strip_tags($doctrack) . "', `doc_rec_access` = '" . strip_tags($doc_rec_access) . "', `noc_replace` = '" . strip_tags($noc_replace) . "', `updatemodule` = '" . strip_tags($updatemodule) . "', `update_screen` = '" . strip_tags($update_screen) . "', `update_screen_id` = '" . strip_tags($update_screen_id) . "', `concernmodule`='" . strip_tags($concernmodule) . "', `concern_creation`='" . strip_tags($concernCreation) . "', `concern_solution`='" . strip_tags($concernSolution) . "', `concern_feedback`='" . strip_tags($concernFeedback) . "', `accountsmodule`='" . strip_tags($accountsmodule) . "', `cash_tally`='" . strip_tags($cash_tally) . "',`cash_tally_access`='" . strip_tags($cash_tally_access) . "', `cash_tally_admin`='" . strip_tags($cash_tally_admin) . "', `bank_details`='" . strip_tags($bank_details) . "',`bank_clearance`='" . strip_tags($bank_clearance) . "',`bnk_clr_upl_acc`='" . strip_tags($bnk_clr_upl_acc) . "', `finance_insight`='" . strip_tags($finance_insight) . "', `accounts_loan_issue`='" . strip_tags($accounts_loan_issue) . "', `followupmodule`='" . strip_tags($followupmodule) . "', `promotion_activity`='" . strip_tags($promotion_activity) . "', `loan_followup`='" . strip_tags($loan_followup) . "', `confirmation_followup`='" . strip_tags($conf_followup) . "', `due_followup`='" . strip_tags($due_followup) . "', `ecs_followup`='" . strip_tags($ecs_followup) . "',  `due_followup_lines`='" . strip_tags($due_follup_line) . "',`reportmodule` = '" . strip_tags($reportmodule) . "',`work_report_module` = '" . strip_tags($work_report_module) . "',`monitor_report_module` = '" . strip_tags($monitor_report_module) . "',`analysis_report_module` = '" . strip_tags($analysis_report_module) . "',`accounts_report_module` = '" . strip_tags($accounts_report_module) . "', `ledger_report` = '" . strip_tags($ledger_report) . "', `request_report` = '" . strip_tags($request_report) . "', `cancel_revoke_report` = '" . strip_tags($cancel_revoke_report) . "', `cus_profile_report` = '" . strip_tags($cus_profile_report) . "', `loan_issue_report` = '" . strip_tags($loan_issue_report) . "', `collection_report` = '" . strip_tags($collection_report) . "', `principal_interest_report` = '" . strip_tags($principal_interest_report) . "', `balance_report` = '" . strip_tags($balance_report) . "', `due_list_report` = '" . strip_tags($due_list_report) . "', `in_closed_report` = '" . strip_tags($in_closed_report) . "', `closed_report` = '" . strip_tags($closed_report) . "', `confirmation_followup_report` = '" . strip_tags($confirmation_followup_report) . "', `agent_report` = '" . strip_tags($agent_report) . "', `no_due_pay_report` = '" . strip_tags($no_due_pay_report) . "', `other_trans_report` = '" . strip_tags($other_trans_report) . "',`day_end_report` = '" . strip_tags($day_end_report) . "',`cash_tally_activity_report` = '" . strip_tags($cash_tally_activity_report) . "', `due_followup_customer_count_report` = '" . strip_tags($due_followup_customer_count_report) . "', `commitment_report` = '" . strip_tags($commitment_report) . "', `customer_status_report` = '" . strip_tags($customer_status_report) . "',`promotion_activity_report` = '" . strip_tags($promotion_activity_report) . "',`cleared_report` = '" . strip_tags($cleared_report) . "',`events_report` = '" . strip_tags($events_report) . "',`area_loan_count_report` = '" . strip_tags($area_loan_count_report) . "',`work_count_report` = '" . strip_tags($work_count_report) . "',`noc_handover_report` = '" . strip_tags($noc_handover_report) . "',`confirmation_count_report` = '" . strip_tags($confirmation_count_report) . "',`concern_report` = '" . strip_tags($concern_report) . "',`partners_report` = '" . strip_tags($partners_report) . "',`reportmodule_intrest` = '" . strip_tags($reportmodule_intrest) . "', `intrest_ledger_report` = '" . strip_tags($intrest_ledger_report) . "', `intrest_loan_issue_report` = '" . strip_tags($intrest_loan_issue_report) . "', `intrest_collection_report` = '" . strip_tags($intrest_collection_report) . "', `intrest_balance_report` = '" . strip_tags($intrest_balance_report) . "', `intrest_closed_report` = '" . strip_tags($intrest_closed_report) . "', `search_module` = '" . strip_tags($searchmodule) . "', `search` = '" . strip_tags($search_screen) . "', `bulk_upload_module` = '" . strip_tags($bulk_upload_module) . "', `bulk_upload` = '" . strip_tags($bulk_upload) . "', `loan_track` = '" . strip_tags($loan_track) . "', `sms_module` = '" . strip_tags($sms_module) . "', `sms_generation` = '" . strip_tags($sms_generation) . "', `status` = 0, `update_login_id` = '" . strip_tags($user_id) . "', `updated_date` = current_timestamp() WHERE user_id = '" . strip_tags($id) . "' ";
+		$updateQry = "UPDATE `user` SET `fullname` = '" . strip_tags($full_name) . "', `emailid` = '" . strip_tags($email) . "', `user_name` = '" . strip_tags($user_name) . "', `user_password` = '" . strip_tags($user_password) . "', `role` = '" . strip_tags($role) . "', `role_type` = '" . strip_tags($role_type) . "', `dir_id` = '" . strip_tags($dir_name) . "',`ag_id` = '" . strip_tags($ag_name) . "', `staff_id` = '" . strip_tags($staff_name) . "', `company_id` = '" . strip_tags($company_id) . "', `branch_id` = '" . strip_tags($branch_id) . "', `bank_access` = '" . strip_tags($bank_access) . "', agentforstaff='" . strip_tags($agentforstaff) . "', `line_id` = '" . strip_tags($line) . "', `group_id` = '" . strip_tags($group) . "', `download_access` = '" . strip_tags($download_access) . "', `report_access` = '" . strip_tags($report_access) . "',`home_access` = '" . strip_tags($home_access) . "', `pro_aty_access` = '" . strip_tags($pro_aty_access) . "', `promotion_activity_mapping_access`='" . strip_tags($promotion_activity_mapping_access) . "', `mastermodule` = '" . strip_tags($mastermodule) . "', `company_creation` = '" . strip_tags($company_creation) . "', `branch_creation` = '" . strip_tags($branch_creation) . "', `loan_category` = '" . strip_tags($loan_category) . "',`area_creation` = '" . strip_tags($area_creation) . "', `area_mapping` = '" . strip_tags($area_mapping) . "', `area_approval` = '" . strip_tags($area_approval) . "', `adminmodule` = '" . strip_tags($adminmodule) . "', `director_creation` = '" . strip_tags($director_creation) . "', `agent_creation` = '" . strip_tags($agent_creation) . "', `staff_creation` = '" . strip_tags($staff_creation) . "', `manage_user` = '" . strip_tags($manage_user) . "', `doc_mapping`='" . strip_tags($doc_mapping) . "', `bank_creation`='" . strip_tags($bank_creation) . "', `requestmodule`='" . strip_tags($requestmodule) . "', `request`='" . strip_tags($request) . "', `request_list_access`='" . strip_tags($request_list_access) . "',`verificationmodule`='" . strip_tags($verificationmodule) . "', `verification`='" . strip_tags($verification) . "',`ver_loan_cat`='" . strip_tags($ver_loan_cat) . "',`ver_group_id`='" . strip_tags($ver_group_id) . "', `approvalmodule`='" . strip_tags($approvalmodule) . "', `approval`='" . strip_tags($approval) . "',`app_loan_cat`='" . strip_tags($app_loan_cat) . "',  `acknowledgementmodule`='" . strip_tags($acknowledgementmodule) . "', `acknowledgement`='" . strip_tags($acknowledgement) . "',`ack_loan_cat`='" . strip_tags($ack_loan_cat) . "',  `loanissuemodule`='" . strip_tags($loanissuemodule) . "', `loan_issue`='" . strip_tags($loan_issue) . "', `collectionmodule` = '" . strip_tags($collectionmodule) . "',  `collection` = '" . strip_tags($collection) . "',  `collection_access` = '" . strip_tags($collection_access) . "', `closedmodule` = '" . strip_tags($closedmodule) . "',  `closed` = '" . strip_tags($closed) . "',  `nocmodule` = '" . strip_tags($nocmodule) . "', `noc` = '" . strip_tags($noc) . "',`noc_handover` = '" . strip_tags($noc_handover) . "', `noc_replace_access` = '" . strip_tags($noc_replace_access) . "', `noc_mapping_access`='" . strip_tags($noc_mapping_access) . "', `doctrackmodule` = '" . strip_tags($doctrackmodule) . "', `doctrack` = '" . strip_tags($doctrack) . "', `doc_rec_access` = '" . strip_tags($doc_rec_access) . "', `noc_replace` = '" . strip_tags($noc_replace) . "', `updatemodule` = '" . strip_tags($updatemodule) . "', `update_screen` = '" . strip_tags($update_screen) . "', `update_screen_id` = '" . strip_tags($update_screen_id) . "', `concernmodule`='" . strip_tags($concernmodule) . "', `concern_creation`='" . strip_tags($concernCreation) . "', `concern_solution`='" . strip_tags($concernSolution) . "', `concern_feedback`='" . strip_tags($concernFeedback) . "', `accountsmodule`='" . strip_tags($accountsmodule) . "', `cash_tally`='" . strip_tags($cash_tally) . "',`cash_tally_access`='" . strip_tags($cash_tally_access) . "', `cash_tally_admin`='" . strip_tags($cash_tally_admin) . "', `bank_details`='" . strip_tags($bank_details) . "',`bank_clearance`='" . strip_tags($bank_clearance) . "',`bnk_clr_upl_acc`='" . strip_tags($bnk_clr_upl_acc) . "', `finance_insight`='" . strip_tags($finance_insight) . "', `accounts_loan_issue`='" . strip_tags($accounts_loan_issue) . "', `followupmodule`='" . strip_tags($followupmodule) . "', `promotion_activity`='" . strip_tags($promotion_activity) . "', `loan_followup`='" . strip_tags($loan_followup) . "', `confirmation_followup`='" . strip_tags($conf_followup) . "', `due_followup`='" . strip_tags($due_followup) . "', `ecs_followup`='" . strip_tags($ecs_followup) . "',  `due_followup_lines`='" . strip_tags($due_follup_line) . "',`reportmodule` = '" . strip_tags($reportmodule) . "',`work_report_module` = '" . strip_tags($work_report_module) . "',`monitor_report_module` = '" . strip_tags($monitor_report_module) . "',`analysis_report_module` = '" . strip_tags($analysis_report_module) . "',`accounts_report_module` = '" . strip_tags($accounts_report_module) . "', `ledger_report` = '" . strip_tags($ledger_report) . "', `request_report` = '" . strip_tags($request_report) . "', `cancel_revoke_report` = '" . strip_tags($cancel_revoke_report) . "', `cus_profile_report` = '" . strip_tags($cus_profile_report) . "', `loan_issue_report` = '" . strip_tags($loan_issue_report) . "', `collection_report` = '" . strip_tags($collection_report) . "', `principal_interest_report` = '" . strip_tags($principal_interest_report) . "', `balance_report` = '" . strip_tags($balance_report) . "', `due_list_report` = '" . strip_tags($due_list_report) . "', `in_closed_report` = '" . strip_tags($in_closed_report) . "', `closed_report` = '" . strip_tags($closed_report) . "', `confirmation_followup_report` = '" . strip_tags($confirmation_followup_report) . "', `agent_report` = '" . strip_tags($agent_report) . "', `no_due_pay_report` = '" . strip_tags($no_due_pay_report) . "', `other_trans_report` = '" . strip_tags($other_trans_report) . "',`day_end_report` = '" . strip_tags($day_end_report) . "',`cash_tally_activity_report` = '" . strip_tags($cash_tally_activity_report) . "', `due_followup_customer_count_report` = '" . strip_tags($due_followup_customer_count_report) . "', `commitment_report` = '" . strip_tags($commitment_report) . "', `customer_status_report` = '" . strip_tags($customer_status_report) . "',`promotion_activity_report` = '" . strip_tags($promotion_activity_report) . "',`cleared_report` = '" . strip_tags($cleared_report) . "',`events_report` = '" . strip_tags($events_report) . "',`area_loan_count_report` = '" . strip_tags($area_loan_count_report) . "',`work_count_report` = '" . strip_tags($work_count_report) . "',`noc_handover_report` = '" . strip_tags($noc_handover_report) . "',`confirmation_count_report` = '" . strip_tags($confirmation_count_report) . "',`concern_report` = '" . strip_tags($concern_report) . "',`partners_report` = '" . strip_tags($partners_report) . "',`reportmodule_intrest` = '" . strip_tags($reportmodule_intrest) . "', `intrest_ledger_report` = '" . strip_tags($intrest_ledger_report) . "', `intrest_loan_issue_report` = '" . strip_tags($intrest_loan_issue_report) . "', `intrest_collection_report` = '" . strip_tags($intrest_collection_report) . "', `intrest_balance_report` = '" . strip_tags($intrest_balance_report) . "', `intrest_closed_report` = '" . strip_tags($intrest_closed_report) . "', `search_module` = '" . strip_tags($searchmodule) . "', `search` = '" . strip_tags($search_screen) . "', `bulk_upload_module` = '" . strip_tags($bulk_upload_module) . "', `bulk_upload` = '" . strip_tags($bulk_upload) . "', `loan_track` = '" . strip_tags($loan_track) . "', `sms_module` = '" . strip_tags($sms_module) . "', `sms_generation` = '" . strip_tags($sms_generation) . "', `status` = 0, `update_login_id` = '" . strip_tags($user_id) . "', `updated_date` = current_timestamp() WHERE user_id = '" . strip_tags($id) . "' ";
 
 
 		$result = $mysqli->query($updateQry) or die;
@@ -4229,8 +4282,11 @@ class admin
 		if (isset($_POST['cus_data'])) {
 			$cus_data = $_POST['cus_data'];
 		}
-		if (isset($_POST['cus_name'])) {
-			$cus_name = $_POST['cus_name'];
+		if (isset($_POST['first_name'])) {
+			$first_name = $_POST['first_name'];
+		}
+		if (isset($_POST['last_name'])) {
+			$last_name = $_POST['last_name'];
 		}
 		if (isset($_POST['dob'])) {
 			$dob = $_POST['dob'];
@@ -4253,9 +4309,6 @@ class admin
 		if (isset($_POST['area'])) {
 			$area = $_POST['area'];
 		}
-		if (isset($_POST['sub_area'])) {
-			$sub_area = $_POST['sub_area'];
-		}
 		if (isset($_POST['address'])) {
 			$address = $_POST['address'];
 		}
@@ -4265,6 +4318,12 @@ class admin
 		$mobile2 = '';
 		if (isset($_POST['mobile2'])) {
 			$mobile2 = $_POST['mobile2'];
+		}
+		if (isset($_POST['mobile_whatsapp'])) {
+			$mobile_whatsapp = $_POST['mobile_whatsapp'];
+		}
+		if (isset($_POST['whatsapp_no'])) {
+			$whatsapp_no = $_POST['whatsapp_no'];
 		}
 		if (isset($_POST['father_name'])) {
 			$father_name = $_POST['father_name'];
@@ -4302,9 +4361,6 @@ class admin
 
 		if (isset($_POST['loan_category'])) {
 			$loan_category = $_POST['loan_category'];
-		}
-		if (isset($_POST['sub_category'])) {
-			$sub_category = $_POST['sub_category'];
 		}
 		$tot_value = '';
 		if (isset($_POST['tot_value'])) {
@@ -4372,36 +4428,37 @@ class admin
 
 
 			$insertQry = "INSERT INTO request_creation(`user_type`, `user_name`, `agent_id`, `responsible`, `remarks`, `declaration`, `req_code`, `dor`, `cus_id`,
-		`cus_data`, `cus_name`, `dob`, `age`, `gender`, `state`, `district`, `taluk`, `area`, `sub_area`, `address`, `mobile1`, `mobile2`, `father_name`, 
-		`mother_name`, `marital`, `spouse_name`, `occupation_type`, `occupation`, `pic`, `loan_category`, `sub_category`, `tot_value`, `ad_amt`, `ad_perc`, 
+		`cus_data`, `first_name`, `last_name`, `dob`, `age`, `gender`, `state`, `district`, `taluk`, `area`, `address`, `mobile1`, `mobile2`,`mobile_whatsapp`,`whatsapp_no`,`father_name`, 
+		`mother_name`, `marital`, `spouse_name`, `occupation_type`, `occupation`, `pic`, `loan_category`,  `tot_value`, `ad_amt`, `ad_perc`, 
 		`loan_amt`, `poss_type`, `due_amt`, `due_period`, `insert_login_id`,`created_date`) 
 		VALUES('" . strip_tags($user_type) . "','" . strip_tags($user) . "','" . strip_tags($agent) . "','" . strip_tags($responsible) . "','" . strip_tags($remarks) . "',
 		'" . strip_tags($declaration) . "','" . strip_tags($req_code) . "','" . strip_tags($dor) . "', '" . strip_tags($cus_id) . "',
-		'" . strip_tags($cus_data) . "','" . strip_tags($cus_name) . "','" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "',
-		'" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "', '" . strip_tags($sub_area) . "', '" . strip_tags($address) . "', '" . strip_tags($mobile1) . "',
-		'" . strip_tags($mobile2) . "','" . strip_tags($father_name) . "','" . strip_tags($mother_name) . "', '" . strip_tags($marital) . "', '" . strip_tags($spouse_name) . "', '" . strip_tags($occupation_type) . "',
-		'" . strip_tags($occupation) . "','" . strip_tags($pic) . "','" . strip_tags($loan_category) . "', '" . strip_tags($sub_category) . "', '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "',
+		'" . strip_tags($cus_data) . "','" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "', '" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "',
+		'" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "', '" . strip_tags($address) . "', '" . strip_tags($mobile1) . "',
+		'" . strip_tags($mobile2) . "','" . strip_tags($mobile_whatsapp) . "','" . strip_tags($whatsapp_no) . "','" . strip_tags($father_name) . "','" . strip_tags($mother_name) . "', '" . strip_tags($marital) . "', '" . strip_tags($spouse_name) . "', '" . strip_tags($occupation_type) . "',
+		'" . strip_tags($occupation) . "','" . strip_tags($pic) . "','" . strip_tags($loan_category) . "', '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "',
 		'" . strip_tags($ad_perc) . "', '" . strip_tags($loan_amt) . "','" . strip_tags($poss_type) . "','" . strip_tags($due_amt) . "','" . strip_tags($due_period) . "',
 		'" . strip_tags($userid) . "',current_timestamp )";
+		
 			$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 			$req_ref_id = $mysqli->insert_id;
+		
 			if ($cus_data == 'New') {
-				$CustomerInsert = "INSERT INTO customer_register (`autogen_cus_id`, `cus_id`,`req_ref_id`, `customer_name`, `dob`, `age`, `gender`, `state`, `district`,
-				`taluk`, `area`, `sub_area`, `address`, `mobile1`, `mobile2`, `father_name`, `mother_name`, `marital`, `spouse`, `occupation_type`, `occupation`,`pic`)
-				VALUES( '" . strip_tags($autogen_cus_id) . "', '" . strip_tags($cus_id) . "','" . strip_tags($req_ref_id) . "','" . strip_tags($cus_name) . "','" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "',
-				'" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "', '" . strip_tags($sub_area) . "', '" . strip_tags($address) . "', '" . strip_tags($mobile1) . "',
-				'" . strip_tags($mobile2) . "','" . strip_tags($father_name) . "','" . strip_tags($mother_name) . "', '" . strip_tags($marital) . "', '" . strip_tags($spouse_name) . "',
-				'" . strip_tags($occupation_type) . "','" . strip_tags($occupation) . "','" . strip_tags($pic) . "' )";
+				$CustomerInsert = "INSERT INTO customer_register (`autogen_cus_id`, `cus_id`,`req_ref_id`, `first_name`, `last_name`, `dob`, `age`, `gender`, `state`, `district`,
+				`taluk`, `area`,  `address`, `mobile1`, `mobile2`,`mobile_whatsapp`,`whatsapp_no`, `father_name`, `mother_name`, `marital`, `spouse`, `occupation_type`, `occupation`,`pic`)
+				VALUES( '" . strip_tags($autogen_cus_id) . "', '" . strip_tags($cus_id) . "','" . strip_tags($req_ref_id) . "','" . strip_tags($first_name) . "','" . strip_tags($last_name) . "','" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "',
+				'" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "',  '" . strip_tags($address) . "', '" . strip_tags($mobile1) . "',
+				'" . strip_tags($mobile2) ."','" 	. strip_tags($mobile_whatsapp)."','" 	. strip_tags($whatsapp_no)."','" 	. strip_tags($father_name)."','" 	. strip_tags($mother_name)."', '" . strip_tags($marital) . "', '" . strip_tags($spouse_name) . "',
+				'" . strip_tags($occupation_type) . "','" . strip_tags($occupation) ."','" 	. strip_tags($pic)."' )";
 				$insresult = $mysqli->query($CustomerInsert) or die("Error " . $mysqli->error);
 			} elseif ($cus_data == 'Existing') {
-				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "',`req_ref_id` = '" . strip_tags($req_ref_id) . "', `customer_name` = '" . strip_tags($cus_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `sub_area` = '" . strip_tags($sub_area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id) . "' ");
+				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "',`req_ref_id` = '" . strip_tags($req_ref_id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "',`address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id) . "' ");
 			}
 
 			for ($i = 0; $i < sizeof($category_info); $i++) {
 				$insertQry = "INSERT INTO `request_category_info`(`req_ref_id`, `category_info`) VALUES ('" . strip_tags($req_ref_id) . "','" . strip_tags($category_info[$i]) . "') ";
 				$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 			}
-
 			// Commit the transaction
 			$mysqli->commit();
 
@@ -4445,7 +4502,8 @@ class admin
 			$detailrecords['dor'] = $row['dor'];
 			$detailrecords['cus_id'] = $row['cus_id'];
 			$detailrecords['cus_data'] = $row['cus_data'];
-			$detailrecords['cus_name'] = $row['cus_name'];
+			$detailrecords['first_name'] = $row['first_name'];
+			$detailrecords['last_name'] = $row['last_name'];
 			$detailrecords['dob'] = $row['dob'];
 			$detailrecords['age'] = $row['age'];
 			$detailrecords['gender'] = $row['gender'];
@@ -4453,10 +4511,11 @@ class admin
 			$detailrecords['district'] = $row['district'];
 			$detailrecords['taluk'] = $row['taluk'];
 			$detailrecords['area'] = $row['area'];
-			$detailrecords['sub_area'] = $row['sub_area'];
 			$detailrecords['address'] = $row['address'];
 			$detailrecords['mobile1'] = $row['mobile1'];
 			$detailrecords['mobile2'] = $row['mobile2'];
+			$detailrecords['mobile_whatsapp'] = $row['mobile_whatsapp'];
+			$detailrecords['whatsapp_no'] = $row['whatsapp_no'];
 			$detailrecords['father_name'] = $row['father_name'];
 			$detailrecords['mother_name'] = $row['mother_name'];
 			$detailrecords['marital'] = $row['marital'];
@@ -4465,7 +4524,6 @@ class admin
 			$detailrecords['occupation'] = $row['occupation'];
 			$detailrecords['pic'] = $row['pic'];
 			$detailrecords['loan_category'] = $row['loan_category'];
-			$detailrecords['sub_category'] = $row['sub_category'];
 			$detailrecords['tot_value'] = $row['tot_value'];
 			$detailrecords['ad_amt'] = $row['ad_amt'];
 			$detailrecords['ad_perc'] = $row['ad_perc'];
@@ -4531,8 +4589,11 @@ class admin
 		if (isset($_POST['cus_data'])) {
 			$cus_data = $_POST['cus_data'];
 		}
-		if (isset($_POST['cus_name'])) {
-			$cus_name = $_POST['cus_name'];
+		if (isset($_POST['first_name'])) {
+			$first_name = $_POST['first_name'];
+		}
+		if (isset($_POST['last_name'])) {
+			$last_name = $_POST['last_name'];
 		}
 		if (isset($_POST['dob'])) {
 			$dob = $_POST['dob'];
@@ -4555,9 +4616,6 @@ class admin
 		if (isset($_POST['area'])) {
 			$area = $_POST['area'];
 		}
-		if (isset($_POST['sub_area'])) {
-			$sub_area = $_POST['sub_area'];
-		}
 		if (isset($_POST['address'])) {
 			$address = $_POST['address'];
 		}
@@ -4567,6 +4625,12 @@ class admin
 		$mobile2 = '';
 		if (isset($_POST['mobile2'])) {
 			$mobile2 = $_POST['mobile2'];
+		}
+		if (isset($_POST['mobile_whatsapp'])) {
+			$mobile_whatsapp = $_POST['mobile_whatsapp'];
+		}
+		if (isset($_POST['whatsapp_no'])) {
+			$whatsapp_no = $_POST['whatsapp_no'];
 		}
 		if (isset($_POST['father_name'])) {
 			$father_name = $_POST['father_name'];
@@ -4605,9 +4669,6 @@ class admin
 		}
 		if (isset($_POST['loan_category'])) {
 			$loan_category = $_POST['loan_category'];
-		}
-		if (isset($_POST['sub_category'])) {
-			$sub_category = $_POST['sub_category'];
 		}
 		$tot_value = '';
 		if (isset($_POST['tot_value'])) {
@@ -4674,13 +4735,13 @@ class admin
 			$insertQry = "UPDATE `request_creation` SET `user_type`='" . strip_tags($user_type) . "',`user_name`='" . strip_tags($user) . "',`agent_id`='" . strip_tags($agent) . "',
 			`responsible`='" . strip_tags($responsible) . "',`remarks`='" . strip_tags($remarks) . "',`declaration`='" . strip_tags($declaration) . "',`req_code`='" . strip_tags($req_code) . "',
 			`dor`='" . strip_tags($dor) . "',`cus_id`='" . strip_tags($cus_id) . "',
-			`cus_data`='" . strip_tags($cus_data) . "',`cus_name`='" . strip_tags($cus_name) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',
+			`cus_data`='" . strip_tags($cus_data) . "',`first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',
 			`gender`='" . strip_tags($gender) . "',`state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',
-			`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`sub_area`='" . strip_tags($sub_area) . "',`address`='" . strip_tags($address) . "',`mobile1`='" . strip_tags($mobile1) . "',
-			`mobile2`='" . strip_tags($mobile2) . "',`father_name`='" . strip_tags($father_name) . "',
+			`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`address`='" . strip_tags($address) . "',`mobile1`='" . strip_tags($mobile1) . "',
+			`mobile2`='" . strip_tags($mobile2) . "',`mobile_whatsapp`='" . strip_tags($mobile_whatsapp) . "',`whatsapp_no`='" . strip_tags($whatsapp_no) . "',`father_name`='" . strip_tags($father_name) . "',
 			`mother_name`='" . strip_tags($mother_name) . "',`marital`='" . strip_tags($marital) . "',`spouse_name`='" . strip_tags($spouse_name) . "',`occupation_type`='" . strip_tags($occupation_type) . "',
 			`occupation`='" . strip_tags($occupation) . "',`pic`='" . strip_tags($pic) . "',
-			`loan_category`='" . strip_tags($loan_category) . "',`sub_category`='" . strip_tags($sub_category) . "',`tot_value`='" . strip_tags($tot_value) . "',`ad_amt`='" . strip_tags($ad_amt) . "',
+			`loan_category`='" . strip_tags($loan_category) . "',`tot_value`='" . strip_tags($tot_value) . "',`ad_amt`='" . strip_tags($ad_amt) . "',
 			`ad_perc`='" . strip_tags($ad_perc) . "',`loan_amt`='" . strip_tags($loan_amt) . "',
 			`poss_type`='" . strip_tags($poss_type) . "',`due_amt`='" . strip_tags($due_amt) . "',`due_period`='" . strip_tags($due_period) .
 				"',
@@ -4702,10 +4763,10 @@ class admin
 				if ($cus_data_upd == "New") {
 					if ($cus_reg_cnt == 0) { //New
 						//...update by old cus id.
-						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `customer_name` = '" . strip_tags($cus_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `sub_area` = '" . strip_tags($sub_area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id_upd) . "' ");
+						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "',`mobile_whatsapp`='" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id_upd) . "' ");
 					} else { //Existing
 						//...update by new cus id.
-						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `customer_name` = '" . strip_tags($cus_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `sub_area` = '" . strip_tags($sub_area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id) . "' ");
+						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id) . "' ");
 
 						//...delete old cus id.
 						$mysqli->query("DELETE From customer_register where cus_id = '" . strip_tags($cus_id_upd) . "' ");
@@ -4713,19 +4774,19 @@ class admin
 				} else if ($cus_data_upd == "Existing") {
 					if ($cus_reg_cnt == 0) { //New
 						//...insert by new cus id.
-						$CustomerInsert = "INSERT INTO customer_register (`autogen_cus_id`, `cus_id`, `req_ref_id`, `customer_name`, `dob`, `age`, `gender`, `state`, `district`,
-						`taluk`, `area`, `sub_area`, `address`, `mobile1`, `mobile2`, `father_name`, `mother_name`, `marital`, `spouse`, `occupation_type`, `occupation`, `pic`)
-						VALUES ( '" . strip_tags($autogen_cus_id) . "', '" . strip_tags($cus_id) . "', '" . strip_tags($id) . "', '" . strip_tags($cus_name) . "', '" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "', '" . strip_tags($district) . "', '" . strip_tags($taluk) . "', '" . strip_tags($area) . "', '" . strip_tags($sub_area) . "', '" . strip_tags($address) . "', '" . strip_tags($mobile1) . "', '" . strip_tags($mobile2) . "', '" . strip_tags($father_name) . "', '" . strip_tags($mother_name) . "', '" . strip_tags($marital) . "', '" . strip_tags($spouse_name) . "', '" . strip_tags($occupation_type) . "', '" . strip_tags($occupation) . "', '" . strip_tags($pic) . "' )";
-						$insresult = $mysqli->query($CustomerInsert) or die("Error " . $mysqli->error);
+						$CustomerInsert = "INSERT INTO customer_register (`autogen_cus_id`, `cus_id`, `req_ref_id`, `first_name`, `last_name`, `dob`, `age`, `gender`, `state`, `district`,
+						`taluk`, `area`,`address`, `mobile1`, `mobile2`, `mobile_whatsapp`, `whatsapp_no`, `father_name`, `mother_name`, `marital`, `spouse`, `occupation_type`, `occupation`, `pic`)
+						VALUES ( '" . strip_tags($autogen_cus_id) . "', '" . strip_tags($cus_id) . "', '" . strip_tags($id) . "', '" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "', '" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "', '" . strip_tags($district) . "', '" . strip_tags($taluk) . "', '" . strip_tags($area) . "','" . strip_tags($address) . "', '" . strip_tags($mobile1) . "', '" . strip_tags($mobile2) . "', '" 	. 	strip_tags( $mobile_whatsapp ) 	. "', '" 	. 	strip_tags( $whatsapp_no ) 	. "', '" 	. 	strip_tags( $father_name ) 	. "', '" 	. 	strip_tags( $mother_name ) 	. "', '" 	. 	strip_tags( $marital ) 	. "', '" 	. 	strip_tags( $spouse_name ) 	. "', '" 	. 	strip_tags( $occupation_type ) 	. "', '" 	. 	strip_tags( $occupation ) 	. "', '" 	. 	strip_tags( $pic ) 	. "' )";
+						$insresult = $mysqli->query($CustomerInsert) or die("Error " .$mysqli->error);
 					} else { //Existing
 						//...update by new cus id.
-						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `customer_name` = '" . strip_tags($cus_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `sub_area` = '" . strip_tags($sub_area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id) . "' ");
+						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) 	. "', `pic` = '" 	. 	strip_tags( $pic ) 	. "' WHERE cus_id= '$cus_id' ");
 					}
 
 					$mysqli->query(" UPDATE customer_register SET req_ref_id = ( SELECT req_id FROM request_creation WHERE cus_id = $cus_id_upd ORDER BY req_id DESC LIMIT 1)  WHERE cus_id = $cus_id_upd ");
 				}
 			} else { //if cus id not edit just update by cus id.
-				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `customer_name` = '" . strip_tags($cus_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `sub_area` = '" . strip_tags($sub_area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id) . "' ");
+				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "',`address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "',`mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) 	. "', `pic` = '" 	. 	strip_tags( $pic ) 	. "' WHERE cus_id= '$cus_id' ");
 			}
 
 
@@ -4783,7 +4844,8 @@ class admin
 			$reqToverify['dor'] = $row['dor'];
 			$reqToverify['cus_id'] = $row['cus_id'];
 			$reqToverify['cus_data'] = $row['cus_data'];
-			$reqToverify['cus_name'] = $row['cus_name'];
+			$reqToverify['first_name'] = $row['first_name'];
+			$reqToverify['last_name'] = $row['last_name'];
 			$reqToverify['dob'] = $row['dob'];
 			$reqToverify['age'] = $row['age'];
 			$reqToverify['gender'] = $row['gender'];
@@ -4792,10 +4854,10 @@ class admin
 			$reqToverify['district'] = $row['district'];
 			$reqToverify['taluk'] = $row['taluk'];
 			$reqToverify['area'] = $row['area'];
-			$reqToverify['sub_area'] = $row['sub_area'];
 			$reqToverify['address'] = $row['address'];
 			$reqToverify['mobile1'] = $row['mobile1'];
 			$reqToverify['mobile2'] = $row['mobile2'];
+			$reqToverify['whatsapp_no'] = $row['whatsapp_no'];
 			$reqToverify['father_name'] = $row['father_name'];
 			$reqToverify['mother_name'] = $row['mother_name'];
 			$reqToverify['marital'] = $row['marital'];
@@ -4804,7 +4866,6 @@ class admin
 			$reqToverify['occupation'] = $row['occupation'];
 			$reqToverify['pic'] = $row['pic'];
 			$reqToverify['loan_category'] = $row['loan_category'];
-			$reqToverify['sub_category'] = $row['sub_category'];
 			$reqToverify['tot_value'] = $row['tot_value'];
 			$reqToverify['ad_amt'] = $row['ad_amt'];
 			$reqToverify['ad_perc'] = $row['ad_perc'];
@@ -4820,9 +4881,6 @@ class admin
 
 			$areaQry = $mysqli->query("SELECT area_name from area_list_creation where area_id = '" . $row['area'] . "' ");
 			$reqToverify['area_name'] = $areaQry->fetch_assoc()['area_name'];
-
-			$subareaQry = $mysqli->query("SELECT sub_area_name from sub_area_list_creation where sub_area_id = '" . $row['sub_area'] . "' ");
-			$reqToverify['sub_area_name'] = $subareaQry->fetch_assoc()['sub_area_name'];
 
 			$ageqry = $mysqli->query("SELECT ag_name from agent_creation where ag_id = '" . $row['agent_id'] . "' ");
 			$reqToverify['agent_name'] = $ageqry->fetch_assoc()['ag_name'] ?? '';
@@ -4849,8 +4907,11 @@ class admin
 		if (isset($_POST['cus_id'])) {
 			$cus_id =  preg_replace('/\s+/', '', $_POST['cus_id']);
 		}
-		if (isset($_POST['cus_name'])) {
-			$cus_name = $_POST['cus_name'];
+		if (isset($_POST['first_name'])) {
+			$first_name = $_POST['first_name'];
+		}
+		if (isset($_POST['last_name'])) {
+			$last_name = $_POST['last_name'];
 		}
 		if (isset($_POST['gender'])) {
 			$gender = $_POST['gender'];
@@ -4998,9 +5059,6 @@ class admin
 		if (isset($_POST['area'])) {
 			$area = $_POST['area'];
 		}
-		if (isset($_POST['sub_area'])) {
-			$sub_area = $_POST['sub_area'];
-		}
 		if (isset($_POST['latlong'])) {
 			$latlong = $_POST['latlong'];
 		}
@@ -5053,27 +5111,27 @@ class admin
 			$qry = $mysqli->query("SELECT req_id From customer_profile where req_id = $req_id");
 			if ($qry->num_rows == 0) {
 				//this will filter out duplication entry in customer profile table
-				$insertQry = "INSERT INTO `customer_profile`( `req_id`, `cus_id`, `cus_name`, `gender`, `dob`, `age`, `blood_group`, `mobile1`, `mobile2`, `whatsapp`,`cus_pic`, `guarentor_name`, `guarentor_relation`, `guarentor_photo`, `cus_type`, `cus_exist_type`, `residential_type`, `residential_details`, `residential_address`, `residential_native_address`, `occupation_type`, `occupation_details`, `occupation_income`, `occupation_address`, `dow`, `abt_occ`, `area_confirm_type`, `area_confirm_state`, `area_confirm_district`, `area_confirm_taluk`, `area_confirm_area`, `area_confirm_subarea`,`latlong` , `area_group`, `area_line`, `cus_status`, `insert_login_id`,`created_date`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id) . "','" . strip_tags($cus_name) . "','" . strip_tags($gender) . "','" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($bloodGroup) . "', '" . strip_tags($mobile1) . "','" . strip_tags($mobile2) . "','" . strip_tags($whatsapp_no) . "','" . strip_tags($pic_req) . "','" . strip_tags($guarentor_name) . "', '" . strip_tags($guarentor_relationship) . "', '" . strip_tags($guarentor) . "', '" . strip_tags($cus_type) . "',
-				'" . strip_tags($cus_exist_type) . "','" . strip_tags($cus_res_type) . "','" . strip_tags($cus_res_details) . "','" . strip_tags($cus_res_address) . "', '" . strip_tags($cus_res_native) . "', '" . strip_tags($cus_occ_type) . "','" . strip_tags($cus_occ_detail) . "','" . strip_tags($cus_occ_income) . "','" . strip_tags($cus_occ_address) . "','" . strip_tags($cus_occ_dow) . "','" . strip_tags($cus_occ_abt) . "','" . strip_tags($area_cnfrm) . "','" . strip_tags($state) . "','" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "','" . strip_tags($sub_area) . "','" . strip_tags($latlong) . "','" . strip_tags($area_group) . "','" . strip_tags($area_line) . "','10','" . $userid . "',current_timestamp() )";
+				$insertQry = "INSERT INTO `customer_profile`( `req_id`, `cus_id`, `first_name`, `last_name`,`gender`, `dob`, `age`, `blood_group`, `mobile1`, `mobile2`, `whatsapp`,`cus_pic`, `guarentor_name`, `guarentor_relation`, `guarentor_photo`, `cus_type`, `cus_exist_type`, `residential_type`, `residential_details`, `residential_address`, `residential_native_address`, `occupation_type`, `occupation_details`, `occupation_income`, `occupation_address`, `dow`, `abt_occ`, `area_confirm_type`, `area_confirm_state`, `area_confirm_district`, `area_confirm_taluk`, `area_confirm_area`,`latlong` , `area_group`, `area_line`, `cus_status`, `insert_login_id`,`created_date`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id) . "','" . strip_tags($first_name) . "','" . strip_tags($last_name) . "','" . strip_tags($gender) . "','" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($bloodGroup) . "', '" . strip_tags($mobile1) . "','" . strip_tags($mobile2) . "','" . strip_tags($whatsapp_no) . "','" . strip_tags($pic_req) . "','" . strip_tags($guarentor_name) . "', '" . strip_tags($guarentor_relationship) . "', '" . strip_tags($guarentor) . "', '" . strip_tags($cus_type) . "',
+				'" . strip_tags($cus_exist_type) . "','" . strip_tags($cus_res_type) . "','" . strip_tags($cus_res_details) . "','" . strip_tags($cus_res_address) . "', '" . strip_tags($cus_res_native) . "', '" . strip_tags($cus_occ_type) . "','" . strip_tags($cus_occ_detail) . "','" . strip_tags($cus_occ_income) . "','" . strip_tags($cus_occ_address) . "','" . strip_tags($cus_occ_dow) . "','" . strip_tags($cus_occ_abt) . "','" . strip_tags($area_cnfrm) . "','" . strip_tags($state) . "','" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "','" . strip_tags($latlong) . "','" . strip_tags($area_group) . "','" . strip_tags($area_line) . "','10','" . $userid . "',current_timestamp() )";
 				$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 
 				$insertQry = "UPDATE request_creation set cus_status = 10,updated_date=now() where req_id ='" . strip_tags($req_id) . "' ";
 				$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 
-				$insertQry = "UPDATE in_verification set agent_id = '" . strip_tags($cus_agent_name) . "' ,cus_status = 10,`cus_id`='" . strip_tags($cus_id) . "',`cus_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "', `state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`sub_area`='" . strip_tags($sub_area) . "', `mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`pic`='" . strip_tags($pic_req) . "',updated_date=now() where req_id ='" . strip_tags($req_id) . "' ";
+				$insertQry = "UPDATE in_verification set agent_id = '" . strip_tags($cus_agent_name) . "' ,cus_status = 10,`cus_id`='" . strip_tags($cus_id) . "',`first_name`='" . strip_tags($first_name) . "', `last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "', `state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`pic`='" . strip_tags($pic_req) . "',updated_date=now() where req_id ='" . strip_tags($req_id) . "' ";
 				$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 			}
 		} else {
 
-			$cusUpd = "UPDATE `customer_profile` SET `req_id`='" . strip_tags($req_id) . "',`cus_id`='" . strip_tags($cus_id) . "',`cus_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "',`mobile1`='" . strip_tags($mobile1) . "',`mobile2`='" . strip_tags($mobile2) . "',`whatsapp`='" . strip_tags($whatsapp_no) . "',`cus_pic`='" . strip_tags($pic_req) . "',`guarentor_name`='" . strip_tags($guarentor_name) . "',`guarentor_relation`='" . strip_tags($guarentor_relationship) . "',`guarentor_photo`='" . strip_tags($guarentor) . "',`cus_type`='" . strip_tags($cus_type) . "',`cus_exist_type`='" . strip_tags($cus_exist_type) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($state) . "',`area_confirm_district`='" . strip_tags($district) . "',`area_confirm_taluk`='" . strip_tags($taluk) . "',`area_confirm_area`='" . strip_tags($area) . "',`area_confirm_subarea`='" . strip_tags($sub_area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "',`update_login_id`='" . $userid . "',`updated_date`= now() WHERE `id`='" . strip_tags($cus_Tableid) . "' ";
+			$cusUpd = "UPDATE `customer_profile` SET `req_id`='" . strip_tags($req_id) . "',`cus_id`='" . strip_tags($cus_id) . "',`first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "',`mobile1`='" . strip_tags($mobile1) . "',`mobile2`='" . strip_tags($mobile2) . "',`whatsapp`='" . strip_tags($whatsapp_no) . "',`cus_pic`='" . strip_tags($pic_req) . "',`guarentor_name`='" . strip_tags($guarentor_name) . "',`guarentor_relation`='" . strip_tags($guarentor_relationship) . "',`guarentor_photo`='" . strip_tags($guarentor) . "',`cus_type`='" . strip_tags($cus_type) . "',`cus_exist_type`='" . strip_tags($cus_exist_type) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($state) . "',`area_confirm_district`='" . strip_tags($district) . "',`area_confirm_taluk`='" . strip_tags($taluk) . "',`area_confirm_area`='" . strip_tags($area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "',`update_login_id`='" . $userid . "',`updated_date`= now() WHERE `id`='" . strip_tags($cus_Tableid) . "' ";
 
 			$updateCus = $mysqli->query($cusUpd) or die("Error " . $mysqli->error);
 
-			$insertQry = "UPDATE in_verification set agent_id = '" . strip_tags($cus_agent_name) . "' ,`cus_id`='" . strip_tags($cus_id) . "',`cus_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "', `state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`sub_area`='" . strip_tags($sub_area) . "', `mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`pic`='" . strip_tags($pic_req) . "' where req_id ='" . strip_tags($req_id) . "' ";
+			$insertQry = "UPDATE in_verification set agent_id = '" . strip_tags($cus_agent_name) . "' ,`cus_id`='" . strip_tags($cus_id) . "',`first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "', `state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "', `mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`pic`='" . strip_tags($pic_req) . "' where req_id ='" . strip_tags($req_id) . "' ";
 			$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 		}
 
-		$updateCus = "UPDATE `customer_register` SET  `cus_id`='" . strip_tags($cus_id) . "',`customer_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "',`mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`whatsapp`='" . strip_tags($whatsapp_no) . "',`pic`='" . strip_tags($pic_req) . "',`how_to_know`='" . strip_tags($cus_how_know) . "',`loan_count`='" . strip_tags($cus_loan_count) . "',`first_loan_date`='" . strip_tags($cus_frst_loanDate) . "',`travel_with_company`='" . strip_tags($cus_travel_cmpy) . "',`monthly_income`='" . strip_tags($cus_monthly_income) . "',`other_income`='" . strip_tags($cus_other_income) . "',`support_income`='" . strip_tags($cus_support_income) . "',`commitment`='" . strip_tags($cus_Commitment) . "',`monthly_due_capacity`='" . strip_tags($cus_monDue_capacity) . "',`loan_limit`='" . strip_tags($cus_loan_limit) . "',`about_customer`='" . strip_tags($about_cus) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_info_occ_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($state) . "',`area_confirm_district`='" . strip_tags($district) . "',`area_confirm_taluk`='" . strip_tags($taluk) . "',`area_confirm_area`='" . strip_tags($area) . "',`area_confirm_subarea`='" . strip_tags($sub_area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "' WHERE `cus_id`= '" . strip_tags($cus_id) . "' ";
+		$updateCus = "UPDATE `customer_register` SET  `cus_id`='" . strip_tags($cus_id) . "',`first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`blood_group`='" . strip_tags($bloodGroup) . "',`mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`whatsapp`='" . strip_tags($whatsapp_no) . "',`pic`='" . strip_tags($pic_req) . "',`how_to_know`='" . strip_tags($cus_how_know) . "',`loan_count`='" . strip_tags($cus_loan_count) . "',`first_loan_date`='" . strip_tags($cus_frst_loanDate) . "',`travel_with_company`='" . strip_tags($cus_travel_cmpy) . "',`monthly_income`='" . strip_tags($cus_monthly_income) . "',`other_income`='" . strip_tags($cus_other_income) . "',`support_income`='" . strip_tags($cus_support_income) . "',`commitment`='" . strip_tags($cus_Commitment) . "',`monthly_due_capacity`='" . strip_tags($cus_monDue_capacity) . "',`loan_limit`='" . strip_tags($cus_loan_limit) . "',`about_customer`='" . strip_tags($about_cus) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_info_occ_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($state) . "',`area_confirm_district`='" . strip_tags($district) . "',`area_confirm_taluk`='" . strip_tags($taluk) . "',`area_confirm_area`='" . strip_tags($area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "' WHERE `cus_id`= '" . strip_tags($cus_id) . "' ";
 		$insresult = $mysqli->query($updateCus) or die("Error " . $mysqli->error);
 
 		//To update customer profile of present loans for the customer
@@ -5087,11 +5145,11 @@ class admin
 		}
 
 		if (!empty($req_id_array)) {
-			$cusUpd = "UPDATE `customer_profile` SET `cus_name`='" . strip_tags($cus_name) . "', `gender`='" . strip_tags($gender) . "', `dob`='" . strip_tags($dob) . "', `age`='" . strip_tags($age) . "',  `whatsapp` = '" . strip_tags($whatsapp_no) . "',  `residential_type`='" . strip_tags($cus_res_type) . "', `residential_details`='" . strip_tags($cus_res_details) . "', `residential_address`='" . strip_tags($cus_res_address) . "', `residential_native_address`='" . strip_tags($cus_res_native) . "', `occupation_type`='" . strip_tags($cus_occ_type) . "', `occupation_details`='" . strip_tags($cus_occ_detail) . "', `occupation_income`='" . strip_tags($cus_occ_income) . "', `occupation_address`='" . strip_tags($cus_occ_address) . "', `dow`='" . strip_tags($cus_occ_dow) . "', `abt_occ`='" . strip_tags($cus_occ_abt) . "', `area_confirm_type`='" . strip_tags($area_cnfrm) . "', `area_confirm_state`='" . strip_tags($state) . "', `area_confirm_district`='" . strip_tags($district) . "', `area_confirm_taluk`='" . strip_tags($taluk) . "', `area_confirm_area`='" . strip_tags($area) . "', `area_confirm_subarea`='" . strip_tags($sub_area) . "', `latlong`='" . strip_tags($latlong) . "', `area_group`='" . strip_tags($area_group) . "', `area_line`='" . strip_tags($area_line) . "', `update_login_id`='" . $userid . "', `updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
+			$cusUpd = "UPDATE `customer_profile` SET `first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "', `gender`='" . strip_tags($gender) . "', `dob`='" . strip_tags($dob) . "', `age`='" . strip_tags($age) . "',  `whatsapp` = '" . strip_tags($whatsapp_no) . "',  `residential_type`='" . strip_tags($cus_res_type) . "', `residential_details`='" . strip_tags($cus_res_details) . "', `residential_address`='" . strip_tags($cus_res_address) . "', `residential_native_address`='" . strip_tags($cus_res_native) . "', `occupation_type`='" . strip_tags($cus_occ_type) . "', `occupation_details`='" . strip_tags($cus_occ_detail) . "', `occupation_income`='" . strip_tags($cus_occ_income) . "', `occupation_address`='" . strip_tags($cus_occ_address) . "', `dow`='" . strip_tags($cus_occ_dow) . "', `abt_occ`='" . strip_tags($cus_occ_abt) . "', `area_confirm_type`='" . strip_tags($area_cnfrm) . "', `area_confirm_state`='" . strip_tags($state) . "', `area_confirm_district`='" . strip_tags($district) . "', `area_confirm_taluk`='" . strip_tags($taluk) . "', `area_confirm_area`='" . strip_tags($area) . "',`latlong`='" . strip_tags($latlong) . "', `area_group`='" . strip_tags($area_group) . "', `area_line`='" . strip_tags($area_line) . "', `update_login_id`='" . $userid . "', `updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
 			$updateCus = $mysqli->query($cusUpd) or die("Error " . $mysqli->error);
 
 
-			$updateACkCus = "UPDATE `acknowlegement_customer_profile` SET `cus_name`='" . strip_tags($cus_name) . "', `gender`='" . strip_tags($gender) . "', `dob`='" . strip_tags($dob) . "', `age`='" . strip_tags($age) . "',  `whatsapp` = '" . strip_tags($whatsapp_no) . "',  `residential_type`='" . strip_tags($cus_res_type) . "', `residential_details`='" . strip_tags($cus_res_details) . "', `residential_address`='" . strip_tags($cus_res_address) . "', `residential_native_address`='" . strip_tags($cus_res_native) . "', `occupation_type`='" . strip_tags($cus_occ_type) . "', `occupation_details`='" . strip_tags($cus_occ_detail) . "', `occupation_income`='" . strip_tags($cus_occ_income) . "', `occupation_address`='" . strip_tags($cus_occ_address) . "', `dow`='" . strip_tags($cus_occ_dow) . "', `abt_occ`='" . strip_tags($cus_occ_abt) . "', `area_confirm_type`='" . strip_tags($area_cnfrm) . "', `area_confirm_state`='" . strip_tags($state) . "', `area_confirm_district`='" . strip_tags($district) . "', `area_confirm_taluk`='" . strip_tags($taluk) . "', `area_confirm_area`='" . strip_tags($area) . "', `area_confirm_subarea`='" . strip_tags($sub_area) . "', `latlong`='" . strip_tags($latlong) . "', `area_group`='" . strip_tags($area_group) . "', `area_line`='" . strip_tags($area_line) . "', `update_login_id`='" . $userid . "', `updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
+			$updateACkCus = "UPDATE `acknowlegement_customer_profile` SET `first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "', `gender`='" . strip_tags($gender) . "', `dob`='" . strip_tags($dob) . "', `age`='" . strip_tags($age) . "',  `whatsapp` = '" . strip_tags($whatsapp_no) . "',  `residential_type`='" . strip_tags($cus_res_type) . "', `residential_details`='" . strip_tags($cus_res_details) . "', `residential_address`='" . strip_tags($cus_res_address) . "', `residential_native_address`='" . strip_tags($cus_res_native) . "', `occupation_type`='" . strip_tags($cus_occ_type) . "', `occupation_details`='" . strip_tags($cus_occ_detail) . "', `occupation_income`='" . strip_tags($cus_occ_income) . "', `occupation_address`='" . strip_tags($cus_occ_address) . "', `dow`='" . strip_tags($cus_occ_dow) . "', `abt_occ`='" . strip_tags($cus_occ_abt) . "', `area_confirm_type`='" . strip_tags($area_cnfrm) . "', `area_confirm_state`='" . strip_tags($state) . "', `area_confirm_district`='" . strip_tags($district) . "', `area_confirm_taluk`='" . strip_tags($taluk) . "', `area_confirm_area`='" . strip_tags($area) . "', `latlong`='" . strip_tags($latlong) . "', `area_group`='" . strip_tags($area_group) . "', `area_line`='" . strip_tags($area_line) . "', `update_login_id`='" . $userid . "', `updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
 			$insresult = $mysqli->query($updateACkCus) or die("Error " . $mysqli->error);
 		}
 
@@ -5110,7 +5168,8 @@ class admin
 				$detailrecords['cus_Tableid'] = $row['id'];
 				$detailrecords['req_id'] = $row['req_id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['gender'] = $row['gender'];
 				$detailrecords['dob'] = $row['dob'];
 				$detailrecords['age'] = $row['age'];
@@ -5137,7 +5196,6 @@ class admin
 				$detailrecords['area_confirm_district'] = $row['area_confirm_district'];
 				$detailrecords['area_confirm_taluk'] = $row['area_confirm_taluk'];
 				$detailrecords['area_confirm_area'] = $row['area_confirm_area'];
-				$detailrecords['area_confirm_subarea'] = $row['area_confirm_subarea'];
 				$detailrecords['latlong'] = $row['latlong'];
 				$detailrecords['area_group'] = $row['area_group'];
 				$detailrecords['area_line'] = $row['area_line'];
@@ -5179,8 +5237,11 @@ class admin
 		if (isset($_POST['cus_id_doc'])) {
 			$cus_id_doc = $_POST['cus_id_doc'];
 		}
-		if (isset($_POST['Customer_name'])) {
-			$Customer_name = $_POST['Customer_name'];
+		if (isset($_POST['doc_first_name'])) {
+			$first_name = $_POST['doc_first_name'];
+		}
+		if (isset($_POST['doc_last_name'])) {
+			$last_name = $_POST['doc_last_name'];
 		}
 		if (isset($_POST['cus_profile_id'])) {
 			$cus_profile_id = $_POST['cus_profile_id'];
@@ -5273,7 +5334,7 @@ class admin
 					// 	$doc_id = $initialapp;
 					// }
 
-					$insertQry = "INSERT INTO `verification_documentation`( `req_id`, `cus_id_doc`, `customer_name`, `cus_profile_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`, `cus_status`, `insert_login_id`,`created_date`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($Customer_name) . "','" . strip_tags($cus_profile_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','11','" . $userid . "',current_timestamp() )";
+					$insertQry = "INSERT INTO `verification_documentation`( `req_id`, `cus_id_doc`, `first_name`, `last_name`,`cus_profile_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`, `cus_status`, `insert_login_id`,`created_date`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "','" . strip_tags($cus_profile_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','11','" . $userid . "',current_timestamp() )";
 
 					$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 
@@ -5296,7 +5357,7 @@ class admin
 				}
 			}
 		} else {
-			$update_doc = " UPDATE `verification_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`customer_name`='" . strip_tags($Customer_name) . "',`cus_profile_id`='" . strip_tags($cus_profile_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`status`='0',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
+			$update_doc = " UPDATE `verification_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`first_name`='" . strip_tags($first_name) . "', `last_name`='" . strip_tags($last_name) . "',`cus_profile_id`='" . strip_tags($cus_profile_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`status`='0',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
 
 			$updDocResult = $mysqli->query($update_doc) or die("Error " . $mysqli->error);
 		}
@@ -5382,20 +5443,15 @@ class admin
 			while ($row = $qry->fetch_assoc()) {
 				$detailrecords['cus_profile_id'] = $row['id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['area_confirm_area'] = $row['area_confirm_area'];
-				$detailrecords['area_confirm_subarea'] = $row['area_confirm_subarea'];
 				$detailrecords['cus_status'] = $row['cus_status'];
 
 
 				$result = $mysqli->query("SELECT area_name FROM area_list_creation where area_id = '" . $detailrecords['area_confirm_area'] . "' and status=0 and area_enable = 0");
 				$area = $result->fetch_assoc();
 				$detailrecords['area_name'] = $area['area_name'];
-
-				$subarearesult = $mysqli->query("SELECT sub_area_name FROM sub_area_list_creation where sub_area_id = '" . $detailrecords['area_confirm_subarea'] . "' and status=0 and sub_area_enable = 0");
-				$subarea = $subarearesult->fetch_assoc();
-				$detailrecords['sub_area_name'] = $subarea['sub_area_name'];
-
 
 				$i++;
 			}
@@ -5404,7 +5460,7 @@ class admin
 	}
 
 
-	public function getCusInfoForLoanCal($mysqli, $id)
+     public function getCusInfoForLoanCal($mysqli, $id)
 	{
 		$qry = $mysqli->query("SELECT * FROM customer_profile where req_id = $id ");
 		$detailrecords = array();
@@ -5412,7 +5468,8 @@ class admin
 		if ($mysqli->affected_rows > 0) {
 			while ($row = $qry->fetch_assoc()) {
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['cus_pic'] = $row['cus_pic'];
 				$detailrecords['cus_type'] = $row['cus_type'];
 				$detailrecords['mobile'] = $row['mobile1'];
@@ -5421,7 +5478,6 @@ class admin
 		}
 		return $detailrecords;
 	}
-
 
 	// Get Loan caltegory list for Documentation
 	public function getloanCategoryForDoc($mysqli, $loan_category)
@@ -5448,8 +5504,11 @@ class admin
 		if (isset($_POST['req_id'])) {
 			$req_id = $_POST['req_id'];
 		}
-		if (isset($_POST['cus_name_loan'])) {
-			$cus_name_loan = $_POST['cus_name_loan'];
+		if (isset($_POST['first_name_loan'])) {
+			$first_name = $_POST['first_name_loan'];
+		}
+		if (isset($_POST['last_name_loan'])) {
+			$last_name = $_POST['last_name_loan'];
 		}
 		if (isset($_POST['cus_data_loan'])) {
 			$cus_data_loan = $_POST['cus_data_loan'];
@@ -5462,9 +5521,6 @@ class admin
 		}
 		if (isset($_POST['loan_category'])) {
 			$loan_category = $_POST['loan_category'];
-		}
-		if (isset($_POST['sub_category'])) {
-			$sub_category = $_POST['sub_category'];
 		}
 		$category_info = [];
 		if (isset($_POST['category_info'])) {
@@ -5625,9 +5681,9 @@ class admin
 
 
 		if ($loan_cal_id > 0 and $loan_cal_id != '') {
-			$mysqli->query("UPDATE verification_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "', cus_name_loan = '" . strip_tags($cus_name_loan) . "', 
+			$mysqli->query("UPDATE verification_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "',first_name = '" . strip_tags($first_name) . "', last_name = '" . strip_tags($last_name) . "',
 			cus_data_loan = '" . strip_tags($cus_data_loan) . "', mobile_loan = '" . strip_tags($mobile_loan) . "', pic_loan = '" . strip_tags($pic_loan) . "', 
-				loan_category = '" . strip_tags($loan_category) . "', sub_category = '" . strip_tags($sub_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
+				loan_category = '" . strip_tags($loan_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
 				loan_amt = '" . strip_tags($loan_amt) . "', profit_type = '" . strip_tags($profit_type) . "', due_method_calc = '" . strip_tags($due_method_calc) . "', 
 				due_type = '" . strip_tags($due_type) . "', profit_method = '" . strip_tags($profit_method) . "', calc_method = '" . strip_tags($calc_method) . "', 
 				due_method_scheme = '" . strip_tags($due_method_scheme) . "',profit_method_scheme = '" . strip_tags($scheme_profit_method) . "', day_scheme = '" . strip_tags($day_scheme) . "', scheme_name = '" . strip_tags($scheme_name) . "', 
@@ -5651,13 +5707,12 @@ class admin
 			if ($qry->num_rows == 0) {
 				//this will filter out duplication entry in customer profile table
 
-				$mysqli->query("INSERT INTO verification_loan_calculation (`req_id`, `cus_id_loan`, `cus_name_loan`,`cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`, `sub_category`,
+				$mysqli->query("INSERT INTO verification_loan_calculation (`req_id`, `cus_id_loan`, `first_name`, `last_name`, `cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`,
 				`tot_value`, `ad_amt`, `loan_amt`, `profit_type`, `due_method_calc`, `due_type`, `profit_method`, `calc_method`, `due_method_scheme`,`profit_method_scheme`, `day_scheme`, `scheme_name`, 
 				`int_rate`, `due_period`, `doc_charge`, `proc_fee`, `loan_amt_cal`, `principal_amt_cal`, `int_amt_cal`, `tot_amt_cal`, `due_amt_cal`, `doc_charge_cal`, `proc_fee_cal`, `net_cash_cal`,
 				`due_start_from`, `maturity_month`, `collection_method`,  `communication`, `com_audio`, `verification_person`, `verification_location`,`verify_remark`, `cus_status`, `insert_login_id`,`create_date`) 
 				VALUES ('" . strip_tags($req_id) . "', '" . strip_tags($cus_id_loan) . "', 
-				'" . strip_tags($cus_name_loan) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "', 
-				'" . strip_tags($sub_category) . "', '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
+				'" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "',  '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
 				'" . strip_tags($due_method_calc) . "', '" . strip_tags($due_type) . "', '" . strip_tags($profit_method) . "', '" . strip_tags($calc_method) . "', '" . strip_tags($due_method_scheme) . "', 
 				'" . strip_tags($scheme_profit_method) . "','" . strip_tags($day_scheme) . "', '" . strip_tags($scheme_name) . "', '" . strip_tags($int_rate) . "', '" . strip_tags($due_period) . "', '" . strip_tags($doc_charge) . "', 
 				'" . strip_tags($proc_fee) . "', '" . strip_tags($loan_amt_cal) . "', '" . strip_tags($principal_amt_cal) . "', '" . strip_tags($int_amt_cal) . "', '" . strip_tags($tot_amt_cal) . "', 
@@ -5689,7 +5744,7 @@ class admin
 			$ad_per = 0;
 		}
 
-		$mysqli->query("UPDATE in_verification set `loan_category`='" . strip_tags($loan_category) . "',`sub_category`='" . strip_tags($sub_category) . "',`tot_value`='" . strip_tags($tot_value) . "',`ad_amt`='" . strip_tags($ad_amt) . "',`ad_perc`='" . strip_tags($ad_per) . "',`loan_amt`='" . strip_tags($loan_amt) . "',`due_period`='" . strip_tags($due_period) . "' where req_id ='" . strip_tags($req_id) . "' ");
+		$mysqli->query("UPDATE in_verification set `loan_category`='" . strip_tags($loan_category) . "',`tot_value`='" . strip_tags($tot_value) . "',`ad_amt`='" . strip_tags($ad_amt) . "',`ad_perc`='" . strip_tags($ad_per) . "',`loan_amt`='" . strip_tags($loan_amt) . "',`due_period`='" . strip_tags($due_period) . "' where req_id ='" . strip_tags($req_id) . "' ");
 
 		// $this->updateResponsible($mysqli, $req_id, $responsible);
 	}
@@ -5703,12 +5758,12 @@ class admin
 				$detailrecords['loan_cal_id'] = $row['loan_cal_id'];
 				// $detailrecords['req_id'] = $row['req_id'];
 				$detailrecords['cus_id_loan'] = $row['cus_id_loan'];
-				$detailrecords['cus_name_loan'] = $row['cus_name_loan'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['cus_data_loan'] = $row['cus_data_loan'];
 				$detailrecords['mobile_loan'] = $row['mobile_loan'];
 				$detailrecords['pic_loan'] = $row['pic_loan'];
 				$detailrecords['loan_category'] = $row['loan_category'];
-				$detailrecords['sub_category'] = $row['sub_category'];
 				$detailrecords['tot_value'] = $row['tot_value'];
 				$detailrecords['ad_amt'] = $row['ad_amt'];
 				$detailrecords['loan_amt'] = $row['loan_amt'];
@@ -5778,7 +5833,8 @@ class admin
 				$detailrecords['cus_Tableid'] = $row['id'];
 				$detailrecords['req_id'] = $row['req_id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['gender'] = $row['gender'];
 				$detailrecords['dob'] = $row['dob'];
 				$detailrecords['age'] = $row['age'];
@@ -5805,7 +5861,6 @@ class admin
 				$detailrecords['area_confirm_district'] = $row['area_confirm_district'];
 				$detailrecords['area_confirm_taluk'] = $row['area_confirm_taluk'];
 				$detailrecords['area_confirm_area'] = $row['area_confirm_area'];
-				$detailrecords['area_confirm_subarea'] = $row['area_confirm_subarea'];
 				$detailrecords['latlong'] = $row['latlong'];
 				$detailrecords['area_group'] = $row['area_group'];
 				$detailrecords['area_line'] = $row['area_line'];
@@ -5843,8 +5898,11 @@ class admin
 		if (isset($_POST['cus_id_doc'])) {
 			$cus_id_doc = $_POST['cus_id_doc'];
 		}
-		if (isset($_POST['Customer_name'])) {
-			$Customer_name = $_POST['Customer_name'];
+		if (isset($_POST['doc_first_name'])) {
+			$first_name = $_POST['doc_first_name'];
+		}
+		if (isset($_POST['doc_last_name'])) {
+			$last_name = $_POST['doc_last_name'];
 		}
 		if (isset($_POST['cus_profile_id'])) {
 			$cus_profile_id = $_POST['cus_profile_id'];
@@ -6074,12 +6132,12 @@ class admin
 				$qry = $mysqli->query("SELECT * From acknowlegement_documentation where req_id = $req_id");
 				if ($qry->num_rows == 0) {
 					//this will filter out duplication entry in customer profile table
-					$insertQry = "INSERT INTO `acknowlegement_documentation`( `req_id`, `cus_id_doc`, `customer_name`, `cus_profile_id`, `doc_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`,`doc_remarks`,`doc_sts`, `noc_replace_status`, `cus_status`, `insert_login_id`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($Customer_name) . "','" . strip_tags($cus_profile_id) . "','" . strip_tags($doc_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','" . strip_tags($doc_remark) . "','" . strip_tags($doc_sts) . "', '" . strip_tags($replace_status) . "', '11','" . $userid . "' )";
+					$insertQry = "INSERT INTO `acknowlegement_documentation`( `req_id`, `cus_id_doc`, `first_name`, `last_name`, `cus_profile_id`, `doc_id`, `mortgage_process`, `Propertyholder_type`, `Propertyholder_name`, `Propertyholder_relationship_name`, `doc_property_relation`, `doc_property_type`, `doc_property_measurement`, `doc_property_location`, `doc_property_value`, `endorsement_process`, `owner_type`, `owner_name`, `ownername_relationship_name`, `en_relation`, `vehicle_type`, `vehicle_process`, `en_Company`, `en_Model`,`doc_remarks`,`doc_sts`, `noc_replace_status`, `cus_status`, `insert_login_id`) VALUES('" . strip_tags($req_id) . "','" . strip_tags($cus_id_doc) . "','" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "','" . strip_tags($cus_profile_id) . "','" . strip_tags($doc_id) . "', '" . strip_tags($mortgage_process) . "', '" . strip_tags($Propertyholder_type) . "', '" . strip_tags($Propertyholder_name) . "','" . strip_tags($Propertyholder_relationship_name) . "','" . strip_tags($doc_property_relation) . "','" . strip_tags($doc_property_pype) . "','" . strip_tags($doc_property_measurement) . "', '" . strip_tags($doc_property_location) . "', '" . strip_tags($doc_property_value) . "', '" . strip_tags($endorsement_process) . "','" . strip_tags($owner_type) . "','" . strip_tags($owner_name) . "','" . strip_tags($ownername_relationship_name) . "','" . strip_tags($en_relation) . "','" . strip_tags($vehicle_type) . "','" . strip_tags($vehicle_process) . "','" . strip_tags($en_Company) . "','" . strip_tags($en_Model) . "','" . strip_tags($doc_remark) . "','" . strip_tags($doc_sts) . "', '" . strip_tags($replace_status) . "', '11','" . $userid . "' )";
 
 					$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 				}
 			} else {
-				$update_doc = " UPDATE `acknowlegement_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`customer_name`='" . strip_tags($Customer_name) . "',`cus_profile_id`='" . strip_tags($cus_profile_id) . "',`doc_id`='" . strip_tags($doc_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`mortgage_name`='" . strip_tags($mortgage_name) . "',`mortgage_dsgn`='" . strip_tags($mortgage_dsgn) . "',`mortgage_nuumber`='" . strip_tags($mortgage_nuumber) . "',`reg_office`='" . strip_tags($reg_office) . "',`mortgage_value`='" . strip_tags($mortgage_value) . "',`mortgage_document`='" . strip_tags($mortgage_document) . "',`mortgage_document_upd`='" . strip_tags($mortgage_document_upd) . "',`mortgage_document_pending`='" . strip_tags($pendingchk) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`vehicle_reg_no`='" . strip_tags($vehicle_reg_no) . "',`endorsement_name`='" . strip_tags($endorsement_name) . "',`en_RC`='" . strip_tags($en_RC) . "',`Rc_document_upd`='" . strip_tags($Rc_document_upd) . "',`Rc_document_pending`='" . strip_tags($endorsependingchk) . "',`en_Key`='" . strip_tags($en_Key) . "',`doc_remarks`='" . strip_tags($doc_remark) . "',`doc_sts`='" . strip_tags($doc_sts) . "', `noc_replace_status` = '" . strip_tags($replace_status) . "', `status`='0',`submitted`='1',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
+				$update_doc = " UPDATE `acknowlegement_documentation` SET `req_id`='" . strip_tags($req_id) . "',`cus_id_doc`='" . strip_tags($cus_id_doc) . "',`first_name`='" . strip_tags($first_name) . "', `last_name`='" . strip_tags($last_name) . "', `cus_profile_id`='" . strip_tags($cus_profile_id) . "',`doc_id`='" . strip_tags($doc_id) . "',`mortgage_process`='" . strip_tags($mortgage_process) . "',`Propertyholder_type`='" . strip_tags($Propertyholder_type) . "',`Propertyholder_name`='" . strip_tags($Propertyholder_name) . "',`Propertyholder_relationship_name`='" . strip_tags($Propertyholder_relationship_name) . "',`doc_property_relation`='" . strip_tags($doc_property_relation) . "',`doc_property_type`='" . strip_tags($doc_property_pype) . "',`doc_property_measurement`='" . strip_tags($doc_property_measurement) . "',`doc_property_location`='" . strip_tags($doc_property_location) . "',`doc_property_value`='" . strip_tags($doc_property_value) . "',`mortgage_name`='" . strip_tags($mortgage_name) . "',`mortgage_dsgn`='" . strip_tags($mortgage_dsgn) . "',`mortgage_nuumber`='" . strip_tags($mortgage_nuumber) . "',`reg_office`='" . strip_tags($reg_office) . "',`mortgage_value`='" . strip_tags($mortgage_value) . "',`mortgage_document`='" . strip_tags($mortgage_document) . "',`mortgage_document_upd`='" . strip_tags($mortgage_document_upd) . "',`mortgage_document_pending`='" . strip_tags($pendingchk) . "',`endorsement_process`='" . strip_tags($endorsement_process) . "',`owner_type`='" . strip_tags($owner_type) . "',`owner_name`='" . strip_tags($owner_name) . "',`ownername_relationship_name`='" . strip_tags($ownername_relationship_name) . "',`en_relation`='" . strip_tags($en_relation) . "',`vehicle_type`='" . strip_tags($vehicle_type) . "',`vehicle_process`='" . strip_tags($vehicle_process) . "',`en_Company`='" . strip_tags($en_Company) . "',`en_Model`='" . strip_tags($en_Model) . "',`vehicle_reg_no`='" . strip_tags($vehicle_reg_no) . "',`endorsement_name`='" . strip_tags($endorsement_name) . "',`en_RC`='" . strip_tags($en_RC) . "',`Rc_document_upd`='" . strip_tags($Rc_document_upd) . "',`Rc_document_pending`='" . strip_tags($endorsependingchk) . "',`en_Key`='" . strip_tags($en_Key) . "',`doc_remarks`='" . strip_tags($doc_remark) . "',`doc_sts`='" . strip_tags($doc_sts) . "', `noc_replace_status` = '" . strip_tags($replace_status) . "', `status`='0',`submitted`='1',`update_login_id`='" . $userid . "' WHERE `id` = '" . strip_tags($doc_table_id) . "' ";
 
 				$updDocResult = $mysqli->query($update_doc) or die("Error " . $mysqli->error);
 			}
@@ -6151,21 +6209,15 @@ class admin
 			while ($row = $qry->fetch_assoc()) {
 				$detailrecords['cus_profile_id'] = $row['id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['area_confirm_area'] = $row['area_confirm_area'];
-				$detailrecords['area_confirm_subarea'] = $row['area_confirm_subarea'];
 				$detailrecords['cus_status'] = $row['cus_status'];
 
 
 				$result = $mysqli->query("SELECT area_name FROM area_list_creation where area_id = '" . $detailrecords['area_confirm_area'] . "' ");
 				$area = $result->fetch_assoc();
 				$detailrecords['area_name'] = $area['area_name'];
-
-				$subarearesult = $mysqli->query("SELECT sub_area_name FROM sub_area_list_creation where sub_area_id = '" . $detailrecords['area_confirm_subarea'] . "' ");
-				$subarea = $subarearesult->fetch_assoc();
-				$detailrecords['sub_area_name'] = $subarea['sub_area_name'];
-
-
 				$i++;
 			}
 		}
@@ -6265,7 +6317,8 @@ class admin
 		if ($mysqli->affected_rows > 0) {
 			while ($row = $qry->fetch_assoc()) {
 				$detailrecords['cus_id'] = $row['cus_id'];
-				$detailrecords['cus_name'] = $row['cus_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['cus_pic'] = $row['cus_pic'];
 				$detailrecords['cus_type'] = $row['cus_type'];
 				$detailrecords['mobile'] = $row['mobile1'];
@@ -6288,8 +6341,11 @@ class admin
 		if (isset($_POST['req_id'])) {
 			$req_id = $_POST['req_id'];
 		}
-		if (isset($_POST['cus_name_loan'])) {
-			$cus_name_loan = $_POST['cus_name_loan'];
+		if (isset($_POST['first_name'])) {
+			$first_name = $_POST['first_name'];
+		}
+		if (isset($_POST['last_name'])) {
+			$last_name = $_POST['last_name'];
 		}
 		if (isset($_POST['cus_data_loan'])) {
 			$cus_data_loan = $_POST['cus_data_loan'];
@@ -6303,9 +6359,7 @@ class admin
 		if (isset($_POST['loan_category_ack'])) {
 			$loan_category = $_POST['loan_category_ack'];
 		}
-		if (isset($_POST['sub_category_ack'])) {
-			$sub_category = $_POST['sub_category_ack'];
-		}
+
 		if (isset($_POST['category_info'])) {
 			$category_info = $_POST['category_info'];
 		}
@@ -6465,9 +6519,9 @@ class admin
 		}
 
 		if ($loan_cal_id > 0 and $loan_cal_id != '') {
-			$updateQry = $mysqli->query("UPDATE acknowlegement_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "', cus_name_loan = '" . strip_tags($cus_name_loan) . "', 
+			$updateQry = $mysqli->query("UPDATE acknowlegement_loan_calculation SET cus_id_loan = '" . strip_tags($cus_id_loan) . "', `first_name`='" . strip_tags($first_name) . "', `last_name`='" . strip_tags($last_name) . "', 
 						cus_data_loan = '" . strip_tags($cus_data_loan) . "', mobile_loan = '" . strip_tags($mobile_loan) . "', pic_loan = '" . strip_tags($pic_loan) . "', 
-						loan_category = '" . strip_tags($loan_category) . "', sub_category = '" . strip_tags($sub_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
+						loan_category = '" . strip_tags($loan_category) . "', tot_value = '" . strip_tags($tot_value) . "', ad_amt = '" . strip_tags($ad_amt) . "',
 						loan_amt = '" . strip_tags($loan_amt) . "', profit_type = '" . strip_tags($profit_type) . "', due_method_calc = '" . strip_tags($due_method_calc) . "', 
 						due_type = '" . strip_tags($due_type) . "', profit_method = '" . strip_tags($profit_method) . "', calc_method = '" . strip_tags($calc_method) . "', 
 						due_method_scheme = '" . strip_tags($due_method_scheme) . "', profit_method_scheme = '" . strip_tags($scheme_profit_method) . "', day_scheme = '" . strip_tags($day_scheme) . "', scheme_name = '" . strip_tags($scheme_name) . "', 
@@ -6485,12 +6539,12 @@ class admin
 						'" . strip_tags($category_info[$i]) . "' )");
 			}
 		} else {
-			$insertQry = $mysqli->query("INSERT INTO acknowlegement_loan_calculation (`req_id`, `cus_id_loan`, `cus_name_loan`,`cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`, `sub_category`,
+			$insertQry = $mysqli->query("INSERT INTO acknowlegement_loan_calculation (`req_id`, `cus_id_loan`,`first_name`, `last_name`,`cus_data_loan`, `mobile_loan`, `pic_loan`, `loan_category`,
 						`tot_value`, `ad_amt`, `loan_amt`, `profit_type`, `due_method_calc`, `due_type`, `profit_method`, `calc_method`, `due_method_scheme`, `profit_method_scheme`,`day_scheme`, `scheme_name`, 
 						`int_rate`, `due_period`, `doc_charge`, `proc_fee`, `loan_amt_cal`, `principal_amt_cal`, `int_amt_cal`, `tot_amt_cal`, `due_amt_cal`, `doc_charge_cal`, `proc_fee_cal`, `net_cash_cal`,
 						`due_start_from`, `maturity_month`, `collection_method`, `cus_status`, `insert_login_id`,`create_date`) VALUES ('" . strip_tags($req_id) . "', '" . strip_tags($cus_id_loan) . "', 
-						'" . strip_tags($cus_name_loan) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "', 
-						'" . strip_tags($sub_category) . "', '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
+						'" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "', '" . strip_tags($cus_data_loan) . "','" . strip_tags($mobile_loan) . "', '" . strip_tags($pic_loan) . "', '" . strip_tags($loan_category) . "', 
+						 '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "', '" . strip_tags($loan_amt) . "', '" . strip_tags($profit_type) . "', 
 						'" . strip_tags($due_method_calc) . "', '" . strip_tags($due_type) . "', '" . strip_tags($profit_method) . "', '" . strip_tags($calc_method) . "', '" . strip_tags($due_method_scheme) . "', '" . strip_tags($scheme_profit_method) . "', 
 						'" . strip_tags($day_scheme) . "', '" . strip_tags($scheme_name) . "', '" . strip_tags($int_rate) . "', '" . strip_tags($due_period) . "', '" . strip_tags($doc_charge) . "', 
 						'" . strip_tags($proc_fee) . "', '" . strip_tags($loan_amt_cal) . "', '" . strip_tags($principal_amt_cal) . "', '" . strip_tags($int_amt_cal) . "', '" . strip_tags($tot_amt_cal) . "', 
@@ -6518,12 +6572,12 @@ class admin
 				$detailrecords['loan_cal_id'] = $row['loan_cal_id'];
 				// $detailrecords['req_id'] = $row['req_id'];
 				$detailrecords['cus_id_loan'] = $row['cus_id_loan'];
-				$detailrecords['cus_name_loan'] = $row['cus_name_loan'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['cus_data_loan'] = $row['cus_data_loan'];
 				$detailrecords['mobile_loan'] = $row['mobile_loan'];
 				$detailrecords['pic_loan'] = $row['pic_loan'];
 				$detailrecords['loan_category'] = $row['loan_category'];
-				$detailrecords['sub_category'] = $row['sub_category'];
 				$detailrecords['tot_value'] = $row['tot_value'];
 				$detailrecords['ad_amt'] = $row['ad_amt'];
 				$detailrecords['loan_amt'] = $row['loan_amt'];
@@ -6727,7 +6781,7 @@ class admin
 	function getLoanList($mysqli, $id)
 	{
 		$detailrecords = array();
-		$Qry = $mysqli->query("SELECT `cus_id`,`cus_name`,`mobile1`,`cus_pic`,`area_confirm_area`,`area_confirm_subarea` FROM `acknowlegement_customer_profile` WHERE req_id = '" . strip_tags($id) . "' ");
+		$Qry = $mysqli->query("SELECT `cus_id`,`cus_name`,`mobile1`,`cus_pic`,`area_confirm_area` FROM `acknowlegement_customer_profile` WHERE req_id = '" . strip_tags($id) . "' ");
 		if ($Qry->num_rows > 0) {
 			$row = $Qry->fetch_assoc();
 			$detailrecords = $row;
@@ -6737,15 +6791,11 @@ class admin
 		$qry = $mysqli->query("SELECT area_name FROM area_list_creation WHERE area_id = '" . $detailrecords['area_confirm_area'] . "' ");
 		$detailrecords['area_name'] = $qry->fetch_assoc()['area_name'];
 
-		//Getting sub area Name
-		$qry = $mysqli->query("SELECT sub_area_name FROM sub_area_list_creation WHERE sub_area_id = '" . $detailrecords['area_confirm_subarea'] . "' ");
-		$detailrecords['sub_area_name'] = $qry->fetch_assoc()['sub_area_name'];
-
 		// Getting Line Id, Branch ID, Branch Name
 		$qry = $mysqli->query("SELECT b.branch_id, b.branch_name, l.map_id, l.line_name AS area_line FROM branch_creation b 
 		JOIN area_line_mapping l ON l.branch_id = b.branch_id 
-		JOIN area_line_mapping_sub_area almsa ON almsa.line_map_id = l.map_id 
-		WHERE almsa.sub_area_id = '" . $detailrecords['area_confirm_subarea'] . "' ");
+		JOIN area_line_mapping_area almsa ON almsa.line_map_id = l.map_id 
+		WHERE almsa.area_id = '" . $detailrecords['area_confirm_area'] . "' ");
 		$row = $qry->fetch_assoc();
 		$detailrecords['line_id'] = $row['map_id'];
 		$detailrecords['area_line'] = $row['area_line'];
@@ -6905,9 +6955,6 @@ class admin
 			if (isset($_POST['cus_area'])) {
 				$cus_area = $_POST['cus_area'];
 			}
-			if (isset($_POST['cus_sub_area'])) {
-				$cus_sub_area = $_POST['cus_sub_area'];
-			}
 			if (isset($_POST['cus_group'])) {
 				$cus_group = $_POST['cus_group'];
 			}
@@ -6978,9 +7025,9 @@ class admin
 				$com_code = $initialapp;
 			}
 
-		$insertQry = "INSERT INTO `concern_creation`( `raising_for`, `self_name`, `self_code`, `staff_name`, `staff_dept_name`, `staff_team_name`, `ag_name`, `ag_grp`, `cus_id`, `cus_name`, `cus_area`, `cus_sub_area`, `cus_group`, `cus_line`, `com_date`, `com_code`, `to_dept_name`, `com_sub`, `com_remark`, `role_type`, `staff_assign_to`, `insert_user_id`) VALUES('" . strip_tags($raising_for) . "','" . strip_tags($self_name) . "','" . strip_tags($self_code) . "','" . strip_tags($staff_name) . "',
+		$insertQry = "INSERT INTO `concern_creation`( `raising_for`, `self_name`, `self_code`, `staff_name`, `staff_dept_name`, `staff_team_name`, `ag_name`, `ag_grp`, `cus_id`, `cus_name`, `cus_area`, `cus_group`, `cus_line`, `com_date`, `com_code`, `to_dept_name`, `com_sub`, `com_remark`, `role_type`, `staff_assign_to`, `insert_user_id`) VALUES('" . strip_tags($raising_for) . "','" . strip_tags($self_name) . "','" . strip_tags($self_code) . "','" . strip_tags($staff_name) . "',
 				'" . strip_tags($staff_dept_name) . "', '" . strip_tags($staff_team_name) . "', '" . strip_tags($ag_name) . "', '" . strip_tags($ag_grp) . "','" . strip_tags($cus_id) . "',
-				'" . strip_tags($cus_name) . "','" . strip_tags($cus_area) . "','" . strip_tags($cus_sub_area) . "', '" . strip_tags($cus_group) . "', '" . strip_tags($cus_line) . "', 
+				'" . strip_tags($cus_name) . "','" . strip_tags($cus_area) . "','" . strip_tags($cus_group) . "', '" . strip_tags($cus_line) . "', 
 				'" . strip_tags($com_date) . "','" . strip_tags($com_code) . "','" . strip_tags($to_dept_name) . "',
 				'" . strip_tags($com_sub) . "','" . strip_tags($com_remark) . "','" . strip_tags($role_type) . "','" . strip_tags($staff_assign_to) . "','" . strip_tags($userid) . "')";
 
@@ -7016,7 +7063,6 @@ class admin
 			$detailrecords['cus_id'] = $row['cus_id'];
 			$detailrecords['cus_name'] = $row['cus_name'];
 			$detailrecords['cus_area'] = $row['cus_area'];
-			$detailrecords['cus_sub_area'] = $row['cus_sub_area'];
 			$detailrecords['cus_group'] = $row['cus_group'];
 			$detailrecords['cus_line'] = $row['cus_line'];
 			$detailrecords['com_date'] = $row['com_date'];
@@ -7205,7 +7251,8 @@ class admin
 				$detailrecords['req_id'] = $row['req_ref_id'];
 				$detailrecords['cus_id'] = $row['cus_id'];
 				// $detailrecords['cus_id'] = $row['cus_data']; //
-				$detailrecords['cus_name'] = $row['customer_name'];
+				$detailrecords['first_name'] = $row['first_name'];
+				$detailrecords['last_name'] = $row['last_name'];
 				$detailrecords['dob'] = $row['dob'];
 				$detailrecords['age'] = $row['age'];
 				$detailrecords['gender'] = $row['gender'];
@@ -7213,7 +7260,6 @@ class admin
 				$detailrecords['district'] = $row['district'];
 				$detailrecords['taluk'] = $row['taluk'];
 				$detailrecords['area'] = $row['area'];
-				$detailrecords['sub_area'] = $row['sub_area'];
 				$detailrecords['address'] = $row['address'];
 				$detailrecords['mobile1'] = $row['mobile1'];
 				$detailrecords['mobile2'] = $row['mobile2'];
@@ -7253,7 +7299,6 @@ class admin
 				$detailrecords['area_confirm_district'] = $row['area_confirm_district'];
 				$detailrecords['area_confirm_taluk'] = $row['area_confirm_taluk'];
 				$detailrecords['area_confirm_area'] = $row['area_confirm_area'];
-				$detailrecords['area_confirm_subarea'] = $row['area_confirm_subarea'];
 				$detailrecords['latlong'] = $row['latlong'];
 				$detailrecords['area_group'] = $row['area_group'];
 				$detailrecords['area_line'] = $row['area_line'];
@@ -7266,13 +7311,6 @@ class admin
 				} else {
 					$detailrecords['area_name'] = '';
 				}
-				$subarearesult = $mysqli->query("SELECT sub_area_name FROM sub_area_list_creation where sub_area_id = '" . $row['area_confirm_subarea'] . "' and status=0 and sub_area_enable = 0");
-				$subarea = $subarearesult->fetch_assoc();
-				if ($mysqli->affected_rows > 0) {
-					$detailrecords['sub_area_name'] = $subarea['sub_area_name'];
-				} else {
-					$detailrecords['sub_area_name'] = '';
-				}
 
 				$reqResult = $mysqli->query("SELECT whatsapp FROM `customer_profile` WHERE `cus_id` = '" . $row['cus_id'] . "' ORDER BY id DESC LIMIT 1");
 				$whatsapp_no = '';
@@ -7283,11 +7321,11 @@ class admin
 				$detailrecords['whatsapp_no'] = $whatsapp_no;
 
 				// Getting Line Id, Branch ID, Branch Name
-				$areaconfirmsubarea = $detailrecords['area_confirm_subarea'] || $detailrecords['sub_area'];
+				$areaconfirmarea = $detailrecords['area_confirm_area'] || $detailrecords['area'];
 				$qry = $mysqli->query("SELECT b.branch_id, b.branch_name, l.map_id, l.line_name AS area_line FROM branch_creation b 
 				JOIN area_line_mapping l ON l.branch_id = b.branch_id
-				JOIN area_line_mapping_sub_area almsa ON almsa.line_map_id = l.map_id
-				WHERE almsa.sub_area_id = '" . $areaconfirmsubarea . "' ");
+				JOIN area_line_mapping_area almsa ON almsa.line_map_id = l.map_id
+				WHERE almsa.area_id = '" . $areaconfirmarea . "' ");
 				$row = $qry->fetch_assoc();
 				$detailrecords['line_id'] = $row['map_id'];
 				$detailrecords['line_name'] = $row['area_line'];
@@ -7541,9 +7579,6 @@ class admin
 		if (isset($_POST['area'])) {
 			$area = $_POST['area'];
 		}
-		if (isset($_POST['sub_area'])) {
-			$sub_area = $_POST['sub_area'];
-		}
 		if (isset($_POST['address'])) {
 			$address = $_POST['address'];
 		}
@@ -7612,9 +7647,6 @@ class admin
 		if (isset($_POST['area_confirm'])) {
 			$area_confirm = $_POST['area_confirm'];
 		}
-		if (isset($_POST['area_sub_area'])) {
-			$area_sub_area = $_POST['area_sub_area'];
-		}
 		if (isset($_POST['area_group'])) {
 			$area_group = $_POST['area_group'];
 		}
@@ -7659,7 +7691,7 @@ class admin
 			$about_cus = $_POST['about_cus'];
 		}
 
-		$updateCus = "UPDATE `customer_register` SET `customer_name`='" . strip_tags($cus_name) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`gender`='" . strip_tags($gender) . "',`state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`sub_area`='" . strip_tags($sub_area) . "',`address`='" . strip_tags($address) . "',`mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`father_name`='" . strip_tags($father_name) . "',`mother_name`='" . strip_tags($mother_name) . "',`marital`='" . strip_tags($marital) . "',`spouse`='" . strip_tags($spouse_name) . "',`occupation_type`='" . strip_tags($occupation_type) . "',`occupation`='" . strip_tags($occupation) . "',`how_to_know`='" . strip_tags($cus_how_know) . "',`loan_count`='" . strip_tags($cus_loan_count) . "',`first_loan_date`='" . strip_tags($cus_frst_loanDate) . "',`travel_with_company`='" . strip_tags($cus_travel_cmpy) . "',`monthly_income`='" . strip_tags($cus_monthly_income) . "',`other_income`='" . strip_tags($cus_other_income) . "',`support_income`='" . strip_tags($cus_support_income) . "',`commitment`='" . strip_tags($cus_Commitment) . "',`monthly_due_capacity`='" . strip_tags($cus_monDue_capacity) . "',`loan_limit`='" . strip_tags($cus_loan_limit) . "',`about_customer`='" . strip_tags($about_cus) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_info_occ_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`area_confirm_subarea`='" . strip_tags($area_sub_area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "' WHERE `cus_id`= '" . strip_tags($cus_id) . "' ";
+		$updateCus = "UPDATE `customer_register` SET `customer_name`='" . strip_tags($cus_name) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`gender`='" . strip_tags($gender) . "',`state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`address`='" . strip_tags($address) . "',`mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "',`father_name`='" . strip_tags($father_name) . "',`mother_name`='" . strip_tags($mother_name) . "',`marital`='" . strip_tags($marital) . "',`spouse`='" . strip_tags($spouse_name) . "',`occupation_type`='" . strip_tags($occupation_type) . "',`occupation`='" . strip_tags($occupation) . "',`how_to_know`='" . strip_tags($cus_how_know) . "',`loan_count`='" . strip_tags($cus_loan_count) . "',`first_loan_date`='" . strip_tags($cus_frst_loanDate) . "',`travel_with_company`='" . strip_tags($cus_travel_cmpy) . "',`monthly_income`='" . strip_tags($cus_monthly_income) . "',`other_income`='" . strip_tags($cus_other_income) . "',`support_income`='" . strip_tags($cus_support_income) . "',`commitment`='" . strip_tags($cus_Commitment) . "',`monthly_due_capacity`='" . strip_tags($cus_monDue_capacity) . "',`loan_limit`='" . strip_tags($cus_loan_limit) . "',`about_customer`='" . strip_tags($about_cus) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_info_occ_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "' WHERE `cus_id`= '" . strip_tags($cus_id) . "' ";
 		$insresult = $mysqli->query($updateCus) or die("Error " . $mysqli->error);
 	}
 
@@ -7876,8 +7908,11 @@ class admin
 		if (isset($_POST['cus_id'])) {
 			$cus_id =  preg_replace('/\s+/', '', $_POST['cus_id']);
 		}
-		if (isset($_POST['cus_name'])) {
-			$cus_name = $_POST['cus_name'];
+		if (isset($_POST['first_name'])) {
+			$first_name = $_POST['first_name'];
+		}
+		if (isset($_POST['last_name'])) {
+			$last_name = $_POST['last_name'];
 		}
 		if (isset($_POST['dob'])) {
 			$dob =  $_POST['dob'];
@@ -7899,9 +7934,6 @@ class admin
 		}
 		if (isset($_POST['area'])) {
 			$area = $_POST['area'];
-		}
-		if (isset($_POST['sub_area'])) {
-			$sub_area = $_POST['sub_area'];
 		}
 		if (isset($_POST['cus_address'])) {
 			$cus_address = $_POST['cus_address'];
@@ -8039,9 +8071,6 @@ class admin
 		if (isset($_POST['area_confirm'])) {
 			$area_confirm = $_POST['area_confirm'];
 		}
-		if (isset($_POST['area_sub_area'])) {
-			$area_sub_area = $_POST['area_sub_area'];
-		}
 		if (isset($_POST['area_group'])) {
 			$area_group = $_POST['area_group'];
 		}
@@ -8098,7 +8127,7 @@ class admin
 		$insresult = $mysqli->query($grantorupdate) or die("Error " . $mysqli->error);
 
 
-		$updateCus = "UPDATE `customer_register` SET  `cus_id`='" . strip_tags($cus_id) . "',`customer_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`sub_area`='" . strip_tags($sub_area) . "',`address`='" . strip_tags($cus_address) . "',`mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "', `whatsapp` = '" . strip_tags($whatsapp_no) . "', `father_name`='" . strip_tags($father_name) . "',`mother_name`='" . strip_tags($mother_name) . "',`marital`='" . strip_tags($marital) . "',`spouse`='" . strip_tags($spouse_name) . "',`occupation_type`='" . strip_tags($occupation_type) . "',`occupation`='" . strip_tags($occupation) . "',`pic` = '" . strip_tags($cus_pic) . "', `how_to_know`='" . strip_tags($cus_how_know) . "',`loan_count`='" . strip_tags($cus_loan_count) . "',`first_loan_date`='" . strip_tags($cus_frst_loanDate) . "',`travel_with_company`='" . strip_tags($cus_travel_cmpy) . "',`monthly_income`='" . strip_tags($cus_monthly_income) . "',`other_income`='" . strip_tags($cus_other_income) . "',`support_income`='" . strip_tags($cus_support_income) . "',`commitment`='" . strip_tags($cus_Commitment) . "',`monthly_due_capacity`='" . strip_tags($cus_monDue_capacity) . "',`loan_limit`='" . strip_tags($cus_loan_limit) . "',`about_customer`='" . strip_tags($about_cus) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_info_occ_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`area_confirm_subarea`='" . strip_tags($area_sub_area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "' WHERE `cus_id`= '" . strip_tags($cus_id) . "' ";
+		$updateCus = "UPDATE `customer_register` SET  `cus_id`='" . strip_tags($cus_id) . "',`first_name`='" . strip_tags($first_name) . "', 		`last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "',`state`='" . strip_tags($state) . "',`district`='" . strip_tags($district) . "',`taluk`='" . strip_tags($taluk) . "',`area`='" . strip_tags($area) . "',`address`='" . strip_tags($cus_address) . "',`mobile1`='" . strip_tags($mobile1) . "', `mobile2`='" . strip_tags($mobile2) . "', `whatsapp` = '" . strip_tags($whatsapp_no) . "', `father_name`='" . strip_tags($father_name) . "',`mother_name`='" . strip_tags($mother_name) . "',`marital`='" . strip_tags($marital) . "',`spouse`='" . strip_tags($spouse_name) . "',`occupation_type`='" . strip_tags($occupation_type) . "',`occupation`='" . strip_tags($occupation) . "',`pic` = '" . strip_tags($cus_pic) . "', `how_to_know`='" . strip_tags($cus_how_know) . "',`loan_count`='" . strip_tags($cus_loan_count) . "',`first_loan_date`='" . strip_tags($cus_frst_loanDate) . "',`travel_with_company`='" . strip_tags($cus_travel_cmpy) . "',`monthly_income`='" . strip_tags($cus_monthly_income) . "',`other_income`='" . strip_tags($cus_other_income) . "',`support_income`='" . strip_tags($cus_support_income) . "',`commitment`='" . strip_tags($cus_Commitment) . "',`monthly_due_capacity`='" . strip_tags($cus_monDue_capacity) . "',`loan_limit`='" . strip_tags($cus_loan_limit) . "',`about_customer`='" . strip_tags($about_cus) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_info_occ_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "' WHERE `cus_id`= '" . strip_tags($cus_id) . "' ";
 		$insresult = $mysqli->query($updateCus) or die("Error " . $mysqli->error);
 
 		$req_id_array = [];
@@ -8110,11 +8139,11 @@ class admin
 			}
 		}
 		if (!empty($req_id_array)) {
-			$cusUpd = "UPDATE `customer_profile` SET `cus_id`='" . strip_tags($cus_id) . "',`cus_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "', `whatsapp` = '" . strip_tags($whatsapp_no) . "', `cus_pic`='" . strip_tags($cus_pic) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`area_confirm_subarea`='" . strip_tags($area_sub_area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "',`update_login_id`='" . $userid . "',`updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
+			$cusUpd = "UPDATE `customer_profile` SET `cus_id`='" . strip_tags($cus_id) . "',`first_name`='" . strip_tags($first_name) . "', 		`last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "', `whatsapp` = '" . strip_tags($whatsapp_no) . "', `cus_pic`='" . strip_tags($cus_pic) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "',`update_login_id`='" . $userid . "',`updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
 			$updateCus = $mysqli->query($cusUpd) or die("Error " . $mysqli->error);
 
 
-			$updateACkCus = "UPDATE `acknowlegement_customer_profile` SET `cus_id`='" . strip_tags($cus_id) . "',`cus_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "', `whatsapp` = '" . strip_tags($whatsapp_no) . "', `cus_pic`='" . strip_tags($cus_pic) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`area_confirm_subarea`='" . strip_tags($area_sub_area) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "',`update_login_id`='" . $userid . "',`updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
+			$updateACkCus = "UPDATE `acknowlegement_customer_profile` SET `cus_id`='" . strip_tags($cus_id) . "',`first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "', `whatsapp` = '" . strip_tags($whatsapp_no) . "', `cus_pic`='" . strip_tags($cus_pic) . "',`residential_type`='" . strip_tags($cus_res_type) . "',`residential_details`='" . strip_tags($cus_res_details) . "',`residential_address`='" . strip_tags($cus_res_address) . "',`residential_native_address`='" . strip_tags($cus_res_native) . "',`occupation_type`='" . strip_tags($cus_occ_type) . "',`occupation_details`='" . strip_tags($cus_occ_detail) . "',`occupation_income`='" . strip_tags($cus_occ_income) . "',`occupation_address`='" . strip_tags($cus_occ_address) . "',`dow`='" . strip_tags($cus_occ_dow) . "',`abt_occ`='" . strip_tags($cus_occ_abt) . "',`area_confirm_type`='" . strip_tags($area_cnfrm) . "',`area_confirm_state`='" . strip_tags($area_state) . "',`area_confirm_district`='" . strip_tags($area_district) . "',`area_confirm_taluk`='" . strip_tags($area_taluk) . "',`area_confirm_area`='" . strip_tags($area_confirm) . "',`latlong`='" . strip_tags($latlong) . "',`area_group`='" . strip_tags($area_group) . "',`area_line`='" . strip_tags($area_line) . "',`update_login_id`='" . $userid . "',`updated_date`= now() WHERE req_id IN (" . implode(",", $req_id_array) . " ) ";
 			$insresult = $mysqli->query($updateACkCus) or die("Error " . $mysqli->error);
 		}
 	}

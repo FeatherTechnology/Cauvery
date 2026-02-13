@@ -19,28 +19,27 @@ $column = array(
     'ad.doc_id',
     'dt.cus_id',
     'cr.autogen_cus_id',
-    'cr.customer_name',
+    'CONCAT(cr.first_name, cr.last_name)',
     'bc.branch_name',
     'al.area_name',
-    'sal.sub_area_name',
     'agm.group_name',
     'alm.line_name',
     'dt.id',
-    'dt.id'
+    'dt.id',
+     'dt.id'
 );
 
 // Base query
 // 1- inserted, 2- send by issued user, 3- received by doc_rec_access user, 1- return.
-$query = "SELECT dt.id, dt.req_id, dt.cus_id, dt.track_status, dt.insert_login_id, dt.created_date, ad.doc_id, cr.autogen_cus_id, cr.customer_name, bc.branch_name, al.area_name, sal.sub_area_name, agm.group_name, alm.line_name, cr.sub_area, ad.noc_replace_status
+$query = "SELECT dt.id, dt.req_id, dt.cus_id, dt.track_status, dt.insert_login_id, dt.created_date, ad.doc_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ',cr.last_name) as customer_name, bc.branch_name, al.area_name,agm.group_name, alm.line_name, ad.noc_replace_status
         FROM document_track dt
         JOIN acknowlegement_documentation ad ON dt.req_id = ad.req_id
         JOIN customer_register cr ON dt.cus_id = cr.cus_id
         JOIN area_list_creation al ON cr.area = al.area_id
-        JOIN sub_area_list_creation sal ON cr.sub_area = sal.sub_area_id
-        JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = cr.sub_area
+        JOIN area_group_mapping_area agmsa ON agmsa.area_id = cr.area
         JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
         LEFT OUTER JOIN branch_creation bc ON agm.branch_id = bc.branch_id
-        JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = cr.sub_area
+        JOIN area_line_mapping_area almsa ON almsa.area_id = cr.area
         JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
         WHERE ( (dt.insert_login_id = $userid && dt.track_status <= 2) OR ($doc_rec_access = 0 && dt.track_status = 2) ) ";
 
@@ -50,10 +49,9 @@ if (isset($_POST['search']) && $_POST['search'] != "") {
     $query .= " AND ( dt.created_date LIKE '%$search%' OR
                 dt.cus_id LIKE '%$search%' OR
                 cr.autogen_cus_id LIKE '%$search%' OR
-                cr.customer_name LIKE '%$search%' OR
+                CONCAT(cr.first_name,' ',cr.last_name) LIKE '%$search%' OR
                 bc.branch_name LIKE '%$search%'  OR
                 al.area_name LIKE '%$search%'  OR
-                sal.sub_area_name LIKE '%$search%'  OR
                 agm.group_name LIKE '%$search%'  OR
                 alm.line_name LIKE '%$search%' )";
 }
@@ -97,7 +95,6 @@ foreach ($result as $row) {
     $sub_array[] = $cus_name; //cus name column
     $sub_array[] = $row['branch_name']; //Branch name column
     $sub_array[] = $row['area_name']; //area name column
-    $sub_array[] = $row['sub_area_name']; //sub area name column
     $sub_array[] = $row['group_name']; //group name column
     $sub_array[] = $row['line_name']; //line name column
 

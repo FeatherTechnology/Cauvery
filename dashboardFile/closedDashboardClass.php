@@ -12,7 +12,7 @@ class ClosedDashboardClass
         $response = array();
         $today = date('Y-m-d');
         $month = (isset($_POST['month']) || $_POST['month'] != '') ? date('Y-m-01', strtotime($_POST['month'])) : date('Y-m-01');
-        $sub_area_list = $_POST['sub_area_list'];
+        $area_list = $_POST['area_list'];
 
         $tot_in_cl = "SELECT COUNT(*) as tot_in_cl FROM request_creation req JOIN acknowlegement_customer_profile cp ON cp.req_id = req.req_id WHERE req.cus_status >= 20 ";
         $month_in_cl = "SELECT COUNT(*) as month_in_cl FROM request_creation req JOIN acknowlegement_customer_profile cp ON cp.req_id = req.req_id JOIN closing_customer cc ON cc.req_id = req.req_id WHERE month(cc.closing_date) = month('$month') and year(cc.closing_date) = year('$month') ";
@@ -30,24 +30,24 @@ class ClosedDashboardClass
         $diamond = "SELECT COUNT(*) as diamond FROM request_creation req JOIN acknowlegement_customer_profile cp ON cp.req_id = req.req_id JOIN closed_status cls ON cls.req_id = req.req_id WHERE req.cus_status >= 20 and month(cls.created_date) = month('$month') and year(cls.created_date) = year('$month') and cls.consider_level = 5 ";
 
 
-        if (empty($sub_area_list)) {
-            $sub_area_list = $this->getUserGroupBasedSubArea($connect, $this->user_id);
+        if (empty($area_list)) {
+            $area_list = $this->getUserGroupBasedArea($connect, $this->user_id);
         }
 
-        $tot_in_cl .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $month_in_cl .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $month_cl_status .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $month_cl_bal .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $today_in_cl .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $today_cl_status .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $consider .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $waiting .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $blocked .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $bronze .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $silver .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $gold .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $platinum .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
-        $diamond .= " AND ( CASE WHEN cp.area_confirm_subarea IS NOT NULL THEN cp.area_confirm_subarea IN ($sub_area_list) ELSE TRUE END ) ";
+        $tot_in_cl .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $month_in_cl .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $month_cl_status .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $month_cl_bal .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $today_in_cl .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $today_cl_status .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $consider .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $waiting .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $blocked .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $bronze .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $silver .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $gold .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $platinum .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
+        $diamond .= " AND ( CASE WHEN cp.area_confirm_area IS NOT NULL THEN cp.area_confirm_area IN ($area_list) ELSE TRUE END ) ";
         $tot_in_clQry = $connect->query($tot_in_cl);
         $month_in_clQry = $connect->query($month_in_cl);
         $month_cl_statusQry = $connect->query($month_cl_status);
@@ -81,7 +81,7 @@ class ClosedDashboardClass
         return $response;
     }
 
-    function getUserGroupBasedSubArea($connect, $user_id)
+    function getUserGroupBasedArea($connect, $user_id)
     {
         if (empty($user_id)) {
             return '';
@@ -105,18 +105,18 @@ class ClosedDashboardClass
         $placeholders = implode(',', array_fill(0, count($group_ids), '?'));
 
         // 3. Fetch sub_area_ids directly from normalized table
-        $stmt = $connect->prepare("SELECT DISTINCT sub_area_id FROM area_group_mapping_sub_area
+        $stmt = $connect->prepare("SELECT DISTINCT area_id FROM area_group_mapping_area
         WHERE group_map_id IN ($placeholders) ");
         $stmt->execute(array_map('intval', $group_ids));
 
-        // 4. Fetch all sub_area_ids as array
-        $sub_area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        // 4. Fetch all area_ids as array
+        $area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        if (empty($sub_area_ids)) {
+        if (empty($area_ids)) {
             return '';
         }
 
         // 5. Return comma-separated list (if needed)
-        return implode(',', array_unique($sub_area_ids));
+        return implode(',', array_unique($area_ids));
     }
 }

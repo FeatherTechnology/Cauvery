@@ -9,8 +9,8 @@ const branchMultiselect = new Choices('#under_branch_dummy', {
 
 $(document).ready(function () {
 
-    // var companySelected = $('#company').val();
-    // getBranchDropdown(companySelected);
+    var companySelected = $('#company').val();
+    getBranchDropdown(companySelected);
 
     $('#submit_bank_creation').click(function () {
 

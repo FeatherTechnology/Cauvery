@@ -26,7 +26,6 @@
 								<th>Customer Name</th>
 								<th>Branch</th>
 								<th>Area</th>
-								<th>Sub Area</th>
 								<th>Group</th>
 								<th>Line</th>
 								<th>Document Holder</th>

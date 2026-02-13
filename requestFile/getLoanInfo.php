@@ -1,26 +1,30 @@
 <?php
 include('../ajaxconfig.php');
-if (isset($_POST['sub_cat_id'])) {
-    $sub_cat_id = $_POST['sub_cat_id'];
+if (isset($_POST['loan_category_upd'])) {
+    $loan_category_upd = $_POST['loan_category_upd'];
 }
 if (isset($_POST['cus_id'])) {
     $cus_id = preg_replace('/\D/', '', $_POST['cus_id']);
 }
 
 $response = array();
-$result = $connect->query("SELECT lc.collection_info,lcat.loan_limit FROM loan_calculation lc JOIN loan_category lcat ON lcat.sub_category_name = lc.sub_category where lc.status=0 and lc.sub_category = '" . strip_tags($sub_cat_id) . "' ");
+$result = $connect->query(query: "SELECT lc.collection_info,lcat.loan_limit,lcat.agent_loan,ls.advance_type FROM loan_category lcat LEFT JOIN loan_calculation lc ON lcat.loan_category_name = lc.loan_category LEFT JOIN loan_scheme ls ON lcat.loan_category_name = ls.loan_category where lcat.status=0 and lcat.loan_category_name = '" . strip_tags($loan_category_upd) . "' ");
 if ($result->rowCount() > 0) {
 
     $row = $result->fetch();
-    $response['advance'] = $row['collection_info'];
+    if (!empty($row['collection_info'])) {
+        $response['advance'] = $row['collection_info'];
+    } else {
+        $response['advance'] = $row['advance_type'];
+    }
     $loan_limit = intVal($row['loan_limit']);
 
     //this section is only for the request screen to get the loan category limit 
-    if(isset($_POST['from']) && ($_POST['from'] === "request")){
+    if (isset($_POST['from']) && ($_POST['from'] === "request")) {
         $response['message'] = "";
         $response['loan_limit'] = $loan_limit;
         echo json_encode($response);
-        exit; 
+        exit;
     }
     $response['message'] = "";
 } else {
@@ -62,7 +66,6 @@ if ($qry->rowCount() > 0) {
     // }
 
     $cus_limit = max(0, $cus_limit - $cus_balance);
-
 } else {
     $cus_limit = 0;
 }
@@ -74,7 +77,7 @@ if ($cus_limit != 0) {
         $response['loan_limit'] = $loan_limit;
     } else if ($cus_limit < $loan_limit) {
         $response['loan_limit'] = $cus_limit;
-    } else if ($cus_limit == $loan_limit){
+    } else if ($cus_limit == $loan_limit) {
         $response['loan_limit'] = $cus_limit;
     }
 } else {

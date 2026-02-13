@@ -1,6 +1,6 @@
 <?php
 
-function getUserSubAreaList(PDO $connect, string $module): string
+function getUserAreaList(PDO $connect, string $module): string
 {
     if (isset($_SESSION["userid"])) {
         $userid = $_SESSION["userid"];
@@ -13,18 +13,18 @@ function getUserSubAreaList(PDO $connect, string $module): string
 
     /* ======================= ACCESS CONFIG PRESETS ======================= */
 
-    $GROUP_SUBAREA = [
+    $GROUP_AREA = [
         'user_col' => 'group_id',
-        'table'    => 'area_group_mapping_sub_area',
+        'table'    => 'area_group_mapping_area',
         'map_col'  => 'group_map_id',
-        'id_col'   => 'sub_area_id',
+        'id_col'   => 'area_id',
     ];
 
-    $LINE_SUBAREA = [
+    $LINE_AREA = [
         'user_col' => 'line_id',
-        'table'    => 'area_line_mapping_sub_area',
+        'table'    => 'area_line_mapping_area',
         'map_col'  => 'line_map_id',
-        'id_col'   => 'sub_area_id',
+        'id_col'   => 'area_id',
     ];
 
     $DUEFOLLOWUP_AREA = [
@@ -38,16 +38,16 @@ function getUserSubAreaList(PDO $connect, string $module): string
 
     $config = [
         // Group → Sub Area
-        'verification'    => $GROUP_SUBAREA,
-        'approval'        => $GROUP_SUBAREA,
-        'acknowledgement' => $GROUP_SUBAREA,
-        'loanissue'       => $GROUP_SUBAREA,
-        'update'          => $GROUP_SUBAREA,
-        'accloanissue'    => $GROUP_SUBAREA,
+        'verification'    => $GROUP_AREA,
+        'approval'        => $GROUP_AREA,
+        'acknowledgement' => $GROUP_AREA,
+        'loanissue'       => $GROUP_AREA,
+        'update'          => $GROUP_AREA,
+        'accloanissue'    => $GROUP_AREA,
 
         // Line → Sub Area
-        'collection'      => $LINE_SUBAREA,
-        'closed'          => $LINE_SUBAREA,
+        'collection'      => $LINE_AREA,
+        'closed'          => $LINE_AREA,
 
         // Due Follow-up → Area
         'confirmFollowUp' => $DUEFOLLOWUP_AREA,

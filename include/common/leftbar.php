@@ -7,8 +7,7 @@ $verif_check = isset($_GET['pge']) ? $_GET['pge'] : null;
 
 if (
 	$current_page == 'edit_company_creation' || $current_page == 'company_creation' || $current_page == 'edit_branch_creation' || $current_page == 'branch_creation' ||
-	$current_page == 'edit_loan_category' || $current_page == 'loan_category' || $current_page == 'edit_loan_calculation' || $current_page == 'loan_calculation' ||
-	$current_page == 'edit_loan_scheme' || $current_page == 'loan_scheme' || $current_page == 'edit_area_creation' || $current_page == 'area_creation' ||
+	$current_page == 'edit_loan_category' || $current_page == 'loan_category'  || $current_page == 'edit_area_creation' || $current_page == 'area_creation' ||
 	$current_page == 'edit_area_mapping' || $current_page == 'area_mapping' || $current_page == 'area_status'
 ) {
 
@@ -150,8 +149,6 @@ $mastermodule    = '';
 $company_creation      = '';
 $branch_creation = '';
 $loan_category = '';
-$loan_calculation   = '';
-$loan_scheme   = '';
 $area_creation        = '';
 $area_mapping        = '';
 $area_status        = '';
@@ -268,8 +265,6 @@ if (sizeof($getUser) > 0) {
 		$company_creation          		     = $getUser['company_creation'];
 		$branch_creation          		     = $getUser['branch_creation'];
 		$loan_category          		     = $getUser['loan_category'];
-		$loan_calculation          		     = $getUser['loan_calculation'];
-		$loan_scheme          		     = $getUser['loan_scheme'];
 		$area_creation          		     = $getUser['area_creation'];
 		$area_mapping          		     = $getUser['area_mapping'];
 		$area_status          		     = $getUser['area_approval'];
@@ -535,16 +530,6 @@ if (sizeof($getUser) > 0) {
 								if ($loan_category == 0) { ?>
 									<li>
 										<a href="edit_loan_category"><i class="icon-package"></i>Loan Category</a>
-									</li>
-								<?php  }
-								if ($loan_calculation == 0) { ?>
-									<li>
-										<a href="edit_loan_calculation"><i class="icon-percent"></i>Loan Calculation</a>
-									</li>
-								<?php  }
-								if ($loan_scheme == 0) { ?>
-									<li>
-										<a href="edit_loan_scheme"><i class="icon-credit-card"></i>Loan Scheme</a>
 									</li>
 								<?php  }
 								if ($area_creation == 0) { ?>
@@ -1229,8 +1214,6 @@ $mastermodule    = '';
 $company_creation      = '';
 $branch_creation = '';
 $loan_category = '';
-$loan_calculation   = '';
-$loan_scheme   = '';
 $area_creation        = '';
 $area_mapping        = '';
 $area_status        = '';

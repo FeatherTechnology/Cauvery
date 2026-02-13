@@ -28,8 +28,6 @@ $mastermodule    = '';
 $company_creation      = '';
 $branch_creation = '';
 $loan_category ='';
-$loan_calculation   = '';
-$loan_scheme   = '';
 $area_creation        = '';
 $area_mapping        = '';
 $area_status        = '';
@@ -202,8 +200,6 @@ if($idupd>0)
 			$company_creation          		     = $getUser['company_creation'];
 			$branch_creation          		     = $getUser['branch_creation'];
 			$loan_category          		     = $getUser['loan_category'];
-			$loan_calculation          		     = $getUser['loan_calculation'];
-			$loan_scheme          		     = $getUser['loan_scheme'];
 			$area_creation          		     = $getUser['area_creation'];
 			$area_mapping          		     = $getUser['area_mapping'];
 			$area_status          		     = $getUser['area_approval'];
@@ -441,7 +437,6 @@ if($idupd>0)
 												<thead>
 													<tr>
 														<th>Loan Category</th>
-														<th>Sub Category</th>
 														<th>Scheme</th>
 														<th>Loan Payment</th>
 														<th>Responsible</th>
@@ -660,18 +655,6 @@ if($idupd>0)
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($loan_category==0){ echo'checked'; }} ?> tabindex="15" class="master-checkbox screen-validations" id="loan_category" name="loan_category" disabled>&nbsp;&nbsp;
                                 <label class="custom-control-label" for="loan_category">Loan Category</label>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($loan_calculation==0){ echo'checked'; }} ?> tabindex="16" class="master-checkbox screen-validations" id="loan_calculation" name="loan_calculation" disabled >&nbsp;&nbsp;
-                                <label class="custom-control-label" for="loan_calculation">Loan Calculation</label>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($loan_scheme==0){ echo'checked'; }} ?> tabindex="17" class="master-checkbox screen-validations" id="loan_scheme" name="loan_scheme" disabled >&nbsp;&nbsp;
-                                <label class="custom-control-label" for="loan_scheme">Loan Scheme</label>
                             </div>
                         </div>
                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">

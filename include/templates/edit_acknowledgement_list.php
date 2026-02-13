@@ -82,9 +82,7 @@ if (sizeof($getUser) > 0) {
 								<th>Line</th>
 								<th>Mobile</th>
 								<th>Area</th>
-								<th>Sub Area</th>
 								<th>Loan Category</th>
-								<th>Sub Category</th>
 								<th>Loan Amount</th>
 								<th>User Type</th>
 								<th>User</th>
@@ -138,7 +136,6 @@ if (sizeof($getUser) > 0) {
 								<th width="25" rowspan="2">S. No</th>
 								<th rowspan="2" class="group-border">Date</th>
 								<th rowspan="2" class="group-border">Loan Category</th>
-								<th rowspan="2" class="group-border">Sub Category</th>
 								<th rowspan="2" class="group-border">Amount</th>
 								<th colspan="3" class="group-border">Loan Status</th>
 								<th colspan="3" class="group-border">Document Status</th>

@@ -2262,27 +2262,39 @@
             XLSX.writeFile(wb, fileName);
         }
 
-        function nameFormatter(selector) {
-            $(selector).on('input', function() {
-                let value = $(this).val();
+        // function nameFormatter(selector) {
+        //     $(selector).on('input', function() {
+        //         let value = $(this).val();
 
-                // Split by space
-                let parts = value.split(" ");
+        //         // Split by space
+        //         let parts = value.split(" ");
 
-                if (parts.length > 1) {
-                    // Convert second part to CAPS and allow only 2 letters
-                    parts[1] = parts[1].toUpperCase()
-                        .replace(/[^A-Z]/g, "")
-                        .substring(0, 2);
+        //         if (parts.length > 1) {
+        //             // Convert second part to CAPS and allow only 2 letters
+        //             parts[1] = parts[1].toUpperCase()
+        //                 .replace(/[^A-Z]/g, "")
+        //                 .substring(0, 2);
 
-                    // Block more than 2 parts
-                    if (parts.length > 2) {
-                        parts = parts.slice(0, 2);
-                    }
-                }
+        //             // Block more than 2 parts
+        //             if (parts.length > 2) {
+        //                 parts = parts.slice(0, 2);
+        //             }
+        //         }
 
-                $(this).val(parts.join(" "));
-            });
+        //         $(this).val(parts.join(" "));
+        //     });
+        // }
+
+         function formatFirstName(input) {
+            let v = input.value.replace(/[^a-zA-Z]/g, ''); // only letters
+            v = v.replace(/\s+/g, ''); // remove spaces
+            input.value = v.charAt(0).toUpperCase() + v.slice(1).toLowerCase(); // First letter caps
+        }
+
+        function formatLastName(input) {
+            let v = input.value.replace(/[^a-zA-Z]/g, ''); // only letters
+            v = v.replace(/\s+/g, ''); // remove spaces
+            input.value = v.toUpperCase(); // all caps
         }
 
         // <------------------------------------------------------ COLUMN VISIBILITY AND COLOR CHNAGE START -------------------------------------------------------->

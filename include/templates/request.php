@@ -120,7 +120,8 @@ if ($idupd > 0) {
 			$dor =  date_format($dor, 'd-m-Y');
 			$cus_id					= $getRequest['cus_id'];
 			$cus_data					= $getRequest['cus_data'];
-			$cus_name					= $getRequest['cus_name'];
+			$first_name					= $getRequest['first_name'];
+			$last_name					= $getRequest['last_name'];
 			$dob					= $getRequest['dob'];
 			$age					= $getRequest['age'];
 			$gender					= $getRequest['gender'];
@@ -128,10 +129,11 @@ if ($idupd > 0) {
 			$district					= $getRequest['district'];
 			$taluk					= $getRequest['taluk'];
 			$area					= $getRequest['area'];
-			$sub_area					= $getRequest['sub_area'];
 			$address					= $getRequest['address'];
 			$mobile1					= $getRequest['mobile1'];
 			$mobile2					= $getRequest['mobile2'];
+			$mobile_whatsapp			= $getRequest['mobile_whatsapp'];
+			$whatsapp_no				= $getRequest['whatsapp_no'];
 			$father_name					= $getRequest['father_name'];
 			$mother_name					= $getRequest['mother_name'];
 			$marital					= $getRequest['marital'];
@@ -140,7 +142,6 @@ if ($idupd > 0) {
 			$occupation					= $getRequest['occupation'];
 			$pic					= $getRequest['pic'];
 			$loan_category					= $getRequest['loan_category'];
-			$sub_category					= $getRequest['sub_category'];
 			$tot_value					= $getRequest['tot_value'];
 			$ad_amt					= $getRequest['ad_amt'];
 			$ad_perc					= $getRequest['ad_perc'];
@@ -228,7 +229,8 @@ if ($idupd > 0) {
 			<input type="hidden" class="form-control" value="<?php if (isset($dor)) echo $dor; ?>" id="dor_upd" name="dor_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($cus_id)) echo $cus_id; ?>" id="cus_id_upd" name="cus_id_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($cus_data)) echo $cus_data; ?>" id="cus_data_upd" name="cus_data_upd">
-			<input type="hidden" class="form-control" value="<?php if (isset($cus_name)) echo $cus_name; ?>" id="cus_name_upd" name="cus_name_upd">
+		    <input type="hidden" class="form-control" value="<?php if (isset($first_name)) echo $first_name; ?>" id="first_name_upd" name="first_name_upd">
+			<input type="hidden" class="form-control" value="<?php if (isset($last_name)) echo $last_name; ?>" id="last_name_upd" name="last_name_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($dob)) echo $dob; ?>" id="dob_upd" name="dob_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($age)) echo $age; ?>" id="age_upd" name="age_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($gender)) echo $gender; ?>" id="gender_upd" name="gender_upd">
@@ -236,7 +238,6 @@ if ($idupd > 0) {
 			<input type="hidden" class="form-control" value="<?php if (isset($district)) echo $district; ?>" id="district_upd" name="district_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($taluk)) echo $taluk; ?>" id="taluk_upd" name="taluk_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($area)) echo $area; ?>" id="area_upd" name="area_upd">
-			<input type="hidden" class="form-control" value="<?php if (isset($sub_area)) echo $sub_area; ?>" id="sub_area_upd" name="sub_area_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($address)) echo $address; ?>" id="address_upd" name="address_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($mobile1)) echo $mobile1; ?>" id="mobile1_upd" name="mobile1_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($mobile2)) echo $mobile2; ?>" id="mobile2_upd" name="mobile2_upd">
@@ -248,7 +249,6 @@ if ($idupd > 0) {
 			<input type="hidden" class="form-control" value="<?php if (isset($occupation)) echo $occupation; ?>" id="occupation_upd" name="occupation_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($pic)) echo $pic; ?>" id="pic_upd" name="pic_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($loan_category)) echo $loan_category; ?>" id="loan_category_upd" name="loan_category_upd">
-			<input type="hidden" class="form-control" value="<?php if (isset($sub_category)) echo $sub_category; ?>" id="sub_category_upd" name="sub_category_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($tot_value)) echo $tot_value; ?>" id="tot_value_upd" name="tot_value_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($ad_amt)) echo $ad_amt; ?>" id="ad_amt_upd" name="ad_amt_upd">
 			<input type="hidden" class="form-control" value="<?php if (isset($ad_perc)) echo $ad_perc; ?>" id="ad_perc_upd" name="ad_perc_upd">
@@ -390,11 +390,20 @@ if ($idupd > 0) {
 							</div>
 							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 								<div class="form-group">
-									<label for="cus_name">Customer Name</label><span class="required">&nbsp;*</span>
-									<input type="text" class="form-control" id="cus_name" name="cus_name" value='<?php if (isset($cus_name)) {
-																														echo $cus_name;
-																													} ?>' tabindex='12' placeholder="Enter Customer Name" pattern="[a-zA-Z\s]+">
-									<span class="text-danger" style='display:none' id='cusnameCheck'>Please Enter Customer Name</span>
+									<label for="first_name">First Name</label><span class="required">&nbsp;*</span>
+									<input type="text" class="form-control" id="first_name" name="first_name" tabindex="13" oninput="formatFirstName(this)" value='<?php if (isset($first_name)) {
+																														echo $first_name;
+																													} ?>' placeholder="Enter First Name">
+									<span class="text-danger" style='display:none' id='firstnameCheck'>Please Enter First Name</span>
+								</div>
+							</div>
+							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
+								<div class="form-group">
+									<label for="last_name">Last Name</label><span class="required">&nbsp;*</span>
+									<input type="text" class="form-control" id="last_name" name="last_name" tabindex="14" oninput="formatLastName(this)" value='<?php if (isset($last_name)) {
+																														echo $last_name;
+																													} ?>' placeholder="Enter Last Name">
+									<span class="text-danger" style='display:none' id='lastnameCheck'>Please Enter Last Name</span>
 								</div>
 							</div>
 							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
@@ -470,15 +479,6 @@ if ($idupd > 0) {
 							</div>
 							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 								<div class="form-group">
-									<label for="disabledInput">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-									<select tabindex="20" type="text" class="form-control" id="sub_area" name="sub_area">
-										<option value=''>Select Sub Area</option>
-									</select>
-									<span class="text-danger" style='display:none' id='subareaCheck'>Please Select Sub Area</span>
-								</div>
-							</div>
-							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
-								<div class="form-group">
 									<label for="address">Address</label><span class="required">&nbsp;*</span>
 									<input type="text" class="form-control" id="address" name="address" value='<?php if (isset($address)) {
 																													echo $address;
@@ -502,6 +502,26 @@ if ($idupd > 0) {
 																																											echo $mobile2;
 																																										} ?>' tabindex='23' oninput="validateInputNumber(this,'withOutDot')"placeholder="Enter Mobile Number">
 									<span class="text-danger" style='display:none' id='mobile2Check'>Please Enter Mobile Number</span>
+								</div>
+							</div>
+								<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+								<div class="form-group">
+									<label>Choose Mobile Number for WhatsApp:</label><br>
+									<label>
+										<input type="radio" name="mobile_whatsapp" value="mobile1" id="mobile1_radio" tabindex="25" class="personal_info_disble"  <?php if($idupd > 0){ if($mobile_whatsapp == 'mobile1'){ echo'checked'; }} ?> >
+										Mobile Number 1
+									</label><br>
+									<label>
+										<input type="radio" name="mobile_whatsapp" value="mobile2" id="mobile2_radio" tabindex="26" class="personal_info_disble" <?php if($idupd > 0){ if($mobile_whatsapp =='mobile2'){ echo'checked'; }} ?> >
+										Mobile Number 2
+									</label>
+									<input type="hidden" id="selected_mobile_radio">
+								</div>
+							</div>
+							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+								<div class="form-group">
+									<label for="whatsapp_no"> WhatsApp Number </label>
+									<input type="number" class="form-control  personal_info_disble" id="whatsapp_no" name="whatsapp_no" tabindex="27" onKeyPress="if(this.value.length==10) return false;" placeholder="Enter WhatsApp Number"value='<?php if (isset($whatsapp_no)) { echo $whatsapp_no; } ?>' readonly>
 								</div>
 							</div>
 							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
@@ -609,15 +629,6 @@ if ($idupd > 0) {
 								} ?>
 							</select>
 							<span class="text-danger" style='display:none' id='loancategoryCheck'>Please Select Loan Category</span>
-						</div>
-					</div>
-					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-						<div class="form-group">
-							<label for="disabledInput">Sub Category</label>&nbsp;<span class="text-danger">*</span>
-							<select tabindex="32" type="text" class="form-control" id="sub_category" name="sub_category">
-								<option value="">Select Sub Category</option>
-							</select>
-							<span class="text-danger" style='display:none' id='subcategoryCheck'>Please Select Sub Category</span>
 						</div>
 					</div>
 					<!-- <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 advance_yes" style="display:none"></div> -->

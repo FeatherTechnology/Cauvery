@@ -79,7 +79,6 @@ $(document).ready(function () {
 
         $('#cus_name').val('');
         $('#cus_area').val('');
-        $('#cus_sub_area').val('');
         $('#cus_group').val('');
         $('#cus_line').val('');
     });
@@ -290,7 +289,6 @@ function refershInput() {
     $('#cus_id').val('');
     $('#cus_name').val('');
     $('#cus_area').val('');
-    $('#cus_sub_area').val('');
     $('#cus_group').val('');
     $('#cus_line').val('');
 }
@@ -350,7 +348,6 @@ function getCustomerDetails(cus_id) {
             if (response['message'] == 'Existing') {
                 $('#cus_name').val(response['cus_name']); //
                 $('#cus_area').val(response['area_name']);//
-                $('#cus_sub_area').val(response['sub_area_name']);//
                 $('#cus_group').val(response['grp_name']);//
                 $('#cus_line').val(response['line_name']);//
             }

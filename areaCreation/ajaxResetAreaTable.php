@@ -6,6 +6,7 @@ if (isset($_POST['taluk'])) {
 ?>
 
 <table class="table custom-table" id="areaTable">
+    <div id="hiddenExport" style="display:none;"></div>
     <thead>
         <tr>
             <th width="25%">S. No</th>
@@ -33,11 +34,10 @@ if (isset($_POST['taluk'])) {
                         <a id="delete_area" value="<?php if (isset($ct["area_id"])) {
                                                         echo $ct["area_id"];
                                                     } ?>"><span class='icon-trash-2'></span>
-                        </a> &nbsp
+                        </a>
                         <a id="swap_areas" data-toggle="modal" data-target="#swap_area_model_box" value="<?php if (isset($ct['area_id'])) {
                                                                                                                 echo $ct['area_id'];
                                                                                                             } ?>"> <span class="icon-sync"></span> </a>
-
                     </td>
                 </tr>
         <?php $i = $i + 1;
@@ -48,9 +48,7 @@ if (isset($_POST['taluk'])) {
 
 <script type="text/javascript">
     $(function() {
-        // Declare table variable to store the DataTable instance
-        var areaTable = $('#areaTable').DataTable({
-            ...getStateSaveConfig('areaTable'),
+        $('#areaTable').DataTable({
             'processing': true,
             'iDisplayLength': 5,
             "lengthMenu": [
@@ -68,24 +66,36 @@ if (isset($_POST['taluk'])) {
             },
             dom: 'lBfrtip',
             buttons: [{
-                    extend: 'excel',
-                    action: function(e, dt, button, config) {
-                        var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-                        var dynamic = curDateJs('Area_table'); // or any base
-                        config.title = dynamic; // for versions that use title as filename
-                        config.filename = dynamic; // for html5 filename
-                        defaultAction.call(this, e, dt, button, config);
+                    text: 'Excel',
+                    action: function(e, dt, node, config) {
+                        // Generate fresh title & filename every click
+                        const {
+                            title,
+                            filename
+                        } = generateReportTitle('Area Creation List');
+
+                        // Create a hidden temporary export button
+                        const tmpBtn = new $.fn.dataTable.Buttons(dt, {
+                            buttons: [{
+                                extend: 'excelHtml5',
+                                title: title,
+                                filename: filename,
+                            }]
+                        }).container().appendTo($('#hiddenExport'));
+
+                        // Trigger that button’s click programmatically
+                        tmpBtn.find('.buttons-excel').click();
+
+                        // Remove the temporary button after export
+                        tmpBtn.remove();
                     }
                 },
                 {
                     extend: 'colvis',
                     collectionLayout: 'fixed four-column',
                 }
-            ]
+            ],
         });
-
-        // Pass the table variable to the initColVisFeatures function
-        initColVisFeatures(areaTable, 'areaTable');
     });
 </script>
 

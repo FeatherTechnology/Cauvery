@@ -3,7 +3,8 @@ require '../ajaxconfig.php';
 
 $reqId                   = $_POST['reqId'];
 $cus_id                   = preg_replace('/\D/', '', $_POST['cus_id']);
-$famname                 = $_POST['famname'];
+$fam_first_name                 = $_POST['fam_first_name'];
+$fam_last_name                 = $_POST['fam_last_name'];
 $realtionship            = $_POST['realtionship'];
 
 if ($realtionship  == 'Other') {
@@ -27,9 +28,9 @@ $authorize               = ($_POST['authorize'] == 1) ? 1 : 0;
 
 if ($famTableId == '') {
 
-    $insert_qry = $connect->query("INSERT INTO `verification_family_info`(`cus_id`,`req_id`, `famname`, `relationship`, `authorize`,`other_remark`, `other_address`, `relation_age`, `relation_aadhar`, `relation_Mobile`, `relation_Occupation`, `relation_Income`, `relation_Blood`) VALUES ('$cus_id','$reqId','$famname','$realtionship','$authorize','$other_remark','$other_address ','$relation_age','$relation_aadhar','$relation_Mobile','$relation_Occupation','$relation_Income','$relation_Blood')");
+    $insert_qry = $connect->query("INSERT INTO `verification_family_info`(`cus_id`,`req_id`,`first_name`, `last_name`, `relationship`, `authorize`,`other_remark`, `other_address`, `relation_age`, `relation_aadhar`, `relation_Mobile`, `relation_Occupation`, `relation_Income`, `relation_Blood`) VALUES ('$cus_id','$reqId','$fam_first_name','$fam_last_name','$realtionship','$authorize','$other_remark','$other_address ','$relation_age','$relation_aadhar','$relation_Mobile','$relation_Occupation','$relation_Income','$relation_Blood')");
 } else {
-    $update = $connect->query("UPDATE `verification_family_info` SET `cus_id`='$cus_id',`req_id`='$reqId',`famname`='$famname',`relationship`='$realtionship',`authorize`='$authorize',`other_remark`='$other_remark',`other_address`='$other_address',`relation_age`='$relation_age',`relation_aadhar`='$relation_aadhar',`relation_Mobile`='$relation_Mobile',`relation_Occupation`='$relation_Occupation',`relation_Income`='$relation_Income',`relation_Blood`='$relation_Blood' WHERE id = '$famTableId ' ");
+    $update = $connect->query("UPDATE `verification_family_info` SET `cus_id`='$cus_id',`req_id`='$reqId',`first_name`='$fam_first_name',`last_name`='$fam_last_name',`relationship`='$realtionship',`authorize`='$authorize',`other_remark`='$other_remark',`other_address`='$other_address',`relation_age`='$relation_age',`relation_aadhar`='$relation_aadhar',`relation_Mobile`='$relation_Mobile',`relation_Occupation`='$relation_Occupation',`relation_Income`='$relation_Income',`relation_Blood`='$relation_Blood' WHERE id = '$famTableId' ");
 }
 
 if ($insert_qry) {

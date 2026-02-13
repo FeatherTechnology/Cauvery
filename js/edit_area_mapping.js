@@ -32,12 +32,11 @@ $(function () {
 function dT1() {
     $('#area_mapping_line_info').DataTable().destroy();
     $('#area_mapping_line_info').empty();
-    $('#area_mapping_line_info').append(`<thead><tr><th width="50">S. No.</th><th>Line Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Sub Area</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
+    $('#area_mapping_line_info').append(`<thead><tr><th width="50">S. No.</th><th>Line Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
 
-    // Declare table variable to store the DataTable instance
-    var area_mapping_line_info = $('#area_mapping_line_info').DataTable({
-        ...getStateSaveConfig('area_mapping_line_info'),
-        "order": [[0, "desc"]],
+    $('#area_mapping_line_info').DataTable({
+
+        "order": [[0, "asc"]],
         'processing': true,
         'serverSide': true,
         'serverMethod': 'post',
@@ -49,22 +48,35 @@ function dT1() {
             }
         },
         dom: 'lBfrtip',
-        buttons: [
-            {
-                extend: 'excel',
-                title: "Line List",
-                action: function (e, dt, button, config) {
-                    var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-                    var dynamic = curDateJs('Line_List'); // or any base
-                    config.title = dynamic;      // for versions that use title as filename
-                    config.filename = dynamic;   // for html5 filename
-                    defaultAction.call(this, e, dt, button, config);
-                }
-            },
-            {
-                extend: 'colvis',
-                collectionLayout: 'fixed four-column',
+        buttons: [{
+            text: 'Excel',
+            action: function (e, dt, node, config) {
+                // Generate fresh title & filename every click
+                const {
+                    title,
+                    filename
+                } = generateReportTitle('Line List');
+
+                // Create a hidden temporary export button
+                const tmpBtn = new $.fn.dataTable.Buttons(dt, {
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        title: title,
+                        filename: filename,
+                    }]
+                }).container().appendTo($('#hiddenExport'));
+
+                // Trigger that button’s click programmatically
+                tmpBtn.find('.buttons-excel').click();
+
+                // Remove the temporary button after export
+                tmpBtn.remove();
             }
+        },
+        {
+            extend: 'colvis',
+            collectionLayout: 'fixed four-column',
+        }
         ],
         "lengthMenu": [
             [10, 25, 50, -1],
@@ -75,19 +87,14 @@ function dT1() {
             paginationFunction('area_mapping_line_info');
         }
     });
-
-    // Pass the table variable to the initColVisFeatures function
-    initColVisFeatures(area_mapping_line_info, 'area_mapping_line_info');
 }
 
 function dT2() {
     $('#area_mapping_group_info').DataTable().destroy();
     $('#area_mapping_group_info').empty();
-    $('#area_mapping_group_info').append(`<thead><tr><th width="50">S. No.</th><th>Group Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Sub Area</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
+    $('#area_mapping_group_info').append(`<thead><tr><th width="50">S. No.</th><th>Group Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
 
-    // Declare table variable to store the DataTable instance
-    var area_mapping_group_info = $('#area_mapping_group_info').DataTable({
-        ...getStateSaveConfig('area_mapping_group_info'),
+    $('#area_mapping_group_info').DataTable({
         "order": [[0, "desc"]],
         'processing': true,
         'serverSide': true,
@@ -101,22 +108,35 @@ function dT2() {
         },
 
         dom: 'lBfrtip',
-        buttons: [
-            {
-                extend: 'excel',
-                title: "Group List",
-                action: function (e, dt, button, config) {
-                    var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-                    var dynamic = curDateJs('Group_List'); // or any base
-                    config.title = dynamic;      // for versions that use title as filename
-                    config.filename = dynamic;   // for html5 filename
-                    defaultAction.call(this, e, dt, button, config);
-                }
-            },
-            {
-                extend: 'colvis',
-                collectionLayout: 'fixed four-column',
+        buttons: [{
+            text: 'Excel',
+            action: function (e, dt, node, config) {
+                // Generate fresh title & filename every click
+                const {
+                    title,
+                    filename
+                } = generateReportTitle('Group List');
+
+                // Create a hidden temporary export button
+                const tmpBtn = new $.fn.dataTable.Buttons(dt, {
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        title: title,
+                        filename: filename,
+                    }]
+                }).container().appendTo($('#hiddenExport'));
+
+                // Trigger that button’s click programmatically
+                tmpBtn.find('.buttons-excel').click();
+
+                // Remove the temporary button after export
+                tmpBtn.remove();
             }
+        },
+        {
+            extend: 'colvis',
+            collectionLayout: 'fixed four-column',
+        }
         ],
         "lengthMenu": [
             [10, 25, 50, -1],
@@ -127,9 +147,6 @@ function dT2() {
             paginationFunction('area_mapping_group_info');
         }
     });
-
-    // Pass the table variable to the initColVisFeatures function
-    initColVisFeatures(area_mapping_group_info, 'area_mapping_group_info');
 }
 
 function dT3() {
@@ -137,9 +154,7 @@ function dT3() {
     $('#area_mapping_duefollowup_info').empty();
     $('#area_mapping_duefollowup_info').append(`<thead><tr><th width="50">S. No.</th><th>Due Followup Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
 
-    // Declare table variable to store the DataTable instance
-    var area_mapping_duefollowup_info = $('#area_mapping_duefollowup_info').DataTable({
-        ...getStateSaveConfig('area_mapping_duefollowup_info'),
+    $('#area_mapping_duefollowup_info').DataTable({
         "order": [[0, "desc"]],
         'processing': true,
         'serverSide': true,
@@ -153,22 +168,35 @@ function dT3() {
         },
 
         dom: 'lBfrtip',
-        buttons: [
-            {
-                extend: 'excel',
-                title: "Due Followup List",
-                action: function (e, dt, button, config) {
-                    var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-                    var dynamic = curDateJs('Due_followup_List'); // or any base
-                    config.title = dynamic;      // for versions that use title as filename
-                    config.filename = dynamic;   // for html5 filename
-                    defaultAction.call(this, e, dt, button, config);
-                }
-            },
-            {
-                extend: 'colvis',
-                collectionLayout: 'fixed four-column',
+        buttons: [{
+            text: 'Excel',
+            action: function (e, dt, node, config) {
+                // Generate fresh title & filename every click
+                const {
+                    title,
+                    filename
+                } = generateReportTitle('Due Followup List');
+
+                // Create a hidden temporary export button
+                const tmpBtn = new $.fn.dataTable.Buttons(dt, {
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        title: title,
+                        filename: filename,
+                    }]
+                }).container().appendTo($('#hiddenExport'));
+
+                // Trigger that button’s click programmatically
+                tmpBtn.find('.buttons-excel').click();
+
+                // Remove the temporary button after export
+                tmpBtn.remove();
             }
+        },
+        {
+            extend: 'colvis',
+            collectionLayout: 'fixed four-column',
+        }
         ],
         "lengthMenu": [
             [10, 25, 50, -1],
@@ -179,8 +207,5 @@ function dT3() {
             paginationFunction('area_mapping_duefollowup_info');
         }
     });
-
-    // Pass the table variable to the initColVisFeatures function
-    initColVisFeatures(area_mapping_duefollowup_info, 'area_mapping_duefollowup_info');
 }
 

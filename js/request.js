@@ -38,7 +38,7 @@ $(document).ready(function () {
 
     $('#agent').change(function () {
         var agent_id = $('#agent').val();
-        $('#loan_category, #sub_category').val('');
+        $('#loan_category').val('');
         getAgentBasedLoanCategory(agent_id);
     })
 
@@ -64,13 +64,13 @@ $(document).ready(function () {
                         $('#cusHistoryTable').empty();
                         $('#cusHistoryTable').html(response);
                         $('#cusHistoryTable tbody tr').each(function () {
-                            var val = $(this).find('td:nth-child(6)').html();
-                            if (['Request', 'Verification', 'Approval', 'Acknowledgement', 'Issue'].includes(val)) {
-                                $(this).find('td:nth-child(6)').css({ 'backgroundColor': 'rgba(240, 0, 0, 0.8)', 'color': 'white', 'fontWeight': 'Bolder' });
+                            var val = $(this).find('td:nth-child(5)').html();
+                            if (['Request', 'Verification', 'Approval', 'Acknowledgement', 'Loan Issue'].includes(val)) {
+                                $(this).find('td:nth-child(5)').css({ 'backgroundColor': 'rgba(240, 0, 0, 0.8)', 'color': 'white', 'fontWeight': 'Bolder' });
                             } else if (val == 'Present') {
-                                $(this).find('td:nth-child(6)').css({ 'backgroundColor': 'rgba(0, 160, 0, 0.8)', 'color': 'white', 'fontWeight': 'Bolder' });
+                                $(this).find('td:nth-child(5)').css({ 'backgroundColor': 'rgba(0, 160, 0, 0.8)', 'color': 'white', 'fontWeight': 'Bolder' });
                             } else if (val == 'Closed') {
-                                $(this).find('td:nth-child(6)').css({ 'backgroundColor': 'rgba(0, 0, 255, 0.8)', 'color': 'white', 'fontWeight': 'Bolder' });
+                                $(this).find('td:nth-child(5)').css({ 'backgroundColor': 'rgba(0, 0, 255, 0.8)', 'color': 'white', 'fontWeight': 'Bolder' });
                             }
 
                         });
@@ -113,11 +113,18 @@ $(document).ready(function () {
         getTalukBasedArea(talukselected);
     })
 
-    $('#area').change(function () {
+    $('input[name="mobile_whatsapp"]').on('change', function () {
+        let selectedValue = $(this).val();
+        let mobileNumber;
 
-        var areaselected = $('#area').val();
-        getAreaBasedSubArea(areaselected);
-    })
+        if (selectedValue === 'mobile1') {
+            mobileNumber = $('#mobile1').val();
+        } else if (selectedValue === 'mobile2') {
+            mobileNumber = $('#mobile2').val();
+        }
+
+        $('#whatsapp_no').val(mobileNumber);
+    });
 
     $('#marital').change(function () {//To get spouse name or not
         var marital = $(this).val();
@@ -137,18 +144,8 @@ $(document).ready(function () {
         $('#ad_perc').val('');
         $('#loan_amt').val('');
         $('.category_info .card-body .row').empty();
-        getSubCategory(loanselected);
-    })
-
-    $('#sub_category').change(function () {
-        var subselected = $('#sub_category').val();
-        $('#tot_value').val('');
-        $('#ad_amt').val('');
-        $('#ad_perc').val('');
-        $('#loan_amt').val('');
-        $('.category_info .card-body .row').empty();
-        getLoaninfo(subselected);
-        getCategoryInfo(subselected);
+        getLoaninfo(loanselected);
+        getCategoryInfo(loanselected)
     })
 
     // $('#tot_value').on('input', function () {// to calculate loan amount ant advance percentage
@@ -217,16 +214,16 @@ $(document).ready(function () {
     })
 
     $('#submit_request').click(function (event) {
-           if(validation(event)){
+        if (validation(event)) {
             let confirmAction = confirm("Are you sure you want to submit Request ?");
             if (!confirmAction) {
-            event.preventDefault();
-            return false; 
+                event.preventDefault();
+                return false;
             }
-        }else{
+        } else {
             event.preventDefault();
             return false;
-    }
+        }
     })
     $('#due_amt').on('input', function () {
         let value = $(this).val();
@@ -239,7 +236,6 @@ $(document).ready(function () {
 
 $(function () {//For Update
     var idupd = $('#id').val();
-    nameFormatter('#cus_name');
     if (idupd > 0) {
         var role_upd = $('#role_upd').val();
         var ag_id_upd = $('#ag_id_upd').val();
@@ -269,8 +265,6 @@ $(function () {//For Update
         getTalukDropdown(district_upd);
         var taluk_upd = $('#taluk_upd').val();
         getTalukBasedArea(taluk_upd);
-        var area_upd = $('#area_upd').val();
-        getAreaBasedSubArea(area_upd);
         var marital_upd = $('#marital_upd').val();
         if (marital_upd == 1) {
             $('.spouse').show();
@@ -278,9 +272,7 @@ $(function () {//For Update
             $('.spouse').hide();
         }
         var loan_category_upd = $('#loan_category_upd').val();
-        getSubCategory(loan_category_upd);
-        var sub_category_upd = $('#sub_category_upd').val();
-        getLoaninfo(sub_category_upd).then(function(){
+        getLoaninfo(loan_category_upd).then(function () {
             var tot_value_upd = $('#tot_value_upd').val();
             var ad_amt_upd = $('#ad_amt_upd').val();
             var ad_perc_upd = $('#ad_perc_upd').val();
@@ -291,7 +283,7 @@ $(function () {//For Update
             $('#loan_amt').val(moneyFormatIndia(loan_amt_upd));
         });
 
-        getCategoryInfo(sub_category_upd);
+        getCategoryInfo(loan_category_upd);
 
         var poss_type_upd = $('#poss_type_upd').val();
         if (poss_type_upd == '1') {
@@ -307,14 +299,14 @@ $(function () {//For Update
         autocallFunctions();
     }
 
-        //If Request info open from verification.
-        let page_view = $('#page_view').val();
+    //If Request info open from verification.
+    let page_view = $('#page_view').val();
 
-        if(page_view =='1'){
-            $('.hidediv').hide();
-            $('form :input').prop('readonly', true);
-            $("form select, form input[type='checkbox'], form input[type='radio']").prop("disabled", true); 
-        }
+    if (page_view == '1') {
+        $('.hidediv').hide();
+        $('form :input').prop('readonly', true);
+        $("form select, form input[type='checkbox'], form input[type='radio']").prop("disabled", true);
+    }
 })
 
 function autocallFunctions() {//For On load
@@ -348,11 +340,11 @@ function getresponsiblecolumn(ag_id) {
         cache: false,
         success: function (response) {
             // if (role != '' && role == '2') {
-                if (response == '0') {
-                    $('.responsible').show();
-                } else {
-                    $('.responsible').hide();
-                }
+            if (response == '0') {
+                $('.responsible').show();
+            } else {
+                $('.responsible').hide();
+            }
             // }
         }
     });
@@ -372,7 +364,8 @@ function getCustomerDetails(cus_id) {
                 $('#cus_data').removeAttr('value');
                 $('#cus_data').attr('value', message);
                 $('#cus_data').val(message);
-                $('#cus_name').val(response['cus_name']);
+                $('#first_name').val(response['first_name']);
+                $('#last_name').val(response['last_name']);
                 $('#dob').val(response['dob']);
                 $('#gender').val(response['gender']);
                 $('#age').val(response['age']);
@@ -389,15 +382,24 @@ function getCustomerDetails(cus_id) {
                 getTalukBasedArea(talukselected);
                 setTimeout(function () {
                     $('#area').val(response['area']);
-                    var areaselected = $('#area').val();
-                    getAreaBasedSubArea(areaselected);
-                    setTimeout(function () {
-                        $('#sub_area').val(response['sub_area']);
-                    }, 1000);
                 }, 1000);
                 $('#address').val(response['address']);
                 $('#mobile1').val(response['mobile1']);
                 $('#mobile2').val(response['mobile2']);
+                // Set radio + whatsapp number
+                if (response['mobile_whatsapp'] == 'mobile1') {
+                    $('#mobile1_radio').prop('checked', true);
+                    $('#mobile2_radio').prop('checked', false);
+                    mobileNumber = response['mobile1'];
+                } else if (response['mobile_whatsapp'] == 'mobile2') {
+                    $('#mobile2_radio').prop('checked', true);
+                    $('#mobile1_radio').prop('checked', false);
+                    mobileNumber = response['mobile2'];
+                }else{
+                   mobileNumber ='';
+                }
+                $('#whatsapp_no').val(mobileNumber);
+                $('#selected_mobile_radio').val(response['mobile_whatsapp']);
                 $('#father_name').val(response['father_name']);
                 $('#mother_name').val(response['mother_name']);
                 $('#marital').val(response['marital']);
@@ -413,7 +415,8 @@ function getCustomerDetails(cus_id) {
                 $('#cus_data').removeAttr('value');
                 $('#cus_data').attr('value', message);
                 $('#cus_data').val(message);
-                $('#cus_name').val('');
+                $('#first_name').val('');
+                $('#last_name').val('');
                 $('#dob').val('');
                 $('#gender').val('');
                 $('#age').val('');
@@ -423,10 +426,13 @@ function getCustomerDetails(cus_id) {
                 $('#taluk1').val('');
                 $('#taluk').val('Select Taluk');
                 $('#area').val('');
-                $('#sub_area').val('');
                 $('#address').val('');
                 $('#mobile1').val('');
                 $('#mobile2').val('');
+                $('#whatsapp_no').val('');
+                $('#mobile1_radio').prop('checked', false);
+                $('#mobile2_radio').prop('checked', false);
+                $('#mobile_whatsapp').val('');
                 $('#father_name').val('');
                 $('#mother_name').val('');
                 $('#marital').val('');
@@ -461,7 +467,7 @@ function getAutogenCusID(adhaar_number) {
         url: 'requestFile/getAutogenCusId.php',
         type: "post",
         dataType: "json",
-        data: {adhaar_number},
+        data: { adhaar_number },
         cache: false,
         success: function (response) {
             $('#autogen_cus_id').val(response);
@@ -720,61 +726,12 @@ function getTalukBasedArea(talukselected) {
     });
 }
 
-//Get Area Based Sub Area
-function getAreaBasedSubArea(area) {
-    var sub_area_upd = $('#sub_area_upd').val();
-    $.ajax({
-        url: 'requestFile/ajaxGetEnabledSubArea.php',
-        type: 'post',
-        data: { 'area': area },
-        dataType: 'json',
-        success: function (response) {
-
-            $('#sub_area').empty();
-            $('#sub_area').append("<option value='' >Select Sub Area</option>");
-            for (var i = 0; i < response.length; i++) {
-                var selected = '';
-                if (sub_area_upd != undefined && sub_area_upd != '' && sub_area_upd == response[i]['sub_area_id']) {
-                    selected = 'selected';
-                }
-                $('#sub_area').append("<option value='" + response[i]['sub_area_id'] + "' " + selected + ">" + response[i]['sub_area_name'] + " </option>");
-            }
-        }
-    });
-}
-
-//Fetch Sub Category Based on loan category
-function getSubCategory(loan_cat) {
-    var sub_category_upd = $('#sub_category_upd').val();
-    $.ajax({
-        url: 'requestFile/getSingleSubCategory.php',
-        type: 'POST',
-        dataType: 'json',
-        cache: false,
-        data: { 'loan_cat': loan_cat },
-        success: function (response) {
-
-            $('#sub_category').empty();
-            $('#sub_category').append("<option value='' >Select Sub Category</option>");
-            for (var i = 0; i < response.length; i++) {
-                var selected = '';
-                if (sub_category_upd != undefined && sub_category_upd != '' && sub_category_upd == response[i]['sub_category_name']) {
-                    selected = 'selected';
-                }
-                $('#sub_category').append("<option value='" + response[i]['sub_category_name'] + "' " + selected + ">" + response[i]['sub_category_name'] + " </option>");
-            }
-            // Sort sub_category dropdown
-            sortDropdownAlphabetically("#sub_category");
-        }
-    })
-}
-
 //Fetch loan Details based on category select
-function getLoaninfo(sub_cat_id) {
+function getLoaninfo(loan_category_upd) {
     let cus_id = $('#cus_id').val();
     return $.ajax({
         url: 'requestFile/getLoanInfo.php',
-        data: { 'sub_cat_id': sub_cat_id, "cus_id": cus_id , from: "request"},
+        data: { 'loan_category_upd': loan_category_upd, "cus_id": cus_id, from: "request" },
         dataType: 'json',
         type: 'post',
         cache: false,
@@ -789,7 +746,7 @@ function getLoaninfo(sub_cat_id) {
                 $('#loan_amt').attr('readonly', true);
 
                 $('#tot_value').on('input', function () {
-                    
+
                     var amt = $('#tot_value').val().replace(/,/g, '');
                     var advance = $('#ad_amt').val().replace(/,/g, '');
                     $('#tot_value').val(formatIndianNumber(amt));
@@ -836,7 +793,7 @@ function getLoaninfo(sub_cat_id) {
                         $('#loan_amt').val('');
                     }
                 })
-                
+
             } else {
                 $('.advance_yes').hide();
                 $('#tot_value').val('');
@@ -926,7 +883,7 @@ function getAgentBasedLoanCategory(ag_id) {
 }
 
 //Category info based on sub category
-function getCategoryInfo(sub_cat) {
+function getCategoryInfo(loanselected) {
     var idupd = $('#id').val();
     let loan_category = $('#loan_category').val()
     if (idupd > 0) {
@@ -934,7 +891,7 @@ function getCategoryInfo(sub_cat) {
     } else { var getCategoryInfo = undefined; }
     $.ajax({
         url: 'requestFile/getCategoryInfo.php',
-        data: { 'sub_cat': sub_cat ,'loan_category':loan_category },
+        data: { 'loan_category': loanselected },
         dataType: 'json',
         type: 'post',
         cache: false,
@@ -1032,14 +989,14 @@ function callresetCustomerStatus(cus_id) {
 //Validations
 function validation(event) {
     var idupd = $('#id').val();
-    var role = (idupd && idupd > 0) ? $('#role_upd').val() : $('#role_load').val();  
-    var validation = true ;
+    var role = (idupd && idupd > 0) ? $('#role_upd').val() : $('#role_load').val();
+    var validation = true;
     if (role == '1') {
         var declaration = $('#declaration').val();
         if (declaration == '') {
             $('#declarationCheck').show();
             event.preventDefault();
-            validation = false ;
+            validation = false;
         } else {
             $('#declarationCheck').hide();
         }
@@ -1048,7 +1005,7 @@ function validation(event) {
         if (declaration == '') {
             $('#declarationCheck').show();
             event.preventDefault();
-            validation = false ;
+            validation = false;
         } else {
             $('#declarationCheck').hide();
         }
@@ -1058,7 +1015,7 @@ function validation(event) {
         if (remark == '') {
             $('#remarkCheck').show();
             event.preventDefault();
-            validation = false ;
+            validation = false;
         } else {
             $('#remarkCheck').hide();
         }
@@ -1068,19 +1025,19 @@ function validation(event) {
     if (responsible == '' && $('.responsible').css('display') != 'none') {
         $('#responsibleCheck').show();
         event.preventDefault();
-        validation = false ;
+        validation = false;
     } else {
         $('#responsibleCheck').hide();
     }
 
-    var cus_id = $('#cus_id').val(); var cus_name = $('#cus_name').val(); var dob = $('#dob').val(); var gender = $('#gender').val(); var pic = $('#pic').val(); var state = $('#state').val(); var district = $('#district1').val(); var taluk = $('#taluk1').val(); var area = $('#area').val(); var sub_area = $('#sub_area').val(); var address = $('#address').val(); var mobile1 = $('#mobile1').val();var mobile2 = $('#mobile2').val(); var father_name = $('#father_name').val(); var mother_name = $('#mother_name').val(); var marital = $('#marital').val(); var spouse_name = $('#spouse_name').val(); var occupation_type = $('#occupation_type').val(); var occupation = $('#occupation').val(); var loan_category = $('#loan_category').val(); var sub_category = $('#sub_category').val(); var tot_value = $('#tot_value').val(); var ad_amt = $('#ad_amt').val(); var ad_perc = $('#ad_perc').val(); var loan_amt = $('#loan_amt').val(); var poss_type = $('#poss_type').val(); var due_amt = $('#due_amt').val(); var due_period = $('#due_period').val(); var agent = $('#agent').val();
+    var cus_id = $('#cus_id').val(); var first_name = $('#first_name').val(); var last_name = $('#last_name').val(); var dob = $('#dob').val(); var gender = $('#gender').val(); var pic = $('#pic').val(); var state = $('#state').val(); var district = $('#district1').val(); var taluk = $('#taluk1').val(); var area = $('#area').val(); var address = $('#address').val(); var mobile1 = $('#mobile1').val(); var mobile2 = $('#mobile2').val(); var father_name = $('#father_name').val(); var mother_name = $('#mother_name').val(); var marital = $('#marital').val(); var spouse_name = $('#spouse_name').val(); var occupation_type = $('#occupation_type').val(); var occupation = $('#occupation').val(); var loan_category = $('#loan_category').val(); var tot_value = $('#tot_value').val(); var ad_amt = $('#ad_amt').val(); var ad_perc = $('#ad_perc').val(); var loan_amt = $('#loan_amt').val(); var poss_type = $('#poss_type').val(); var due_amt = $('#due_amt').val(); var due_period = $('#due_period').val(); var agent = $('#agent').val();
 
     //if loan category is Appliance, vehicle, 2 vehicle, 4 vehicle need to check agent select  because these type of loan given by agent only. so validation added.
-    if( role != '2' && (loan_category == '1' || loan_category == '2' || loan_category == '4')){
+    if (role != '2' && (loan_category == '1' || loan_category == '2' || loan_category == '4')) {
         if (!agent) {
             event.preventDefault();
             $('#agentCheck').show();
-            validation = false ;
+            validation = false;
         } else {
             $('#agentCheck').hide();
         }
@@ -1089,28 +1046,35 @@ function validation(event) {
     if (!cus_id) {
         event.preventDefault();
         $('#cusidCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#cusidCheck').hide();
     }
-    if (!cus_name) {
+    if (!first_name) {
         event.preventDefault();
-        $('#cusnameCheck').show();
-        validation = false ;
+        $('#firstnameCheck').show();
+        validation = false
     } else {
-        $('#cusnameCheck').hide();
+        $('#firstnameCheck').hide();
+    }
+    if (!last_name) {
+        event.preventDefault();
+        $('#lastnameCheck').show();
+        validation = false
+    } else {
+        $('#lastnameCheck').hide();
     }
     if (!dob) {
         event.preventDefault();
         $('#dobCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#dobCheck').hide();
     }
     if (!gender) {
         event.preventDefault();
         $('#genderCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#genderCheck').hide();
     }
@@ -1119,7 +1083,7 @@ function validation(event) {
         if (pic == '' && $('#pic').attr('style') != 'display: none;') {
             event.preventDefault();
             $('#picCheck').show();
-            validation = false ;
+            validation = false;
         } else {
             $('#picCheck').hide();
         }
@@ -1127,83 +1091,76 @@ function validation(event) {
     if (state == 'SelectState') {
         event.preventDefault();
         $('#stateCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#stateCheck').hide();
     }
     if (!district) {
         event.preventDefault();
         $('#districtCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#districtCheck').hide();
     }
-    if (!taluk ) {
+    if (!taluk) {
         event.preventDefault();
         $('#talukCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#talukCheck').hide();
     }
-    if (!area)  {
+    if (!area) {
         event.preventDefault();
         $('#areaCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#areaCheck').hide();
-    }
-    if (!sub_area) {
-        event.preventDefault();
-        $('#subareaCheck').show();
-        validation = false ;
-    } else {
-        $('#subareaCheck').hide();
     }
     if (!address) {
         event.preventDefault();
         $('#addressCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#addressCheck').hide();
     }
-    if (!mobile1  || mobile1.length < 10) {
+    if (!mobile1 || mobile1.length < 10) {
         event.preventDefault();
         $('#mobile1Check').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#mobile1Check').hide();
     }
     if (mobile2 != '' && mobile2.length < 10) {
         event.preventDefault();
         $('#mobile2Check').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#mobile2Check').hide();
     }
     if (!father_name) {
         event.preventDefault();
         $('#fathernameCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#fathernameCheck').hide();
     }
     if (!mother_name) {
         event.preventDefault();
         $('#mothernameCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#mothernameCheck').hide();
     }
     if (!marital) {
         event.preventDefault();
         $('#maritalCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#maritalCheck').hide();
         if (marital == '1' && spouse_name == '') {
             event.preventDefault();
             $('#spousenameCheck').show();
-            validation = false ;
+            validation = false;
         } else {
             $('#spousenameCheck').hide();
         }
@@ -1211,63 +1168,58 @@ function validation(event) {
     if (!occupation_type) {
         event.preventDefault();
         $('#occupationtypeCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#occupationtypeCheck').hide();
     }
     if (!occupation) {
         event.preventDefault();
         $('#occupationCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#occupationCheck').hide();
     }
     if (!loan_category) {
         event.preventDefault();
         $('#loancategoryCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#loancategoryCheck').hide();
     }
-    if (!sub_category) {
-        event.preventDefault();
-        $('#subcategoryCheck').show();
-        validation = false ;
-    } else {
-        $('#subcategoryCheck').hide();
+    if (loan_category) { // loan category has a value
+        if (loan_amt == '') {
+            event.preventDefault();
+            $('#loanamtCheck').show();
+            validation = false;
+        } else {
+            $('#loanamtCheck').hide();
+        }
         if (tot_value == '' && $('.advance_yes').css('display') != "none") {
             event.preventDefault();
             $('#totvalueCheck').show();
-            validation = false ;
+            validation = false;
         } else {
             $('#totvalueCheck').hide();
         }
         if (ad_amt == '' && $('.advance_yes').css('display') != "none") {
             event.preventDefault();
             $('#adamtCheck').show();
-            validation = false ;
+            validation = false;
         } else {
             $('#adamtCheck').hide();
-        }
-        if (loan_amt == '') {
-            event.preventDefault();
-            $('#loanamtCheck').show();
-            validation = false ;
-        } else {
-            $('#loanamtCheck').hide();
         }
     }
     if (!poss_type) {
         event.preventDefault();
         $('#posstypeCheck').show();
-        validation = false ;
+        validation = false;
     } else {
         $('#posstypeCheck').hide();
         if (poss_type == '1') {
             if (due_amt == '') {
                 event.preventDefault();
                 $('#dueamtCheck').show();
-                validation = false ;
+                validation = false;
             } else {
                 $('#dueamtCheck').hide();
                 $('#due_period').val('');
@@ -1276,7 +1228,7 @@ function validation(event) {
             if (due_period == '') {
                 event.preventDefault();
                 $('#dueperiodCheck').show();
-                validation = false ;
+                validation = false;
             } else {
                 $('#dueperiodCheck').hide();
                 $('#due_amt').val('');

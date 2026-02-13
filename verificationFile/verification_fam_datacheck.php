@@ -32,7 +32,7 @@ include '../ajaxconfig.php';
         if (isset($_POST['category'])) {
             $category = $_POST['category'];
             if ($category == '0') {
-                $category = "famname";
+                $category = "first_name";
             }
             if ($category == '1') {
                 $category = "relation_aadhar";
@@ -42,7 +42,7 @@ include '../ajaxconfig.php';
             }
         }
 
-        $cusInfo = $connect->query("SELECT a.`famname`,a.`relationship`,a.`relation_aadhar`,rc.`cus_id`,rc.`cus_name` FROM `verification_family_info` a left join `request_creation` rc 
+        $cusInfo = $connect->query("SELECT CONCAT(a.first_name, ' ', a.last_name) AS famname,a.`relationship`,a.`relation_aadhar`,rc.`cus_id`,CONCAT(rc.first_name, ' ', rc.last_name) AS cus_name FROM `verification_family_info` a left join `request_creation` rc 
         on a.req_id = rc.req_id  WHERE a.`req_id` != '$req_id' && a.$category = '$name' order by a.id desc");
 
         $i = 1;

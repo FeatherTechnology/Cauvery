@@ -10,7 +10,7 @@ $screen = isset($_POST['screen']) ? $_POST['screen'] : '';
 
 $records = array();
 
-$result = $connect->query("SELECT req_id, dor, loan_category, sub_category, loan_amt, prompt_remark, cus_status FROM request_creation where cus_id = '" . strip_tags($cus_id) . "' ORDER BY created_date DESC ");
+$result = $connect->query("SELECT req_id, dor, loan_category, loan_amt, prompt_remark, cus_status FROM request_creation where cus_id = '" . strip_tags($cus_id) . "' ORDER BY created_date DESC ");
 
 if ($result->rowCount() > 0) {
     $i = 0;
@@ -24,7 +24,6 @@ if ($result->rowCount() > 0) {
         $row1 = $qry->fetch();
         $records[$i]['loan_category'] = $row1['loan_category_creation_name'];
 
-        $records[$i]['sub_category'] = $row['sub_category'];
         $records[$i]['loan_amt'] = moneyFormatIndia($row['loan_amt']);
         $records[$i]['remark'] = $row['prompt_remark'] ?? '';
         $cus_status = $row['cus_status'];
@@ -137,7 +136,6 @@ if ($result->rowCount() > 0) {
                 <th width="25" rowspan="2">S. No</th>
                 <th rowspan="2">Date</th>
                 <th rowspan="2">Loan Category</th>
-                <th rowspan="2">Sub Category</th>
                 <th rowspan="2">Amount</th>
                 <th colspan="3">Loan Status</th>
                 <th colspan="3">Document Status</th>
@@ -157,7 +155,6 @@ if ($result->rowCount() > 0) {
                 <th width="25">S. No</th>
                 <th>Date</th>
                 <th>Loan Category</th>
-                <th>Sub Category</th>
                 <th>Amount</th>
                 <th>Status</th>
                 <th>Sub Status</th>
@@ -172,7 +169,6 @@ if ($result->rowCount() > 0) {
                 <td><?php echo $i + 1; ?></td>
                 <td><?php echo $records[$i]['dor']; ?></td>
                 <td><?php echo $records[$i]['loan_category']; ?></td>
-                <td><?php echo $records[$i]['sub_category']; ?></td>
                 <td><?php echo $records[$i]['loan_amt']; ?></td>
                 <?php if ($screen == 'acknowledgement') { ?>
                     <td><?= $records[$i]['status'] ?></td>
@@ -252,7 +248,7 @@ function getCollectionStatus($connect, $cus_id, $req_id)
 
     $retVal = 'Current';
 
-    $run = $connect->query("SELECT lc.due_start_from,lc.loan_category,lc.sub_category,lc.loan_amt_cal,lc.due_amt_cal,lc.net_cash_cal,lc.collection_method,ii.loan_id,ii.req_id,ii.updated_date,ii.cus_status,
+    $run = $connect->query("SELECT lc.due_start_from,lc.loan_category,lc.loan_amt_cal,lc.due_amt_cal,lc.net_cash_cal,lc.collection_method,ii.loan_id,ii.req_id,ii.updated_date,ii.cus_status,
     rc.agent_id,lcc.loan_category_creation_name as loan_catrgory_name
     from acknowlegement_loan_calculation lc JOIN in_issue ii ON lc.req_id = ii.req_id JOIN request_creation rc ON ii.req_id = rc.req_id 
     JOIN loan_category_creation lcc ON lc.loan_category = lcc.loan_category_creation_id

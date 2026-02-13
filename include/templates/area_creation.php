@@ -6,7 +6,6 @@ if (isset($_SESSION["userid"])) {
 
 $id = 0;
 $areaList = $userObj->getAreaList($mysqli);
-$subAreaList = $userObj->getSubAreaList($mysqli);
 
 if (isset($_POST['submit_area_creation']) && $_POST['submit_area_creation'] != '') {
 	if (isset($_POST['id']) && $_POST['id'] > 0 && is_numeric($_POST['id'])) {
@@ -39,6 +38,7 @@ if ($del > 0) {
 		location.href = '<?php echo $HOSTPATH;  ?>edit_area_creation&msc=3';
 	</script>
 <?php
+}
 }*/
 
 if (isset($_GET['upd'])) {
@@ -52,7 +52,6 @@ if ($idupd > 0) {
 		for ($i = 0; $i < sizeof($getAreaCreation); $i++) {
 			$area_creation_id                 	 = $getAreaCreation['area_creation_id'];
 			$area_id          		     = $getAreaCreation['area_name_id'];
-			$sub_area      			     = $getAreaCreation['sub_area'];
 			$taluk      			 = $getAreaCreation['taluk'];
 			$state       			 = $getAreaCreation['state'];
 			$district                	 = $getAreaCreation['district'];
@@ -67,7 +66,7 @@ if ($idupd > 0) {
 <!-- Page header start -->
 <br><br>
 <div class="page-header">
-	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
+	<div style="background-color:#0c70ab; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
 		Cauvery Capitals - Area Creation
 	</div>
 </div><br>
@@ -91,7 +90,6 @@ if ($idupd > 0) {
 		<input type="hidden" class="form-control" value="<?php if (isset($district)) echo $district; ?>" id="district_upd" name="district_upd" aria-describedby="id" placeholder="Enter id">
 		<input type="hidden" class="form-control" value="<?php if (isset($taluk)) echo $taluk; ?>" id="taluk_upd" name="taluk_upd" aria-describedby="id" placeholder="Enter id">
 		<input type="hidden" class="form-control" value="<?php if (isset($area_id)) echo $area_id; ?>" id="area_upd" name="area_upd" aria-describedby="id" placeholder="Enter id">
-		<input type="hidden" class="form-control" value="<?php if (isset($sub_area)) echo $sub_area; ?>" id="sub_area_upd" name="sub_area_upd" aria-describedby="id" placeholder="Enter id">
 
 		<!-- Row start -->
 		<div class="row gutters">
@@ -148,32 +146,18 @@ if ($idupd > 0) {
 											<button type="button" tabindex="5" class="btn btn-primary" id="add_area" name="add_area" style="padding: 8px calc(1vw + 1rem);"><span class="icon-add"></span></button>
 										</div>
 									</div>
-									<div class="col-xl-3 col-lg-4 col-md-4 col-sm-10 col-12">
-										<div class="form-group">
-											<label for="disabledInput">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-											<input type="hidden" id="sub_area" name="sub_area" value="">
-											<select type="text" class="form-control " id="sub_area1" name="sub_area1" tabindex="6" multiple data-selected-text-format="count > 2" data-actions-box="true">
-												<option value="">Select Sub Area</option>
-											</select>
-										</div>
-									</div>
-									<div class="col-xl-1 col-lg-2 col-md-2 col-sm-2 col-12" style="margin-top: 19px;">
-										<div class="form-group">
-											<button type="button" tabindex="7" class="btn btn-primary" id="add_sub_area" name="add_sub_area" style="padding: 8px calc(1vw + 1rem);"><span class="icon-add"></span></button>
-										</div>
-									</div>
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-10 col-12">
 										<div class="form-group">
 											<label for="disabledInput">Pincode</label>&nbsp;<span class="text-danger"></span>
-											<input type="text" tabindex="8" onKeyPress="if(this.value.length==6) return false;" class="form-control" id="pincode" name="pincode" value="<?php if (isset($pincode)) echo $pincode; ?>" placeholder="Enter Pincode" oninput="validateInputNumber(this,'withOutDot')">
+											<input type="number" tabindex="6" onKeyPress="if(this.value.length==6) return false;" class="form-control" id="pincode" name="pincode" value="<?php if (isset($pincode)) echo $pincode; ?>" placeholder="Enter Pincode">
 										</div>
-									</div> <!-- Use input type='text' for numeric validation, because type='number' always resets the cursor when you block invalid characters-->
+									</div>
 								</div>
 								<br><br><br>
 								<div class="row">
 									<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-										<button type="button" tabindex="9" id="downloadarea" name="downloadarea" class="btn btn-primary"><span class="icon-download"></span>&nbsp;Download</button>
-										<button type="button" data-toggle="modal" data-target="#areaUploadModal" tabindex="10" id="uploadArea" name="uploadArea" class="btn btn-primary"><span class="icon-upload"></span>&nbsp;Upload</button>
+										<button type="button" tabindex="7" id="downloadarea" name="downloadarea" class="btn btn-primary"><span class="icon-download"></span>&nbsp;Download</button>
+										<button type="button" data-toggle="modal" data-target="#areaUploadModal" tabindex="8" id="uploadArea" name="uploadArea" class="btn btn-primary"><span class="icon-upload"></span>&nbsp;Upload</button>
 									</div>
 								</div>
 							</div>
@@ -183,8 +167,8 @@ if ($idupd > 0) {
 
 				<div class="col-md-12 ">
 					<div class="text-right">
-						<button type="submit" name="submit_area_creation" id="submit_area_creation" class="btn btn-primary" value="Submit" tabindex="11"><span class="icon-check"></span>&nbsp;Submit</button>
-						<button type="reset" class="btn btn-outline-secondary" tabindex="12">Clear</button>
+						<button type="submit" name="submit_area_creation" id="submit_area_creation" class="btn btn-primary" value="Submit" tabindex="9"><span class="icon-check"></span>&nbsp;Submit</button>
+						<button type="reset" class="btn btn-outline-secondary" tabindex="10">Clear</button>
 					</div>
 
 				</div>
@@ -229,8 +213,8 @@ if ($idupd > 0) {
 						<div class="form-group">
 							<label class="label">Enter Area</label>
 							<input type="hidden" name="area_id" id="area_id">
-							<input type="text" name="area_name" id="area_name" class="form-control" placeholder="Enter Area">
-							<span class="text-danger" tabindex="1" id="areanameCheck">Enter Area</span>
+							<input type="text" name="area_name" id="area_name" class="form-control" tabindex="1" placeholder="Enter Area">
+							<span class="text-danger" id="areanameCheck">Enter Area</span>
 						</div>
 					</div>
 					<div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 col-12">
@@ -254,84 +238,6 @@ if ($idupd > 0) {
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Add Course Category Modal -->
-<div class="modal fade add_sub_area" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content" style="background-color: white">
-			<div class="modal-header">
-				<h5 class="modal-title" id="myLargeModalLabel">Add Sub Area</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeSubModal()">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<!-- alert messages -->
-				<div id="subareaInsertNotOk" class="unsuccessalert">Sub Area Already Exists, Please Enter a Different Name!
-					<span class="custclosebtn" onclick="this.parentElement.style.display='none';"><span class="icon-squared-cross"></span></span>
-				</div>
-
-				<div id="subareaInsertOk" class="successalert">Sub Area Added Succesfully!<span class="custclosebtn" onclick="this.parentElement.style.display='none';"><span class="icon-squared-cross"></span></span>
-				</div>
-
-				<div id="subareaUpdateOk" class="successalert">Sub Area Updated Succesfully!<span class="custclosebtn" onclick="this.parentElement.style.display='none';"><span class="icon-squared-cross"></span></span>
-				</div>
-
-				<div id="subareaDeleteNotOk" class="unsuccessalert">You Don't Have Rights To Delete This Sub Area!
-					<span class="custclosebtn" onclick="this.parentElement.style.display='none';"><span class="icon-squared-cross"></span></span>
-				</div>
-
-				<div id="subareaDeleteOk" class="successalert">Sub Area Has been Inactivated!<span class="custclosebtn" onclick="this.parentElement.style.display='none';"><span class="icon-squared-cross"></span></span>
-				</div>
-
-				<br />
-				<div class="row">
-					<div class="col-xl-3 col-lg-3 col-md-2 col-sm-2 col-12"></div>
-					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-12">
-						<div class="form-group">
-							<label class="label">Enter Sub Area</label>
-							<input type="hidden" name="sub_area_id" id="sub_area_id">
-							<input type="text" name="sub_area_name" id="sub_area_name" class="form-control" placeholder="Enter Sub Area">
-							<span class="text-danger" tabindex="1" id="subareanameCheck">Enter Sub Area</span>
-						</div>
-					</div>
-					<div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 col-12">
-						<label class="label" style="visibility: hidden;">Sub Area</label><br>
-						<button type="button" tabindex="2" name="submiSubAreaBtn" id="submiSubAreaBtn" class="btn btn-primary">Submit</button>
-					</div>
-				</div>
-				<div id="updatedSubAreaTable">
-					<table class="table custom-table" id="subAreaTable">
-						<thead>
-							<tr>
-								<th width="15px">S. No</th>
-								<th width="100px">Sub Area Name</th>
-								<th>ACTION</th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php if (sizeof($subAreaList) > 0) {
-								for ($j = 0; $j < count($subAreaList); $j++) { ?>
-									<tr>
-										<td class="col-md-2 col-xl-2"><?php echo $j + 1; ?></td>
-										<td><?php echo $subAreaList[$j]['sub_area_name']; ?></td>
-										<td>
-											<a id="edit_sub_area" value="<?php echo $subAreaList[$j]['sub_area_id'] ?>"><span class="icon-border_color"></span></a> &nbsp;
-											<a id="delete_sub_area" value="<?php echo $subAreaList[$j]['sub_area_id'] ?>"><span class='icon-trash-2'></span></a>
-										</td>
-									</tr>
-							<?php }
-							} ?>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeSubModal()">Close</button>
 			</div>
 		</div>
 	</div>
@@ -370,7 +276,6 @@ if ($idupd > 0) {
 		</div>
 	</div>
 </div>
-
 <!-- Modal for Loan Follow Chart just view table   -->
 <div class="modal fade" id="swap_area_model_box" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 	<div class="modal-dialog modal-lg " role="document">

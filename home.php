@@ -167,22 +167,6 @@ if (isset($getuserdetails['download_access'])) {
 				<?php include "include/templates/edit_loan_category.php" ?>
 			<?php } else ?>
 
-			<?php if ($current_page == 'loan_calculation') { ?>
-				<?php include "include/templates/loan_calculation.php" ?>
-			<?php } else ?>
-
-			<?php if ($current_page == 'edit_loan_calculation') { ?>
-				<?php include "include/templates/edit_loan_calculation.php" ?>
-			<?php } else ?>
-
-			<?php if ($current_page == 'loan_scheme') { ?>
-				<?php include "include/templates/loan_scheme.php" ?>
-			<?php } else ?>
-
-			<?php if ($current_page == 'edit_loan_scheme') { ?>
-				<?php include "include/templates/edit_loan_scheme.php" ?>
-			<?php } else ?>
-
 			<?php if ($current_page == 'area_creation') { ?>
 				<?php include "include/templates/area_creation.php" ?>
 			<?php } else ?>

@@ -132,27 +132,27 @@ function getLoanCategoryList() {
     }, 'json')
 }
 
-function getSubAreaList(branch_id) {
+function getAreaList(branch_id) {
 
     return new Promise((resolve, reject) => {
         if (branch_id != '') {
             $.ajax({
-                url: 'dashboardFile/getSubAreaList.php',
+                url: 'dashboardFile/getAreaList.php',
                 type: 'POST',
                 data: { branch_id },
                 dataType: 'json',
                 success: function (data) {
                     //convert json array to string to return as string if not empty and then return to calling function
                     if (data != 'Error') {
-                        let sub_area_list = data;
-                        $('#sub_area_list').val(sub_area_list);
-                        resolve(sub_area_list);
+                        let area_list = data;
+                        $('#area_list').val(area_list);
+                        resolve(area_list);
                     } else {
                         Swal.fire({
                             title: 'Error',
                             text: 'No Sub Area for this Branch!',
                             icon: 'error',
-                            confirmButtonColor: '#0C70AB',
+                            confirmButtonColor: '#0c70ab',
                         }).then(function () {
                             $('#branch_id').val('');
                         })
@@ -177,9 +177,9 @@ function getRequestDashboard() {
     let loan_category = $('#loan_cat').val();
     let month = $('#filter_month').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getRequestDashboard.php', { loan_category,sub_area_list, month }, function (data) {
+        $.post('dashboardFile/getRequestDashboard.php', { loan_category,area_list, month }, function (data) {
 
             $('#tot_req').text(data.tot_req)
             $('#tot_req_issue').text(data.tot_issue)
@@ -238,9 +238,9 @@ function getVerificationDashboard() {
     let month = $('#filter_month').val();
     let loan_category = $('#loan_cat').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getVerificationDashboard.php', { sub_area_list, month,loan_category }, function (data) {
+        $.post('dashboardFile/getVerificationDashboard.php', { area_list, month,loan_category }, function (data) {
 
             $('#tot_in_ver').text(data.tot_in_ver)
             $('#tot_ver_issue').text(data.tot_issue)
@@ -298,9 +298,9 @@ function getApprovalDashboard() {
     let month = $('#filter_month').val();
     let loan_category = $('#loan_cat').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getApprovalDashboard.php', { sub_area_list, month,loan_category }, function (data) {
+        $.post('dashboardFile/getApprovalDashboard.php', { area_list, month,loan_category }, function (data) {
 
             $('#tot_in_app').text(data.tot_in_app)
             $('#tot_app_issue').text(data.tot_issue)
@@ -358,9 +358,9 @@ function getAcknowledgmentDashboard() {
     let branch_id = $('#branch_id').val();
     let month = $('#filter_month').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getAcknowledgmentDashboard.php', { sub_area_list, month,loan_category }, function (data) {
+        $.post('dashboardFile/getAcknowledgmentDashboard.php', { area_list, month,loan_category }, function (data) {
 
             $('#tot_in_ack').text(data.tot_in_ack)
             $('#tot_ack_issue').text(data.tot_issue)
@@ -418,9 +418,9 @@ function getLoanIssueDashboard() {
     let month = $('#filter_month').val();
     let loan_category = $('#loan_cat').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getLoanIssueDashboard.php', { sub_area_list, month ,loan_category}, function (data) {
+        $.post('dashboardFile/getLoanIssueDashboard.php', { area_list, month ,loan_category}, function (data) {
 
             $('#tot_li').text(data.tot_li)
             $('#tot_li_issue').text(data.tot_li_issue)
@@ -492,9 +492,9 @@ function getCollectionDashboard() {
     let branch_id = $('#branch_id').val();
     let month = $('#filter_month').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getCollectionDashboard.php', { sub_area_list, month }, function (data) {
+        $.post('dashboardFile/getCollectionDashboard.php', { area_list, month }, function (data) {
             $('#tot_col_paid').text(data.tot_col_paid)
             $('#tot_col_pen').text(data.tot_col_pen)
             $('#tot_col_fine').text(data.tot_col_fine)
@@ -510,7 +510,7 @@ function getCollectionDashboard() {
             $('.col-counter').off('click').click(function () {
                 $('#col_chart_part').slideDown();
                 let pid = $(this).attr('id');
-                getCollectionSplit(pid, sub_area_list).then(function () {
+                getCollectionSplit(pid, area_list).then(function () {
                     $('#chart_part').empty();
                     let cur_amt = localStorage.getItem('cur_amt');
                     let cur_point = localStorage.getItem('cur_point');
@@ -524,9 +524,9 @@ function getCollectionDashboard() {
         })
 
     })
-    function getCollectionSplit(pid, sub_area_list) {
+    function getCollectionSplit(pid, area_list) {
         return new Promise(function (resolve, reject) {
-            $.post('dashboardFile/getCollectionSplit.php', { pid, sub_area_list }, function (data) {
+            $.post('dashboardFile/getCollectionSplit.php', { pid, area_list }, function (data) {
                 localStorage.setItem('cur_amt', data.cur_amt);
                 localStorage.setItem('cur_point', data.cur_point);
                 localStorage.setItem('pend_amt', data.pend_amt);
@@ -545,9 +545,9 @@ function getClosedDashboard() {
     let branch_id = $('#branch_id').val();
     let month = $('#filter_month').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getClosedDashboard.php', { sub_area_list, month }, function (data) {
+        $.post('dashboardFile/getClosedDashboard.php', { area_list, month }, function (data) {
             $('#tot_in_cl').text(data.tot_in_cl)
             $('#month_in_cl').text(data.month_in_cl)
             $('#month_cl_status').text(data.month_cl_status)
@@ -575,9 +575,9 @@ function getNOCDashboard() {
     let branch_id = $('#branch_id').val();
     let month = $('#filter_month').val();
     localStorage.clear();//clear localstorage before fetching data for prevent conflict
-    getSubAreaList(branch_id).then(sub_area_list => {
+    getAreaList(branch_id).then(area_list => {
 
-        $.post('dashboardFile/getNOCDashboard.php', { sub_area_list, month }, function (data) {
+        $.post('dashboardFile/getNOCDashboard.php', { area_list, month }, function (data) {
             $('#tot_noc').text(data.tot_noc)
             $('#tot_noc_issued').text(data.tot_noc_issued)
             $('#month_noc').text(data.month_noc)
