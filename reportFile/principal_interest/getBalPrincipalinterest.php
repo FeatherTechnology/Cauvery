@@ -7,27 +7,32 @@ include '../../moneyFormatIndia.php';
 $userid = $_SESSION["userid"] ?? null;
 $report_access = '2'; //if super Admin login use need to show overall.
 
-$sub_area_list = '';
+$area_list = '';
 $user_based = '';
 
 if ($userid && $userid != 1) {
-    $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid");
+   $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid");
     $user = $userQry->fetch();
     $report_access = $user['report_access'];
 
-    if ($report_access =='1') {
+    if ($report_access == '1') {
         $line_id = explode(',', $user['line_id']);
-        $sub_area_list = [];
+        $area_list_array = [];
         foreach ($line_id as $line) {
-            $lineQry = $connect->query("SELECT sub_area_id FROM area_line_mapping WHERE map_id = $line");
-            while ($row = $lineQry->fetch()) {
-                $sub_area_list = array_merge($sub_area_list, explode(',', $row['sub_area_id']));
+            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
+            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
+                $area_list_array[] = $row_sub['area_id'];
             }
         }
-        $sub_area_list = implode(',', array_unique($sub_area_list));
+        $area_ids = [];
+        foreach ($area_list_array as $subarray) {
+            $area_ids = array_merge($area_ids, explode(',', $subarray));
+        }
 
-        $user_based = " AND cp.area_confirm_subarea IN ($sub_area_list) AND req.insert_login_id = '$userid' ";
-        
+        $area_ids = array_unique($area_ids);
+        $area_list = implode(',', $area_ids);
+
+        $user_based = " AND cp.area_confirm_area IN ($area_list) AND req.insert_login_id = '$userid' ";
     }
 }
 
@@ -43,20 +48,18 @@ if (isset($_POST['to_date']) && $_POST['to_date'] != '') {
 
 $column = [
     'ii.loan_id',
-    'ag.group_name',
+    // 'ag.group_name',
     'alm.line_name',
-     'adm.duefollowup_name',
+    // 'adm.duefollowup_name',
     'ii.loan_id',
     'ad.doc_id',
     'ii.updated_date',
     'lc.maturity_month',
     'cp.cus_id',
     'cr.autogen_cus_id',
-    'cp.cus_name',
+    'CONCAT(cp.first_name, " ", cp.last_name)',
     'al.area_name',
-    'sal.sub_area_name',
     'lc.loan_cal_id',
-    'lc.sub_category',
     'ac.ag_name',
     'lc.loan_amt_cal',
     'lc.due_amt_cal',
@@ -90,9 +93,9 @@ while ($row = $run->fetch()) {
 $req_id_list = implode(',', $req_id_list);
 
 $query = "SELECT 
-            ag.group_name,
+            -- ag.group_name,
             alm.line_name AS line,
-            adm.duefollowup_name,
+            -- adm.duefollowup_name,
             ii.loan_id,
             ad.doc_id,
             ii.updated_date AS loan_date,
@@ -100,11 +103,9 @@ $query = "SELECT
             cp.cus_id,
             cr.autogen_cus_id,
             cp.req_id,
-            cp.cus_name,
+            CONCAT(cp.first_name, ' ', cp.last_name) AS cus_name,
             al.area_name,
-            sal.sub_area_name,
             lcc.loan_category_creation_name AS loan_cat_name,
-            lc.sub_category,
             ac.ag_name,
             lc.loan_amt_cal,
             lc.due_amt_cal,
@@ -141,14 +142,12 @@ $query = "SELECT
             loan_issue li ON lc.req_id = li.req_id 
         JOIN 
             area_list_creation al ON cp.area_confirm_area = al.area_id
-        JOIN 
-            sub_area_list_creation sal ON cp.area_confirm_subarea = sal.sub_area_id
-        JOIN 
-            area_group_mapping ag ON FIND_IN_SET(sal.sub_area_id, ag.sub_area_id)
-        JOIN 
-            area_line_mapping alm ON FIND_IN_SET(sal.sub_area_id, alm.sub_area_id)
-        JOIN 
-            area_duefollowup_mapping adm ON FIND_IN_SET(al.area_id, adm.area_id)
+        -- JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
+        -- JOIN area_group_mapping ag ON ag.map_id = agma.group_map_id
+        JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+        JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+        -- JOIN area_duefollowup_mapping_area adma ON adma.area_id = al.area_id
+        -- JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id
         JOIN 
             in_verification iv ON lc.req_id = iv.req_id
         JOIN 
@@ -191,18 +190,17 @@ if(isset($_POST['loan_cat'])){
 if (isset($_POST['search']) && $_POST['search'] != "") {
     $search = $_POST['search'];
     $query .= " AND (
-        ag.group_name LIKE '%$search%' OR
+        -- ag.group_name LIKE '%$search%' OR
         alm.line_name LIKE '%$search%' OR
-        adm.duefollowup_name LIKE '%$search%' OR
+        -- adm.duefollowup_name LIKE '%$search%' OR
         ii.loan_id LIKE '%$search%' OR
         ad.doc_id LIKE '%$search%' OR
         ii.updated_date LIKE '%$search%' OR
         lc.maturity_month LIKE '%$search%' OR
         cp.cus_id LIKE '%$search%' OR
         cr.autogen_cus_id LIKE '%$search%' OR
-        cp.cus_name LIKE '%$search%' OR
+        CONCAT(cp.first_name, ' ', cp.last_name) LIKE '%$search%' OR
         al.area_name LIKE '%$search%' OR
-        sal.sub_area_name LIKE '%$search%'
     )";
 }
 
@@ -277,9 +275,9 @@ foreach ($result as $row) {
     $fine = intval($row['fine']) - (intval($row['fine_track']) + intval($row['fine_waiver']));
 
     $sub_array[] = $sno;
-      $sub_array[] = $row['group_name'];
+    //   $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line'];
-    $sub_array[] = $row['duefollowup_name'];
+    // $sub_array[] = $row['duefollowup_name'];
     $sub_array[] = $row['loan_id'];
     $sub_array[] = $row['doc_id'];
     $sub_array[] = date('d-m-Y', strtotime($row['loan_date']));
@@ -288,9 +286,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['loan_cat_name'];
-    $sub_array[] = $row['sub_category'];
     $sub_array[] = $row['ag_name'];
     $sub_array[] = moneyFormatIndia($row['loan_amt_cal']);
     $sub_array[] = moneyFormatIndia($row['due_amt_cal']);

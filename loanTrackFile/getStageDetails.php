@@ -21,11 +21,11 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
         }
 
         if ($row['verification_person'] == $row['cus_id']) {
-            $cusname_qry = $connect->query("SELECT customer_name from customer_register where cus_id = '" . strip_tags($row['cus_id']) . "' ");
+            $cusname_qry = $connect->query("SELECT CONCAT(first_name,' ',last_name) As customer_name from customer_register where cus_id = '" . strip_tags($row['cus_id']) . "' ");
             $cusname_row = $cusname_qry->fetch();
             $verification_person = $cusname_row['customer_name'];
         } else {
-            $famname_qry = $connect->query("SELECT famname from verification_family_info where id = '" . strip_tags($row['verification_person']) . "' ");
+            $famname_qry = $connect->query("SELECT CONCAT(first_name,' ',last_name) As famname from verification_family_info where id = '" . strip_tags($row['verification_person']) . "' ");
             $famname_row = $famname_qry->fetch();
             $verification_person = $famname_row['famname'];
         }
@@ -35,15 +35,15 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
     }
 } elseif ($stage == 'li') { //Loan Issue, So show Cash Acknowledgement info
 
-    $qry = $connect->query("SELECT cus_id,issued_to,cash_guarentor_name,cash_guarentor_name,agent_id from loan_issue where req_id = '" . strip_tags($req_id) . "' ");
+    $qry = $connect->query("SELECT cus_id,issued_to,cash_guarentor_name,agent_id from loan_issue where req_id = '" . strip_tags($req_id) . "' ");
     if ($qry->rowCount() > 0) {
 
         $row = $qry->fetch();
 
-        if (empty($row['agent_id']) && $row['cus_id'] != $row['cash_guarentor_name']) {
+        if (empty($row['agent_id']) && $row['cus_id'] != $row['cash_guarentor_name'] && !empty($row['cash_guarentor_name'])) {
             //if agent id is empty and cash gurarantor is not the customer, then we need to search in family table
 
-            $fam_qry = $connect->query("SELECT famname,relationship from verification_family_info where relation_aadhar = '" . strip_tags($row['cash_guarentor_name']) . "' ");
+            $fam_qry = $connect->query("SELECT CONCAT(first_name,' ',last_name) As famname,relationship from verification_family_info where relation_aadhar = '" . strip_tags($row['cash_guarentor_name']) . "' ");
             $fam_row = $fam_qry->fetch();
             $detail_arr['issued_to'] = $fam_row['famname'];
             $detail_arr['relationship'] = $fam_row['relationship'];
@@ -53,7 +53,7 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
             $ag_row = $ag_qry->fetch();
             $detail_arr['issued_to'] = $ag_row['ag_name'];
             $detail_arr['relationship'] = 'Agent';
-        } else if ($row['cus_id'] == $row['cash_guarentor_name']) { //if issued and customer are same then direclty take values from issue table
+        } else if ($row['cus_id'] == $row['cash_guarentor_name'] || empty($row['cash_guarentor_name'])) { //if issued and customer are same then direclty take values from issue table
 
             $detail_arr['issued_to'] = $row['issued_to'];
             $detail_arr['relationship'] = 'Customer';
@@ -78,7 +78,7 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
     } else if ($response['noc_member'] == '3') {
         // 3 = Family member
         $fam_qry = $connect->query("
-        SELECT famname, relationship 
+        SELECT CONCAT(first_name,' ',last_name) As famname, relationship 
         FROM verification_family_info 
         WHERE id = '" . strip_tags($response['mem_name']) . "'
     ");

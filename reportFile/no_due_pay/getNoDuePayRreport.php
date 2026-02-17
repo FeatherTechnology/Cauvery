@@ -17,21 +17,23 @@ if ($userid != 1) {
     $report_access = $rowuser['report_access'];
 
     if ($report_access == '1') { //Report access individual.
-        $line_id = explode(',', $line_id);
-        $sub_area_list = array();
-        foreach ($line_id as $line) {
-            $lineQry = $connect->query("SELECT sub_area_id FROM area_line_mapping WHERE map_id = $line ");
-            $row_sub = $lineQry->fetch();
-            $sub_area_list[] = $row_sub['sub_area_id'];
+        $line_ids = explode(',', $line_id);
+        $area_list_array = [];
+        foreach ($line_ids as $line) {
+            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
+            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
+                $area_list_array[] = $row_sub['area_id'];
+            }
         }
-        $sub_area_ids = array();
-        foreach ($sub_area_list as $subarray) {
-            $sub_area_ids = array_merge($sub_area_ids, explode(',', $subarray));
+        $area_ids = [];
+        foreach ($area_list_array as $subarray) {
+            $area_ids = array_merge($area_ids, explode(',', $subarray));
         }
-        $sub_area_list = array();
-        $sub_area_list = implode(',', $sub_area_ids);
 
-        $user_based = " AND cp.area_confirm_subarea IN ($sub_area_list) AND coll.insert_login_id = '$userid' ";
+        $area_ids = array_unique($area_ids);
+        $area_list = implode(',', $area_ids);
+
+        $user_based = " AND cp.area_confirm_area IN ($area_list)";
     }
 }
 
@@ -39,8 +41,8 @@ $where = "1";
 
 if (isset($_POST['from_date']) && $_POST['from_date'] != '') {
     $full_date = $_POST['from_date'] . '-01';
-    $from_month = date('m', strtotime($full_date)); 
-    $from_year = date('Y', strtotime($full_date)); 
+    $from_month = date('m', strtotime($full_date));
+    $from_year = date('Y', strtotime($full_date));
     $where = " NOT EXISTS(
         SELECT 1 
         FROM collection coll 
@@ -51,25 +53,23 @@ if (isset($_POST['from_date']) && $_POST['from_date'] != '') {
     AND lc.due_start_from <= '$full_date'  AND (lc.tot_amt_cal - IFNULL(col_sum.total_due_amt_tract, 0)) > 0";
 }
 
-    $where  .= $user_based;
+$where  .= $user_based;
 
 $role_arr = [1 => 'Director', 2 => 'Agent', 3 => 'Staff'];
 
 $column = array(
     'ii.req_id',
-    //  'ag.group_name',
+    'ag.group_name',
     'alm.line_name',
-    //  'adm.duefollowup_name',
+    'adm.duefollowup_name',
     'ii.loan_id',
     'ii.updated_date',
     'lc.maturity_month',
     'ii.cus_id',
     'cr.autogen_cus_id',
-    'req.cus_name',
+    "CONCAT(req.first_name, ' ', req.last_name)",
     'al.area_name',
-    'sal.sub_area_name',
     'lcc.loan_category_creation_name',
-    'lc.sub_category',
     'ac.ag_name',
     'u.role',
     'u.fullname',
@@ -83,22 +83,20 @@ $column = array(
     'ii.req_id',
     'ii.req_id',
     'ii.req_id',
-    'ii.req_id'    
+    'ii.req_id'
 );
 
 $query = "SELECT
     ii.req_id,
-    --  ag.group_name,
+    ag.group_name,
     alm.line_name AS line,
-    -- adm.duefollowup_name,
+    adm.duefollowup_name,
     ii.loan_id,
     ii.updated_date AS loan_date,
     ii.cus_id,
     cr.autogen_cus_id,
     al.area_name,
-    sal.sub_area_name,
     lcc.loan_category_creation_name AS loan_cat_name,
-    lc.sub_category,
     ac.ag_name,
     u.role,
     u.fullname,
@@ -112,7 +110,7 @@ $query = "SELECT
     lc.due_start_from,
     cls.closed_sts,
     cls.consider_level,
-    req.cus_name,
+    CONCAT(req.first_name, ' ', req.last_name) AS cus_name,
     req.cus_status,
     ack.updated_date,
     IFNULL(col_sum.total_due_amt_tract, 0) AS total_due_amt
@@ -124,11 +122,12 @@ JOIN acknowlegement_customer_profile cp ON
     ii.req_id = cp.req_id
 JOIN area_list_creation al ON
     cp.area_confirm_area = al.area_id
-JOIN sub_area_list_creation sal ON
-    cp.area_confirm_subarea = sal.sub_area_id
-JOIN area_line_mapping alm ON FIND_IN_SET(sal.sub_area_id, alm.sub_area_id)
-        --  JOIN area_group_mapping ag ON FIND_IN_SET(sal.sub_area_id, ag.sub_area_id)
-        --  JOIN area_duefollowup_mapping adm ON FIND_IN_SET(al.area_id, adm.area_id)
+ JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
+JOIN area_group_mapping ag ON ag.map_id = agma.group_map_id
+JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+ JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+ JOIN area_duefollowup_mapping_area adma ON adma.area_id = al.area_id
+JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id
 JOIN acknowlegement_loan_calculation lc ON
     ii.req_id = lc.req_id
 JOIN loan_category_creation lcc ON
@@ -164,25 +163,21 @@ AND (
     (MONTH('$full_date') - MONTH(lc.due_start_from)) + 1
   ) * lc.due_amt_cal 
 - IFNULL(col_sum.total_due_amt_tract, 0)
-) > 0
-
-";
+) > 0";
 
 if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
         $query .= " and (ii.loan_id LIKE '%" . $_POST['search'] . "%'
-        -- OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
+         OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
                     OR alm.line_name LIKE '%" . $_POST['search'] . "%'
-                    -- OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%'
+                    OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%'
                     OR ii.updated_date LIKE '%" . $_POST['search'] . "%'
                     OR lc.maturity_month LIKE '%" . $_POST['search'] . "%'
                     OR ii.cus_id LIKE '%" . $_POST['search'] . "%'
                     OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-                    OR req.cus_name LIKE '%" . $_POST['search'] . "%'
+                    OR CONCAT(req.first_name, ' ', req.last_name) LIKE '%" . $_POST['search'] . "%'
                     OR al.area_name LIKE '%" . $_POST['search'] . "%'
-                    OR sal.sub_area_name LIKE '%" . $_POST['search'] . "%'
                     OR lcc.loan_category_creation_name LIKE '%" . $_POST['search'] . "%'
-                    OR lc.sub_category LIKE '%" . $_POST['search'] . "%'
                     OR ac.ag_name LIKE '%" . $_POST['search'] . "%'
                     OR u.role LIKE '%" . $_POST['search'] . "%'
                     OR alm.line_name LIKE '%" . $_POST['search'] . "%'
@@ -219,39 +214,37 @@ foreach ($result as $row) {
         $search_date = strtotime($full_date);
         $months = (date('Y', $end) - date('Y', $start)) * 12 + (date('m', $end) - date('m', $start)) + 1;
         $pending = $months;
-         if (($row['due_method_calc'] == 'Monthly' || $row['due_method_scheme'] == '1')  ) {
-            if(date('m', $search_date) == date('m', $end) && date('Y', $search_date) == date('Y', $end) ){
-            $pending -= 1;
+        if (($row['due_method_calc'] == 'Monthly' || $row['due_method_scheme'] == '1')) {
+            if (date('m', $search_date) == date('m', $end) && date('Y', $search_date) == date('Y', $end)) {
+                $pending -= 1;
             }
         }
         $pending_month = $pending;
-        
     } else {
         $end = strtotime($full_date);
         $start = strtotime($row['due_start_from']);
         $months = (date('Y', $end) - date('Y', $start)) * 12 + (date('m', $end) - date('m', $start)) + 1;
-    
-        if (($row['due_method_calc'] != 'Monthly' && $row['due_method_scheme'] != '1')  ) {
-            if((date('d', $start) < date('d', $end)) && (date('m', $start) <= date('m', $end)) && (date('Y', $start) <= date('Y', $end)) ){
+
+        if (($row['due_method_calc'] != 'Monthly' && $row['due_method_scheme'] != '1')) {
+            if ((date('d', $start) < date('d', $end)) && (date('m', $start) <= date('m', $end)) && (date('Y', $start) <= date('Y', $end))) {
                 $months += 1;
             }
         }
         $pending_month = $months - 1;
-
     }
-    
+
     $balance_amount = $row['tot_amt_cal'] - $row['total_due_amt'];
     $paid_due = $row['total_due_amt'] / $row['due_amt_cal'];
     $balance_due = (float)$row['due_period'] - $paid_due;
-    $payable_amount = ($months * $row['due_amt_cal'] ) - $row['total_due_amt'];
-    $pending_amount = ($pending_month * $row['due_amt_cal'] ) - $row['total_due_amt'];
+    $payable_amount = ($months * $row['due_amt_cal']) - $row['total_due_amt'];
+    $pending_amount = ($pending_month * $row['due_amt_cal']) - $row['total_due_amt'];
     $pending_due =  $pending_amount  / $row['due_amt_cal'];
 
     $sub_array   = array();
     $sub_array[] = $sno;
-    //    $sub_array[] = $row['group_name'];
+    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line'];
-    // $sub_array[] = $row['duefollowup_name'];
+    $sub_array[] = $row['duefollowup_name'];
     $sub_array[] = $row['loan_id'];
     $sub_array[] = date('d-m-Y', strtotime($row['loan_date']));
     $sub_array[] = date('d-m-Y', strtotime($row['maturity_date']));
@@ -259,9 +252,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['loan_cat_name'];
-    $sub_array[] = $row['sub_category'];
     $sub_array[] = $row['ag_name'];
     $sub_array[] = $role_arr[$row['role']];
     $sub_array[] = $row['fullname'];
@@ -271,31 +262,25 @@ foreach ($result as $row) {
     $payable_amount = max(0, $payable_amount);
     $pending_amount = max(0, $pending_amount);
 
-    if($row['cus_status'] =='15' && strtotime($row['updated_date']) < strtotime($full_date)){
+    if ($row['cus_status'] == '15' && strtotime($row['updated_date']) < strtotime($full_date)) {
         $sub_array[] = 'Error';
-    }
-    else if($row['cus_status'] =='16' && strtotime($row['updated_date'])< strtotime($full_date)){
+    } else if ($row['cus_status'] == '16' && strtotime($row['updated_date']) < strtotime($full_date)) {
         $sub_array[] = 'Legal';
-    }
-    else if($payable_amount == 0  && $pending_amount == 0  && $balance_amount == 0){
+    } else if ($payable_amount == 0  && $pending_amount == 0  && $balance_amount == 0) {
         $sub_array[] = 'Due Nil';
-    }
-    else if($payable_amount <= $row['due_amt_cal'] && $pending_amount == 0  &&  ((($row['due_method_scheme'] === '1' || $row['due_method_calc'] ==='Monthly') && date('Y-m', strtotime($row['maturity_date'])) >= date('Y-m', strtotime($full_date))) ||(($row['due_method_scheme'] != '1'|| $row['due_method_calc'] !='Monthly') && strtotime($row['maturity_date']) >= strtotime($full_date))) && $balance_amount != 0 ){
+    } else if ($payable_amount <= $row['due_amt_cal'] && $pending_amount == 0  &&  ((($row['due_method_scheme'] === '1' || $row['due_method_calc'] === 'Monthly') && date('Y-m', strtotime($row['maturity_date'])) >= date('Y-m', strtotime($full_date))) || (($row['due_method_scheme'] != '1' || $row['due_method_calc'] != 'Monthly') && strtotime($row['maturity_date']) >= strtotime($full_date))) && $balance_amount != 0) {
         $sub_array[] = 'Current';
-    }
-    else if($pending_amount > 0 &&  (
-            (($row['due_method_scheme'] === '1' || $row['due_method_calc'] ==='Monthly') && date('Y-m', strtotime($row['maturity_date'])) >= date('Y-m', strtotime($full_date))) || (($row['due_method_scheme'] != '1'|| $row['due_method_calc'] !='Monthly') && strtotime($row['maturity_date']) > strtotime($full_date))
-        )){
+    } else if ($pending_amount > 0 &&  (
+        (($row['due_method_scheme'] === '1' || $row['due_method_calc'] === 'Monthly') && date('Y-m', strtotime($row['maturity_date'])) >= date('Y-m', strtotime($full_date))) || (($row['due_method_scheme'] != '1' || $row['due_method_calc'] != 'Monthly') && strtotime($row['maturity_date']) > strtotime($full_date))
+    )) {
         $sub_array[] = 'Pending';
-    }
-    else if (
-    (
-        ($balance_amount  > 0) &&((($row['due_method_scheme'] === '1' || $row['due_method_calc'] ==='Monthly') && date('Y-m', strtotime($row['maturity_date'])) < date('Y-m', strtotime($full_date))) ||(($row['due_method_scheme'] != '1'|| $row['due_method_calc'] !='Monthly') && strtotime($row['maturity_date']) < strtotime($full_date)))
-    )) 
-    {
-    $sub_array[] = 'OD';
-    }
-    else {
+    } else if (
+        (
+            ($balance_amount  > 0) && ((($row['due_method_scheme'] === '1' || $row['due_method_calc'] === 'Monthly') && date('Y-m', strtotime($row['maturity_date'])) < date('Y-m', strtotime($full_date))) || (($row['due_method_scheme'] != '1' || $row['due_method_calc'] != 'Monthly') && strtotime($row['maturity_date']) < strtotime($full_date)))
+        )
+    ) {
+        $sub_array[] = 'OD';
+    } else {
         $sub_array[] = 'No Result';
     }
 
@@ -303,7 +288,7 @@ foreach ($result as $row) {
     $months_diff = 0;
     if ($row['due_amt_cal'] > 0) {
         $months_diff = (int) ceil($payable_amount / $row['due_amt_cal']);
-    } 
+    }
     $monthCols = [0, 0, 0, 0, 0, 0]; // one to above_five
     if ($months_diff >= 6) {
         $monthCols[5] = 1;

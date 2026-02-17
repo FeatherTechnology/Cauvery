@@ -77,7 +77,8 @@ $(document).ready(function () {
         value = value.replace(/\D/g, "").split(/(?:([\d]{4}))/g).filter(s => s.length > 0).join(" ");
         $(this).val(value);
 
-        $('#cus_name').val('');
+        $('#first_name').val('');
+        $('#last_name').val('');
         $('#cus_area').val('');
         $('#cus_group').val('');
         $('#cus_line').val('');
@@ -287,7 +288,8 @@ function refershInput() {
     $('#ag_name').val('');
     $('#ag_grp').val('');
     $('#cus_id').val('');
-    $('#cus_name').val('');
+    $('#first_name').val('');
+    $('#last_name').val('');
     $('#cus_area').val('');
     $('#cus_group').val('');
     $('#cus_line').val('');
@@ -345,12 +347,11 @@ function getCustomerDetails(cus_id) {
         type: 'post',
         cache: false,
         success: function (response) {
-            if (response['message'] == 'Existing') {
-                $('#cus_name').val(response['cus_name']); //
+                $('#first_name').val(response['first_name']); //
+                $('#last_name').val(response['last_name']); //
                 $('#cus_area').val(response['area_name']);//
                 $('#cus_group').val(response['grp_name']);//
                 $('#cus_line').val(response['line_name']);//
-            }
         }
     });
 }

@@ -11,7 +11,7 @@ if (isset($_SESSION["userid"])) {
 $user_based = "";
 
 if ($userid != 1) {
-
+  
     $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid ");
     $rowuser = $userQry->fetch();
     $line_id = $rowuser['line_id'];
@@ -19,20 +19,22 @@ if ($userid != 1) {
 
     if ($report_access == '1') {
         $line_id = explode(',', $line_id);
-        $sub_area_list = array();
+        $area_list_array = [];
         foreach ($line_id as $line) {
-            $lineQry = $connect->query("SELECT sub_area_id FROM area_line_mapping where map_id = $line ");
-            $row_sub = $lineQry->fetch();
-            $sub_area_list[] = $row_sub['sub_area_id'];
+            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
+            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
+                $area_list_array[] = $row_sub['area_id'];
+            }
         }
-        $sub_area_ids = array();
-        foreach ($sub_area_list as $subarray) {
-            $sub_area_ids = array_merge($sub_area_ids, explode(',', $subarray));
+        $area_ids = [];
+        foreach ($area_list_array as $subarray) {
+            $area_ids = array_merge($area_ids, explode(',', $subarray));
         }
-        $sub_area_list = array();
-        $sub_area_list = implode(',', $sub_area_ids);
 
-        $user_based = " AND cp.area_confirm_subarea IN ($sub_area_list) AND ii.insert_login_id = '$userid' ";
+        $area_ids = array_unique($area_ids);
+        $area_list = implode(',', $area_ids);
+
+        $user_based = " AND cp.area_confirm_area IN ($area_list) AND ii.insert_login_id = '$userid' ";
     }
 }
 
@@ -52,17 +54,15 @@ $column = array(
     'ad.doc_id',
     'ii.cus_id',
     'cr.autogen_cus_id',
-    'cp.cus_name',
-    'fam.famname',
+    "CONCAT(cp.first_name, ' ', cp.last_name)",
+    "CONCAT(fam.first_name, ' ', fam.last_name)",
     'fam.relationship',
     'al.area_name',
-    'sal.sub_area_name',
     'ag.group_name',
     'alm.line_name',
     'adm.duefollowup_name',
     'bc.branch_name',
     'lcc.loan_category_creation_name',
-    'lc.sub_category',
     'ac.ag_name',
     'iv.responsible',
     'ii.updated_date',
@@ -80,7 +80,7 @@ $column = array(
     'lc.due_period',
     'lc.due_start_from',
     'lc.maturity_month',
-    'vfi_received_by.famname',
+    'vfi_received_by.first_name',
     'vfi_received_by.relationship',
 );
 
@@ -89,17 +89,15 @@ $query = "SELECT
         ad.doc_id,
         cp.cus_id,
         cr.autogen_cus_id,
-        cp.cus_name,
-        fam.famname,
+        CONCAT(cp.first_name, ' ', cp.last_name) AS cus_name,
+        CONCAT(fam.first_name, ' ', fam.last_name) AS famname,
         fam.relationship,
         al.area_name,
-        sal.sub_area_name,
         ag.group_name,
         alm.line_name,
         adm.duefollowup_name,
         bc.branch_name,
         lcc.loan_category_creation_name as loan_cat_name,
-        lc.sub_category,
         ac.ag_name,
         iv.responsible,
         ii.updated_date as loan_date,
@@ -117,7 +115,7 @@ $query = "SELECT
         lc.due_start_from,
         lc.maturity_month,
         li.relationship as rec_relationship,
-        vfi_received_by.famname as received_by,
+         CONCAT(vfi_received_by.first_name, ' ', vfi_received_by.last_name) AS received_by,
         vfi_received_by.relationship as rel_name
 
         FROM in_issue ii
@@ -128,11 +126,13 @@ $query = "SELECT
         LEFT JOIN in_verification iv ON ii.req_id = iv.req_id
         LEFT JOIN verification_family_info fam ON cp.guarentor_name = fam.id
         LEFT JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
-        LEFT JOIN sub_area_list_creation sal ON cp.area_confirm_subarea = sal.sub_area_id
-        LEFT JOIN area_group_mapping ag ON FIND_IN_SET(sal.sub_area_id, ag.sub_area_id)
+        JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
+        JOIN area_group_mapping ag ON ag.map_id = agma.group_map_id
         LEFT JOIN branch_creation bc ON ag.branch_id = bc.branch_id
-        LEFT JOIN area_line_mapping alm ON FIND_IN_SET(sal.sub_area_id, alm.sub_area_id)
-        LEFT JOIN area_duefollowup_mapping adm ON FIND_IN_SET(al.area_id, adm.area_id)
+         JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+        JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+        JOIN area_duefollowup_mapping_area adma ON adma.area_id = al.area_id
+        JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id
         LEFT JOIN request_creation req ON ii.req_id = req.req_id
         LEFT JOIN loan_issue li ON li.req_id = ii.req_id
         LEFT JOIN loan_category_creation lcc ON lc.loan_category = lcc.loan_category_creation_id
@@ -149,17 +149,15 @@ if (isset($_POST['search'])) {
             OR ad.doc_id LIKE '%" . $_POST['search'] . "%'
             OR ii.cus_id LIKE '%" . $_POST['search'] . "%'
             OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-            OR cp.cus_name LIKE '%" . $_POST['search'] . "%' 
-            OR fam.famname LIKE '%" . $_POST['search'] . "%' 
+            OR CONCAT(cp.first_name, ' ', cp.last_name) LIKE '%" . $_POST['search'] . "%' 
+            OR CONCAT(fam.first_name, ' ', fam.last_name) LIKE '%" . $_POST['search'] . "%'
             OR fam.relationship LIKE '%" . $_POST['search'] . "%' 
             OR al.area_name LIKE '%" . $_POST['search'] . "%' 
-            OR sal.sub_area_name LIKE '%" . $_POST['search'] . "%' 
             OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
             OR alm.line_name LIKE '%" . $_POST['search'] . "%' 
             OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%' 
             OR bc.branch_name LIKE '%" . $_POST['search'] . "%' 
             OR lcc.loan_category_creation_name LIKE '%" . $_POST['search'] . "%' 
-            OR lc.sub_category LIKE '%" . $_POST['search'] . "%' 
             OR ac.ag_name LIKE '%" . $_POST['search'] . "%' 
             OR iv.responsible LIKE '%" . $_POST['search'] . "%' 
             OR ii.updated_date LIKE '%" . $_POST['search'] . "%') ";
@@ -227,13 +225,11 @@ foreach ($result as $row) {
     $sub_array[] = $row['famname'];
     $sub_array[] = $row['relationship'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line_name'];
     $sub_array[] = $row['duefollowup_name'];
     $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['loan_cat_name'];
-    $sub_array[] = $row['sub_category'];
     $sub_array[] = $row['ag_name'];
     $sub_array[] = (!empty($row['ag_name'])) ? (($row['responsible'] == '0') ? 'Yes' : 'No') : '';
     $sub_array[] = date('d-m-Y', strtotime($row['loan_date']));

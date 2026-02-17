@@ -18,20 +18,21 @@ if ($userid != 1) {
 
     if ($report_access == '1') { //Report access individual.
         $line_id = explode(',', $line_id);
-        $sub_area_list = array();
+        $area_list_array = [];
         foreach ($line_id as $line) {
-            $lineQry = $connect->query("SELECT sub_area_id FROM area_line_mapping WHERE map_id = $line ");
-            $row_sub = $lineQry->fetch();
-            $sub_area_list[] = $row_sub['sub_area_id'];
+            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
+            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
+                $area_list_array[] = $row_sub['area_id'];
+            }
         }
-        $sub_area_ids = array();
-        foreach ($sub_area_list as $subarray) {
-            $sub_area_ids = array_merge($sub_area_ids, explode(',', $subarray));
+        $area_ids = [];
+        foreach ($area_list_array as $subarray) {
+            $area_ids = array_merge($area_ids, explode(',', $subarray));
         }
-        $sub_area_list = array();
-        $sub_area_list = implode(',', $sub_area_ids);
 
-        $user_based = " AND cp.area_confirm_subarea IN ($sub_area_list) AND coll.insert_login_id = '$userid' ";
+        $area_ids = array_unique($area_ids);
+        $area_list = implode(',', $area_ids);
+        $user_based = " AND cp.area_confirm_area IN ($area_list) AND coll.insert_login_id = '$userid' ";
     }
 }
 
@@ -61,24 +62,22 @@ $statusObj = [
 
 $column = array(
     'ii.loan_id',
-    // 'ag.group_name',
+    'ag.group_name',
     'alm.line_name',
-    // 'adm.duefollowup_name',
+    'adm.duefollowup_name',
     'ii.loan_id',
     'ii.updated_date',
     'lc.due_start_from',
     'lc.maturity_date',
     'lc.cus_id_loan',
     'cr.autogen_cus_id',
-    'lc.cus_name_loan',
+    'CONCAT(lc.first_name, " ", lc.last_name)',
     'cp.mobile1',
     'al.area_name',
-    'sal.sub_area_name',
     'lcc.loan_category_creation_name',
-    'lc.sub_category',
     'ac.ag_name',
     'iv.responsible',
-    'vfi.famname',
+    'CONCAT(vfi.first_name, " ", vfi.last_name)',
     'vfi.relationship',
     'vfi.relation_Mobile',
     'lc.loan_amt',
@@ -133,22 +132,20 @@ $query = "SELECT
     lc.maturity_month AS maturity_date,
     lc.cus_id_loan,
     cr.autogen_cus_id,
-    lc.cus_name_loan,
+    CONCAT(lc.first_name, ' ', lc.last_name) AS cus_name_loan,
     lc.loan_amt,
     lc.due_amt_cal,
     lc.due_period,
     lc.tot_amt_cal,
-    lc.sub_category,
     lc.due_start_from,
     lc.due_method_scheme,
     lc.due_method_calc,
     cp.mobile1,
-    -- ag.group_name,
+    ag.group_name,
     alm.line_name AS line,
-    --  adm.duefollowup_name,
+    adm.duefollowup_name,
     ii.loan_id,
     al.area_name,
-    sal.sub_area_name,
     lcc.loan_category_creation_name AS loan_cat_name,
     ac.ag_name,
     iv.responsible,
@@ -156,7 +153,7 @@ $query = "SELECT
     cls.consider_level,
     iv.cus_status,
     ack.updated_date,
-    vfi.famname,
+    CONCAT(vfi.first_name, ' ', vfi.last_name) AS famname,
     vfi.relationship,
     vfi.relation_Mobile,
     IFNULL(NULLIF(c.pending, ''), 0) AS pending,
@@ -180,12 +177,12 @@ JOIN
     loan_issue li ON lc.req_id = li.req_id
 JOIN 
     area_list_creation al ON cp.area_confirm_area = al.area_id
-JOIN 
-    sub_area_list_creation sal ON cp.area_confirm_subarea = sal.sub_area_id
-JOIN 
-    area_line_mapping alm ON FIND_IN_SET( sal.sub_area_id, alm.sub_area_id )
--- JOIN area_group_mapping ag ON FIND_IN_SET(sal.sub_area_id, ag.sub_area_id)
--- JOIN area_duefollowup_mapping adm ON FIND_IN_SET(al.area_id, adm.area_id)
+JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
+  JOIN area_group_mapping ag ON ag.map_id = agma.group_map_id
+JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+JOIN area_duefollowup_mapping_area adma ON adma.area_id = al.area_id
+JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id
 JOIN 
     in_verification iv ON lc.req_id = iv.req_id
 JOIN 
@@ -224,17 +221,15 @@ if (isset($_POST['search'])) {
                         OR lc.maturity_month LIKE '%" . $_POST['search'] . "%'
                         OR lc.cus_id_loan LIKE '%" . $_POST['search'] . "%'
                         OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-                        OR lc.cus_name_loan LIKE '%" . $_POST['search'] . "%'
+                        OR CONCAT(lc.first_name, ' ', lc.last_name) LIKE '%" . $_POST['search'] . "%'
                         OR cp.mobile1 LIKE '%" . $_POST['search'] . "%'
                         OR al.area_name LIKE '%" . $_POST['search'] . "%'
-                        OR sal.sub_area_name LIKE '%" . $_POST['search'] . "%'
-                        -- OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
+                        OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
                          OR alm.line_name LIKE '%" . $_POST['search'] . "%' 
-                        -- OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%' 
-                        OR lc.sub_category LIKE '%" . $_POST['search'] . "%'
+                        OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%' 
                         OR ac.ag_name LIKE '%" . $_POST['search'] . "%'
                         OR iv.responsible LIKE '%" . $_POST['search'] . "%'
-                        OR vfi.famname LIKE '%" . $_POST['search'] . "%'
+                        OR CONCAT(vfi.first_name, ' ', vfi.last_name) LIKE '%" . $_POST['search'] . "%'
                         OR vfi.relationship LIKE '%" . $_POST['search'] . "%'
                         OR vfi.relation_Mobile LIKE '%" . $_POST['search'] . "%'
                         OR lc.loan_amt LIKE '%" . $_POST['search'] . "%'
@@ -317,9 +312,9 @@ foreach ($result as $row) {
 
     $sub_array   = array();
     $sub_array[] = $sno;
-    // $sub_array[] = $row['group_name'];
+    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line'];
-    // $sub_array[] = $row['duefollowup_name'];
+    $sub_array[] = $row['duefollowup_name'];
     $sub_array[] = $row['loan_id'];
     $sub_array[] = date('d-m-Y', strtotime($row['loan_date']));
     $sub_array[] = date('d-m-Y', strtotime($row['due_start_from']));
@@ -329,9 +324,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['cus_name_loan'];
     $sub_array[] = $row['mobile1'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['loan_cat_name'];
-    $sub_array[] = $row['sub_category'];
     $sub_array[] = $row['ag_name'];
     $sub_array[] = (!empty($row['ag_name'])) ? (($row['responsible'] == '0') ? 'Yes' : 'No') : '';
     $sub_array[] = $row['famname'];

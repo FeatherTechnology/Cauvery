@@ -1099,7 +1099,7 @@ if (sizeof($getUser) > 0) {
 						</div>
 					</li>
 				<?php  } ?>
-				<?php if ($reportmodule_intrest == 0) { ?>
+				<!-- <?php if ($reportmodule_intrest == 0) { ?>
 					<li class="sidebar-dropdown ">
 						<a href="javascript:void(0)">
 							<i class='icon-area-graph'></i>
@@ -1135,7 +1135,7 @@ if (sizeof($getUser) > 0) {
 							</ul>
 						</div>
 					</li>
-				<?php  } ?>
+				<?php  } ?> -->
 				<?php if ($search_module == 0) { ?>
 					<li class="sidebar-dropdown">
 						<a href="javascript:void(0)">

@@ -31,7 +31,6 @@
 									<th>Cust. ID</th>
 									<th>Cust. Name</th>
 									<th>Area</th>
-									<th>Sub Area</th>
 									<th>Line</th>
 									<th>Branch</th>
 									<th>Handover Date</th>
@@ -42,7 +41,7 @@
 								<tbody></tbody>
 								<tfoot>
 									<tr>
-										<td colspan="7"></td>
+										<td colspan="6"></td>
 										<td></td>
 										<td></td>
 										<td colspan="5"></td>

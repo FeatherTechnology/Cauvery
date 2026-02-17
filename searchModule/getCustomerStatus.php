@@ -14,9 +14,9 @@ $result = $connect->query("SELECT req.req_id, req.prompt_remark, req.cus_status,
     CASE WHEN req.cus_status >= 14 THEN ii.updated_date ELSE req.dor END AS `updated_date`,
     CASE WHEN req.cus_status >= 14 THEN ii.loan_id ELSE req.req_code END AS `code`,
     CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_category WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24) THEN alc.loan_category ELSE req.loan_category END AS loan_category,
-    CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.sub_category WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24) THEN alc.sub_category ELSE req.sub_category END AS sub_category,
+    CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_category WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24) THEN alc.loan_category ELSE req.loan_category END AS loan_category,
     CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_amt WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24) THEN alc.loan_amt ELSE req.loan_amt END AS loan_amt,
-    CASE WHEN req.cus_status IN (12,2,6,7,3,13,14,15,16,17,20,21,22,23,24) THEN cp.cus_name ELSE req.cus_name END AS cus_name
+    CASE WHEN req.cus_status IN (12,2,6,7,3,13,14,15,16,17,20,21,22,23,24) THEN CONCAT(cp.first_name,' ',cp.last_name) ELSE CONCAT(req.first_name,' ',req.last_name) END AS cus_name
     FROM request_creation req
     LEFT JOIN customer_profile cp ON req.req_id = cp.req_id
     LEFT JOIN verification_loan_calculation vlc ON req.req_id = vlc.req_id
@@ -41,7 +41,6 @@ if ($result->rowCount() > 0) {
         $row1 = $qry->fetch();
         $records[$i]['loan_category'] = $row1['loan_category_creation_name'];
 
-        $records[$i]['sub_category'] = $row['sub_category'];
         $records[$i]['loan_amt'] = $row['loan_amt'];
         $records[$i]['remark'] = $row['prompt_remark'] ?? '';
         $cus_status = $row['cus_status'];
@@ -141,7 +140,6 @@ if ($result->rowCount() > 0) {
             <th rowspan="2">Req ID/Loan ID</th>
             <th rowspan="2">Document ID</th>
             <th rowspan="2">Loan Category</th>
-            <th rowspan="2">Sub Category</th>
             <th rowspan="2">Loan Amount</th>
             <th colspan="2">Loan Status</th>
             <th colspan="4">Document Status</th>
@@ -163,7 +161,6 @@ if ($result->rowCount() > 0) {
                 <td><?php echo $records[$i]['code']; ?></td>
                 <td><?php echo $records[$i]['doc_id']; ?></td>
                 <td><?php echo $records[$i]['loan_category']; ?></td>
-                <td><?php echo $records[$i]['sub_category']; ?></td>
                 <td><?php echo moneyFormatIndia($records[$i]['loan_amt']); ?></td>
                 <td><?php echo $records[$i]['status']; ?></td>
                 <td><?php echo $records[$i]['sub_status']; ?></td>
@@ -203,7 +200,7 @@ function getCollectionStatus($connect, $cus_id, $user_id, $req_id)
 
     $retVal = 'Current';
 
-    $run = $connect->query("SELECT lc.due_start_from,lc.loan_category,lc.sub_category,lc.loan_amt_cal,lc.due_amt_cal,lc.net_cash_cal,lc.collection_method,ii.loan_id,ii.req_id,ii.updated_date,ii.cus_status,
+    $run = $connect->query("SELECT lc.due_start_from,lc.loan_category,lc.loan_amt_cal,lc.due_amt_cal,lc.net_cash_cal,lc.collection_method,ii.loan_id,ii.req_id,ii.updated_date,ii.cus_status,
     rc.agent_id,lcc.loan_category_creation_name as loan_catrgory_name, us.collection_access
     from acknowlegement_loan_calculation lc JOIN in_issue ii ON lc.req_id = ii.req_id JOIN request_creation rc ON ii.req_id = rc.req_id 
     JOIN loan_category_creation lcc ON lc.loan_category = lcc.loan_category_creation_id JOIN user us ON us.user_id = $user_id

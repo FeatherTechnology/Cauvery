@@ -48,7 +48,7 @@ if ($type == 1) {
 
     $line_str  = implode(',', $line);
     $condition = "alm.map_id IN ($line_str)";
-    $joinTable = "JOIN area_line_mapping alm ON FIND_IN_SET(al.area_id, alm.area_id)";
+    $joinTable = "JOIN area_line_mapping_area alma ON al.area_id = alma.area_id JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id";
     $nameField = "alm.line_name";
 } else if ($type == 2) {
     // 🔹 User based
@@ -83,7 +83,8 @@ if ($type == 1) {
     }
     $line_id_str = implode(',', $line_ids);
     $condition   = "alm.map_id IN ($line_id_str)";
-    $joinTable   = "JOIN area_line_mapping alm ON FIND_IN_SET(al.area_id, alm.area_id)";
+    $joinTable   = "JOIN area_line_mapping_area alma ON al.area_id = alma.area_id
+    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id";
     $userName    = implode(', ', array_unique($display_names));
     $nameField   = "NULL";
 } else if ($type == 3) {
@@ -94,9 +95,10 @@ if ($type == 1) {
     }
 
     $group_str  = implode(',', $group_map);
-    $condition  = "ag.map_id IN ($group_str)";
-    $joinTable  = "JOIN area_group_mapping ag ON FIND_IN_SET(al.area_id, ag.area_id)";
-    $nameField  = "ag.group_name";
+    $condition  = "agm.map_id IN ($group_str)";
+    $joinTable  = "JOIN area_group_mapping_area agma ON al.area_id = agma.area_id
+    JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id";
+    $nameField  = "agm.group_name";
 } else if ($type == 4) {
     if (empty($due_followup)) {
         echo json_encode(["data" => []]);
@@ -104,7 +106,8 @@ if ($type == 1) {
     }
 
     $due_followup_str = implode(',', $due_followup);
-    $joinTable = "JOIN area_duefollowup_mapping adm ON FIND_IN_SET(al.area_id, adm.area_id)";
+    $joinTable = "  JOIN area_duefollowup_mapping_area adma ON al.area_id = adma.area_id
+    JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id";
     // Condition only for line_ids
     $condition = "adm.map_id IN ($due_followup_str)";
     $nameField = "adm.duefollowup_name";
@@ -152,7 +155,6 @@ $DueNilReqIdStr = !empty($DueNilReqIds) ? implode(',', $DueNilReqIds) : 'NULL';
 foreach ($loan_category as $cat_id) {
     // Step 1: Fetch customers
     $where = "AND alc.loan_category = $cat_id";
-
     $custQry = $connect->query("SELECT 
         ii.req_id,
         ii.loan_id,

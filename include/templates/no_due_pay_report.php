@@ -24,9 +24,9 @@
 							<table id="no_pay_due_report_table" class="table custom-table">
 								<thead>
 									<th>S.No</th>
-									<!-- <th>Group</th> -->
+									<th>Group</th>
 									<th>Line</th>
-									<!-- <th>Followup</th> -->
+									<th>Followup</th>
 									<th>Loan ID</th>
 									<th>Loan Date</th>
 									<th>Maturity Date</th>
@@ -34,9 +34,7 @@
 									<th>Cust. ID</th>
 									<th>Cust. Name</th>
 									<th>Area</th>
-									<th>Sub Area</th>
 									<th>Loan Category</th>
-									<th>Sub Category</th>
 									<th>Agent</th>
 									<th>User Type</th>
 									<th>User</th>

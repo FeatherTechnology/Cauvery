@@ -59,7 +59,7 @@ $coll_arr = [1 => 'Cash', 2 => 'Cheque', 3 => 'ECS', 4 => 'IMPS/NEFT/RTGS', 5 =>
 $coll_method = [1 => 'By Self', 2 => 'On Spot'];
 
 $column = array(
-      'coll.coll_id',
+    'coll.coll_id',
     'ag.group_name',
     'alm.line_name',
     'adm.duefollowup_name',
@@ -67,11 +67,9 @@ $column = array(
     'ii.updated_date',
     'coll.cus_id',
     'cr.autogen_cus_id',
-    'coll.cus_name',
+    "CONCAT(coll.first_name,' ',coll.last_name)",
     'al.area_name',
-    'sal.sub_area_name',
     'lcc.loan_category_creation_name',
-    'lc.sub_category',
     'ac.ag_name',
     'u.role',
     'u.fullname',
@@ -98,12 +96,10 @@ $query = "SELECT
             coll.cus_id,
             cr.autogen_cus_id,
             coll.req_id,
-            coll.cus_name,
+            CONCAT(coll.first_name,' ',coll.last_name) as cus_name,
             coll.coll_mode,
             al.area_name,
-            sal.sub_area_name,
             lcc.loan_category_creation_name AS loan_cat_name,
-            lc.sub_category,
             lc.due_type,
             lc.due_period,
             lc.principal_amt_cal,
@@ -130,9 +126,12 @@ $query = "SELECT
         JOIN in_issue ii ON coll.req_id = ii.req_id
         JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
         JOIN sub_area_list_creation sal ON cp.area_confirm_subarea = sal.sub_area_id
-        JOIN area_line_mapping alm ON FIND_IN_SET(sal.sub_area_id, alm.sub_area_id)
-         JOIN area_group_mapping ag ON FIND_IN_SET(sal.sub_area_id, ag.sub_area_id)
-         JOIN area_duefollowup_mapping adm ON FIND_IN_SET(al.area_id, adm.area_id)
+        JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
+        JOIN area_group_mapping ag ON ag.map_id = agma.group_map_id
+        JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+        JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+        JOIN area_duefollowup_mapping_area adma ON adma.area_id = al.area_id
+        JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id
         JOIN acknowlegement_loan_calculation lc ON coll.req_id = lc.req_id
         JOIN in_verification iv ON coll.req_id = iv.req_id
         LEFT JOIN bank_creation b ON coll.bank_id = b.id
@@ -149,15 +148,13 @@ if (isset($_POST['search'])) {
         $query .= " and (ii.loan_id LIKE '%" . $_POST['search'] . "%'
                     OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
                     OR alm.line_name LIKE '%" . $_POST['search'] . "%'
-                     OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%'
+                    OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%'
                     OR ii.updated_date LIKE '%" . $_POST['search'] . "%'
                     OR coll.cus_id LIKE '%" . $_POST['search'] . "%'
                     OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-                    OR coll.cus_name LIKE '%" . $_POST['search'] . "%'
+                    OR CONCAT(coll.first_name,' ',coll.last_name) LIKE '%" . $_POST['search'] . "%'
                     OR al.area_name LIKE '%" . $_POST['search'] . "%'
-                    OR sal.sub_area_name LIKE '%" . $_POST['search'] . "%'
                     OR lcc.loan_category_creation_name LIKE '%" . $_POST['search'] . "%'
-                    OR lc.sub_category LIKE '%" . $_POST['search'] . "%'
                     OR ac.ag_name LIKE '%" . $_POST['search'] . "%'
                     OR u.role LIKE '%" . $_POST['search'] . "%'
                     OR u.fullname LIKE '%" . $_POST['search'] . "%'
@@ -208,9 +205,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['loan_cat_name'];
-    $sub_array[] = $row['sub_category'];
     $sub_array[] = $row['ag_name'];
     $sub_array[] = $role_arr[$row['role']];
     $sub_array[] = $row['fullname'];

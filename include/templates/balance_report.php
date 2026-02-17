@@ -58,9 +58,7 @@
 									<th>Cust. ID</th>
 									<th>Cust. Name</th>
 									<th>Area</th>
-									<th>Sub Area</th>
 									<th>Loan Category</th>
-									<th>Sub Category</th>
 									<th>Agent</th>
 									<th>Loan Amount</th>
 									<th>Due Amount</th>
@@ -83,8 +81,8 @@
 										<td></td>
 										<td></td>
 										<td></td>
-										<td></td>
-										<td></td>
+										<!-- <td></td>
+										<td></td> -->
 										<!-- <td></td>
 										<td></td> -->
 										<td colspan="2"></td>
@@ -109,9 +107,7 @@
 									<th>Cust. ID</th>
 									<th>Cust. Name</th>
 									<th>Area</th>
-									<th>Sub Area</th>
 									<th>Loan Category</th>
-									<th>Sub Category</th>
 									<th>Agent</th>
 									<th>Loan Amount</th>
 									<th>Due Amount</th>
@@ -130,8 +126,6 @@
 								<tfoot>
 									<tr>
 										<td colspan="14"></td>
-										<td></td>
-										<td></td>
 										<td></td>
 										<td></td>
 										<td></td>
