@@ -14,7 +14,7 @@ $column = array(
     'u.fullname',
     'cc.raising_for',
     'cc.raising_for',
-    'cc.cus_name',
+    'cc.first_name',
     'cc.to_dept_name',
     'sc.staff_name',
     'cs.concern_subject',
@@ -22,7 +22,7 @@ $column = array(
     'cc.id'
 );
 
-$query = "SELECT cc.*,sc.staff_name,cs.concern_subject,ag.ag_name,u.fullname,ag.ag_code
+$query = "SELECT cc.*,CONCAT(cc.first_name, ' ', cc.last_name) AS cus_name,sc.staff_name,cs.concern_subject,ag.ag_name,u.fullname,ag.ag_code
     FROM concern_creation cc
      JOIN staff_creation sc ON sc.staff_id = COALESCE(NULLIF(cc.pass_to, ''), cc.staff_assign_to)
     JOIN concern_subject cs ON cc.com_sub = cs.concern_sub_id

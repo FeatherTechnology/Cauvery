@@ -32,9 +32,7 @@
                                     <th>Cust. ID</th>
                                     <th>Cust. Name</th>
                                     <th>Area</th>
-                                    <th>Sub Area</th>
                                     <th>Loan Category</th>
-                                    <th>Sub Category</th>
                                     <th>Agent</th>
                                     <th>User Type</th>
                                     <th>User</th>
@@ -49,18 +47,19 @@
                                 <tbody></tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="12"></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td colspan="10"></td>
+                                        <td></td> <!-- 11 -->
+                                        <td></td> <!-- 12 -->
+                                        <td></td> <!-- 13 -->
+                                        <td></td> <!-- 14 -->
+                                        <td></td> <!-- 15 -->
+                                        <td></td> <!-- 16 -->
+                                        <td></td> <!-- 17 -->
+                                        <td></td> <!-- 18 -->
+                                        <td></td> <!-- 19 -->
                                     </tr>
                                 </tfoot>
+
                             </table>
                         </div>
                     </div>

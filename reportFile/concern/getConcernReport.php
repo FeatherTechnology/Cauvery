@@ -36,7 +36,7 @@ $column = array(
      'u.fullname',
     'cc.raising_for',
     'cc.raising_for',
-    'cc.cus_name',
+    'cc.first_name',
     'cs.concern_subject',
     'cc.to_dept_name',
     'cc.com_remark',
@@ -51,7 +51,7 @@ $column = array(
     'cc.status'
 );
 
-$query = "SELECT cc.id, cc.com_code,cc.com_date,cc.raising_for,cc.self_name,cc.cus_name,cs.concern_subject,cc.com_remark,sc.staff_name, cc.status,cc.solution_date,cc.communication,cc.location, cc.sol_participants,cc.solution_remark,cc.uploads ,cc.self_code,cc.cus_id,ag.ag_name,cc.to_dept_name,u.fullname,ag.ag_code,cc.pass_to,scs.staff_name as pass_staff FROM concern_creation cc LEFT JOIN concern_subject cs ON cc.com_sub = cs.concern_sub_id LEFT JOIN agent_creation ag ON cc.ag_name = ag.ag_id LEFT JOIN staff_creation sc ON cc.staff_assign_to = sc.staff_id LEFT JOIN staff_creation scs ON cc.pass_to = scs.staff_id 
+$query = "SELECT cc.id, cc.com_code,cc.com_date,cc.raising_for,cc.self_name,CONCAT(cc.first_name,' ',cc.last_name) as cus_name,cs.concern_subject,cc.com_remark,sc.staff_name, cc.status,cc.solution_date,cc.communication,cc.location, cc.sol_participants,cc.solution_remark,cc.uploads ,cc.self_code,cc.cus_id,ag.ag_name,cc.to_dept_name,u.fullname,ag.ag_code,cc.pass_to,scs.staff_name as pass_staff FROM concern_creation cc LEFT JOIN concern_subject cs ON cc.com_sub = cs.concern_sub_id LEFT JOIN agent_creation ag ON cc.ag_name = ag.ag_id LEFT JOIN staff_creation sc ON cc.staff_assign_to = sc.staff_id LEFT JOIN staff_creation scs ON cc.pass_to = scs.staff_id 
   LEFT JOIN user u ON cc.insert_user_id = u.user_id
 WHERE $where ";
 
@@ -60,7 +60,7 @@ if (isset($_POST['search'])) {
         $search = $_POST['search'];
         $query .=     " AND (cc.com_code LIKE '%" . $search . "%'
         OR cc.com_date LIKE '%" . $search . "%'
-        OR cc.cus_name LIKE '%" . $search . "%'
+        OR CONCAT(cc.first_name,' ',cc.last_name) LIKE '%" . $search . "%'
         OR cc.self_name LIKE '%" . $search . "%'
         OR cs.concern_subject LIKE '%" . $search . "%'
         OR cc.solution_date LIKE '%" . $search . "%' )";

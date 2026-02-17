@@ -158,15 +158,22 @@ if (isset($_POST['submit_concern']) && $_POST['submit_concern'] != '') {
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
-                                        <label for="cus_name">Customer Name</label><span class="required">&nbsp;*</span>
-                                        <input type="text" class="form-control" id="cus_name" name="cus_name" tabindex='6' readonly>
+                                        <label for="first_name">First Name</label><span class="required">&nbsp;*</span>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" tabindex='6' readonly>
+                                    </div>
+                                </div>
+
+                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label for="last_name">Last Name</label><span class="required">&nbsp;*</span>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" tabindex='7' readonly>
                                     </div>
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="area">Area</label><span class="required">&nbsp;*</span>
-                                        <input type="text" class="form-control" id="cus_area" name="cus_area" readonly tabindex='7'>
+                                        <input type="text" class="form-control" id="cus_area" name="cus_area" readonly tabindex='8'>
                                     </div>
                                 </div>
 

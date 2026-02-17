@@ -25,7 +25,7 @@
 							<table id="closed_report_table" class="table custom-table">
 								<thead>
 									<th>S.No</th>
-									<!-- <th>Group</th> -->
+									<th>Group</th>
 									<th>Line</th>
 									<th>Loan ID</th>
 									<th>Doc ID</th>
@@ -34,9 +34,7 @@
 									<th>Cust. ID</th>
 									<th>Cust. Name</th>
 									<th>Area</th>
-									<th>Sub Area</th>
 									<th>Loan Category</th>
-									<th>Sub Category</th>
 									<th>Agent Name</th>
 									<th>Loan Amount</th>
 									<th>Maturity Date</th>
@@ -48,7 +46,8 @@
 								<tbody></tbody>
 								<tfoot>
 									<tr>
-										<td colspan="13"></td>
+										<td colspan="11"></td>
+										<td></td>
 										<td></td>
 										<td colspan="5"></td>
 									</tr>

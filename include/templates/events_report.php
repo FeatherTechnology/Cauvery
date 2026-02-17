@@ -28,7 +28,6 @@
                                 <th>Customer Name</th>
                                 <th>Mobile</th>
                                 <th>Area</th>
-                                <th>Sub Area</th>
                                 <th>User</th>
                                 <th>Created Date</th>
 								</thead>

@@ -10,31 +10,34 @@ if (isset($_SESSION["userid"])) {
 
 $user_based = '';
 if ($userid != 1) {
-
     $userQry = $connect->query("SELECT group_id, report_access FROM USER WHERE user_id = $userid ");
     $rowuser = $userQry->fetch();
-        $group_id = $rowuser['group_id'];
-        $report_access = $rowuser['report_access'];
-    
-    if($report_access =='1'){ //Report access individual.
-        $group_id = explode(',', $group_id);
-        $sub_area_list = array();
-        foreach ($group_id as $group) {
-            $groupQry = $connect->query("SELECT sub_area_id FROM area_group_mapping WHERE map_id = $group ");
-            $row_sub = $groupQry->fetch();
-            $sub_area_list[] = $row_sub['sub_area_id'];
+    $group_id = $rowuser['group_id'];
+    $report_access = $rowuser['report_access'];
+
+    if ($report_access == '1') { //Report access individual.
+        $group_id_array = explode(',', $group_id);
+        $area_list_array = [];
+
+        foreach ($group_id_array as $group) {
+            $groupQry = $connect->query("SELECT area_id FROM area_group_mapping_area WHERE group_map_id = $group");
+
+            while ($row_sub = $groupQry->fetch(PDO::FETCH_ASSOC)) {
+                $area_list_array[] = $row_sub['area_id'];
+            }
         }
-        $sub_area_ids = array();
-        foreach ($sub_area_list as $subarray) {
-            $sub_area_ids = array_merge($sub_area_ids, explode(',', $subarray));
+        $area_ids = [];
+        foreach ($area_list_array as $subarray) {
+            $area_ids = array_merge($area_ids, explode(',', $subarray));
         }
-        $sub_area_list = array();
-        $sub_area_list = implode(',', $sub_area_ids);
+
+        $area_ids = array_unique($area_ids);
+        $area_list = implode(',', $area_ids);
 
         $user_based = " AND (
-            (req.cus_status >= 10 AND cp.area_confirm_subarea IN ($sub_area_list))
+            (req.cus_status >= 10 AND cp.area_confirm_area IN ($area_list))
             OR 
-            (req.cus_status < 10 AND req.sub_area IN ($sub_area_list))
+            (req.cus_status < 10 AND req.area IN ($area_list))
         ) AND req.insert_login_id = '$userid' ";
     }
 }
@@ -81,11 +84,9 @@ $column = array(
     'req.dor',
     'req.cus_id',
     'cr.autogen_cus_id',
-    'req.cus_name',
+    "CONCAT(req.first_name, ' ', req.last_name)",
     'al.area_name',
-    'sal.sub_area_name',
     'lcc.loan_category_creation_name',
-    'req.sub_category',
     'req.loan_amt',
     'req.user_type',
     'req.user_name',
@@ -96,9 +97,9 @@ $column = array(
 );
 $query = "SELECT 
     req.*,
+     CONCAT(req.first_name, ' ', req.last_name) AS cus_name,
     cr.autogen_cus_id,
     al.area_name,
-    sal.sub_area_name,
     lcc.loan_category_creation_name,
     ag.ag_name
 FROM 
@@ -107,8 +108,6 @@ JOIN
     customer_register cr ON req.cus_id = cr.cus_id
 JOIN 
     area_list_creation al ON req.area = al.area_id
-JOIN 
-    sub_area_list_creation sal ON req.sub_area = sal.sub_area_id
 JOIN 
     loan_category_creation lcc ON req.loan_category = lcc.loan_category_creation_id
 LEFT JOIN 
@@ -123,7 +122,7 @@ if (isset($_POST['search'])) {
 
         $query .= " and (req.cus_id LIKE '%" . $_POST['search'] . "%' OR
                 cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR
-                req.cus_name LIKE '%" . $_POST['search'] . "%' OR
+                 CONCAT(req.first_name, ' ', req.last_name) LIKE '%" . $_POST['search'] . "%' OR
                 al.area_name LIKE '%" . $_POST['search'] . "%' OR
                 lcc.loan_category_creation_name LIKE '%" . $_POST['search'] . "%' OR
                 req.cus_data LIKE '%" . $_POST['search'] . "%' ) ";
@@ -136,7 +135,6 @@ if (isset($_POST['order'])) {
 } else {
     $query .= ' ';
 }
-
 $query1 = '';
 if ($_POST['length'] != -1) {
     $query1 = " LIMIT " . $_POST['start'] . ", " . $_POST['length'];
@@ -166,9 +164,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['loan_category_creation_name'];
-    $sub_array[] = $row['sub_category'];
     $sub_array[] = moneyFormatIndia($row['loan_amt']);
     $sub_array[] = $row['user_type'];
     $sub_array[] = $row['user_name'];

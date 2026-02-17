@@ -119,7 +119,7 @@ function loanIssueReportTable(){
 
             // Array of column indices to sum
    
-            var columnsToSum = [22, 23, 24, 25, 26, 27, 28, 29];
+            var columnsToSum = [20, 21, 22, 23, 24, 25, 26, 27];
             // Loop through each column index
             columnsToSum.forEach(function (colIndex) {
                 // Total over all pages for the current column

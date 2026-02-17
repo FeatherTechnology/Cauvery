@@ -97,7 +97,7 @@ SELECT * FROM (
     SELECT 
         ac.ag_name,
         c.created_date AS tdate,
-        c.cus_name AS details,
+        CONCAT(c.first_name,' ',c.last_name) AS details,
         c.total_paid_track AS coll_amt,
         0 AS netcash,
         0 AS Credit,
@@ -112,7 +112,7 @@ SELECT * FROM (
     SELECT 
         ac.ag_name,
         c.created_date AS tdate,
-        acp.cus_name AS details,
+        CONCAT(acp.first_name,' ',acp.last_name) AS details,
         0 AS coll_amt,
         (IFNULL(c.cash,0) + IFNULL(c.cheque_value,0) + IFNULL(c.transaction_value,0)) AS netcash,
         0 AS Credit,

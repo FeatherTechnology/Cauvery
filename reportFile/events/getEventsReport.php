@@ -28,24 +28,21 @@ $where  .= $user_based;
 $column = array(
     'ep.id',
     'e.event_name',
-    'ep.name',
+    'ep.first_name',
     'ep.mobile_num',
     'alc.area_name',
-    'slc.sub_area_name',
     'u.fullname',
     'ep.event_created_date'
 );
 
 $query = "SELECT 
-    ep.event_created_date ,ep.name ,ep.mobile_num ,ep.area ,ep.sub_area ,ep.insert_login_id ,e.event_name ,alc.area_name ,slc.sub_area_name ,u.fullname
+    ep.event_created_date,CONCAT(ep.first_name,' ',ep.last_name) as name,ep.mobile_num ,ep.area,ep.insert_login_id ,e.event_name ,alc.area_name,u.fullname
 FROM 
     event_promotion ep
 LEFT JOIN 
     events e ON e.id = ep.event_id
 LEFT JOIN 
     area_list_creation alc ON ep.area = alc.area_id
-LEFT JOIN 
-    sub_area_list_creation slc ON ep.sub_area = slc.sub_area_id
 LEFT JOIN 
     user u ON u.user_id = ep.insert_login_id
 WHERE $where ";
@@ -54,10 +51,9 @@ if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
 
         $query .= " and (e.event_name LIKE '%" . $_POST['search'] . "%' OR
-                ep.name LIKE '%" . $_POST['search'] . "%' OR
+                CONCAT(ep.first_name,' ',ep.last_name) LIKE '%" . $_POST['search'] . "%' OR
                 ep.mobile_num LIKE '%" . $_POST['search'] . "%' OR
                 alc.area_name LIKE '%" . $_POST['search'] . "%' OR
-                slc.sub_area_name LIKE '%" . $_POST['search'] . "%' OR
                 ep.event_created_date LIKE '%" . $_POST['search'] . "%' OR
                 u.fullname LIKE '%" . $_POST['search'] . "%' ) ";
     }
@@ -97,7 +93,6 @@ foreach ($result as $row) {
     $sub_array[] = $row['name'];
     $sub_array[] = $row['mobile_num'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['fullname'];
     $sub_array[] = date('d-m-Y', strtotime($row['event_created_date']));
 

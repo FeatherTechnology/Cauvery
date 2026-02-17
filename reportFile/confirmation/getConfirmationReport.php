@@ -11,28 +11,29 @@ if (isset($_SESSION["userid"])) {
 $user_based = "";
 
 if ($userid != 1) {
-
-    $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid ");
+     $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid ");
     $rowuser = $userQry->fetch();
     $line_id = $rowuser['line_id'];
     $report_access = $rowuser['report_access'];
 
     if ($report_access == '1') {
-        $line_id = explode(',', $line_id);
-        $sub_area_list = array();
-        foreach ($line_id as $line) {
-            $lineQry = $connect->query("SELECT sub_area_id FROM area_line_mapping where map_id = $line ");
-            $row_sub = $lineQry->fetch();
-            $sub_area_list[] = $row_sub['sub_area_id'];
+         $line_ids = explode(',', $line_id);
+        $area_list_array = [];
+        foreach ($line_ids as $line) {
+            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
+            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
+                $area_list_array[] = $row_sub['area_id'];
+            }
         }
-        $sub_area_ids = array();
-        foreach ($sub_area_list as $subarray) {
-            $sub_area_ids = array_merge($sub_area_ids, explode(',', $subarray));
+        $area_ids = [];
+        foreach ($area_list_array as $subarray) {
+            $area_ids = array_merge($area_ids, explode(',', $subarray));
         }
-        $sub_area_list = array();
-        $sub_area_list = implode(',', $sub_area_ids);
 
-        $user_based = " AND cp.area_confirm_subarea IN ($sub_area_list) AND c.insert_login_id = '$userid' ";
+        $area_ids = array_unique($area_ids);
+        $area_list = implode(',', $area_ids);
+
+        $user_based = " AND cp.area_confirm_area IN ($area_list) AND cf.insert_login_id = '$userid' ";
     }
 }
 
@@ -58,7 +59,7 @@ $column = array(
     'ii.updated_date',
     'cf.cus_id',
     'cr.autogen_cus_id',
-    'cp.cus_name',
+    'cp.first_name',
     'cf.mobile',
     'cf.person_type',
     'cf.person_name',
@@ -78,7 +79,7 @@ $query = "SELECT
     ii.updated_date AS loan_date,
     cf.cus_id,
     cr.autogen_cus_id,
-    cp.cus_name,
+    CONCAT(cp.first_name,' ',cp.last_name) As cus_name,
     cf.mobile,
     cf.person_type,
     cf.person_name,
@@ -103,10 +104,8 @@ JOIN
     customer_register cr ON ii.cus_id = cr.cus_id
 JOIN 
     area_list_creation al ON cp.area_confirm_area = al.area_id
-JOIN 
-    sub_area_list_creation sal ON cp.area_confirm_subarea = sal.sub_area_id
-JOIN
-    area_line_mapping alm ON FIND_IN_SET(al.area_id, alm.area_id)
+JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+ JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
 WHERE 1
     $where ";
 
@@ -116,7 +115,7 @@ if (isset($_POST['search'])) {
             ii.loan_id LIKE '%" . $_POST['search'] . "%' OR
             cf.cus_id LIKE '%" . $_POST['search'] . "%' OR
             cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR
-            cp.cus_name LIKE '%" . $_POST['search'] . "%' OR
+            CONCAT(cp.first_name,' ',cp.last_name) LIKE '%" . $_POST['search'] . "%' OR
             cf.mobile LIKE '%" . $_POST['search'] . "%' OR
             cf.status LIKE '%" . $_POST['search'] . "%' OR
             cf.sub_status LIKE '%" . $_POST['search'] . "%' OR

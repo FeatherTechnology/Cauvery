@@ -22,12 +22,11 @@ $column = array(
     'np.id',
     'np.cus_id',
     'cp.autogen_cus_id',
-    'COALESCE(cp.customer_name, ncp.cus_name)',
+    'COALESCE(cp.first_name, ncp.first_name)',
     'np.created_date',
     'np.created_date',
     'COALESCE(cp.mobile1, ncp.mobile)',
     'COALESCE(al.area_name, ncp.area)',
-    'COALESCE(sl.sub_area_name, ncp.sub_area)',
     'bc.branch_name',
     'agm.group_name',
     'alm.line_name',
@@ -47,10 +46,9 @@ $query = "SELECT
     np.remark, 
     u.role,
     u.fullname,
-    COALESCE(cp.customer_name, ncp.cus_name) AS customer_name,
+    COALESCE(cp.first_name, ncp.first_name) AS customer_name,
     COALESCE(cp.mobile1, ncp.mobile) AS mobile1,
     COALESCE(al.area_name, ncp.area) AS area_name,
-    COALESCE(sl.sub_area_name, ncp.sub_area) AS sub_area_name,
     bc.branch_name, 
     agm.group_name, 
     alm.line_name, 
@@ -66,12 +64,14 @@ LEFT JOIN
     new_cus_promo ncp ON np.cus_id = ncp.cus_id
 LEFT JOIN 
     area_list_creation al ON al.area_id = COALESCE(cp.area, ncp.area)
-LEFT JOIN 
-    sub_area_list_creation sl ON   sl.sub_area_id = COALESCE(cp.sub_area, ncp.sub_area) 
-LEFT JOIN 
-    area_group_mapping agm ON FIND_IN_SET(sl.sub_area_id, agm.sub_area_id) 
-LEFT JOIN 
-    area_line_mapping alm ON FIND_IN_SET(sl.sub_area_id, alm.sub_area_id) 
+
+LEFT JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
+
+LEFT JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id  
+
+LEFT JOIN area_line_mapping_area alma ON alma.area_id = al.area_id  
+
+LEFT JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
 LEFT JOIN 
     branch_creation bc ON agm.branch_id = bc.branch_id  
 
@@ -82,9 +82,8 @@ if (isset($_POST['search'])) {
         $query .= " and (np.created_date LIKE '%" . $_POST['search'] . "%' OR
             np.cus_id LIKE '%" . $_POST['search'] . "%' OR
             cp.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR
-            COALESCE(cp.customer_name, ncp.cus_name) LIKE '%" . $_POST['search'] . "%' OR
+             COALESCE(cp.first_name, ncp.first_name) LIKE '%" . $_POST['search'] . "%' OR
             COALESCE(al.area_name, ncp.area) LIKE '%" . $_POST['search'] . "%' OR
-            COALESCE(sl.sub_area_name, ncp.sub_area) LIKE '%" . $_POST['search'] . "%' OR
             bc.branch_name LIKE '%" . $_POST['search'] . "%' OR
             agm.group_name LIKE '%" . $_POST['search'] . "%' OR
             alm.line_name LIKE '%" . $_POST['search'] . "%' OR
@@ -133,7 +132,6 @@ foreach ($result as $row) {
     $sub_array[] = date('h:i:s A', strtotime($row['created_date']));
     $sub_array[] = $row['mobile1'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line_name'];
