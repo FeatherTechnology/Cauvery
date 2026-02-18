@@ -39,7 +39,8 @@ if (sizeof($getCustomerReg) > 0) {
 		$req_id					= $getCustomerReg['req_id'];
 		$cus_id					= $getCustomerReg['cus_id'];
 		$autogen_cus_id			= $getCustomerReg['autogen_cus_id'];
-		$cus_name				= $getCustomerReg['cus_name'];
+		$first_name				= $getCustomerReg['first_name'];
+		$last_name				= $getCustomerReg['last_name'];
 		$dob					= $getCustomerReg['dob'];
 		$age					= $getCustomerReg['age'];
 		$gender					= $getCustomerReg['gender'];
@@ -47,7 +48,6 @@ if (sizeof($getCustomerReg) > 0) {
 		$district				= $getCustomerReg['district'];
 		$taluk					= $getCustomerReg['taluk'];
 		$area					= $getCustomerReg['area'];
-		$sub_area				= $getCustomerReg['sub_area'];
 		$address				= $getCustomerReg['address'];
 		$mobile1				= $getCustomerReg['mobile1'];
 		$mobile2				= $getCustomerReg['mobile2'];
@@ -86,12 +86,10 @@ if (sizeof($getCustomerReg) > 0) {
 		$area_confirm_district 		= $getCustomerReg['area_confirm_district'];
 		$area_confirm_taluk 		= $getCustomerReg['area_confirm_taluk'];
 		$area_confirm_area 			= $getCustomerReg['area_confirm_area'];
-		$area_confirm_subarea 		= $getCustomerReg['area_confirm_subarea'];
 		$latlong 		= $getCustomerReg['latlong'];
 		$area_group 				= $getCustomerReg['area_group'];
 		$area_line 					= $getCustomerReg['area_line'];
 		$area_name 					= $getCustomerReg['area_name'];
-		$sub_area_name 					= $getCustomerReg['sub_area_name'];
 	}
 
 	$cp_whatsapp = $whatsapp ?? $whatsapp_no;
@@ -201,15 +199,10 @@ if (sizeof($getCustomerReg) > 0) {
 </div><br>
 <div class="page-header sticky-top" id="navbar" style="display: none;" data-toggle="toggle">
 	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
-		Customer Name - <?php if (isset($cus_name)) {
-							echo $cus_name;
-						} ?>
+		Customer Name - <?php if (isset($first_name) && isset($last_name)) { echo $first_name . ' ' . $last_name; } ?>
 		,&nbsp;&nbsp;Area - <?php if (isset($area_name)) {
 								echo $area_name;
 							} ?>
-		,&nbsp;&nbsp;Sub Area - <?php if (isset($sub_area_name)) {
-									echo $sub_area_name;
-								} ?>
 	</div>
 </div><br>
 <div class="text-right" style="margin-right: 25px;">
@@ -268,9 +261,6 @@ if (sizeof($getCustomerReg) > 0) {
 			<input type="hidden" name="area_upd" id="area_upd" value="<?php if (isset($area)) {
 																			echo $area;
 																		} ?>" />
-			<input type="hidden" name="sub_area_upd" id="sub_area_upd" value="<?php if (isset($sub_area)) {
-																					echo $sub_area;
-																				} ?>" />
 			<input type="hidden" name="guarentor_name_upd" id="guarentor_name_upd" value="" />
 
 			<input type="hidden" name="area_state_upd" id="area_state_upd" value="<?php if (isset($area_confirm_state)) {
@@ -284,9 +274,6 @@ if (sizeof($getCustomerReg) > 0) {
 																					} ?>" />
 			<input type="hidden" name="area_confirm_area" id="area_confirm_area" value="<?php if (isset($area_confirm_area)) {
 																							echo $area_confirm_area;
-																						} ?>" />
-			<input type="hidden" name="sub_area_confirm" id="sub_area_confirm" value="<?php if (isset($area_confirm_subarea)) {
-																							echo $area_confirm_subarea;
 																						} ?>" />
 
 			<input type="hidden" class="form-control" value="<?php if (isset($marital)) echo $marital; ?>" id="marital_upd" name="marital_upd">
@@ -322,11 +309,17 @@ if (sizeof($getCustomerReg) > 0) {
 										</div>
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 											<div class="form-group">
-												<label for="cus_name">Customer Name</label><span class="required">&nbsp;*</span>
-												<input type="text" class="form-control" id="cus_name" name="cus_name" value='<?php if (isset($cus_name)) {
-																																	echo $cus_name;
-																																} ?>' tabindex='3' placeholder="Enter Customer Name" pattern="[a-zA-Z\s]+">
-												<span class="text-danger" style='display:none' id='cusnameCheck'>Please Enter Customer Name</span>
+												<label for="first_name">First Name</label><span class="required">&nbsp;*</span>
+													<input type="text" class="form-control" id="first_name" name="first_name" oninput="formatFirstName(this)" value='<?php if (isset ($first_name)) {echo $first_name; } ?>' tabindex='3' placeholder="Enter First Name">
+												<span class="text-danger" style='display:none' id='firstnameCheck'>Please Enter First Name</span>
+											</div>
+										</div>
+										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
+											<div class="form-group">
+												<label for="last_name">Last Name</label><span class="required">&nbsp;*</span>
+												<input type="text" class="form-control" id="last_name" name="last_name" oninput="formatLastName(this)" value='<?php if 
+												(isset($last_name)) { echo $last_name; } ?>' tabindex='4' placeholder="Enter Last Name">
+												<span class="text-danger" style='display:none' id='lastnameCheck'>Please Enter Last Name</span>
 											</div>
 										</div>
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
@@ -398,15 +391,6 @@ if (sizeof($getCustomerReg) > 0) {
 
 												</select>
 												<span class="text-danger" style='display:none' id='areaCheck'>Please Select Area</span>
-											</div>
-										</div>
-										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
-											<div class="form-group">
-												<label for="sub_area">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-												<select tabindex="11" type="text" class="form-control" id="sub_area" name="sub_area">
-													<option value=''>Select Sub Area</option>
-												</select>
-												<span class="text-danger" style='display:none' id='subareaCheck'>Please Select Sub Area</span>
 											</div>
 										</div>
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
@@ -806,15 +790,6 @@ if (sizeof($getCustomerReg) > 0) {
 									</div>
 								</div>
 
-								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-									<div class="form-group">
-										<label for="area_sub_area">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-										<select tabindex="43" type="text" class="form-control" id="area_sub_area" name="area_sub_area">
-											<option value=''>Select Sub Area</option>
-										</select>
-										<span class="text-danger" style='display:none' id='areasubareaCheck'>Please Enter Sub Area </span>
-									</div>
-								</div>
 								<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12">
 									<div class="form-group">
 										<label for="latlong">Location</label>
@@ -1186,8 +1161,15 @@ if (sizeof($getCustomerReg) > 0) {
 
 							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 								<div class="form-group">
-									<label for="Customer_name"> Customer Name </label> <span class="required"> * </span>
-									<input type="text" class="form-control" id="Customer_name" name="Customer_name" value='<?php if (isset($cus_name)) echo $cus_name; ?>' readonly tabindex="67">
+									<label for="doc_first_name"> First Name </label> <span class="required"> * </span>
+									<input type="text" class="form-control" id="doc_first_name" name="doc_first_name" value='<?php if (isset($first_name)) echo $first_name; ?>' readonly tabindex="3">
+								</div>
+							</div>
+
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+								<div class="form-group">
+									<label for="doc_last_name"> Last Name </label> <span class="required"> * </span>
+									<input type="text" class="form-control" id="doc_last_name" name="doc_last_name" value='<?php if (isset($last_name)) echo $last_name; ?>' readonly tabindex="4">
 								</div>
 							</div>
 
@@ -1197,14 +1179,6 @@ if (sizeof($getCustomerReg) > 0) {
 									<input tabindex="68" type="text" class="form-control" id="doc_area" name="doc_area" value="<?php if (isset($area_name)) echo $area_name; ?>" readonly>
 								</div>
 							</div>
-
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<div class="form-group">
-									<label for="doc_Sub_Area"> Sub Area </label> <span class="required"> * </span>
-									<input type="text" class="form-control" id="doc_Sub_Area" name="doc_Sub_Area" value='<?php if (isset($sub_area_name)) echo $sub_area_name; ?>' readonly tabindex="69">
-								</div>
-							</div>
-
 
 						</div>
 					</div>
@@ -1783,11 +1757,18 @@ if (sizeof($getCustomerReg) > 0) {
 				<div class="row" id="editFam">
 
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-
 						<div class="form-group">
-							<label class="label"> Name </label>&nbsp;<span class="text-danger">*</span>
-							<input type="text" class="form-control" name="famname" id="famname" onkeydown="return /[a-z ]/i.test(event.key)" placeholder="Enter Name" tabindex='1'>
-							<span class="text-danger" id="famnameCheck" style='display:none'>Enter Name</span>
+							<label class="label"> First Name </label>&nbsp;<span class="text-danger">*</span>
+							<input type="text" class="form-control" name="fam_first_name" id="fam_first_name" oninput="formatFirstName(this)" tabindex='1' placeholder="Enter First Name">
+							<span class="text-danger" id="famFirstnameCheck" style='display:none'>Enter First Name</span>
+						</div>
+					</div>
+
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+						<div class="form-group">
+							<label class="label"> Last Name </label>&nbsp;<span class="text-danger">*</span>
+							<input type="text" class="form-control" name="fam_last_name" id="fam_last_name" oninput="formatLastName(this)" tabindex='1' placeholder="Enter Last Name">
+							<span class="text-danger" id="famLastnameCheck" style='display:none'>Enter Last Name</span>
 						</div>
 					</div>
 
@@ -3102,8 +3083,14 @@ if (sizeof($getCustomerReg) > 0) {
 						</div>
 						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 							<div class="form-group">
-								<label for="cus_name_old">Customer Name</label>
-								<input type="text" class="form-control" id="cus_name_old" name="cus_name_old" value="<?php echo $cus_name; ?>" readonly tabindex='2'>
+								<label for="first_name_old">First Name</label>
+								<input type="text" class="form-control" id="first_name_old" name="first_name_old" value="<?php echo $first_name; ?>" readonly tabindex='1'>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+							<div class="form-group">
+								<label for="last_name_old">Last Name</label>
+								<input type="text" class="form-control" id="last_name_old" name="last_name_old" value="<?php echo $last_name; ?>" readonly tabindex='1'>
 							</div>
 						</div>
 						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
@@ -3123,23 +3110,9 @@ if (sizeof($getCustomerReg) > 0) {
 						</div>
 						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 							<div class="form-group">
-								<label for="sub_area_old">Sub Area</label><span class="required">&nbsp;*</span>
-								<input type="text" class="form-control" id="sub_area_old" name="sub_area_old" value="" placeholder="Enter Sub Area Name" tabindex="5">
-								<span class="text-danger" id="sub_area_oldCheck" style='display:none'> Please Enter Sub Area Name </span>
-							</div>
-						</div>
-						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-							<div class="form-group">
 								<label for="loan_cat_old">Loan Category</label><span class="required">&nbsp;*</span>
 								<input type="text" class="form-control" id="loan_cat_old" name="loan_cat_old" placeholder="Enter Loan Category" tabindex="6">
 								<span class="text-danger" id="loan_cat_oldCheck" style='display:none'> Please Enter Loan Category </span>
-							</div>
-						</div>
-						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-							<div class="form-group">
-								<label for="sub_cat_old">Sub Category</label><span class="required">&nbsp;*</span>
-								<input type="text" class="form-control" id="sub_cat_old" name="sub_cat_old" placeholder="Enter Sub Category" tabindex="7">
-								<span class="text-danger" id="sub_cat_oldCheck" style='display:none'> Please Enter Sub Category </span>
 							</div>
 						</div>
 						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">

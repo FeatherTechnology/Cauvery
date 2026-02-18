@@ -59,8 +59,7 @@ $(document).ready(function () {
 
     $('#area').change(function () {
         var areaselected = $('#area').val();
-        var sub_area_upd = '';
-        getAreaBasedSubArea(areaselected, sub_area_upd, '#sub_area');
+        getGroupandLine(areaselected)
     })
 
     //Area Confirm Card.
@@ -86,13 +85,7 @@ $(document).ready(function () {
 
     $('#area_confirm').change(function () {
         var areaselected = $(this).val();
-        var sub_area_upd = '';
-        getAreaBasedSubArea(areaselected, sub_area_upd, '#area_sub_area');
-    })
-
-    $('#area_sub_area').change(function () {
-        var sub_area_id = $(this).val();
-        getGroupandLine(sub_area_id);
+        getGroupandLine(areaselected)
     })
 
     $('#getlatlong').click(function () {
@@ -760,9 +753,6 @@ $(function () {
         callCustomerProfileFunctn(); getDocumentHistory();
 
     }
-    nameFormatter('#cus_name');
-    nameFormatter('#famname');
-
 }); //OnLoad function.
 
 function callCustomerProfileFunctn() {
@@ -779,7 +769,9 @@ function callCustomerProfileFunctn() {
     getCustomerLoanCounts();//to get closed customer details
 
     var cus_id = $('#cus_id').val();
-    var cus_name = $('#cus_name').val();
+    var first_name = $("#first_name").val();
+    var last_name = $("#last_name").val();
+    var cus_name = first_name + " " + last_name;
     if (cus_name != '' && cus_id != '') {
         getFingerPrintDetails(cus_id, cus_name);
     }
@@ -801,12 +793,6 @@ function callCustomerProfileFunctn() {
         getTalukBasedArea(taluk_upd, area_upd, '#area');
     }
 
-    var area_upd = $('#area_upd').val();
-    if (area_upd != '') {
-        var sub_area_upd = $('#sub_area_upd').val();
-        getAreaBasedSubArea(area_upd, sub_area_upd, '#sub_area');
-    }
-
     //Area Confirm Details.
     var area_state_upd = $('#area_state_upd').val();
     if (area_state_upd != '') {
@@ -824,12 +810,6 @@ function callCustomerProfileFunctn() {
     if (area_taluk_upd != '') {
         var area_upd = $('#area_confirm_area').val();
         getTalukBasedArea(area_taluk_upd, area_upd, '#area_confirm');
-    }
-
-    var area_confirm_area = $('#area_confirm_area').val();
-    if (area_confirm_area != '') {
-        var sub_area_upd = $('#sub_area_confirm').val();
-        getAreaBasedSubArea(area_confirm_area, sub_area_upd, '#area_sub_area');
     }
 
     var marital_upd = $('#marital_upd').val();
@@ -909,7 +889,8 @@ function getCustomerLoanCounts() {
 
 $(document).on("click", "#submitFamInfoBtn", function () {
     let cus_id = $('#cus_id').val();
-    let famname = $("#famname").val();
+    let fam_first_name = $("#fam_first_name").val();
+    let fam_last_name = $("#fam_last_name").val();
     let relationship = $("#relationship").val();
     let other_remark = $("#other_remark").val();
     let other_address = $("#other_address").val();
@@ -922,11 +903,11 @@ $(document).on("click", "#submitFamInfoBtn", function () {
     let famTableId = $("#famID").val();
     let authorize = $("#authorize").val();
 
-    if (famname != "" && relationship != "" && relation_aadhar != "" && relation_Mobile != "" && relation_Mobile.length === 10) {
+    if (fam_first_name != "" && fam_last_name != "" && relationship != "" && relation_aadhar != "" && relation_Mobile != "" && relation_Mobile.length === 10) {
         $.ajax({
             url: 'updateFile/update_family_submit.php',
             type: 'POST',
-            data: { "famname": famname, "realtionship": relationship, "other_remark": other_remark, "other_address": other_address, "relation_age": relation_age, "relation_aadhar": relation_aadhar, "relation_Mobile": relation_Mobile, "relation_Occupation": relation_Occupation, "relation_Income": relation_Income, "relation_Blood": relation_Blood, "famTableId": famTableId, "cus_id": cus_id ,"authorize":authorize },
+            data: { "fam_first_name": fam_first_name, "fam_last_name": fam_last_name, "realtionship": relationship, "other_remark": other_remark, "other_address": other_address, "relation_age": relation_age, "relation_aadhar": relation_aadhar, "relation_Mobile": relation_Mobile, "relation_Occupation": relation_Occupation, "relation_Income": relation_Income, "relation_Blood": relation_Blood, "famTableId": famTableId, "cus_id": cus_id ,"authorize":authorize },
             cache: false,
             success: function (response) {
 
@@ -956,10 +937,16 @@ $(document).on("click", "#submitFamInfoBtn", function () {
         });
     }
     else {
-        if (famname == "") {
-            $('#famnameCheck').show();
+        if (fam_first_name == "") {
+            $("#famFirstnameCheck").show();
         } else {
-            $('#famnameCheck').hide();
+            $("#famFirstnameCheck").hide();
+        }
+
+        if (fam_last_name == "") {
+            $("#famLastnameCheck").show();
+        } else {
+            $("#famLastnameCheck").hide();
         }
 
         if (relationship == "") {
@@ -1007,7 +994,8 @@ function resetFamInfo() {
             $("#updatedFamTable").empty();
             $("#updatedFamTable").html(html);
 
-            $("#famname").val('');
+            $("#fam_first_name").val('');
+            $("#fam_last_name").val('');
             $("#relationship").val('');
             $("#authorize").val('');
             $("#other_remark").val('');
@@ -1025,7 +1013,9 @@ function resetFamInfo() {
 
 function resetFamDetails() {
     let cus_id = $('#cus_id').val();
-    let cus_name = $('#cus_name').val();
+    var first_name = $("#first_name").val();
+    var last_name = $("#last_name").val();
+    var cus_name = first_name + " " + last_name;
 
     $.ajax({
         url: 'verificationFile/verification_fam_list.php',
@@ -1052,7 +1042,8 @@ $("body").on("click", "#verification_fam_edit", function () {
         success: function (result) {
 
             $("#famID").val(result['id']);
-            $("#famname").val(result['fname']);
+            $("#fam_first_name").val(result["first_name"]);
+            $("#fam_last_name").val(result["last_name"]);
             $("#relationship").val(result['relation']);
             $("#authorize").val(result['authorize']);
             $("#other_remark").val(result['remark']);
@@ -1071,7 +1062,8 @@ $("body").on("click", "#verification_fam_edit", function () {
                 $('#remark').hide();
                 $('#address').hide();
             }
-            $('#famnameCheck').hide(); $('#famrelationCheck').hide(); $('#famremarkCheck').hide(); $('#famaddressCheck').hide(); $('#famageCheck').hide(); $('#famaadharCheck').hide(); $('#fammobileCheck').hide(); $('#famoccCheck').hide(); $('#famincomeCheck').hide();
+            $("#famFirstnameCheck").hide(); $("#famLastnameCheck").hide(); $('#famrelationCheck').hide(); $('#famremarkCheck').hide(); $('#famaddressCheck').hide(); 
+            $('#famageCheck').hide(); $('#famaadharCheck').hide(); $('#fammobileCheck').hide(); $('#famoccCheck').hide(); $('#famincomeCheck').hide();
         }
     });
 
@@ -2214,34 +2206,11 @@ function getTalukBasedArea(talukselected, area_upd, area) {
     });
 }
 
-//Get Area Based Sub Area
-function getAreaBasedSubArea(area, sub_area_upd, sub_area) {
-
-    $.ajax({
-        url: 'requestFile/ajaxGetEnabledSubArea.php',
-        type: 'post',
-        data: { 'area': area },
-        dataType: 'json',
-        success: function (response) {
-
-            $(sub_area).empty();
-            $(sub_area).append("<option value='' >Select Sub Area</option>");
-            for (var i = 0; i < response.length; i++) {
-                var selected = '';
-                if (sub_area_upd != undefined && sub_area_upd != '' && sub_area_upd == response[i]['sub_area_id']) {
-                    selected = 'selected';
-                }
-                $(sub_area).append("<option value='" + response[i]['sub_area_id'] + "' " + selected + ">" + response[i]['sub_area_name'] + " </option>");
-            }
-        }
-    });
-}
-
-function getGroupandLine(sub_area_id) {
+function getGroupandLine(area_id) {
 
     $.ajax({
         url: 'verificationFile/getGroupandLine.php',
-        data: { 'sub_area_id': sub_area_id },
+        data: { 'area_id': area_id },
         dataType: 'json',
         type: 'post',
         cache: false,
@@ -2251,30 +2220,6 @@ function getGroupandLine(sub_area_id) {
         }
     })
 }
-
-$('#cus_loan_limit').change(function () { /// Loan Limit will Check the Loan Amount in Request Loan Category./////
-    let loanLimit = parseInt($(this).val().replace(/,/g, ''));
-    let loanSubCat = $('#loan_sub_cat').val();
-
-    $.ajax({
-        type: 'POST',
-        url: 'verificationFile/check_loan_limit.php',
-        data: { 'loan_sub_id': loanSubCat },
-        dataType: 'json',
-        success: function (response) {
-            if (loanLimit > parseInt(response)) {
-                alert("Kindly Enter Loan Limit Lesser Than Loan Amount " + response);
-                $('#cus_loan_limit').val('');
-                return false;
-            }
-        }
-    })
-
-
-
-})
-
-
 
 //Customer Feedback Modal 
 
@@ -2428,13 +2373,13 @@ $('#submit_update_cus_profile').click(function () {
 function validation() {
     var cus_id = $('#cus_id').val(); var cus_name = $('#cus_name').val(); var dob = $('#dob').val(); var gender = $('#gender').val(); var state = $('#state').val();
     var cus_image = $('#cus_image').val(); var pic = $('#pic').val();
-    var district = $('#district').val(); var taluk = $('#taluk').val(); var area = $('#area').val(); var sub_area = $('#sub_area').val(); var cus_address = $('#cus_address').val();
+    var district = $('#district').val(); var taluk = $('#taluk').val(); var area = $('#area').val(); var cus_address = $('#cus_address').val();
     var mobile1 = $('#mobile1').val(); var mobile2 = $('#mobile2').val(); var father_name = $('#father_name').val(); var mother_name = $('#mother_name').val(); var marital = $('#marital').val();
     var occupation_type = $('#occupation_type').val(); var occupation = $('#occupation').val(); var area_cnfrm = $('#area_cnfrm').val(); var cus_res_type = $('#cus_res_type').val();
     var cus_res_details = $('#cus_res_details').val(); var cus_res_address = $('#cus_res_address').val(); var cus_res_native = $('#cus_res_native').val();
     var cus_occ_type = $('#cus_occ_type').val(); var cus_occ_detail = $('#cus_occ_detail').val(); var cus_occ_income = $('#cus_occ_income').val(); var cus_occ_address = $('#cus_occ_address').val(); var cus_occ_dow = $('#cus_occ_dow').val(); var cus_occ_abt = $('#cus_occ_abt').val();
     var area_state = $('#area_state').val(); var area_district = $('#area_district').val(); var area_taluk = $('#area_taluk').val();
-    var area_confirm = $('#area_confirm').val(); var area_sub_area = $('#area_sub_area').val();
+    var area_confirm = $('#area_confirm').val();
     var cus_how_know = $('#cus_how_know').val(); var cus_monthly_income = $('#cus_monthly_income').val(); var cus_other_income = $('#cus_other_income').val(); var cus_support_income = $('#cus_support_income').val(); var cus_Commitment = $('#cus_Commitment').val(); var cus_monDue_capacity = $('#cus_monDue_capacity').val(); var cus_loan_limit = $('#cus_loan_limit').val(); var about_cus = $('#about_cus').val();
     var guarentor_name = $('#guarentor_name').val(); var guarentor_image = $('#guarentor_image').val(); var guarentorpic = $('#guarentorpic').val(); var loan_id = $('#loan_id').val(); var validation = true;
 
@@ -2493,13 +2438,6 @@ function validation() {
         $('#areaCheck').show();
     } else {
         $('#areaCheck').hide();
-    }
-    if (sub_area == '') {
-        event.preventDefault();
-        validation = false;
-        $('#subareaCheck').show();
-    } else {
-        $('#subareaCheck').hide();
     }
     if (cus_address == '') {
         event.preventDefault();
@@ -2611,13 +2549,6 @@ function validation() {
         $('#areaconfirmCheck').show();
     } else {
         $('#areaconfirmCheck').hide();
-    }
-    if (area_sub_area == '') {
-        event.preventDefault();
-        validation = false;
-        $('#areasubareaCheck').show();
-    } else {
-        $('#areasubareaCheck').hide();
     }
     if (cus_how_know == '') {
         event.preventDefault();
@@ -4607,11 +4538,10 @@ function submitDocument(req_id, cus_id) {
 
 function OldCusValidation() {
     let response = true;
-    let mobile_old = $('#mobile_old').val(); let area_old = $('#area_old').val(); let sub_area_old = $('#sub_area_old').val(); let loan_cat_old = $('#loan_cat_old').val(); let sub_cat_old = $('#sub_cat_old').val();
+    let mobile_old = $('#mobile_old').val(); let area_old = $('#area_old').val(); let loan_cat_old = $('#loan_cat_old').val(); let sub_cat_old = $('#sub_cat_old').val();
     let loan_amt_old = $('#loan_amt_old').val(); let due_chart_old = $('#due_chart_old').val();
 
     validateField(area_old, "area_old");
-    validateField(sub_area_old, "sub_area_old");
     validateField(loan_cat_old, "loan_cat_old");
     validateField(sub_cat_old, "sub_cat_old");
     validateField(loan_amt_old, "loan_amt_old");

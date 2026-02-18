@@ -39,7 +39,8 @@ if (sizeof($getRequestData) > 0) {
 		$dor						= date('d-m-Y', strtotime($getRequestData['dor']));
 		$cus_id						= $getRequestData['cus_id'];
 		$cus_data					= $getRequestData['cus_data'];
-		$cus_name					= $getRequestData['cus_name'];
+		$first_name					= $getRequestData['first_name'];
+		$last_name					= $getRequestData['last_name'];
 		$dob						= $getRequestData['dob'];
 		$age						= $getRequestData['age'];
 		$gender						= $getRequestData['gender'];
@@ -47,12 +48,10 @@ if (sizeof($getRequestData) > 0) {
 		$mobile2					= $getRequestData['mobile2'];
 		$pic						= $getRequestData['pic'];
 		$loan_category				= $getRequestData['loan_category'];
-		$sub_category				= $getRequestData['sub_category'];
 		$tot_value					= $getRequestData['tot_value'];
 		$ad_amt						= $getRequestData['ad_amt'];	
 		$loan_amt					= $getRequestData['loan_amt'];
 		$area_nameforhead 			= $getRequestData['area_name'];
-		$sub_area_nameforhead 		= $getRequestData['sub_area_name'];
 		$agent_name 				= $getRequestData['agent_name'];
 	}
 }
@@ -87,7 +86,6 @@ if (sizeof($getCustomerProfile) > 0) {
 	$area_confirm_district = $getCustomerProfile['area_confirm_district'];
 	$area_confirm_taluk = $getCustomerProfile['area_confirm_taluk'];
 	$area_confirm_area = $getCustomerProfile['area_confirm_area'];
-	$area_confirm_subarea = $getCustomerProfile['area_confirm_subarea'];
 	$latlong = $getCustomerProfile['latlong'];
 	$area_group = $getCustomerProfile['area_group'];
 	$area_line = $getCustomerProfile['area_line'];
@@ -113,9 +111,9 @@ $getcusInfoForDoc = $userObj->getAckcusInfoForDoc($mysqli, $idupd);
 if (sizeof($getcusInfoForDoc) > 0) {
 	$cus_profile_id = $getcusInfoForDoc['cus_profile_id'];
 	$doc_cus_id = $getcusInfoForDoc['cus_id'];
-	$doc_cus_name = $getcusInfoForDoc['cus_name'];
+	$doc_first_name = $getcusInfoForDoc['first_name'];
+	$doc_last_name = $getcusInfoForDoc['last_name'];
 	$doc_area_name = $getcusInfoForDoc['area_name'];
-	$doc_sub_area_name = $getcusInfoForDoc['sub_area_name'];
 }
 
 ////   Documentation ////////////
@@ -179,7 +177,6 @@ if (sizeof($getLoanCalculation) > 0) {
 	for ($i = 0; $i < sizeof($getLoanCalculation); $i++) {
 		$loan_cal_id = $getLoanCalculation['loan_cal_id'];
 		$loan_category_lc = $getLoanCalculation['loan_category'];
-		$sub_category_lc = $getLoanCalculation['sub_category'];
 		$tot_value_lc = $getLoanCalculation['tot_value'];
 		$ad_amt_lc = $getLoanCalculation['ad_amt'];
 		$loan_amt_lc = $getLoanCalculation['loan_amt'];
@@ -294,15 +291,10 @@ if (sizeof($getLoanCalculation) > 0) {
 </div><br>
 <div class="page-header sticky-top" id="navbar" style="display: none;" data-toggle="toggle">
 	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
-		Customer Name - <?php if (isset($cus_name)) {
-							echo $cus_name;
-						} ?>
+		Customer Name - <?php if (isset($first_name) && isset($last_name)) { echo $first_name . ' ' . $last_name; } ?>
 		,&nbsp;&nbsp;Area - <?php if (isset($area_nameforhead)) {
 								echo $area_nameforhead;
 							} ?>
-		,&nbsp;&nbsp;Sub Area - <?php if (isset($sub_area_nameforhead)) {
-									echo $sub_area_nameforhead;
-								} ?>
 	</div>
 </div><br>
 <div class="text-right" style="margin-right: 25px;">
@@ -325,9 +317,6 @@ if (sizeof($getLoanCalculation) > 0) {
 			<input type="hidden" name="req_id" id="req_id" value="<?php if (isset($req_id)) {
 																		echo $req_id;
 																	} ?>" />
-			<input type="hidden" name="loan_sub_cat" id="loan_sub_cat" value="<?php if (isset($sub_category)) {
-																					echo $sub_category;
-																				} ?>" />
 			<input type="hidden" name="guarentor_name_upd" id="guarentor_name_upd" value="<?php if (isset($guarentor_name)) {
 																								echo $guarentor_name;
 																							} ?>" />
@@ -343,9 +332,6 @@ if (sizeof($getLoanCalculation) > 0) {
 			<input type="hidden" name="area_upd" id="area_upd" value="<?php if (isset($area_confirm_area)) {
 																			echo $area_confirm_area;
 																		} ?>" />
-			<input type="hidden" name="sub_area_upd" id="sub_area_upd" value="<?php if (isset($area_confirm_subarea)) {
-																					echo $area_confirm_subarea;
-																				} ?>" />
 			<input type="hidden" name="verification_person_upd" id="verification_person_upd" value="<?php if (isset($verification_person)) {
 																										echo $verification_person;
 																									} ?>" />
@@ -446,10 +432,17 @@ if (sizeof($getLoanCalculation) > 0) {
 
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 											<div class="form-group">
-												<label for="cus_name">Customer Name</label><span class="required">&nbsp;*</span>
-												<input type="text" class="form-control" id="cus_name" name="cus_name"  placeholder="Enter Customer Name" onkeydown="return /[a-z ]/i.test(event.key)" value='<?php if (isset($cus_name)) {
-																																																								echo $cus_name;
-																																																							} ?>'>
+												<label for="first_name">First Name</label><span class="required">&nbsp;*</span>
+												<input type="text" class="form-control" id="first_name" name="first_name" tabindex='10' placeholder="Enter Customer Name"  
+												value='<?php if (isset($first_name)) { echo $first_name; } ?>'>
+											</div>
+										</div>
+
+										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
+											<div class="form-group">
+												<label for="last_name">Last Name</label><span class="required">&nbsp;*</span>
+												<input type="text" class="form-control" id="last_name" name="last_name" tabindex='10' placeholder="Enter Customer Name"  
+												value='<?php if (isset($last_name)) { echo $last_name; } ?>'>
 											</div>
 										</div>
 
@@ -864,14 +857,6 @@ if (sizeof($getLoanCalculation) > 0) {
 									</div>
 								</div>
 
-								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-									<div class="form-group">
-										<label for="disabledInput">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-										<select  type="text" class="form-control" id="sub_area" name="sub_area">
-											<option value=''>Select Sub Area</option>
-										</select>
-									</div>
-								</div>
 								<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12">
 									<div class="form-group">
 										<label for="latlong">Location</label>
@@ -1215,10 +1200,18 @@ if (sizeof($getLoanCalculation) > 0) {
 
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 									<div class="form-group">
-										<label for="CustomerName"> Customer Name </label> <span class="required"> * </span>
-										<input type="text" class="form-control" id="Customer_name" name="Customer_name" value='<?php if (isset($doc_cus_name)) echo $doc_cus_name; ?>' readonly >
+										<label for="doc_first_name"> First Name </label> <span class="required"> * </span>
+										<input type="text" class="form-control" id="doc_first_name" name="doc_first_name" value='<?php if (isset($doc_first_name)) echo $doc_first_name; ?>' readonly tabindex="2">
 									</div>
 								</div>
+
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<div class="form-group">
+										<label for="doc_last_name"> Last Name </label> <span class="required"> * </span>
+										<input type="text" class="form-control" id="doc_last_name" name="doc_last_name" value='<?php if (isset($doc_last_name)) echo $doc_last_name; ?>' readonly tabindex="2">
+									</div>
+								</div>
+
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 responsible" style="display: none">
 									<div class="form-group">
 										<label for="responsible">Responsible&nbsp;<span class="required">&nbsp;*</span></label>
@@ -1247,13 +1240,6 @@ if (sizeof($getLoanCalculation) > 0) {
 									<div class="form-group">
 										<label for="DocArea"> Area </label> <span class="required"> * </span>
 										<input  type="text" class="form-control" id="doc_area" name="doc_area" value="<?php if (isset($doc_area_name)) echo $doc_area_name; ?>" readonly>
-									</div>
-								</div>
-
-								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-									<div class="form-group">
-										<label for="DocSubArea"> Sub Area </label> <span class="required"> * </span>
-										<input type="text" class="form-control" id="doc_Sub_Area" name="doc_Sub_Area" value='<?php if (isset($doc_sub_area_name)) echo $doc_sub_area_name; ?>' readonly >
 									</div>
 								</div>
 
@@ -1723,14 +1709,8 @@ if (sizeof($getLoanCalculation) > 0) {
 			<input type="hidden" name="loan_category_load" id="loan_category_load" value="<?php if (isset($loan_category)) {
 																								echo $loan_category;
 																							} ?>" />
-			<input type="hidden" name="sub_category_load" id="sub_category_load" value="<?php if (isset($sub_category)) {
-																							echo $sub_category;
-																						} ?>" />
 			<input type="hidden" name="loan_category_upd" id="loan_category_upd" value="<?php if (isset($loan_category_lc)) {
 																							echo $loan_category_lc;
-																						} ?>" />
-			<input type="hidden" name="sub_category_upd" id="sub_category_upd" value="<?php if (isset($sub_category_lc)) {
-																							echo $sub_category_lc;
 																						} ?>" />
 			<input type="hidden" name="profit_type_upd" id="profit_type_upd" value="<?php if (isset($profit_type_lc)) {
 																						echo $profit_type_lc;
@@ -1823,14 +1803,6 @@ if (sizeof($getLoanCalculation) > 0) {
 										<input  type="text" class="form-control" id="doc_area" name="doc_area" value="<?php if (isset($doc_area_name)) echo $doc_area_name; ?>" readonly>
 									</div>
 								</div>
-
-								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-									<div class="form-group">
-										<label for="DocSubArea"> Sub Area </label> <span class="required"> * </span>
-										<input type="text" class="form-control" id="doc_Sub_Area" name="doc_Sub_Area" value='<?php if (isset($doc_sub_area_name)) echo $doc_sub_area_name; ?>' readonly >
-									</div>
-								</div>
-
 
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 									<div class="form-group">
@@ -1944,16 +1916,6 @@ if (sizeof($getLoanCalculation) > 0) {
 													<option value="">Select Loan Category</option>
 												</select>
 												<span class="text-danger" style='display:none' id='loancategoryCheck'>Please Select Loan Category</span>
-											</div>
-										</div>
-										<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-											<div class="form-group">
-												<label for="disabledInput">Sub Category</label>&nbsp;<span class="text-danger">*</span>
-												<input type="hidden" class="form-control" id="sub_category_ack" name="sub_category_ack">
-												<select  type="text" class="form-control" id="sub_category" name="sub_category">
-													<option value="">Select Sub Category</option>
-												</select>
-												<span class="text-danger" style='display:none' id='subcategoryCheck'>Please Select Sub Category</span>
 											</div>
 										</div>
 										<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12"></div>

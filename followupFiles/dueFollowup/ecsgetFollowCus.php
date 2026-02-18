@@ -73,9 +73,8 @@ $columns = [
     'cp.id',
     'cp.cus_id',
     'cr.autogen_cus_id',
-    'cp.cus_name',
+    'CONCAT(cp.first_name, cp.last_name)',
     'alc.area_name',
-    'salc.sub_area_name',
     'bc.branch_name',
     'alm.line_name',
     'cp.mobile1',
@@ -91,18 +90,16 @@ $order = $columns[$_POST['order'][0]['column']] ? "ORDER BY " . $columns[$_POST[
 $search = $searchValue != '' ? "AND (
 ii.cus_id LIKE '%$searchValue%' OR 
 cr.autogen_cus_id LIKE '%$searchValue%' OR 
-cp.cus_name LIKE '%$searchValue%' OR 
+CONCAT(cp.first_name,' ', cp.last_name) LIKE '%$searchValue%' OR 
 alc.area_name LIKE '%$searchValue%' OR 
-salc.sub_area_name LIKE '%$searchValue%' OR 
 cp.mobile1 LIKE '%$searchValue%' OR
 cs.sub_status LIKE '%$searchValue%' )" : '';
 
 $query = "SELECT
     cp.cus_id AS cp_cus_id,
     cr.autogen_cus_id,
-    cp.cus_name,
+    CONCAT(cp.first_name,' ', cp.last_name) AS customer_name,
     alc.area_name,
-    salc.sub_area_name,
     bc.branch_name,
     alm.line_name,
     cp.mobile1,
@@ -116,7 +113,6 @@ JOIN
 JOIN acknowlegement_customer_profile cp ON ii.req_id = cp.req_id
 JOIN customer_status cs ON cp.req_id = cs.req_id
 JOIN area_list_creation alc ON cp.area_confirm_area = alc.area_id
-JOIN sub_area_list_creation salc ON cp.area_confirm_subarea = salc.sub_area_id
 JOIN area_line_mapping_area alma ON alma.area_id = alc.area_id
 JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
 JOIN branch_creation bc ON alm.branch_id = bc.branch_id
@@ -156,9 +152,8 @@ $result = $statement->fetchAll();
 $sno = 1;
 foreach ($result as $row) {
     $cus_id = $row['cp_cus_id'];
-    $cus_name = $row['cus_name'];
+    $cus_name = $row['customer_name'];
     $area_name = $row['area_name'];
-    $sub_area_name = $row['sub_area_name'];
     $branch_name = '';
     $comm_date = '';
     $hint = '';
@@ -224,7 +219,6 @@ foreach ($result as $row) {
         $finalData['autogen_cus_id'] = $row['autogen_cus_id'],
         $finalData['cus_name'] = $cus_name,
         $finalData['area_name'] = $area_name,
-        $finalData['sub_area_name'] = $sub_area_name,
         $finalData['branch_name'] = $branch_name,
         $finalData['line'] = $row['line_name'],
         $finalData['mobile'] = $row['mobile1'],
@@ -268,7 +262,6 @@ function getFilteredRecords($connect, $data, $search, $sub_status_mapping, $loan
         JOIN acknowlegement_customer_profile cp ON ii.req_id = cp.req_id
         JOIN customer_status cs ON cp.req_id = cs.req_id
         JOIN area_list_creation alc ON cp.area_confirm_area = alc.area_id
-        JOIN sub_area_list_creation salc ON cp.area_confirm_subarea = salc.sub_area_id
         JOIN area_line_mapping_area alma ON alma.area_id = alc.area_id
         JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
         JOIN branch_creation bc ON alm.branch_id = bc.branch_id

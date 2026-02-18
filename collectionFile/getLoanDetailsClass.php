@@ -204,9 +204,9 @@ class GetLoanDetails
 
 
                     if ($loan_arr['scheme_name'] == '' || $loan_arr['scheme_name'] == null) {
-                        $result = $connect->query("SELECT overdue FROM `loan_calculation` WHERE loan_category = '" . $loan_arr['loan_category'] . "' and sub_category = '" . $loan_arr['sub_category'] . "' ");
+                        $result = $connect->query("SELECT overdue FROM `loan_calculation` WHERE loan_category = '" . $loan_arr['loan_category'] . "' ");
                     } else {
-                        $result =  $connect->query("SELECT overdue FROM `loan_scheme` WHERE loan_category = '" . $loan_arr['loan_category'] . "' AND FIND_IN_SET('" . $loan_arr['sub_category'] . "', sub_category)");
+                        $result =  $connect->query("SELECT overdue FROM `loan_scheme` WHERE loan_category = '" . $loan_arr['loan_category'] . "' ");
                     }
                     $row = $result->fetch();
                     $penalty_per = $row['overdue']; //get penalty percentage to insert
@@ -326,9 +326,9 @@ class GetLoanDetails
 
 
                 if ($loan_arr['scheme_name'] == '' || $loan_arr['scheme_name'] == null) {
-                    $result = $connect->query("SELECT overdue FROM `loan_calculation` WHERE loan_category = '" . $loan_arr['loan_category'] . "' and sub_category = '" . $loan_arr['sub_category'] . "' ");
+                    $result = $connect->query("SELECT overdue FROM `loan_calculation` WHERE loan_category = '" . $loan_arr['loan_category'] . "' ");
                 } else {
-                    $result = $connect->query("SELECT overdue FROM `loan_scheme` WHERE loan_category = '" . $loan_arr['loan_category'] . "' and sub_category = '" . $loan_arr['sub_category'] . "' ");
+                    $result = $connect->query("SELECT overdue FROM `loan_scheme` WHERE loan_category = '" . $loan_arr['loan_category'] . "' ");
                 }
                 $row = $result->fetch();
                 $penalty_per = $row['overdue']; //get penalty percentage to insert
@@ -438,9 +438,9 @@ class GetLoanDetails
 
 
                 if ($loan_arr['scheme_name'] == '' || $loan_arr['scheme_name'] == null) {
-                    $result = $connect->query("SELECT overdue FROM `loan_calculation` WHERE loan_category = '" . $loan_arr['loan_category'] . "' and sub_category = '" . $loan_arr['sub_category'] . "' ");
+                    $result = $connect->query("SELECT overdue FROM `loan_calculation` WHERE loan_category = '" . $loan_arr['loan_category'] . "' ");
                 } else {
-                    $result = $connect->query("SELECT overdue FROM `loan_scheme` WHERE loan_category = '" . $loan_arr['loan_category'] . "' and sub_category = '" . $loan_arr['sub_category'] . "' ");
+                    $result = $connect->query("SELECT overdue FROM `loan_scheme` WHERE loan_category = '" . $loan_arr['loan_category'] . "' ");
                 }
                 $row = $result->fetch();
                 $penalty_per = $row['overdue']; //get penalty percentage to insert
@@ -616,7 +616,6 @@ class GetLoanDetails
         $calculate_method = $loan_arr['calc_method'];
         $int_rate = $loan_arr['int_rate'];
         $loan_category = $loan_arr['loan_category'];
-        $sub_category = $loan_arr['sub_category'];
         $result = 0;
         $monthly_interest_data = [];
 

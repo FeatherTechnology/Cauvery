@@ -103,7 +103,6 @@ if (sizeof($getUser) > 0) {
 								<th>Customer ID</th>
 								<th>Customer Name</th>
 								<th>Area</th>
-								<th>Sub Area</th>
 								<th>Branch</th>
 								<th>Group</th>
 								<th>Line</th>
@@ -134,7 +133,6 @@ if (sizeof($getUser) > 0) {
 								<th>Customer ID</th>
 								<th>Customer Name</th>
 								<th>Area</th>
-								<th>Sub Area</th>
 								<th>Branch</th>
 								<th>Group</th>
 								<th>Line</th>
@@ -236,8 +234,15 @@ if (sizeof($getUser) > 0) {
 							</div>
 							<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12">
 								<div class="form-group">
-									<label for="cus_name_search">Customer Name</label><span class="required">&nbsp;*</span>
-									<input type="text" class="form-control" id="cus_name_search" name="cus_name_search" value='' placeholder='Enter Customer Name'>
+									<label for="first_name_search">First Name</label><span class="required">&nbsp;*</span>
+									<input type="text" class="form-control" id="first_name_search" name="first_name_search" oninput="formatFirstName(this)" value='' placeholder='Enter First Name'>
+									<span class="searchDetailsCheck text-danger" style="display: none;">Please enter any of these fields!</span>
+								</div>
+							</div>
+							<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12">
+								<div class="form-group">
+									<label for="last_name_search">Last Name</label><span class="required">&nbsp;*</span>
+									<input type="text" class="form-control" id="last_name_search" name="last_name_search" oninput="formatLastName(this)" value='' placeholder='Enter Last Name'>
 									<span class="searchDetailsCheck text-danger" style="display: none;">Please enter any of these fields!</span>
 								</div>
 							</div>
@@ -288,7 +293,6 @@ if (sizeof($getUser) > 0) {
 								<th>Customer ID</th>
 								<th>Customer Name</th>
 								<th>Area</th>
-								<th>Sub Area</th>
 								<th>Branch</th>
 								<th>Group</th>
 								<th>Line</th>
@@ -363,10 +367,10 @@ if (sizeof($getUser) > 0) {
 									<thead>
 										<tr>
 											<th>Date</th>
-											<th>Name</th>
+											<th>First Name</th>
+											<th>Last Name</th>
 											<th>Mobile</th>
 											<th>Area</th>
-											<th>Sub Area</th>
 											<th>User</th>
 											<th colspan="2">Action</th>
 										</tr>
@@ -374,7 +378,13 @@ if (sizeof($getUser) > 0) {
 										<tbody>
 											<tr>
 												<td class="current_date"></td>
-												<td><input type="text"  name="cus_name" id="cus_name" class="form-control cus_name" value="" placeholder="Enter Customer Name"></td>
+												<td>
+													<input type="text"  name="cus_first_name" id="cus_first_name" oninput="formatFirstName(this)" class="form-control cus_first_name" value="" placeholder="Enter First Name">
+												</td>
+
+												<td>
+													<input type="text"  name="cus_last_name" id="cus_last_name" oninput="formatLastName(this)" class="form-control cus_last_name" value="" placeholder="Enter Last Name">
+												</td>
 												<td>
 												<input type="text" class="form-control cus_mobile_num" id="cus_mobile_num" name="cus_mobile_num" value='' placeholder="Enter Mobile Number" oninput="validateInputNumber(this,'withOutDot')"></td>
 
@@ -382,9 +392,6 @@ if (sizeof($getUser) > 0) {
 														<option value="">Select Area Name</option>
 													</select></td>
 
-												<td><select type="text" class="form-control sub_area_name" id="sub_area_name" name="sub_area_name" >
-														<option value="">Select Sub Area Name</option>
-													</select></td>
 												<td class="user"></td>
 												<td>
 
@@ -429,13 +436,18 @@ if (sizeof($getUser) > 0) {
 								<span class="text-danger" id='cus_idCheck' style="display: none;">Please Enter Aadhaar Number</span>
 							</div>
 							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<label for="cus_name">Customer Name</label><span class="required">&nbsp;*</span>
-								<input type="text" name="new_cus_name" id="new_cus_name" class='form-control' placeholder="Enter Customer Name" tabindex="2">
-								<span class="text-danger" id='cus_nameCheck' style="display: none;">Please Enter Customer Name</span>
+								<label for="first_names">First Name</label><span class="required">&nbsp;*</span>
+								<input type="text" name="first_names" id="first_names" class='form-control' oninput="formatFirstName(this)" placeholder="Enter First Name" tabindex="2">
+								<span class="text-danger" id='first_nameCheck' style="display: none;">Please Enter First Name</span>
+							</div>
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+								<label for="last_names">Last Name</label><span class="required">&nbsp;*</span>
+								<input type="text" name="last_names" id="last_names" class='form-control' oninput="formatLastName(this)" placeholder="Enter Last Name" tabindex="3">
+								<span class="text-danger" id='last_nameCheck' style="display: none;">Please Enter Last Name</span>
 							</div>
 							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 								<label for="cus_mob">Mobile Number</label><span class="required">&nbsp;*</span>
-								<input type="text" name="cus_mob" id="cus_mob" class='form-control' placeholder="Enter Mobile Number" tabindex="3" onKeyPress="if(this.value.length==10) return false;" oninput="validateInputNumber(this,'withOutDot')">
+								<input type="text" name="cus_mob" id="cus_mob" class='form-control' placeholder="Enter Mobile Number" tabindex="4" onKeyPress="if(this.value.length==10) return false;" oninput="validateInputNumber(this,'withOutDot')">
 								<span class="text-danger" id='cus_mobCheck' style="display: none;">Please Enter Mobile Number </span>
 							</div> <!-- Use input type='text' for numeric validation, because type='number' always resets the cursor when you block invalid characters-->
 							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
@@ -445,15 +457,6 @@ if (sizeof($getUser) > 0) {
 										<option value="">Select Area</option>
 									</select>
 									<span class="text-danger" style='display:none' id='areaCheck'>Please Select Area</span>
-								</div>
-							</div>
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<div class="form-group">
-									<label for="sub_area">Sub Area</label>&nbsp;<span class="text-danger">*</span>
-									<select tabindex="45" type="text" class="form-control" id="sub_area" name="sub_area">
-										<option value=''>Select Sub Area</option>
-									</select>
-									<span class="text-danger" style='display:none' id='subareaCheck'>Please Select Sub Area</span>
 								</div>
 							</div>
 						</div>

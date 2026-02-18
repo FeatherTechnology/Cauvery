@@ -423,7 +423,6 @@ function getLc() {
     })
 }
 function getCategoryInfo() {
-    var loan_category_upd = $('#loan_category_upd').val();
     var loan_category = $('#loan_category_lc').val();
     $.ajax({
         url: 'requestFile/getCategoryInfo.php',
@@ -447,19 +446,19 @@ function getCategoryInfo() {
                 var category_content = $('#moduleTable tbody tr').html(); //To get the appended category list
 
                 var category_count = $('#moduleTable tbody tr').find('td').length;//To find input fields count
-                getCategoryInputs(category_count, category_content, loan_category_upd);
+                getCategoryInputs(category_count, category_content);
 
             }
         }
     });
 
 
-    function getCategoryInputs(category_count, category_content, loan_category_upd) {
+    function getCategoryInputs(category_count, category_content) {
 
         var req_id = $('#req_id').val();
         $.ajax({
             url: 'loanIssueFile/getCategoryInfoForIssue.php',
-            data: { 'req_id': req_id, 'loan_category_upd': loan_category_upd },
+            data: { 'req_id': req_id },
             dataType: 'json',
             type: 'post',
             cache: false,

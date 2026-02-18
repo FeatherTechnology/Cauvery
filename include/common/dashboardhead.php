@@ -232,9 +232,12 @@
 		}
 
 		// Function to remove the overlay and clear the timer
-		function hideOverlay() {
-			var overlayDiv = document.querySelector('.overlay');
-			overlayDiv.remove();
-		}
+        function hideOverlay() {
+            var overlayDiv = document.querySelector('.overlay');
+            // Check if the overlayDiv element exists before trying to remove it
+            if (overlayDiv) {
+                overlayDiv.remove();
+            }
+        }
 	</script>
 </head>

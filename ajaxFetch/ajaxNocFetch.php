@@ -7,7 +7,7 @@ if (isset($_SESSION["userid"])) {
 }
 
 /* ================= USER ACCESS FILTER ================= */
-$sub_area_list = '';
+$area_list = '';
 $colName = '';
 
 if ($userid != 1) {
@@ -22,8 +22,8 @@ if ($userid != 1) {
     }
 
     $accessMap = [
-        1 => ['group_id', 'area_group_mapping_sub_area', 'group_map_id', 'sub_area_id', 'cr.area_confirm_subarea'],
-        2 => ['line_id', 'area_line_mapping_sub_area', 'line_map_id', 'sub_area_id', 'cr.area_confirm_subarea'],
+        1 => ['group_id', 'area_group_mapping_area', 'group_map_id', 'area_id', 'cr.area_confirm_area'],
+        2 => ['line_id', 'area_line_mapping_area', 'line_map_id', 'area_id', 'cr.area_confirm_area'],
         3 => ['due_followup_lines', 'area_duefollowup_mapping_area', 'duefollowup_map_id', 'area_id', 'cr.area_confirm_area']
     ];
 
@@ -48,7 +48,7 @@ if ($userid != 1) {
     $stmt = $connect->prepare("SELECT DISTINCT $selCol FROM $table WHERE $mapCol IN ($in)");
     $stmt->execute($ids);
 
-    $sub_area_list = implode(',', $stmt->fetchAll(PDO::FETCH_COLUMN));
+    $area_list = implode(',', $stmt->fetchAll(PDO::FETCH_COLUMN));
     $colName = $filterCol;
 }
 
@@ -57,9 +57,8 @@ $column = array(
     'cs.latest_date',
     'cr.cus_id',
     'cr.autogen_cus_id',
-    'cr.cus_name',
+    'CONCAT(cr.first_name, cr.last_name)',
     'ac.area_name',
-    'sa.sub_area_name',
     'bc.branch_name',
     'alm.line_name',
     'cr.mobile1',
@@ -73,13 +72,12 @@ $column = array(
 //23 send NOC Handover
 //24 NOC Handovered.
 if ($userid == 1) {
-    $query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, cr.customer_name, ac.area_name, sa.sub_area_name, alm.line_name, bc.branch_name, cr.mobile1
+    $query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) AS customer_name, ac.area_name, alm.line_name, bc.branch_name, cr.mobile1
     FROM in_issue ii 
     JOIN customer_register cr ON ii.cus_id = cr.cus_id
     JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
-    JOIN sub_area_list_creation sa ON cr.area_confirm_subarea = sa.sub_area_id
-    JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sa.sub_area_id
-    JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
+    JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
+    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
     JOIN branch_creation bc ON alm.branch_id = bc.branch_id
     LEFT JOIN (
         SELECT cs.cus_id, MAX(cs.created_date) AS latest_date
@@ -96,13 +94,12 @@ if ($userid == 1) {
     WHERE ii.status = 0
         AND ii.cus_status IN (21,22,23) "; // Only Issued and all lines not relying on sub area
 } else {
-    $query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, cr.customer_name, ac.area_name, sa.sub_area_name, alm.line_name, bc.branch_name, cr.mobile1
+    $query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) AS customer_name, ac.area_name, alm.line_name, bc.branch_name, cr.mobile1
     FROM in_issue ii 
     JOIN customer_register cr ON ii.cus_id = cr.cus_id
     JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
-    JOIN sub_area_list_creation sa ON cr.area_confirm_subarea = sa.sub_area_id
-    JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sa.sub_area_id
-    JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
+    JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
+    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
     JOIN branch_creation bc ON alm.branch_id = bc.branch_id
     LEFT JOIN (
         SELECT cs.cus_id, MAX(cs.created_date) AS latest_date
@@ -118,7 +115,7 @@ if ($userid == 1) {
     ON cs.cus_id = cr.cus_id
     WHERE ii.status = 0
         AND ii.cus_status IN (21,22,23)
-        AND $colName IN ($sub_area_list) ";
+        AND $colName IN ($area_list) ";
 }
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
@@ -126,9 +123,8 @@ if (isset($_POST['search']) && $_POST['search'] != "") {
     $query .= " AND (cr.cus_id LIKE '%" . $_POST['search'] . "%'
             OR cs.latest_date LIKE '%" . $_POST['search'] . "%'
             OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-            OR cr.customer_name LIKE '%" . $_POST['search'] . "%'
+            OR CONCAT(cr.first_name,' ', cr.last_name) LIKE '%" . $_POST['search'] . "%'
             OR ac.area_name LIKE '%" . $_POST['search'] . "%'
-            OR sa.sub_area_name LIKE '%" . $_POST['search'] . "%'
             OR alm.line_name LIKE '%" . $_POST['search'] . "%'
             OR bc.branch_name LIKE '%" . $_POST['search'] . "%'
             OR cr.mobile1 LIKE '%" . $_POST['search'] . "%' ) ";
@@ -181,7 +177,6 @@ foreach ($result as $row) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['customer_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row["branch_name"];
     $sub_array[] = $row['line_name'];
     $sub_array[] = $row['mobile1'];

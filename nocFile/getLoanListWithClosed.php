@@ -68,7 +68,6 @@ if (isset($_SESSION["userid"])) {
             <th width='50'>Loan ID</th>
             <th>Doc ID</th>
             <th>Loan Category</th>
-            <th>Sub Category</th>
             <th>Agent</th>
             <th>Loan date</th>
             <th>Loan Amount</th>
@@ -97,7 +96,7 @@ if (isset($_SESSION["userid"])) {
                 $cus_sts = "21,22,23";
             }
 
-            $run = $connect->query("SELECT ii.loan_id, lc.cus_name_loan as cus_name, ad.doc_id, lcc.loan_category_creation_name as loan_catrgory_name, lc.sub_category, iv.agent_id, ii.updated_date, lc.loan_amt_cal, ii.req_id, ii.cus_status
+            $run = $connect->query("SELECT ii.loan_id, CONCAT(lc.first_name, ' ', lc.last_name) AS cus_name, ad.doc_id, lcc.loan_category_creation_name as loan_catrgory_name, iv.agent_id, ii.updated_date, lc.loan_amt_cal, ii.req_id, ii.cus_status
             FROM acknowlegement_loan_calculation lc 
             JOIN acknowlegement_documentation ad ON lc.req_id = ad.req_id 
             JOIN in_issue ii ON lc.req_id = ii.req_id 
@@ -113,7 +112,6 @@ if (isset($_SESSION["userid"])) {
                 <td><?php echo $row["loan_id"]; ?></td>
                 <td><?php echo $row["doc_id"]; ?></td>
                 <td><?php echo $row["loan_catrgory_name"]; ?></td>
-                <td><?php echo $row["sub_category"]; ?></td>
                 <td>
                     <?php
                     if ($row["agent_id"] != '' || $row["agent_id"] != NULL) {

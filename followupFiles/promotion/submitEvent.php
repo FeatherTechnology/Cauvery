@@ -38,10 +38,10 @@ foreach ($areas as $area) {
 
 // Loop through all customers (rows)
 foreach ($rowsData as $row) {
-    $cus_name = $row['cus_name'];
+    $first_name = $row['cus_first_name'];
+    $last_name = $row['cus_last_name'];
     $cus_mobile_num = $row['cus_mobile_num'];
     $cus_area_name = $row['cus_area_name'];
-    $sub_area_name = $row['sub_area_name'];
     $event_date = $row['currentDate'];
     $cus_hidden_id = $row['cus_hidden_id'];
 
@@ -50,19 +50,19 @@ foreach ($rowsData as $row) {
         $connect->query("UPDATE event_promotion SET 
             event_id = '$event_id',
             event_created_date = '$event_date',
-            name = '$cus_name',
+            first_name = '$first_name',
+            last_name = '$last_name',
             mobile_num = '$cus_mobile_num',
             area = '$cus_area_name',
-            sub_area = '$sub_area_name',
             update_login_id = '$user_id',
             updated_date = NOW()
             WHERE id = '$cus_hidden_id'");
     } else {
         // Insert new record
         $connect->query("INSERT INTO event_promotion (
-            event_id, event_created_date, name, mobile_num, area, sub_area, insert_login_id
+            event_id, event_created_date, first_name, last_name, mobile_num, area, insert_login_id
         ) VALUES (
-            '$event_id', '$event_date', '$cus_name', '$cus_mobile_num', '$cus_area_name', '$sub_area_name', '$user_id'
+            '$event_id', '$event_date', '$first_name', '$last_name', '$cus_mobile_num', '$cus_area_name', '$user_id'
         )");
     }
 }

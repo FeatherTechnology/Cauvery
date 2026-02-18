@@ -13,7 +13,7 @@ if (isset($_GET['cus_id']) && isset($_GET['req_id'])  && isset($_GET['payable'])
 
 if ($payable > 0) {
 
-    $query = "SELECT cp.cus_id as cp_cus_id,cp.cus_name,cp.area_confirm_area,cp.area_confirm_subarea,cp.area_line,cp.mobile1, ii.cus_id as ii_cus_id, ii.req_id FROM 
+    $query = "SELECT cp.cus_id as cp_cus_id,cp.cus_name,cp.area_confirm_area,cp.area_line,cp.mobile1, ii.cus_id as ii_cus_id, ii.req_id FROM 
     acknowlegement_customer_profile cp JOIN in_issue ii ON cp.cus_id = ii.cus_id
     where ii.status = 0 and (ii.cus_status >= 14 and ii.cus_status <= 17) $filter  GROUP BY ii.cus_id "; // 14 and 17 means collection entries, 17 removed from issue list
     //this will only take selected req_ids which is payable > 0
@@ -26,7 +26,6 @@ if ($payable > 0) {
         $cus_id = $row['cp_cus_id'];
         $cus_name = $row['cus_name'];
         $area_name = '';
-        $sub_area_name = '';
         $branch_name = '';
         $comm_date = '';
         $hint = '';
@@ -38,14 +37,6 @@ if ($payable > 0) {
         if ($qry->rowCount() > 0) {
             $row1 = $qry->fetch();
             $area_name = $row1['area_name'];
-        }
-
-        // Fetch sub-area name
-        $sub_area_id = $row['area_confirm_subarea'];
-        $qry = $connect->query("SELECT * FROM sub_area_list_creation WHERE sub_area_id = $sub_area_id");
-        if ($qry->rowCount() > 0) {
-            $row1 = $qry->fetch();
-            $sub_area_name = $row1['sub_area_name'];
         }
 
         // Fetch branch name
@@ -75,7 +66,6 @@ if ($payable > 0) {
             'cus_id' => $cus_id,
             'cus_name' => $cus_name,
             'area_name' => $area_name,
-            'sub_area_name' => $sub_area_name,
             'branch_name' => $branch_name,
             'line' => $row['area_line'],
             'mobile' => $row['mobile1'],

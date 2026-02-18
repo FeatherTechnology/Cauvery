@@ -7,16 +7,15 @@ $follow_up_date = '';
 
 $sno = 1;
 $Obj = new promotionListClass($connect);
-$sub_area_list = $Obj->sub_area_list;
+$area_list = $Obj->area_list;
 $accessType = $Obj->accessType;
 
 $column = array(
     'cp.cus_reg_id',                  
     'cp.cus_id',    
     'cp.autogen_cus_id',          
-    'cp.customer_name',            
-    'al.area_name',           
-    'sl.sub_area_name',       
+    'CONCAT(cp.first_name, cp.last_name)',     
+    'al.area_name',       
     'bc.branch_name',         
     'agm.group_name',                   
     'alm.line_name',           
@@ -33,17 +32,14 @@ $column = array(
 
 $search = '';
 if (isset($_POST['search']) && $_POST['search'] != "") {
-    $search = " and (cp.cus_id LIKE '%" . $_POST['search'] . "%' OR cp.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR cp.customer_name LIKE '%" . $_POST['search'] . "%' OR al.area_name LIKE '%" . $_POST['search'] . "%' OR sl.sub_area_name LIKE '%" . $_POST['search'] . "%' OR bc.branch_name LIKE '%" . $_POST['search'] . "%' OR agm.group_name LIKE '%" . $_POST['search'] . "%' OR alm.line_name LIKE '%" . $_POST['search'] . "%' OR cp.mobile1 LIKE '%" . $_POST['search'] . "%' OR np.status LIKE '%" . $_POST['search'] . "%' ) ";
+    $search = " and (cp.cus_id LIKE '%" . $_POST['search'] . "%' OR cp.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR CONCAT(cp.first_name,' ', cp.last_name) LIKE '%" . $_POST['search'] . "%' OR al.area_name LIKE '%" . $_POST['search'] . "%' OR bc.branch_name LIKE '%" . $_POST['search'] . "%' OR agm.group_name LIKE '%" . $_POST['search'] . "%' OR alm.line_name LIKE '%" . $_POST['search'] . "%' OR cp.mobile1 LIKE '%" . $_POST['search'] . "%' OR np.status LIKE '%" . $_POST['search'] . "%' ) ";
 }
 
 $order = '';
 if (isset($_POST['order'])) {
     $order = ' ORDER BY ' . $column[$_POST['order']['0']['column']] . ' ' . $_POST['order']['0']['dir'] . ' ';
 }
-$areaColumn = ($accessType == 3) 
-    ? "cp.area" 
-    : "cp.sub_area";
-    $qry = "SELECT req.req_id, req.cus_data, req.cus_id, cp.autogen_cus_id, cp.customer_name, al.area_name, sl.sub_area_name, bc.branch_name, agm.group_name, alm.line_name, cp.mobile1, req.cus_status AS consider_level, req.updated_date, np.status AS followup_sts, np.follow_date 
+    $qry = "SELECT req.req_id, req.cus_data, req.cus_id, cp.autogen_cus_id, CONCAT(cp.first_name,' ', cp.last_name) AS customer_name, al.area_name, bc.branch_name, agm.group_name, alm.line_name, cp.mobile1, req.cus_status AS consider_level, req.updated_date, np.status AS followup_sts, np.follow_date 
     FROM request_creation req 
     LEFT JOIN customer_register cp ON req.cus_id = cp.cus_id 
     LEFT JOIN (
@@ -53,15 +49,14 @@ $areaColumn = ($accessType == 3)
         AND cus_status < 20 
     ) rc ON req.cus_id = rc.cus_id 
     LEFT JOIN area_list_creation al ON al.area_id = CASE WHEN req.cus_status IN (6, 7) THEN cp.area_confirm_area ELSE cp.area END
-    LEFT JOIN sub_area_list_creation sl ON sl.sub_area_id = CASE WHEN req.cus_status IN (6, 7) THEN cp.area_confirm_subarea ELSE cp.sub_area END
-    LEFT JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = sl.sub_area_id
-    LEFT JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
-    LEFT JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = sl.sub_area_id
-    LEFT JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
+    LEFT JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
+    LEFT JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
+    LEFT JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+    LEFT JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
     LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
     LEFT JOIN new_promotion np ON np.cus_id = req.cus_id AND np.created_date = (SELECT MAX(np1.created_date) FROM new_promotion np1 WHERE np1.cus_id = req.cus_id)
     WHERE req.cus_status BETWEEN 4 AND 9 
-    AND CASE WHEN req.cus_status IN (6, 7) THEN cp.area_confirm_subarea ELSE $areaColumn END IN  ($sub_area_list) AND rc.cus_id IS NULL ";
+    AND CASE WHEN req.cus_status IN (6, 7) THEN cp.area_confirm_area ELSE cp.area END IN  ($area_list) AND rc.cus_id IS NULL ";
 
     if($_POST['followUpSts']){
         $follow_up_sts = $_POST['followUpSts'];
@@ -103,7 +98,6 @@ while ($row = $sql->fetch()) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['customer_name'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['sub_area_name'];
     $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line_name'];

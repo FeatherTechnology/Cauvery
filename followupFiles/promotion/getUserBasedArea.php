@@ -51,24 +51,6 @@ if ($user_id && empty(trim($area_id))) {
     }
 }
 
-/* ========================================================= CASE 2: Area selected → Load sub-areas ========================================================= */
-else {
-
-    if (!empty($area_id)) {
-
-        $sql = "
-            SELECT sub_area_id, sub_area_name
-            FROM sub_area_list_creation
-            WHERE area_id_ref IN ($area_id)
-              AND status = 0
-            ORDER BY sub_area_name ASC
-        ";
-
-        $stmt = $connect->query($sql);
-        $detailrecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-}
-
 echo json_encode($detailrecords);
 $connect = null;
 ?>

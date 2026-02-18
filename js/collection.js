@@ -272,7 +272,9 @@ $(document).ready(function () {
     let req_id = $("#comm_req_id").val();
     let cus_id = $("#cusidupd").val();
     if (type == 1) {
-      let cus_name = $("#cus_name").val();
+      let first_name = $("#first_name").val();
+      let last_name = $("#last_name").val();
+      let cus_name = first_name + " " + last_name;
       $("#comm_person_name1").hide(); //select box
       $("#comm_person_name").show();
       $("#comm_person_name").val(cus_name); //storing customer name in person name
@@ -464,9 +466,7 @@ function OnLoadFunctions(cus_id) {
             cache: false,
             success: function (response) {
               var loan_category_id = response["loan_category"];
-              var sub_category_id = response["sub_category"];
               $("#loan_category_id").val(loan_category_id);
-              $("#sub_category_id").val(sub_category_id);
             },
           });
           var loan_category = $(this)
@@ -481,23 +481,11 @@ function OnLoadFunctions(cus_id) {
             .prev()
             .prev()
             .text();
-          var sub_category = $(this)
-            .parent()
-            .prev()
-            .prev()
-            .prev()
-            .prev()
-            .prev()
-            .prev()
-            .prev()
-            .prev()
-            .text();
           var status = $(this).parent().prev().prev().text();
           var sub_status = $(this).parent().prev().text();
 
           $("#req_id").val(req_id);
           $("#loan_category").val(loan_category);
-          $("#sub_category").val(sub_category);
           $("#status").val(status);
           $("#sub_status").val(sub_status);
 

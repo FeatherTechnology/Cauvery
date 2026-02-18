@@ -7,7 +7,7 @@ if (isset($_POST["coll_id"])) {
     $coll_code_id = $_POST["coll_id"];
 }
 
-$qry = $connect->query("SELECT coll_id, req_id, cus_id, cus_name, coll_code, coll_mode, trans_date, coll_date, due_amt_track, penalty_track, coll_charge_track, princ_amt_track , int_amt_track, due_amt, insert_login_id FROM `collection` WHERE coll_code = '" . strip_tags($coll_code_id) . "' ");
+$qry = $connect->query("SELECT coll_id, req_id, cus_id, CONCAT(first_name, ' ', last_name) AS cus_name, coll_code, coll_mode, trans_date, coll_date, due_amt_track, penalty_track, coll_charge_track, princ_amt_track , int_amt_track, due_amt, insert_login_id FROM `collection` WHERE coll_code = '" . strip_tags($coll_code_id) . "' ");
 $row = $qry->fetch();
 
 extract($row); // Extracts the array values into variables
@@ -17,8 +17,8 @@ $rowSql = $sql->fetch();
 $autogen_cus_id = $rowSql['autogen_cus_id'];
 
 $sql = $connect->query("SELECT alm.line_name, alc.area_name FROM `acknowlegement_customer_profile` cp 
-JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = cp.area_confirm_subarea 
-JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id 
+JOIN area_line_mapping_area alma ON alma.area_id = cp.area_confirm_area 
+JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id 
 JOIN area_list_creation alc ON cp.area_confirm_area = alc.area_id WHERE cp.req_id='" . strip_tags($req_id) . "'");
 $rowSql = $sql->fetch();
 $line_name = $rowSql['line_name'];
