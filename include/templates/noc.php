@@ -7,11 +7,10 @@ $getCustomerReg = $userObj->getCustomerRegister($mysqli, $cusidupd);
 if (sizeof($getCustomerReg) > 0) { 
 	$autogen_cus_id 			= $getCustomerReg['autogen_cus_id'];
 	$cus_id						= $getCustomerReg['cus_id'];
-	$cus_name					= $getCustomerReg['cus_name'];
+	$first_name					= $getCustomerReg['first_name'];
+	$last_name					= $getCustomerReg['last_name'];
 	$area_id					= $getCustomerReg['area_confirm_area'];
 	$area_name					= $getCustomerReg['area_name'];
-	$sub_area_id				= $getCustomerReg['area_confirm_subarea'];
-	$sub_area_name				= $getCustomerReg['sub_area_name'];
 	$branch_id					= $getCustomerReg['branch_id'];
 	$branch_name				= $getCustomerReg['branch_name'];
 	$line_id					= $getCustomerReg['line_id'];
@@ -92,12 +91,22 @@ if (sizeof($getCustomerReg) > 0) {
 
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 											<div class="form-group">
-												<label for="cus_name">Customer Name</label><span class="required">&nbsp;*</span>
-												<input type="text" class="form-control" id="cus_name" name="cus_name" value='<?php if (isset($cus_name)) {
-																																	echo $cus_name;
+												<label for="first_name">First Name</label><span class="required">&nbsp;*</span>
+												<input type="text" class="form-control" id="first_name" name="first_name" value='<?php if (isset($first_name)) {
+																																	echo $first_name;
 																																} ?>' readonly tabindex='3'>
 											</div>
 										</div>
+
+										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
+											<div class="form-group">
+												<label for="last_name">Last Name</label><span class="required">&nbsp;*</span>
+												<input type="text" class="form-control" id="last_name" name="last_name" value='<?php if (isset($last_name)) {
+																																	echo $last_name;
+																																} ?>' readonly tabindex='4'>
+											</div>
+										</div>
+
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 											<div class="form-group">
 												<label for="area"> Area </label> <span class="required"> * </span>
@@ -105,13 +114,7 @@ if (sizeof($getCustomerReg) > 0) {
 												<input type="text" class="form-control" id="area" name="area" value="<?php if (isset($area_name)) echo $area_name; ?>" readonly tabindex='4'>
 											</div>
 										</div>
-										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-											<div class="form-group">
-												<label for="sub_area"> Sub Area </label> <span class="required"> * </span>
-												<input type="hidden" id='sub_area_id' name='sub_area_id' value='<?php if (isset($sub_area_id)) echo $sub_area_id; ?>'>
-												<input type="text" class="form-control" id="sub_area" name="sub_area" value='<?php if (isset($sub_area_name)) echo $sub_area_name; ?>' readonly tabindex='5'>
-											</div>
-										</div>
+
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
 											<div class="form-group">
 												<label for="branch"> Branch </label> <span class="required"> * </span>

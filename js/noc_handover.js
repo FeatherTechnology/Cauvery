@@ -58,7 +58,9 @@ $(document).ready(function () {
             $('.mem_relation_name').hide();
             $('#mem_relation_name').empty();
 
-            var cus_name = $('#cus_name').val();
+            var first_name = $("#first_name").val();
+            var last_name = $("#last_name").val();
+            var cus_name = first_name + " " + last_name;
             var cus_id = $('#cus_id').val();
             $('#mem_name').val(cus_name)
 
@@ -165,7 +167,9 @@ function OnLoadFunctions() {
             $('#req_id').val(req_id) //assigning to req_id input box for getching noc members
 
             //To get the Signed Document List on Checklist
-            const cus_name = $('#cus_name').val();
+            var first_name = $("#first_name").val();
+            var last_name = $("#last_name").val();
+            var cus_name = first_name + " " + last_name;
 
             // Wrap each AJAX in a promise
             function getSignedDocList() {

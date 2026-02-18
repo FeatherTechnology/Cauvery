@@ -5,7 +5,7 @@ include('..\moneyFormatIndia.php');
 include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
-$area_list = getUserAreaList($connect, 'loanissue');
+$area_list = getUserAreaList($connect, 'Group');
 
 if ($userid) {
     $stmt = $connect->prepare("SELECT role FROM user WHERE user_id = ?");

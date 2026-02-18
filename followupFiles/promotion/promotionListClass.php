@@ -2,7 +2,7 @@
 session_start();
 class promotionListClass
 {
-    public $sub_area_list = array();
+    public $area_list = array();
     public $accessType;
     public function __construct($connect)
     {
@@ -10,7 +10,7 @@ class promotionListClass
 
         // Super admin bypass
         if ($userid == 1) {
-            $this->sub_area_list = '';
+            $this->area_list = '';
             return;
         }
 
@@ -20,7 +20,7 @@ class promotionListClass
         $rowuser = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$rowuser) {
-            $this->sub_area_list = '';
+            $this->area_list = '';
             return;
         }
 
@@ -34,15 +34,15 @@ class promotionListClass
         if ($this->accessType == 1) {
             // Group-based
             $ids = array_filter(explode(',', $rowuser['group_id']));
-            $table = 'area_group_mapping_sub_area';
+            $table = 'area_group_mapping_area';
             $column = 'group_map_id';
-            $selectColumn = 'sub_area_id';
+            $selectColumn = 'area_id';
         } elseif ($this->accessType == 2) {
             // Line-based
             $ids = array_filter(explode(',', $rowuser['line_id']));
-            $table = 'area_line_mapping_sub_area';
+            $table = 'area_line_mapping_area';
             $column = 'line_map_id';
-            $selectColumn = 'sub_area_id';
+            $selectColumn = 'area_id';
         } elseif ($this->accessType == 3) {
             // Due-followup based
             $ids = array_filter(explode(',', $rowuser['due_followup_lines']));
@@ -52,7 +52,7 @@ class promotionListClass
         }
 
         if (empty($ids)) {
-            $this->sub_area_list = '';
+            $this->area_list = '';
             return;
         }
 
@@ -66,23 +66,20 @@ class promotionListClass
         $stmt->execute(array_map('intval', $ids));
 
         // Fetch directly as array
-        $sub_area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         // Final clean list
-        $this->sub_area_list = implode(',', array_unique($sub_area_ids));
+        $this->area_list = implode(',', array_unique($area_ids));
     }
 
 
     function getdetails($connect, $type)
     {
         $arr = array();
-        $colName = ($this->accessType == 3)
-            ? "cp.area_confirm_area"          // Due Followup
-            : "cp.area_confirm_subarea";      // Group/Line
         if ($type == 'existing') {
             //only closed customers who dont have any loans in current.
 
-            $sql = $connect->query("SELECT cs.cus_id,cs.consider_level,cs.updated_date FROM closed_status cs JOIN acknowlegement_customer_profile cp ON cs.req_id = cp.req_id WHERE cs.cus_sts >= '20' and $colName IN ($this->sub_area_list) and cs.closed_sts = 1 ");
+            $sql = $connect->query("SELECT cs.cus_id,cs.consider_level,cs.updated_date FROM closed_status cs JOIN acknowlegement_customer_profile cp ON cs.req_id = cp.req_id WHERE cs.cus_sts >= '20' and cp.area_confirm_area IN ($this->area_list) and cs.closed_sts = 1 ");
 
             while ($row = $sql->fetch()) {
 
@@ -99,15 +96,13 @@ class promotionListClass
             SELECT req.*
             FROM request_creation req
             WHERE (req.cus_status >= 4 AND req.cus_status <= 9)
-              AND (
-                    " . ($this->accessType == 3
-                ? "req.area"
-                : "req.sub_area") . " IN ($this->sub_area_list)
-                  OR 
-                    " . ($this->accessType == 3
-                ? "(SELECT area_confirm_area FROM acknowlegement_customer_profile WHERE req_id = req.req_id)"
-                : "(SELECT area_confirm_subarea FROM customer_profile WHERE req_id = req.req_id)") . " IN ($this->sub_area_list)
-              )
+            AND (
+                req.area IN ($this->area_list)
+                OR 
+                (SELECT area_confirm_area FROM acknowlegement_customer_profile 
+                WHERE req_id = req.req_id
+                ) IN ($this->area_list)
+            )
             GROUP BY req.cus_id
         ");
             while ($row = $sql->fetch()) {

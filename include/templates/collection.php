@@ -13,11 +13,10 @@ if ($idupd > 0) {
 	$getLoanList = $userObj->getLoanList($mysqli, $idupd);
 	if (sizeof($getLoanList) > 0) {
 		$cus_id						= $getLoanList['cus_id'];
-		$cus_name					= $getLoanList['cus_name'];
+		$first_name					= $getLoanList['first_name'];
+		$last_name					= $getLoanList['last_name'];
 		$area_id					= $getLoanList['area_confirm_area'];
 		$area_name					= $getLoanList['area_name'];
-		$sub_area_id				= $getLoanList['area_confirm_subarea'];
-		$sub_area_name				= $getLoanList['sub_area_name'];
 		$branch_id					= $getLoanList['branch_id'];
 		$branch_name				= $getLoanList['branch_name'];
 		$line_id					= $getLoanList['line_id'];
@@ -89,15 +88,10 @@ if (sizeof($getCustomerReg) > 0) {
 <br>
 <div class="page-header sticky-top" id="navbar" style="display: none;" data-toggle="toggle">
 	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
-		Customer Name - <?php if (isset($cus_name)) {
-							echo $cus_name;
-						} ?>
+		Customer Name - <?php if (isset($first_name) && isset($last_name)) { echo $first_name . ' ' . $last_name; } ?>
 		,&nbsp;&nbsp;Area - <?php if (isset($area_name)) {
 								echo $area_name;
 							} ?>
-		,&nbsp;&nbsp;Sub Area - <?php if (isset($sub_area_name)) {
-									echo $sub_area_name;
-								} ?>
 	</div>
 </div>
 <br>
@@ -164,10 +158,19 @@ if (sizeof($getCustomerReg) > 0) {
 
 									<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 										<div class="form-group">
-											<label for="cus_name">Customer Name</label>
-											<input type="text" class="form-control" id="cus_name" name="cus_name" value='<?php if (isset($cus_name)) {
-																																echo $cus_name;
+											<label for="first_name">First Name</label>
+											<input type="text" class="form-control" id="first_name" name="first_name" value='<?php if (isset($first_name)) {
+																																echo $first_name;
 																															} ?>' readonly tabindex='3'>
+										</div>
+									</div>
+
+									<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
+										<div class="form-group">
+											<label for="last_name">Last Name</label>
+											<input type="text" class="form-control" id="last_name" name="last_name" value='<?php if (isset($last_name)) {
+																																echo $last_name;
+																															} ?>' readonly tabindex='4'>
 										</div>
 									</div>
 
@@ -176,14 +179,6 @@ if (sizeof($getCustomerReg) > 0) {
 											<label for="area"> Area </label>
 											<input type="hidden" class="form-control" id="area_id" name="area_id" value="<?php if (isset($area_id)) echo $area_id; ?>" readonly>
 											<input type="text" class="form-control" id="area_name" name="area_name" value="<?php if (isset($area_name)) echo $area_name; ?>" readonly tabindex='4'>
-										</div>
-									</div>
-
-									<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-										<div class="form-group">
-											<label for="sub_area"> Sub Area </label>
-											<input type="hidden" class="form-control" id="sub_area_id" name="sub_area_id" value="<?php if (isset($sub_area_id)) echo $sub_area_id; ?>" readonly>
-											<input type="text" class="form-control" id="sub_area_name" name="sub_area_name" value='<?php if (isset($sub_area_name)) echo $sub_area_name; ?>' readonly tabindex='5'>
 										</div>
 									</div>
 
@@ -258,7 +253,6 @@ if (sizeof($getCustomerReg) > 0) {
 													<tr>
 														<th width="50">Loan ID</th>
 														<th>Loan Category</th>
-														<th>Sub Category</th>
 														<th>Agent</th>
 														<th>Loan date</th>
 														<th>Loan Amount</th>
@@ -285,8 +279,6 @@ if (sizeof($getCustomerReg) > 0) {
 
 				<!-- Collection window Start -->
 				<input type="hidden" name="loan_category_id" id="loan_category_id" value="">
-
-				<input type="hidden" name="sub_category_id" id="sub_category_id" value="">
 				
 				<input type="hidden" name="status" id="status" value="">
 				

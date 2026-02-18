@@ -27,8 +27,7 @@ if ($promotion_activity_mapping_access == 1) {
 if ($role_type == 7 || $role_type == 3) {
     // Role 7 (Admin) and 3(Manager)→ See all records
     $sql = $connect->query("
-        SELECT ncp.cus_id,ncp.cus_name,ncp.mobile,ncp.insert_login_id,ncp.created_date,a.area_name,sa.sub_area_name,agm.group_name,alm.line_name FROM new_cus_promo ncp JOIN area_list_creation a ON ncp.area = a.area_id
-        JOIN sub_area_list_creation sa ON ncp.sub_area = sa.sub_area_id
+        SELECT ncp.cus_id,CONCAT(ncp.first_name,' ',ncp.last_name) AS customer_name,ncp.mobile,ncp.insert_login_id,ncp.created_date,a.area_name,agm.group_name,alm.line_name FROM new_cus_promo ncp JOIN area_list_creation a ON ncp.area = a.area_id
         JOIN area_group_mapping_area agma ON agma.area_id = a.area_id
         JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         JOIN area_line_mapping_area alma ON alma.area_id = a.area_id
@@ -38,10 +37,9 @@ if ($role_type == 7 || $role_type == 3) {
 } else {
     // Other roles → See only their own records
     $sql = $connect->query("
-        SELECT ncp.cus_id,ncp.cus_name,ncp.mobile,ncp.insert_login_id,ncp.created_date,a.area_name, sa.sub_area_name,agm.group_name,alm.line_name 
+        SELECT ncp.cus_id,CONCAT(ncp.first_name,' ',ncp.last_name) AS customer_name,ncp.mobile,ncp.insert_login_id,ncp.created_date,a.area_name,agm.group_name,alm.line_name 
         FROM new_cus_promo ncp 
         JOIN area_list_creation a ON ncp.area = a.area_id
-        JOIN sub_area_list_creation sa ON ncp.sub_area = sa.sub_area_id
         JOIN area_group_mapping_area agma ON agma.area_id = a.area_id
         JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         JOIN area_line_mapping_area alma ON alma.area_id = a.area_id
@@ -64,7 +62,6 @@ if ($role_type == 7 || $role_type == 3) {
         <th>Customer Name</th>
         <th>Mobile No.</th>
         <th>Area</th>
-        <th>Sub Area</th>
         <th>Line</th>
         <th>Group</th>
         <th>User Name</th>
@@ -77,10 +74,9 @@ if ($role_type == 7 || $role_type == 3) {
             <tr>
                 <td><?php echo date('d-m-Y', strtotime($row['created_date'])); ?></td>
                 <td><?php echo $row['cus_id']; ?></td>
-                <td><?php echo $row['cus_name']; ?></td>
+                <td><?php echo $row['customer_name']; ?></td>
                 <td><?php echo $row['mobile']; ?></td>
                 <td><?php echo $row['area_name']; ?></td>
-                <td><?php echo $row['sub_area_name']; ?></td>
                 <td><?php echo $row['line_name']; ?></td>
                 <td><?php echo $row['group_name']; ?></td>
                 <td>

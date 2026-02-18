@@ -104,10 +104,7 @@ $(document).ready(function () {
             showPromotionList('followupFiles/promotion/showPromotionList.php', 're_active_promotion_list', '16');
         }
     });
-    $("#area").change(function () {
-        var areaselected = $("#area").val();
-        getAreaBasedSubArea(areaselected);
-    });
+
     $('#follow_up_fromdate').change(function () {
         const fromDate = $(this).val();
         const toDate = $('#follow_up_todate').val();
@@ -151,7 +148,10 @@ $(document).ready(function () {
         <tr>
             <td class="current_date">${currentDate}</td>
             <td>
-                <input type="text"  name="cus_name" class="form-control cus_name" value="" placeholder='Enter Customer Name'>
+                <input type="text"  name="cus_first_name" class="form-control cus_first_name" oninput="formatFirstName(this)" value="" placeholder='Enter First Name'>
+            </td>
+            <td>
+                <input type="text"  name="cus_last_name" class="form-control cus_last_name" oninput="formatLastName(this)" value="" placeholder='Enter Last Name'>
             </td>
             <td>
                 <input type="number" class="form-control cus_mobile_num" name="cus_mobile_num" value="" placeholder="Enter Mobile Number">
@@ -159,11 +159,6 @@ $(document).ready(function () {
             <td>
                 <select class="form-control cus_area_name" name="area_name">
                     <option value="">Select Area Name</option>
-                </select>
-            </td>
-            <td>
-                <select class="form-control sub_area_name" name="sub_area_name">
-                    <option value="">Select Sub Area Name</option>
                 </select>
             </td>
             <td class="user"></td>
@@ -187,10 +182,10 @@ $(document).ready(function () {
 
         var appendTxt = "<tr>" +
             "<td class='current_date'>" + currentDate + "</td>" +
-            "<td><input type='text' name='cus_name' class='form-control cus_name' placeholder='Enter Customer Name'></td>" +
+            "<td><input type='text' name='cus_first_name' class='form-control cus_first_name' oninput='formatFirstName(this)' placeholder='Enter First Name'></td>" +
+            "<td><input type='text' name='cus_last_name' class='form-control cus_last_name' oninput='formatLastName(this)' placeholder='Enter Last Name'></td>" +
             "<td><input type='number' class='form-control cus_mobile_num' name='cus_mobile_num'  value='' placeholder='Enter Mobile Number'></td>" +
             "<td><select class='form-control cus_area_name' name='cus_area_name'> <option value=''>Select Area Name</option> </select></td>" +
-            "<td><select class='form-control sub_area_name' name='sub_area_name'> <option value=''>Select Sub Area Name</option> </select></td>" +
             "<td class='user'></td>" +
             "<td><button type='button' class='btn btn-primary add_event_mem'>Add</button></td>" +
             "<td><span class='icon-trash-2 delet_event'></span></td>" +
@@ -207,40 +202,6 @@ $(document).ready(function () {
             lastCusAreaSelect.append(
                 $('<option>', { value: opt.value, text: opt.text })
             );
-        });
-    });
-
-    $(document).on('change', '.cus_area_name', function () {
-        const $this = $(this);
-        const selectedAreas = $this.val();
-        const $row = $this.closest('tr');
-        const $subAreaSelect = $row.find('.sub_area_name');
-        const hiddenSubAreaId = $row.find('.hidden_area').text().trim() || "";
-
-        if (!selectedAreas || selectedAreas.length === 0) {
-            $subAreaSelect.empty().append('<option value="">Select Sub Area Name</option>');
-            return;
-        }
-
-        $.ajax({
-            url: 'followupFiles/promotion/getUserBasedArea.php',
-            type: 'POST',
-            dataType: 'json',
-            data: { area_id: selectedAreas },
-            success: function (response) {
-                $subAreaSelect.empty().append('<option value="">Select Sub Area Name</option>');
-                response.forEach(function (sub) {
-                    let option = $('<option>', { value: sub.sub_area_id, text: sub.sub_area_name });
-                    if (sub.sub_area_id.toString() === hiddenSubAreaId) {
-                        option.prop('selected', true);
-                    }
-
-                    $subAreaSelect.append(option);
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error("Error fetching sub-areas:", error);
-            }
         });
     });
 
@@ -340,12 +301,12 @@ $(document).ready(function () {
 
         rows.each(function () {
             var $row = $(this);
-            var cus_name = $row.find('.cus_name').val().trim();
+            var cus_first_name = $row.find('.cus_first_name').val().trim();
+            var cus_last_name = $row.find('.cus_last_name').val().trim();
             var cus_mobile_num = $row.find('.cus_mobile_num').val().trim();
             var cus_area_name = $row.find('.cus_area_name').val();
-            var sub_area_name = $row.find('.sub_area_name').val();
 
-            if (!cus_name || !cus_mobile_num || !cus_area_name || !sub_area_name) {
+            if (!cus_first_name || !cus_last_name || !cus_mobile_num || !cus_area_name) {
                 allValid = false;
                 return false; // break loop
             }
@@ -383,10 +344,10 @@ $(document).ready(function () {
         var allRowsData = [];
         rows.each(function () {
             var $row = $(this);
-            var cus_name = $row.find('.cus_name').val().trim();
+            var cus_first_name = $row.find('.cus_first_name').val().trim();
+            var cus_last_name = $row.find('.cus_last_name').val().trim();
             var cus_mobile_num = $row.find('.cus_mobile_num').val().trim();
             var cus_area_name = $row.find('.cus_area_name').val();
-            var sub_area_name = $row.find('.sub_area_name').val();
             var currentDateText = $row.find('.current_date').text().trim();
             var cus_hidden_id = $row.find('.cus_hidden_id').text().trim();
 
@@ -395,10 +356,10 @@ $(document).ready(function () {
             var currentDate = parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0');
 
             allRowsData.push({
-                cus_name,
+                cus_first_name,
+                cus_last_name,
                 cus_mobile_num,
                 cus_area_name,
-                sub_area_name,
                 currentDate,
                 cus_hidden_id
             });
@@ -466,15 +427,11 @@ $(document).ready(function () {
                         var newRow = $(`
                         <tr>
                             <td class="current_date">${formattedDate}</td>
-                            <td><input type="text" class="form-control cus_name" value="${row.name}" placeholder='Enter Customer Name'></td>
+                            <td><input type="text" class="form-control cus_first_name" value="${row.first_name}" placeholder='Enter First Name'></td>
+                            <td><input type="text" class="form-control cus_last_name" value="${row.last_name}" placeholder='Enter Last Name'></td>
                             <td><input type='number' class='form-control cus_mobile_num'  name='cus_mobile_num'  value="${row.mobile_num}"  placeholder='Enter Mobile Number'></td>
                             <td><select class="form-control cus_area_name"></select></td>
-                            <td>
-                                <!-- sub_area will be filled by .cus_area_name change handler -->
-                                <select class="form-control sub_area_name"></select>
-                            </td>
                             <td class="user">${row.fullname}</td>
-                            <td class="hidden_area" style="display:none;">${row.sub_area}</td>
                             <td class="cus_hidden_id" style="display:none;">${row.id}</td>
                             <td><button type="button" class="btn btn-primary add_event_mem">Add</button></td>
                             <td><span class="icon-trash-2 delet_event"></span></td>
@@ -602,13 +559,13 @@ function searchCustomer() {
 
 function validateCustSearch() {
     let response = true;
-    let cus_id = $('#cus_id_search').val(); let cus_name = $('#cus_name_search').val(); let cus_mob = $('#cus_mob_search').val();
+    let cus_id = $('#cus_id_search').val(); let first_name_search = $('#first_name_search').val(); let last_name_search = $('#last_name_search').val(); let cus_mob = $('#cus_mob_search').val();
     cus_id = cus_id.replaceAll(" ", "");//will remove all spaces 
 
-    validateField(cus_id, cus_name, cus_mob, '.searchDetailsCheck');
+    validateField(cus_id, first_name_search, last_name_search, cus_mob, '.searchDetailsCheck');
 
-    function validateField(cus_id, cus_name, cus_mob, fieldId) {
-        if (cus_id == '' && cus_name == '' && cus_mob == '') {
+    function validateField(cus_id, first_name_search, last_name_search, cus_mob, fieldId) {
+        if (cus_id == '' && first_name_search == '' && last_name_search == '' && cus_mob == '') {
             response = false;
             event.preventDefault();
             $(fieldId).show();
@@ -643,9 +600,12 @@ function resetNewPromotionTable() {
 }
 
 function submitNewCustomer() {
-    let cus_id = $('#cus_id').val(); let cus_name = $('#new_cus_name').val(); let cus_mob = $('#cus_mob').val();
-    let area = $('#area').val(); let sub_area = $('#sub_area').val();
-    let args = { 'cus_id': cus_id, 'cus_name': cus_name, 'cus_mob': cus_mob, 'area': area, 'sub_area': sub_area }
+    let cus_id = $('#cus_id').val(); 
+    var first_name = $("#first_names").val();
+    var last_name = $("#last_names").val(); 
+    let cus_mob = $('#cus_mob').val();
+    let area = $('#area').val();
+    let args = { 'cus_id': cus_id, 'first_name': first_name, 'last_name': last_name, 'cus_mob': cus_mob, 'area': area }
     $.post('followupFiles/promotion/submitNewCustomer.php', args, function (response) {
         if (response.includes('Error')) {
             swarlErrorAlert(response);
@@ -663,12 +623,12 @@ function submitNewCustomer() {
 
 function validateNewCusAdd() {
     let response = true;
-    let cus_id = $('#cus_id').val(); let cus_name = $('#new_cus_name').val(); let cus_mob = $('#cus_mob').val();
-    let area = $('#area').val(); let sub_area = $('#sub_area').val();
+    let cus_id = $('#cus_id').val(); let first_names = $('#first_names').val(); let last_names = $('#last_names').val(); let cus_mob = $('#cus_mob').val();
+    let area = $('#area').val();
 
-    validateField(cus_name, '#cus_nameCheck');
+    validateField(first_names, '#first_nameCheck');
+    validateField(last_names, '#last_nameCheck');
     validateField(area, '#areaCheck');
-    validateField(sub_area, '#subareaCheck');
 
     function validateField(value, fieldId) {
         if (value === '') {
@@ -735,38 +695,6 @@ function getUserBasedArea() {
     });
 }
 
-function getAreaBasedSubArea(area) {
-    var sub_area_upd = $("#sub_area_upd").val();
-    $.ajax({
-        url: "requestFile/ajaxGetEnabledSubArea.php",
-        type: "post",
-        data: { area: area },
-        dataType: "json",
-        success: function (response) {
-            $("#sub_area").empty();
-            $("#sub_area").append("<option value='' >Select Sub Area</option>");
-            for (var i = 0; i < response.length; i++) {
-                var selected = "";
-                if (
-                    sub_area_upd != undefined &&
-                    sub_area_upd != "" &&
-                    sub_area_upd == response[i]["sub_area_id"]
-                ) {
-                    selected = "selected";
-                }
-                $("#sub_area").append(
-                    "<option value='" +
-                    response[i]["sub_area_id"] +
-                    "' " +
-                    selected +
-                    ">" +
-                    response[i]["sub_area_name"] +
-                    " </option>"
-                );
-            }
-        },
-    });
-}
 function validatePromoAdd() {
     let response = true;
     let status = $('#promo_status').val(); let label = $('#promo_label').val(); let remark = $('#promo_remark').val();
@@ -793,8 +721,8 @@ function validatePromoAdd() {
 
 function update() {//this function will update customer details of after confirmation
     let cus_id = $('#cus_id').val(); let cus_name = $('#new_cus_name').val(); let cus_mob = $('#cus_mob').val();
-    let area = $('#area').val(); let sub_area = $('#sub_area').val();
-    let args = { 'cus_id': cus_id, 'cus_name': cus_name, 'cus_mob': cus_mob, 'area': area, 'sub_area': sub_area, 'update': 'yes' }
+    let area = $('#area').val();
+    let args = { 'cus_id': cus_id, 'cus_name': cus_name, 'cus_mob': cus_mob, 'area': area, 'update': 'yes' }
     $.post('followupFiles/promotion/submitNewCustomer.php', args, function (response) {
         if (response.includes('Error')) {
             swarlErrorAlert(response);
@@ -1118,7 +1046,9 @@ function historyTableContents(cus_id, type, url) {
 
         $('#close_history_card').off('click').click(() => {
             let typevalue = $(".toggle-container .active").val();//this will show back active tab's contents
-            if (typevalue == 'Renewal') { $('.renewal_card').show(); }  if(typevalue == 'Re-active'){$('.re_active_card').show();}else { $('.repromotion_card').show(); }
+            if(typevalue == 'Renewal') { $('.renewal_card').show(); }  
+            if(typevalue == 'Re-active'){$('.re_active_card').show();} 
+            if(typevalue == 'Repromotion'){$('.repromotion_card').show();}
 
             $('.filter_card').show();
             $('.customer-status-card, .loan-history-card, .doc-history-card, #close_history_card').hide();

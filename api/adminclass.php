@@ -6781,7 +6781,7 @@ class admin
 	function getLoanList($mysqli, $id)
 	{
 		$detailrecords = array();
-		$Qry = $mysqli->query("SELECT `cus_id`,`cus_name`,`mobile1`,`cus_pic`,`area_confirm_area` FROM `acknowlegement_customer_profile` WHERE req_id = '" . strip_tags($id) . "' ");
+		$Qry = $mysqli->query("SELECT `cus_id`,`first_name`,`last_name`,`mobile1`,`cus_pic`,`area_confirm_area` FROM `acknowlegement_customer_profile` WHERE req_id = '" . strip_tags($id) . "' ");
 		if ($Qry->num_rows > 0) {
 			$row = $Qry->fetch_assoc();
 			$detailrecords = $row;
@@ -8124,7 +8124,7 @@ class admin
 			$loan_id = $_POST['loan_id'];
 		}
 
-		$insertQry = "UPDATE in_verification set `cus_name`='" . strip_tags($cus_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "' where `cus_id`='" . strip_tags($cus_id) . "' ";
+		$insertQry = "UPDATE in_verification set `first_name`='" . strip_tags($first_name) . "',`last_name`='" . strip_tags($last_name) . "',`gender`='" . strip_tags($gender) . "',`dob`='" . strip_tags($dob) . "',`age`='" . strip_tags($age) . "' where `cus_id`='" . strip_tags($cus_id) . "' ";
 		$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 
 		$grantorupdate = "UPDATE customer_profile cp JOIN in_issue ii ON cp.req_id = ii.req_id  JOIN acknowlegement_customer_profile ackp ON ackp.req_id = ii.req_id SET cp.`guarentor_name`='" . strip_tags($guarentor_name) . "',cp.`guarentor_relation`='" . strip_tags($guarentor_relation) . "',cp.`guarentor_photo`='" . strip_tags($guarentor_pic) . "',ackp.`guarentor_name`='" . strip_tags($guarentor_name) . "',ackp.`guarentor_relation`='" . strip_tags($guarentor_relation) . "',ackp.`guarentor_photo`='" . strip_tags($guarentor_pic) . "' WHERE ii.loan_id = '$loan_id'; ";

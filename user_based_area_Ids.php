@@ -38,19 +38,13 @@ function getUserAreaList(PDO $connect, string $module): string
 
     $config = [
         // Group → Sub Area
-        'verification'    => $GROUP_AREA,
-        'approval'        => $GROUP_AREA,
-        'acknowledgement' => $GROUP_AREA,
-        'loanissue'       => $GROUP_AREA,
-        'update'          => $GROUP_AREA,
-        'accloanissue'    => $GROUP_AREA,
+        'Group'    => $GROUP_AREA,
 
         // Line → Sub Area
-        'collection'      => $LINE_AREA,
-        'closed'          => $LINE_AREA,
+        'Line'     => $LINE_AREA,
 
         // Due Follow-up → Area
-        'confirmFollowUp' => $DUEFOLLOWUP_AREA,
+        'DueFollowup' => $DUEFOLLOWUP_AREA,
     ];
 
     if (!isset($config[$module])) {

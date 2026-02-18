@@ -25,9 +25,9 @@ if($idupd>0)
 	$getLoanList = $userObj->getLoanList($mysqli,$idupd); 
 	if (sizeof($getLoanList)>0) {
 			$cus_id						= $getLoanList['cus_id'];
-			$cus_name					= $getLoanList['cus_name'];
+			$first_name					= $getLoanList['first_name'];
+			$last_name					= $getLoanList['last_name'];
 			$area_name					= $getLoanList['area_name'];
-			$sub_area_name				= $getLoanList['sub_area_name'];
 	}
 }
 ?>
@@ -39,10 +39,9 @@ if($idupd>0)
 	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
 		Cauvery Capitals - ECS Follow Up &nbsp; -- &nbsp;
 
-		Customer Name - <?php if (isset($cus_name)) { echo $cus_name;} ?>
+		Customer Name - <?php if (isset($first_name) && isset($last_name)) { echo $first_name . ' ' . $last_name; } ?>
 		,&nbsp;&nbsp;Cus ID - <?php if (isset($cus_id)) { echo $cus_id; } ?>
 		,&nbsp;&nbsp;Area - <?php if (isset($area_name)) { echo $area_name; } ?>
-		,&nbsp;&nbsp;Sub Area - <?php if (isset($sub_area_name)) { echo $sub_area_name; } ?>
 
 	</div>
 </div>
@@ -63,7 +62,8 @@ if($idupd>0)
 		<input type="hidden" name="idupd" id="idupd" value="<?php if (isset($idupd)) {echo $idupd;} ?>" />
 		<input type="hidden" name="req_id" id="req_id" value="<?php if (isset($req_id)) {echo $req_id;} ?>" />
 		<input type="hidden" name="cusidupd" id="cusidupd" value="<?php if (isset($cusidupd)) {echo $cusidupd;} ?>" />
-		<input type="hidden" name="cus_name" id="cus_name" value="<?php if (isset($cus_name)) {echo $cus_name;} ?>" />
+		<input type="hidden" name="first_name" id="first_name" value="<?php if (isset($first_name)) {echo $first_name;} ?>" />
+		<input type="hidden" name="last_name" id="last_name" value="<?php if (isset($last_name)) {echo $last_name;} ?>" />
 		<input type="hidden" name="pending_sts" id="pending_sts" value="" />
 		<input type="hidden" name="od_sts" id="od_sts" value="" />
 		<input type="hidden" name="due_nil_sts" id="due_nil_sts" value="" />

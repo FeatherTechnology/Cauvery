@@ -8,7 +8,6 @@ include '../../moneyFormatIndia.php';
             <th width="10%">S.No</th>
             <th>Loan ID</th>
             <th>Loan Category</th>
-            <th>Sub Category</th>
             <th>Agent</th>
             <th>Responsible</th>
             <th>Loan Amount</th>
@@ -24,7 +23,7 @@ include '../../moneyFormatIndia.php';
 
         <?php
         $cus_id = $_POST['cus_id'];
-        $run = $connect->query("SELECT ii.loan_id, lcc.loan_category_creation_name as loan_catrgory_name, lc.sub_category, rc.agent_id, rc.responsible, lc.loan_amt_cal, lc.collection_method, ii.cus_status, ii.req_id, cs.sub_status,lc.collection_method
+        $run = $connect->query("SELECT ii.loan_id, lcc.loan_category_creation_name as loan_catrgory_name, rc.agent_id, rc.responsible, lc.loan_amt_cal, lc.collection_method, ii.cus_status, ii.req_id, cs.sub_status,lc.collection_method
         FROM acknowlegement_loan_calculation lc 
         LEFT JOIN in_issue ii ON lc.req_id = ii.req_id 
         LEFT JOIN request_creation rc ON ii.req_id = rc.req_id 
@@ -41,7 +40,6 @@ include '../../moneyFormatIndia.php';
                 <td><?php echo $i; ?></td>
                 <td><?php echo $row['loan_id']; ?></td>
                 <td><?php echo $row["loan_catrgory_name"]; ?></td>
-                <td><?php echo $row["sub_category"]; ?></td>
                 <td>
                     <?php 
                         if($row["agent_id"] != '' || $row["agent_id"] != NULL){

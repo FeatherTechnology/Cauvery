@@ -5,7 +5,7 @@ include('..\moneyFormatIndia.php');
 include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
-$area_list = getUserAreaList($connect, 'accloanissue');
+$area_list = getUserAreaList($connect, 'Group');
 
 /* ---------------- DATATABLE COLUMN MAP ---------------- */
 $column = [

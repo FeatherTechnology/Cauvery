@@ -1,7 +1,7 @@
 <?php
 session_start();
 include('../../ajaxconfig.php');
-include('../../user_based_sub_area_Ids.php');
+include('../../user_based_area_Ids.php');
 
 $draw = $_POST['draw'];
 $start = $_POST['start'];
@@ -20,9 +20,8 @@ $columns = [
     'rc.updated_date',
     'rc.cus_id',
     'cr.autogen_cus_id',
-    'rc.cus_name',
+    'CONCAT(rc.first_name, rc.last_name)',
     'alc.area_name',
-    'salc.sub_area_name',
     'bc.branch_name',
     'agm.group_name',
     'alm.line_name',
@@ -36,15 +35,14 @@ if (isset($_SESSION["userid"])) {
     $userid = $_SESSION["userid"];
 }
 
-$area_list = getUserSubAreaList($connect, 'confirmFollowUp');
+$area_list = getUserAreaList($connect, 'DueFollowup');
 
 $searchQuery = "";
 if ($searchValue != '') {
     $searchQuery = " AND (rc.cus_id LIKE '%" . $searchValue . "%' 
                     OR cr.autogen_cus_id LIKE '%" . $searchValue . "%'
-                    OR rc.cus_name LIKE '%" . $searchValue . "%' 
+                    OR CONCAT(rc.first_name,' ', rc.last_name) LIKE '%" . $searchValue . "%' 
                     OR alc.area_name LIKE '%" . $searchValue . "%'
-                    OR salc.sub_area_name LIKE '%" . $searchValue . "%'
                     OR bc.branch_name LIKE '%" . $searchValue . "%'
                     OR agm.group_name LIKE '%" . $searchValue . "%'
                     OR alm.line_name LIKE '%" . $searchValue . "%'
@@ -57,11 +55,10 @@ $sql = "SELECT
     rc.req_id,
     rc.updated_date,
     rc.cus_id,
-    rc.cus_name,
+    CONCAT(rc.first_name,' ', rc.last_name) AS customer_name,
     rc.mobile1,
     cr.autogen_cus_id,
     alc.area_name,
-    salc.sub_area_name,
     bc.branch_name,
     agm.group_name,
     alm.line_name
@@ -70,12 +67,11 @@ FROM
 JOIN customer_register cr ON rc.cus_id = cr.cus_id
 JOIN acknowlegement_customer_profile acp ON rc.req_id = acp.req_id
 LEFT JOIN area_list_creation alc ON rc.area = alc.area_id
-LEFT JOIN sub_area_list_creation salc ON rc.sub_area = salc.sub_area_id
-LEFT JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = salc.sub_area_id
-LEFT JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+LEFT JOIN area_group_mapping_area agma ON agma.area_id = alc.area_id
+LEFT JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
 LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id
-LEFT JOIN area_line_mapping_sub_area almsa ON almsa.sub_area_id = salc.sub_area_id
-LEFT JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
+LEFT JOIN area_line_mapping_area alma ON alma.area_id = alc.area_id
+LEFT JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
 WHERE 
     rc.cus_status >= 14 AND acp.area_confirm_area IN ($area_list) 
     AND NOT EXISTS (SELECT 1 FROM confirmation_followup cf WHERE cf.req_id = rc.req_id AND cf.remove_status = 1) $searchQuery $orderQuery ";
@@ -113,7 +109,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         if ($status == '1') { // 1 means completed
             $actionEdit .= "<a class='conf-remove' data-cusid='" . $row['cus_id'] . "' data-reqid='" . $row['req_id'] . "' ><span>Remove</span></a>";
         } else {
-            $actionEdit .= "<a class='conf-edit' data-cusid='" . $row['cus_id'] . "' data-cusname='" . $row['cus_name'] . "' data-reqid='" . $row['req_id'] . "' data-toggle='modal' data-target='#addConfimation'><span>Confirmation</span></a>";
+            $actionEdit .= "<a class='conf-edit' data-cusid='" . $row['cus_id'] . "' data-cusname='" . $row['customer_name'] . "' data-reqid='" . $row['req_id'] . "' data-toggle='modal' data-target='#addConfimation'><span>Confirmation</span></a>";
         }
 
         $actionEdit .= "</div></div>";
@@ -123,9 +119,8 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
             date('d-m-Y', strtotime($row['updated_date'])),
             $row['cus_id'],
             $row['autogen_cus_id'],
-            $row['cus_name'],
+            $row['customer_name'],
             $row['area_name'],
-            $row['sub_area_name'],
             $row['branch_name'],
             $row['group_name'],
             $row['line_name'],
