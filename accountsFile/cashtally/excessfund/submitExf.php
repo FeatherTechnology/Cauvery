@@ -58,9 +58,7 @@ $upqry = $connect->query("
         clr_status = CASE 
                         WHEN ROUND($available_amt - '$amt', 2) = 0 THEN 1 
                         ELSE clr_status 
-                     END,
-        update_login_id = '$user_id',
-        updated_date = NOW()
+                     END
     WHERE bank_id = '$bank_id'
       AND trans_id = '$trans_id'
 ");

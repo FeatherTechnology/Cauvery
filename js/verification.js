@@ -394,6 +394,7 @@ $(document).ready(function () {
       $("#customer_profile").show();
       $("#cus_document").hide();
       $("#customer_loan_calc").hide();
+      customerProfileFunc();
     }
     if (verify == "documentation") {
       if (profile_sts == 10 || doc_sts == 11) {
@@ -422,27 +423,62 @@ $(document).ready(function () {
     }
   });
 
+  function customerProfileFunc() {
+
+      getImage(); // To show customer image when window onload.
+      closeFamModal(); // Family Info List and guarantor dropdown.
+      getOldGuarentorImg().then(() => {
+        resetkycinfoList(); // GUARANTEED to run AFTER guarantor data
+      });
+      resetPropertyinfoList(); //Property Info List.
+      resetbankinfoList(); //Bank Info List.
+      feedbackList(); // Feedback Info List.
+      getCustomerLoanCounts(); //to get closed customer details
+    
+      var state_upd = $("#state_upd").val();
+      if (state_upd != "") {
+          getDistrictDropdown(state_upd);
+      }
+    
+      var district_upd = $("#district_upd").val();
+      if (district_upd != "") {
+          getTalukDropdown(district_upd);
+      }
+    
+      var taluk_upd = $("#taluk_upd").val();
+      if (taluk_upd != "") {
+          getTalukBasedArea(taluk_upd);
+      }
+    
+      var role_upd = $("#role_upd").val();
+      if (role_upd == "3") {
+        //Staff
+        var userid_upd = $("#userid_upd").val();
+         getStaffBasedAgent(userid_upd); //create agent dropdown based on staff name using user id
+      } else if (role_upd == "1") {
+        //Director
+         getAllAgentDropdown(); //for directors
+      }
+  
+      let agent_id = $("#agent_id").val();
+      getresponsiblecolumn(agent_id);
+  
+      var pge = $("#pge").val();
+      if (pge == "1") {
+        //verification.
+        $("#cus_agent_name").attr("disabled", true);
+        $("#cus_responsible").attr("disabled", true);
+      }
+  }
+
   async function initialize() {
     onLoadEditFunction();
     await getUserBasedLoanCategory();
-    await getCategoryInfo();
+    getCategoryInfo();
     var loan_category = $("#loan_category").val();
-    await getLoaninfo(loan_category);
-    await profitCalculationInfo();
+    getLoaninfo(loan_category);
+    profitCalculationInfo();
   }
-
-  //Open close Cards
-  // $('.icon-chevron-down1').click(function(){ //$('.card-header').click(function(){
-  //     $(this).parent().next('div').slideToggle(); //$(this).next('div').slideToggle();
-  // })
-
-  //Already div in comment but function call in loan calc. so comment function also.
-  // function getCustomerOldData() {
-  //     let cus_id = $('#cus_id').val();
-  //     $.post('updateFile/showCustomerOldData.php', { cus_id }, function (html) {
-  //         // $('#cusOldDataDiv').empty().html(html);
-  //     })
-  // }
 
   ///Documentation
 
@@ -716,7 +752,6 @@ $(document).ready(function () {
 
   $("body").on("click", "#gold_info_edit", function () {
     let id = $(this).attr("value");
-    chequeHolderName(); // Holder Name From Family Table.
 
     $.ajax({
       url: "verificationFile/documentation/gold_info_edit.php",
@@ -1222,55 +1257,6 @@ function showErrorAlert(message) {
 }
 $(function () {
   $(".icon-chevron-down1").parent().next("div").slideUp(); //To collapse all card on load
-  getImage(); // To show customer image when window onload.
-
-  resetFamInfo(); //Call Family Info Table Initially.
-  resetFamDetails();
-  closeFamModal();
-
-  getOldGuarentorImg(); //gets the guarentor name if the customer is exist or already uploaded the guarentor pic
-
-  // resetgroupInfo(); //Group Family Modal Table Reset
-  // resetGroupDetails()
-  // closeGroupModal()
-
-  resetpropertyInfo(); // Property Info Modal Table Reset.
-  // closePropertyModal() //Property Info List.
-  resetPropertyinfoList(); //Property Info List.
-
-  resetbankInfo(); // Bank info Modal Table Reset.
-  // closeBankModal(); //Bank Info List.
-  resetbankinfoList(); //Bank Info List.
-
-  resetfeedback(); //Reset Feedback Modal Table.
-  feedbackList(); // Feedback List.
-
-  getCustomerLoanCounts(); //to get closed customer details
-
-  var state_upd = $("#state_upd").val();
-  if (state_upd != "") {
-    getDistrictDropdown(state_upd);
-  }
-  var district_upd = $("#district_upd").val();
-  if (district_upd != "") {
-    getTalukDropdown(district_upd);
-  }
-  var taluk_upd = $("#taluk_upd").val();
-  if (taluk_upd != "") {
-    getTalukBasedArea(taluk_upd);
-  }
-  var area_upd = $("#area_upd").val();
-
-  var role_upd = $("#role_upd").val();
-
-  if (role_upd == "3") {
-    //Staff
-    var userid_upd = $("#userid_upd").val();
-    getStaffBasedAgent(userid_upd); //create agent dropdown based on staff name using user id
-  } else if (role_upd == "1") {
-    //Director
-    getAllAgentDropdown(); //for directors
-  }
 
   $(".modalTable").DataTable({
     processing: true,
@@ -1303,20 +1289,6 @@ $(function () {
       },
     ],
   });
-
-  let agent_id = $("#agent_id").val();
-  getresponsiblecolumn(agent_id);
-
-  var pge = $("#pge").val();
-  if (pge == "1") {
-    //verification.
-    $("#cus_agent_name").attr("disabled", true);
-    $("#cus_responsible").attr("disabled", true);
-  }
-
-  setTimeout(function(){
-    resetkycinfoList(); //KYC Info List.
-  }, 1000);
 
 });
 
@@ -1376,17 +1348,7 @@ function getCustomerLoanCounts() {
     },
   });
 }
-// Modal Box for Agent Group
-$("#famFirstnameCheck").hide();
-$("#famLastnameCheck").hide();
-$("#famrelationCheck").hide();
-$("#famremarkCheck").hide();
-$("#famaddressCheck").hide();
-$("#famageCheck").hide();
-$("#famaadharCheck").hide();
-$("#fammobileCheck").hide();
-$("#famoccCheck").hide();
-$("#famincomeCheck").hide();
+
 $(document).on("click", "#submitFamInfoBtn", function () {
   let req_id = $("#req_id").val();
   let cus_id = $("#cus_id").val();
@@ -1455,8 +1417,6 @@ $(document).on("click", "#submitFamInfoBtn", function () {
         }
 
         resetFamInfo();
-        resetFamDetails();
-        closeFamModal();
       },
     });
   } else {
@@ -1601,16 +1561,12 @@ $("body").on("click", "#verification_fam_delete", function () {
             $("#FamDeleteOk").fadeOut("fast");
           }, 2000);
           resetFamInfo();
-          resetFamDetails();
-          closeFamModal();
         } else {
           $("#FamDeleteNotOk").show();
           setTimeout(function () {
             $("#FamDeleteNotOk").fadeOut("fast");
           }, 2000);
           resetFamInfo();
-          resetFamDetails();
-          closeFamModal();
         }
       },
     });
@@ -1653,64 +1609,65 @@ function closeFamModal() {
       // Sort guarentor_name dropdown
       sortDropdownAlphabetically("#guarentor_name");
 
-      resetFamInfo();
       resetFamDetails();
-      verificationPerson(); //To Select verification Person in Verification Info.//////
-      fingerprintTable();
     },
   });
 }
 
 function getOldGuarentorImg() {
-  let cus_id = $("#cus_id").val();
-  $.post(
-    "verificationFile/getOldGuarentorImg.php",
-    { cus_id: cus_id },
-    function (response) {
-      if (response.length > 0) {
-        var img = response[0]["img"];
-        $("#imgshows").attr("src", "uploads/verification/guarentor/" + img);
-        $("#guarentor_image").val(img);
-        $("#guarentorpic").attr("value", img);
-        $("#guarentor_relationship").val(response[0]["relation"]);
+  return new Promise((resolve, reject) => {
+    let cus_id = $("#cus_id").val();
+    $.post(
+      "verificationFile/getOldGuarentorImg.php",
+      { cus_id: cus_id },
+      function (response) {
+        if (response.length > 0) {
+          var img = response[0]["img"];
+          $("#imgshows").attr("src", "uploads/verification/guarentor/" + img);
+          $("#guarentor_image").val(img);
+          $("#guarentorpic").attr("value", img);
+          $("#guarentor_relationship").val(response[0]["relation"]);
 
-        $.post(
-          "verificationFile/verificationFam.php",
-          { cus_id: cus_id },
-          function (data) {
-            $("#guarentor_name")
-              .empty()
-              .append("<option value=''>" + "Select Guarantor" + "</option>");
-            for (var i = 0; i < data.length - 1; i++) {
-              // -1 because this ajax's response will contain customer value at the last of the response for verification person
-              var fam_name = data[i]["fam_name"];
-              var fam_id = data[i]["fam_id"];
-              var selected = "";
-              if (
-                response[0]["fam_id"] != "" &&
-                fam_id == response[0]["fam_id"]
-              ) {
-                selected = "selected";
+          $.post(
+            "verificationFile/verificationFam.php",
+            { cus_id: cus_id },
+            function (data) {
+              $("#guarentor_name")
+                .empty()
+                .append("<option value=''>" + "Select Guarantor" + "</option>");
+              for (var i = 0; i < data.length - 1; i++) {
+                // -1 because this ajax's response will contain customer value at the last of the response for verification person
+                var fam_name = data[i]["fam_name"];
+                var fam_id = data[i]["fam_id"];
+                var selected = "";
+                if (
+                  response[0]["fam_id"] != "" &&
+                  fam_id == response[0]["fam_id"]
+                ) {
+                  selected = "selected";
+                }
+                $("#guarentor_name").append(
+                  "<option value='" +
+                  fam_id +
+                  "' " +
+                  selected +
+                  ">" +
+                  fam_name +
+                  "</option>"
+                );
               }
-              $("#guarentor_name").append(
-                "<option value='" +
-                fam_id +
-                "' " +
-                selected +
-                ">" +
-                fam_name +
-                "</option>"
-              );
-            }
-          },
-          "json"
-        );
-      } else {
-        $("#imgshows").attr("src", "img/avatar.png");
-      }
-    },
-    "json"
-  );
+              resolve();
+            },
+            "json"
+          );
+        } else {
+          $("#imgshows").attr("src", "img/avatar.png");
+          resolve();
+        }
+      },
+      "json"
+    ).fail(reject);
+  });
 }
 
 // Verification Info Person
@@ -2583,8 +2540,6 @@ function resetkycinfoList() {
     success: function (html) {
       $("#kycListTable").empty();
       $("#kycListTable").html(html);
-
-      resetkycInfo();
     },
   });
 }
@@ -5012,6 +4967,8 @@ async function getDocumentFunc() {
   // await resetdocInfo(); // Document Info Reset.
   await docinfoList(); // Document Info List.
 
+  fingerprintTable(); // Fingerprint Info List.
+
   let mort = $("#mortgage_process").val() == "0" ? true : false;
   if (mort) {
     $("#mortgage_info_card").show();
@@ -5106,7 +5063,12 @@ $("#loan_category").change(function () {
   $("#loan_amt").val("");
   getLoaninfo(loan_cat);
 });
+
 $("#refresh_cal").click(function () {
+  runRefreshCalculation();
+});
+
+function runRefreshCalculation() {
   var customer_limit = parseFloat($("#customer_limit").val());
   var loan_amt = parseFloat($("#loan_amt").val().replace(/,/g, ''));
   var intrest_rate = $("#int_rate").val();
@@ -5118,37 +5080,34 @@ $("#refresh_cal").click(function () {
 
   if (loan_amt <= 0) {
     Swal.fire({
-      timerProgressBar: true,
-      timer: 2000,
-      title: 'Loan amount must be greater than zero',
+      title: "Warning!",
+      text: "Loan amount must be greater than zero",
       icon: 'error',
       showConfirmButton: true,
       confirmButtonColor: '#0C70AB'
     });
-    return;
+    return false;
   }
 
   if (loan_amt > customer_limit) {
     Swal.fire({
-      timerProgressBar: true,
-      timer: 2000,
-      title: 'Customer limit exceeded..!',
+      title: 'Warning!',
+      text: 'Customer limit exceeded..!',
       icon: 'error',
       showConfirmButton: true,
       confirmButtonColor: '#0C70AB'
     });
-    return;
+    return false;
   }
   if (intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || (profit_method == "" && scheme_profit_method == "")) {
     Swal.fire({
-      timerProgressBar: true,
-      timer: 2000,
-      title: 'Please Fill out Loan Info!',
+      title: 'Warning!',
+      text: 'Please Fill out Loan Info!',
       icon: 'error',
       showConfirmButton: true,
       confirmButtonColor: '#0C70AB'
     });
-    return;
+    return false;
   }
 
   $(".int-diff").text("*");
@@ -5202,7 +5161,9 @@ $("#refresh_cal").click(function () {
       $('.emi_div').show();
     }
   }
-});
+
+  return true;
+};
 
 $("#day_scheme").change(function () {
   $("#due_start_from").val("");
@@ -5259,8 +5220,8 @@ $("#due_start_from").change(function () {
 
 $("#submit_loan_calculation").click(function () {
   $('#due_start_from').trigger('change');
-  $("#refresh_cal").trigger("click"); //For calculate once again if user missed to refresh calculation
-  if (loan_calc_validation()) {
+
+  if (loan_calc_validation() && runRefreshCalculation()) {
     let confirmAction = confirm("Are you sure you want to submit Loan Calculation?");
     if (!confirmAction) {
       event.preventDefault(); // Stop form submission if canceled
@@ -6670,14 +6631,6 @@ function loan_calc_validation() {
   var due_period = $("#due_period").val();
   var doc_charge = $("#doc_charge").val();
   var proc_fee = $("#proc_fee").val();
-  var loan_amt_cal = $("#loan_amt_cal").val();
-  var principal_amt_cal = $("#principal_amt_cal").val();
-  var int_amt_cal = $("#int_amt_cal").val();
-  var tot_amt_cal = $("#tot_amt_cal").val();
-  var due_amt_cal = $("#due_amt_cal").val();
-  var doc_charge_cal = $("#doc_charge_cal").val();
-  var proc_fee_cal = $("#proc_fee_cal").val();
-  var net_cash_cal = $("#net_cash_cal").val();
   var due_start_from = $("#due_start_from").val();
   var maturity_month = $("#maturity_month").val();
   var collection_method = $("#collection_method").val();

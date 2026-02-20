@@ -48,7 +48,7 @@ $insertCredit = $connect->query("
     ('$bex_id','$from_bank_id','$to_bank_id','$from_user_id','$to_user_id','$ref_code','$trans_id','$remark','$amt','$user_id','$op_date')");
 
 /* ✅ UPDATE BANK STATEMENT (SUBTRACT + CLEAR STATUS) */
-$upqry = $connect->query(" UPDATE bank_stmt SET transaction_amount = $available_amt - '$amt',clr_status = CASE WHEN ROUND($available_amt - '$amt', 2) = 0 THEN 1 ELSE clr_status END, update_login_id = '$user_id', updated_date = NOW() WHERE bank_id = '$to_bank_id' AND trans_id = '$trans_id'");
+$upqry = $connect->query(" UPDATE bank_stmt SET transaction_amount = $available_amt - '$amt',clr_status = CASE WHEN ROUND($available_amt - '$amt', 2) = 0 THEN 1 ELSE clr_status END WHERE bank_id = '$to_bank_id' AND trans_id = '$trans_id'");
 
 if ($insertCredit && $upqry) {
     echo "Submitted Successfully";

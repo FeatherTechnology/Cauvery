@@ -51,7 +51,6 @@ if ($idupd > 0) {
             $branch_name                       = $getBranchCreation['branch_name'];
             $mobile_number                       = $getBranchCreation['mobile_number'];
             $address1                 = $getBranchCreation['address1'];
-            $address2                         = $getBranchCreation['address2'];
             $state                     = $getBranchCreation['state'];
             $place                   = $getBranchCreation['place'];
             $pincode                    = $getBranchCreation['pincode'];

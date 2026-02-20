@@ -53,7 +53,7 @@ $qry = $connect->query("
     ('$ref_code','$from_acc_id','$to_bank_id','$to_user_id','$trans_id','$remark','$amt','$user_id','$op_date') ");
 
 /* ✅ UPDATE BANK STATEMENT (SUBTRACT AMOUNT + CLR STATUS) */
-$upqry = $connect->query(" UPDATE bank_stmt SET transaction_amount = $available_amt - '$amt',clr_status = CASE WHEN ROUND($available_amt - '$amt', 2) = 0 THEN 1 ELSE clr_status END, update_login_id = '$user_id', updated_date = NOW() WHERE bank_id = '$from_acc_id' AND trans_id = '$trans_id'");
+$upqry = $connect->query(" UPDATE bank_stmt SET transaction_amount = $available_amt - '$amt',clr_status = CASE WHEN ROUND($available_amt - '$amt', 2) = 0 THEN 1 ELSE clr_status END WHERE bank_id = '$from_acc_id' AND trans_id = '$trans_id'");
 
 if ($qry && $upqry) {
     echo "Submitted Successfully";

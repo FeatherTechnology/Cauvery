@@ -71,7 +71,7 @@ $qry = $connect->query(" INSERT INTO ct_db_bexpense
     ('$username','$usertype','$ref_code','$bank_id','$cat','$part','$vou_id','$trans_id','$rec_per','$remark','$amt','$upd','$user_id','$op_date')");
 
 /* ✅ UPDATE BANK STATEMENT */
-$upqry = $connect->query(" UPDATE bank_stmt SET transaction_amount = $available_amt - '$amt',clr_status = CASE WHEN ROUND($available_amt - '$amt', 2) = 0 THEN 1 ELSE clr_status END, update_login_id = '$user_id', updated_date = NOW() WHERE bank_id = '$bank_id' AND trans_id = '$trans_id'");
+$upqry = $connect->query(" UPDATE bank_stmt SET transaction_amount = $available_amt - '$amt',clr_status = CASE WHEN ROUND($available_amt - '$amt', 2) = 0 THEN 1 ELSE clr_status END WHERE bank_id = '$bank_id' AND trans_id = '$trans_id'");
 
 if ($qry && $upqry) {
     echo "Submitted Successfully";
