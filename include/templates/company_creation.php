@@ -52,7 +52,6 @@ if ($idupd > 0) {
 			$company_id                 	 = $getCompanyCreation['company_id'];
 			$company_name          		     = $getCompanyCreation['company_name'];
 			$address1      			     = $getCompanyCreation['address1'];
-			$address2      			 = $getCompanyCreation['address2'];
 			$state       			 = $getCompanyCreation['state'];
 			$district                	 = $getCompanyCreation['district'];
 			$taluk       		    	 = $getCompanyCreation['taluk'];
@@ -117,12 +116,6 @@ if ($idupd > 0) {
 											<input type="text" class="form-control" id="address1" name="address1" value="<?php if (isset($address1)) echo $address1; ?>" placeholder="Enter Address" tabindex="2">
 										</div>
 									</div>
-									<!-- <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-                                        <div class="form-group">
-                                            <label for="disabledInput">Address Line 2</label>&nbsp;<span class="text-danger">*</span>
-                                            <input type="text" class="form-control" id="address2" name="address2" value="<?php if (isset($address2)) echo $address2; ?>" placeholder="Enter Address Line 2" tabindex="3" >
-                                        </div>
-                                    </div> -->
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="disabledInput">State</label>&nbsp;<span class="text-danger">*</span>
