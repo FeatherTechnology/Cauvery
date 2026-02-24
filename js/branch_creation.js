@@ -277,6 +277,21 @@ function getTalukDropdown(DistSelected) {
 function validateBranchForm() {
     var mobile = $('#mobile_number').val();
     var wapp = $('#whatsapp_number').val();
+    var state = $('#state').val(); 
+    var district = $('#district').val(); 
+    var taluk = $('#taluk').val();
+
+    if (state === 'SelectState' || district === 'Select District' || taluk === 'Select Taluk') {
+        Swal.fire({
+            timerProgressBar: true,
+            timer: 2000,
+            title: 'Please Fill out Mandatory fields!',
+            icon: 'error',
+            showConfirmButton: true,
+            confirmButtonColor: '#0C70AB'
+        });
+        return false;
+    }
 
     if (mobile != '' && mobile.length < 10) {
         Swal.fire({

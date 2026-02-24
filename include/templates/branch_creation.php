@@ -137,7 +137,7 @@ if ($idupd > 0) {
                                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                         <div class="form-group">
                                             <label for="disabledInput">State</label>&nbsp;<span class="text-danger">*</span>
-                                            <select type="text" class="form-control" id="state" name="state" required tabindex="5">
+                                            <select type="text" class="form-control" id="state" name="state" tabindex="5">
                                                 <option value="SelectState">Select State</option>
                                                 <option value="TamilNadu" <?php if (isset($state) && $state == 'TamilNadu') echo 'selected' ?>>Tamil Nadu</option>
                                                 <option value="Puducherry" <?php if (isset($state) && $state == 'Puducherry') echo 'selected' ?>>Puducherry</option>
@@ -148,7 +148,7 @@ if ($idupd > 0) {
                                         <div class="form-group">
                                             <label for="disabledInput">District</label>&nbsp;<span class="text-danger">*</span>
                                             <input type="hidden" class="form-control" id="district1" name="district1">
-                                            <select type="text" class="form-control" id="district" name="district" required tabindex="6">
+                                            <select type="text" class="form-control" id="district" name="district" tabindex="6">
                                                 <?php if ($idupd == '') { ?>
                                                     <option value="Select District">Select District</option>
                                                 <?php } else { ?>
@@ -161,7 +161,7 @@ if ($idupd > 0) {
                                         <div class="form-group">
                                             <label for="disabledInput">Taluk</label>&nbsp;<span class="text-danger">*</span>
                                             <input type="hidden" class="form-control" id="taluk1" name="taluk1">
-                                            <select type="text" class="form-control" id="taluk" name="taluk" required tabindex="7">
+                                            <select type="text" class="form-control" id="taluk" name="taluk" tabindex="7">
                                                 <?php if ($idupd == '') { ?>
                                                     <option value="Select Taluk">Select Taluk</option>
                                                 <?php } else { ?>

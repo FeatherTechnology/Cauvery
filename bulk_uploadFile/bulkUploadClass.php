@@ -501,10 +501,10 @@ class bulkUploadClass
 
     function verificationTables($connect, $data, $userData, $req_id)
     {
-        $insert_inv = $connect->query("INSERT INTO in_verification (`req_id`,`user_type`, `user_name`, `agent_id`, `responsible`, `remarks`, `declaration`,`req_code`, `dor`,`cus_reg_id`, `cus_id`, `cus_data`, `first_name`,`last_name`, `dob`, `age`, `gender`, `state`, `district`, `taluk`, `area`, `address`,`mobile1`, `mobile2`, `father_name`, `mother_name`, `marital`, `spouse_name`, `occupation_type`, `occupation`, `pic`, `loan_category`,`tot_value`, `ad_amt`, `ad_perc`, `loan_amt`, `poss_type`, `due_amt`, `due_period`, `cus_status`,`prompt_remark`, `status`, `insert_login_id`, `update_login_id`, `delete_login_id`, `created_date`, `updated_date` ) SELECT req_id, user_type,user_name,agent_id, responsible, remarks, declaration, req_code, dor, cus_reg_id, cus_id, cus_data, first_name, last_name, dob, age, gender,
+        $insert_inv = $connect->query("INSERT INTO in_verification (`req_id`,`user_type`, `user_name`, `agent_id`, `responsible`, `remarks`, `declaration`,`req_code`, `dor`,`cus_reg_id`, `cus_id`, `cus_data`, `first_name`,`last_name`, `dob`, `age`, `gender`, `state`, `district`, `taluk`, `area`, `address`,`mobile1`, `mobile2`, `father_name`, `mother_name`, `marital`, `spouse_name`, `occupation_type`, `occupation`, `pic`, `loan_category`,`tot_value`, `ad_amt`, `ad_perc`, `loan_amt`, `poss_type`, `due_amt`, `due_period`, `cus_status`,`prompt_remark`, `status`, `insert_login_id`, `update_login_id`, `created_date`, `updated_date` ) SELECT req_id, user_type,user_name,agent_id, responsible, remarks, declaration, req_code, dor, cus_reg_id, cus_id, cus_data, first_name, last_name, dob, age, gender,
     state, district, taluk, area, address, mobile1, mobile2, father_name, mother_name,marital, spouse_name, occupation_type, occupation, pic, loan_category,
      tot_value, ad_amt, ad_perc, loan_amt, poss_type, due_amt, due_period,
-    cus_status, prompt_remark, status, insert_login_id, update_login_id, delete_login_id,
+    cus_status, prompt_remark, status, insert_login_id, update_login_id,
     created_date, updated_date from request_creation where req_id = '" . $req_id . "' ");
 
         $qry = $connect->query("SELECT id FROM verification_family_info WHERE TRIM(LOWER(cus_id)) = TRIM(LOWER('" . $data['cus_id'] . "')) AND TRIM(LOWER(first_name)) = TRIM(LOWER('" . $data['guarantor_first_name'] . "')) AND TRIM(LOWER(relationship)) = TRIM(LOWER('" . $data['guarantor_relationship'] . "')) ");

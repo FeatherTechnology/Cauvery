@@ -69,7 +69,7 @@ $column = array(
     'ii.updated_date',
     'cp.cus_id',
     'cr.autogen_cus_id',
-    'CONCAT(cp.first_name, " ", cp.last_name) AS cus_name',
+    'CONCAT(cp.first_name, " ", cp.last_name)',
     'al.area_name',
     'lcc.loan_category_creation_name',
     'ac.ag_name',
