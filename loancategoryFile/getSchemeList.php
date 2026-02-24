@@ -9,10 +9,24 @@ if (isset($_SESSION["userid"])) {
 $column = array(
     'ls.scheme_id',
     'ls.scheme_name',
+    'ls.short_name',
     'ls.due_method',
-    'ls.scheme_id',
-    'ls.scheme_id',
-    'ls.status'
+    'ls.profit_method',
+    'ls.total_due',
+    'ls.advance_type',
+    'ls.due_period',
+    'ls.intreset_type',
+    'ls.intreset_min',
+    'ls.intreset_max',
+    'ls.doc_charge_type',
+    'ls.doc_charge_min',
+    'ls.doc_charge_max',
+    'ls.proc_fee_type',
+    'ls.proc_fee_min',
+    'ls.proc_fee_max',
+    'ls.overdue',
+    'ls.status',
+    'ls.scheme_id'
 );
 if (isset($_POST['action']) && $_POST['action'] == 'dropdown') {
     // Return simple list for dropdown

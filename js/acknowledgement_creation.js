@@ -813,12 +813,12 @@ $('#doc_remarkcheck').hide();
 
         if (rcupd == '0') {
             $('#RCdocUpd').show();
-            enpend.checked = false;
+            // enpend.checked = false;
 
         } else {
             $('#RC_document_upd').val('');
             $('#RCdocUpd').hide();
-            enpend.checked = true;
+            // enpend.checked = true;
         }
     })
 

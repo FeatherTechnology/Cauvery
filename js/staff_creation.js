@@ -501,7 +501,7 @@ function getStaffTypeDropdown() {
 
 function submitValidation() { 
  var staff_name = $('#staff_name').val(); var staff_type = $('#staff_type').val(); var address = $('#address').val(); var state = $('#state').val(); var district = $('#district').val(); var taluk = $('#taluk').val(); var place = $('#place').val(); var pincode = $('#pincode').val(); let mobile1 = $('#mobile1').val(); let mobile2 = $('#mobile2').val(); let whatsapp = $('#whatsapp').val();
-        if (staff_name === '' || staff_type === '' || address === '' || state === '' || district === '' || taluk === '' || place === '' || pincode === '') {
+        if (staff_name === '' || staff_type === '' || address === '' || state === 'SelectState' || district === 'Select District' || taluk === 'Select Taluk' || place === '' || pincode === '') {
             Swal.fire({
                 timerProgressBar: true,
                 timer: 2000,

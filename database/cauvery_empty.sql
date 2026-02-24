@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2026 at 01:53 PM
+-- Generation Time: Feb 23, 2026 at 10:56 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -1092,10 +1092,7 @@ CREATE TABLE `collection` (
   `coll_charge_waiver` varchar(255) NOT NULL DEFAULT '0',
   `total_waiver` varchar(255) NOT NULL DEFAULT '0',
   `insert_login_id` varchar(255) DEFAULT NULL,
-  `update_login_id` varchar(255) DEFAULT NULL,
-  `delete_login_id` varchar(255) DEFAULT NULL,
-  `created_date` datetime DEFAULT NULL COMMENT 'Create Time',
-  `updated_date` datetime DEFAULT current_timestamp() COMMENT 'Update Time'
+  `created_date` datetime DEFAULT NULL COMMENT 'Create Time'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -1596,7 +1593,6 @@ CREATE TABLE `ct_db_bdeposit` (
   `remark` varchar(255) DEFAULT NULL,
   `amt` varchar(255) DEFAULT NULL,
   `insert_login_id` varchar(255) DEFAULT NULL,
-  `update_login_id` varchar(255) DEFAULT NULL,
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -1765,7 +1761,6 @@ CREATE TABLE `ct_db_hag` (
   `remark` varchar(255) DEFAULT NULL,
   `amt` varchar(255) DEFAULT NULL,
   `insert_login_id` varchar(255) DEFAULT NULL,
-  `update_login_id` varchar(255) DEFAULT NULL,
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -2374,7 +2369,6 @@ CREATE TABLE `in_acknowledgement` (
   `status` varchar(50) DEFAULT NULL,
   `insert_login_id` varchar(50) DEFAULT NULL,
   `update_login_id` varchar(255) DEFAULT NULL,
-  `delete_login_id` varchar(255) DEFAULT NULL,
   `created_on` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_date` datetime NOT NULL DEFAULT current_timestamp(),
   `inserted_user` varchar(10) DEFAULT NULL,
@@ -2394,7 +2388,6 @@ CREATE TABLE `in_approval` (
   `status` varchar(255) DEFAULT '0',
   `insert_login_id` varchar(255) DEFAULT NULL,
   `update_login_id` varchar(255) DEFAULT NULL,
-  `delete_login_id` varchar(255) DEFAULT NULL,
   `created_date` datetime DEFAULT current_timestamp(),
   `updated_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -3267,8 +3260,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `fullname`, `title`, `emailid`, `user_name`, `user_password`, `role`, `role_type`, `dir_id`, `ag_id`, `staff_id`, `company_id`, `branch_id`, `bank_access`, `loan_cat`, `agentforstaff`, `line_id`, `group_id`, `download_access`, `report_access`, `home_access`, `pro_aty_access`, `promotion_activity_mapping_access`, `mastermodule`, `company_creation`, `branch_creation`, `loan_category`, `area_creation`, `area_mapping`, `area_approval`, `adminmodule`, `director_creation`, `agent_creation`, `staff_creation`, `manage_user`, `doc_mapping`, `bank_creation`, `requestmodule`, `request`, `request_list_access`, `verificationmodule`, `verification`, `ver_loan_cat`, `ver_group_id`, `approvalmodule`, `approval`, `app_loan_cat`, `acknowledgementmodule`, `acknowledgement`, `ack_loan_cat`, `loanissuemodule`, `loan_issue`, `collectionmodule`, `collection`, `collection_access`, `closedmodule`, `closed`, `nocmodule`, `noc`, `noc_handover`, `noc_replace_access`, `noc_mapping_access`, `doctrackmodule`, `doctrack`, `doc_rec_access`, `noc_replace`, `updatemodule`, `update_screen`, `update_screen_id`, `concernmodule`, `concern_creation`, `concern_solution`, `concern_feedback`, `accountsmodule`, `cash_tally`, `cash_tally_access`, `bank_details`, `cash_tally_admin`, `bank_clearance`, `bnk_clr_upl_acc`, `finance_insight`, `accounts_loan_issue`, `followupmodule`, `promotion_activity`, `loan_followup`, `confirmation_followup`, `due_followup`, `ecs_followup`, `due_followup_lines`, `reportmodule`, `work_report_module`, `monitor_report_module`, `analysis_report_module`, `accounts_report_module`, `ledger_report`, `request_report`, `cancel_revoke_report`, `cus_profile_report`, `loan_issue_report`, `collection_report`, `principal_interest_report`, `balance_report`, `due_list_report`, `in_closed_report`, `closed_report`, `confirmation_followup_report`, `agent_report`, `no_due_pay_report`, `other_trans_report`, `day_end_report`, `cash_tally_activity_report`, `due_followup_customer_count_report`, `commitment_report`, `customer_status_report`, `promotion_activity_report`, `cleared_report`, `events_report`, `area_loan_count_report`, `work_count_report`, `noc_handover_report`, `confirmation_count_report`, `concern_report`, `partners_report`, `reportmodule_intrest`, `intrest_ledger_report`, `intrest_loan_issue_report`, `intrest_collection_report`, `intrest_balance_report`, `intrest_closed_report`, `search_module`, `search`, `bulk_upload_module`, `bulk_upload`, `loan_track`, `sms_module`, `sms_generation`, `status`, `insert_login_id`, `update_login_id`, `delete_login_id`, `created_date`, `updated_date`) VALUES
-(2, NULL, NULL, 'Naren', NULL, '', 'admin', 'Galaxy@2024', '3', '7', '', '', '1', '1', '1,2,3,4', '2', '1,2,3', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87', '1,2,3,4,5,6,7,8,9,10,11', '1,2,3,4,5,6,7,8,9,10,11', '1', '2', 0, '1,2,3,4,5', '2', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '1,2,3,7', '', '0', '0', '1,2,3,7', '0', '0', '1,2,3,7', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 1, '2', '0', '0', '0', 1, '0', '0', '1,2', '0', '0', '0', '1', '0', '0', NULL, '2,3', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0', 0, '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15', '0', 0, 0, 0, 0, '1', '0', '0', '1', '0', '0', 0, '0', '0', 0, '0', '0', '0', 0, '0', '0', 0, '0', '0', '0', 0, 0, 0, 0, 0, '0', '0', '0', '0', 1, 1, 1, 1, 1, 1, '0', '0', '0', '0', '0', 0, 0, '0', '1', '2', NULL, '2024-06-26 15:01:00', '2026-02-02 14:14:51'),
-(70, NULL, NULL, 'Naren', NULL, '', 'Naren', '2020', '3', '7', '', '', '1', '1', '1,2,3,4,7,8', '2,3', '1,2,3,4,6,7,8,9', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77', '1,2,3,4,5,6,7,8,9,11,12,13,14', '1,2,3,4,5,6,7,8,9,10,11,12,14', '0', '2', 0, '1,2,3,4,5', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '1,2,3,7', '', '0', '0', '1,2,3,7', '0', '0', '1,2,3,7', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 0, '1', '0', '0', '0', 0, '0', '0', '1,2', '0', '0', '0', '1', '0', '0', '1,2,3,4', '2,3', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0', 0, '1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17', '0', 0, 0, 0, 0, '1', '0', '0', '1', '0', '0', 0, '0', '0', 0, '0', '0', '0', 0, '0', '0', 1, '0', '0', '0', 0, 0, 0, 0, 0, '0', '0', '0', '0', 1, 1, 1, 1, 1, 1, '0', '0', '0', '0', '0', 0, 0, '0', '2', '70', NULL, '2025-02-13 19:02:00', '2026-02-20 12:31:07');
+(2, NULL, NULL, 'Naren', NULL, '', 'admin', 'Galaxy@2024', '3', '1', '', '', '1', '1', '1,2,3,4', '2', '1,2,3', '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87', '1,2,3,4,5,6,7,8,9,10,11', '1,2,3,4,5,6,7,8,9,10,11', '1', '2', 0, '1,2,3,4,5', '2', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '1,2,3,7', '', '0', '0', '1,2,3,7', '0', '0', '1,2,3,7', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 1, '2', '0', '0', '0', 1, '0', '0', '1,2', '0', '0', '0', '1', '0', '0', NULL, '2,3', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0', 0, '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15', '0', 0, 0, 0, 0, '1', '0', '0', '1', '0', '0', 0, '0', '0', 0, '0', '0', '0', 0, '0', '0', 0, '0', '0', '0', 0, 0, 0, 0, 0, '0', '0', '0', '0', 1, 1, 1, 1, 1, 1, '0', '0', '0', '0', '0', 0, 0, '0', '1', '2', NULL, '2024-06-26 15:01:00', '2026-02-02 14:14:51');
 
 -- --------------------------------------------------------
 

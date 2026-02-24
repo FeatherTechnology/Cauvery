@@ -310,7 +310,7 @@ function getBranchDropdown(company_id) {
     })
 }
 function validateDirectorForm() {
-    var dir_type = $('#dir_type').val(); var dir_id = $('#dir_id').val(); var dir_name = $('#dir_name').val(); var state = $('#state').val(); var district = $('#district1').val(); var taluk = $('#taluk1').val(); var place = $('#place').val(); var pincode = $('#pincode').val(); var mobile = $('#mobile').val(); var whatsapp = $('#whatsapp').val();
+    var dir_type = $('#dir_type').val(); var dir_id = $('#dir_id').val(); var dir_name = $('#dir_name').val(); var state = $('#state').val(); var district = $('#district').val(); var taluk = $('#taluk').val(); var place = $('#place').val(); var pincode = $('#pincode').val(); var mobile = $('#mobile').val(); var whatsapp = $('#whatsapp').val();
         if (dir_type === '' || dir_id === '' || dir_name === '' || state === 'SelectState' || district === 'Select District' || taluk === 'Select Taluk' || place === '' || pincode === '') {
             Swal.fire({
                 timerProgressBar: true,

@@ -4451,9 +4451,9 @@ class admin
 	// 	$revokeQry = $mysqli->query("Update request_creation set cus_status = 8,updated_date=now(), update_login_id= $userid where req_id = $rev ") or die($mysqli->error());
 	// 	$revokeQry = $mysqli->query("Update customer_register set cus_status = 8,updated_date=now() where req_ref_id = $rev ") or die($mysqli->error());
 	// }
-	public function deleteRequest($mysqli, $del, $userid)
+	public function deleteRequest($mysqli, $del)
 	{
-		$deleteQry = $mysqli->query("Update request_creation set status = 1,updated_date=now(), delete_login_id= $userid where req_id = $del ") or die($mysqli->error());
+		$deleteQry = $mysqli->query("Update request_creation set status = 1,updated_date=now() where req_id = $del ") or die($mysqli->error());
 	}
 
 	public function getRequest($mysqli, $id)
@@ -4785,10 +4785,10 @@ class admin
 	// 	$revokeQry = $mysqli->query("Update in_verification set cus_status = 9,updated_date=now(), update_login_id= $userid where req_id = $rev ") or die($mysqli->error());
 	// }
 	//Delete verification 
-	function deleteVerification($mysqli, $id, $userid)
+	function deleteVerification($mysqli, $id)
 	{
-		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Verification');
-		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Verification');
+		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Verification');
+		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Verification');
 	}
 
 	//Cancel Approval
@@ -6616,10 +6616,10 @@ class admin
 	//Delete Acknowledgement
 	function removeAcknowledgement($mysqli, $id, $userid)
 	{
-		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Acknowledgement');
-		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Acknowledgement');
-		$qry = $mysqli->query("UPDATE in_approval set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Acknowledgement');
-		$qry = $mysqli->query("UPDATE in_acknowledgement set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id  ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE in_approval set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE in_acknowledgement set status = 1,updated_date=now() where req_id = $id  ") or die('Error While Removing Acknowledgement');
 	}
 
 	///  Acknowlegement END

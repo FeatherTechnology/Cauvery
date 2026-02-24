@@ -17,7 +17,7 @@ $column = [
     'bc.branch_name',
     'agm.group_name',
     'alm.line_name',
-    'a.area_name',
+    'ac.area_name',
     'lcc.loan_category_creation_name',
     'b.loan_amt',
     'a.user_type',
