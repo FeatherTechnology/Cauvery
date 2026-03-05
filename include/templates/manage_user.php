@@ -74,6 +74,7 @@ $bank_details = '';
 $bank_clearance = '';
 $bnk_clr_upl_acc = '';
 $finance_insight = '';
+$hand_cash_balance_sheet = '';
 $accounts_loan_issue = '';
 $followupmodule = '';
 $promotion_activity = '';
@@ -219,6 +220,7 @@ if($idupd>0)
 			$approval          		     = $getUser['approval'];
 			$acknowledgementmodule          		     = $getUser['acknowledgementmodule'];
 			$acknowledgement          		     = $getUser['acknowledgement'];
+			$acknowledgement_access          		     = $getUser['acknowledgement_access'];
 			$loanissuemodule          		     = $getUser['loanissuemodule'];
 			$loan_issue          		     = $getUser['loan_issue'];
 			$collectionmodule          		     = $getUser['collectionmodule'];
@@ -238,6 +240,7 @@ if($idupd>0)
 			$updatemodule 				= $getUser['updatemodule'];
 			$update_screen 				= $getUser['update_screen'];
 			$update_screen_id 				= $getUser['update_screen_id'];
+			$update_cp_edit_access 				= $getUser['update_cp_edit_access'];
 			$concernmodule          		     = $getUser['concernmodule'];
 			$concern_creation          		     = $getUser['concern_creation'];
 			$concern_solution          		     = $getUser['concern_solution'];
@@ -250,6 +253,7 @@ if($idupd>0)
 			$bank_clearance          		     = $getUser['bank_clearance'];
 			$bnk_clr_upl_acc          		     = $getUser['bnk_clr_upl_acc'];
 			$finance_insight          		     = $getUser['finance_insight'];
+			$hand_cash_balance_sheet          		     = $getUser['hand_cash_balance_sheet'];
 			$accounts_loan_issue          		     = $getUser['accounts_loan_issue'];
 			$followupmodule          		     = $getUser['followupmodule'];
 			$promotion_activity = $getUser['promotion_activity'];
@@ -834,6 +838,12 @@ if($idupd>0)
                                 <label class="custom-control-label" for="acknowledgement">Acknowledgement</label>
                             </div>
                         </div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($acknowledgement_access==0){ echo'checked'; }} ?> tabindex="37" class="acknowledgement-checkbox screen-validations" id="acknowledgement_access" name="acknowledgement_access" disabled>&nbsp;&nbsp;
+                                <label class="custom-control-label" for="acknowledgement_access">Acknowledgement Access</label>
+                            </div>
+                        </div>
 						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 ack_loancat_div" style='display:none;'>
                             <div class="form-group">
 								<label for="loan_cat3">Acknowledgement Loan Category</label>&nbsp;<span class="text-danger">*</span>
@@ -1008,6 +1018,16 @@ if($idupd>0)
 								<span class='text-danger updateScreenCheck' style="display:none">Please Select Update Screen</span>
                             </div>
                         </div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 update_cp_edit_access_div" style='display:none;'>
+                            <div class="custom-control custom-checkbox">
+                                <select class='form-control' name='update_cp_edit_access' id='update_cp_edit_access'>
+									<option value="0">Select Customer Profile Edit Access</option>
+									<option value="1" <?php if(isset($update_cp_edit_access) && $update_cp_edit_access == '1') echo 'selected'; ?>>Customer Feedback</option>
+									<option value="2" <?php if(isset($update_cp_edit_access) && $update_cp_edit_access == '2') echo 'selected'; ?>>Overall Customer Profile</option>
+								</select>
+								<span class='text-danger cpEditScreenCheck' style="display:none">Please Select Customer Profile Edit Access</span>
+                            </div>
+                        </div>
 					</div>
 
 					<hr>
@@ -1110,6 +1130,12 @@ if($idupd>0)
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($finance_insight==0){ echo'checked'; }} ?> tabindex="58" class="accounts-checkbox screen-validations" id="finance_insight" name="finance_insight" disabled>&nbsp;&nbsp;
                                 <label class="custom-control-label" for="finance_insight">Financial Insights</label>
+                            </div>
+                        </div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($hand_cash_balance_sheet==0){ echo'checked'; }} ?> tabindex="58" class="accounts-checkbox screen-validations" id="hand_cash_balance_sheet" name="hand_cash_balance_sheet" disabled>&nbsp;&nbsp;
+                                <label class="custom-control-label" for="hand_cash_balance_sheet">Hand Cash Balance Sheet</label>
                             </div>
                         </div>
 						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">

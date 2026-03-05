@@ -12,12 +12,13 @@ $selected_screens = [];
 if (isset($_SESSION['userid'])) {
 	$userid = $_SESSION['userid'];
 	$getUser = $userObj->getuser($mysqli, $userid);
-		$approvalaccess = $getUser['approval'];
 	// Check if user record exists and update_screen_id is not empty
 	if (!empty($getUser) && !empty($getUser['update_screen_id'])) {
 		$update_screen_id = $getUser['update_screen_id'];
 		$selected_screens = array_filter(explode(',', $update_screen_id));
 	}
+		$approvalaccess = $getUser['approval'];
+		$update_cp_edit_access = $getUser['update_cp_edit_access'] ?? 0;
 }
 
 if (isset($_POST['submit_update_cus_profile']) && $_POST['submit_update_cus_profile'] != '') {
@@ -209,7 +210,7 @@ if (sizeof($getCustomerReg) > 0) {
 	<a href="edit_update<?php if (isset($_GET['docstatus'])) {
 							echo '&docstatus=' . $_GET['docstatus'];
 						} ?>">
-		<button type="button" class="btn btn-primary"><span class="icon-arrow-left"></span>&nbsp; Back</button>
+		<button type="button" class="btn btn-primary" id="back_btn"><span class="icon-arrow-left"></span>&nbsp; Back</button>
 	</a>
 </div><br><br>
 <!-- Page header end -->
@@ -277,6 +278,7 @@ if (sizeof($getCustomerReg) > 0) {
 																						} ?>" />
 
 			<input type="hidden" class="form-control" value="<?php if (isset($marital)) echo $marital; ?>" id="marital_upd" name="marital_upd">
+			<input type="hidden" class="form-control" value="<?php if (isset($update_cp_edit_access)) echo $update_cp_edit_access; ?>" id="update_cp_edit_access" name="update_cp_edit_access">
 
 
 			<!-- Row start -->
@@ -932,7 +934,7 @@ if (sizeof($getCustomerReg) > 0) {
 
 
 					<!-- ///////////////////////////////////////////////// Customer Summary START ///////////////////////////////////////////////////////////// -->
-					<div class="card">
+					<div class="card" id="customer_summary_card">
 						<div class="card-header"> Customer Summary <span style="font-weight:bold" class=""></span></div>
 						<div class="card-body">
 							<div class="row">
@@ -1040,9 +1042,7 @@ if (sizeof($getCustomerReg) > 0) {
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 									<div class="form-group">
 										<label for="cus_loan_limit"> Customer Limit </label> <span class="required">*</span>
-										<input type="text" class="form-control" name="cus_loan_limit" id="cus_loan_limit" oninput="validateInputNumber(this,'withOutDot')" placeholder="Enter Customer Limit" value="<?php if (isset($loan_limit)) {
-																																									echo moneyFormatIndia($loan_limit);
-																																								} ?>" tabindex="60">
+										<input type="text" class="form-control" name="cus_loan_limit" id="cus_loan_limit" oninput="validateInputNumber(this,'withOutDot')" placeholder="Enter Customer Limit" value="<?php if (isset($loan_limit)) { echo moneyFormatIndia($loan_limit);} ?>" tabindex="60">
 										<span class="text-danger" style='display:none' id='loanLimitCheck'>Please Enter Customer Limit </span>
 									</div>
 								</div>
@@ -2419,6 +2419,7 @@ if (sizeof($getCustomerReg) > 0) {
 								<select type="text" class="form-control" id="feedback_label" style="width: 330px;" name="feedback_label" tabindex='1'>
 									<option value=""> Select Feedback Label</option>
 								</select>
+								<span class="text-danger" id="feedbacklabelCheck" style='display:none'> Select Feedback Label</span>
 							</div>
 							<div style="padding: 20px 0px 0px 10px;  ">
 							    <button type="button" class="btn btn-primary" id="add_cus_feedback" name="add_cus_feedback" data-toggle="modal" data-target="#add_feedback_lable" style="display: <?= ($approvalaccess == '0' ? 'inline-block' : 'none'); ?>;" tabindex="2"><span class="icon-add"></span></button>
@@ -2794,7 +2795,7 @@ if (sizeof($getCustomerReg) > 0) {
 							<select type="text" class="form-control" id="proofof" name="proofof" tabindex='1'>
 								<option value=""> Select Proof Of </option>
 								<option value="0"> Customer </option>
-								<option value="1"> Guarantor </option>
+								<!-- <option value="1"> Guarantor </option> -->
 								<option value="2"> Family Members </option>
 							</select>
 							<span class="text-danger" id="proofCheck" style="display:none"> Select Proof </span>

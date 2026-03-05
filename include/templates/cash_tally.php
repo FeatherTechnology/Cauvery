@@ -215,7 +215,10 @@ if ($bank_qry->num_rows > 0) {
 						</div>
 					</div>
 				</div>
-				<!-- //////////////////////////////////////////////////////////// Opening Balance Card ////////////////////////////////////////////////////////////////////////////-->
+
+				<br>
+
+				<!-- //////////////////////////////////////////////////////////// Opening Balance Card ///////////////////////////////////////////////////////////////////-->
 				<div class="coll-radio-container" style="display: flex; justify-content: center; align-items: center;">
 					<div class="selector">
 
@@ -241,14 +244,16 @@ if ($bank_qry->num_rows > 0) {
 
 					</div>
 				</div>
+
+				<br>
 				
 				<!-- //////////////////////////////////////////////////////////// Collection Card ////////////////////////////////////////////////////////////////////////////-->
 				<div class="card collection_card" style='display:none'>
 					<div class="card-header" style='font-size:18px;font-weight:bold;'>Collection</div>
-					<div class="card-body">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="row">
+					<!-- <div class="card-body"> -->
+						<!-- <div class="row"> -->
+							<!-- <div class="col-md-12"> -->
+								<!-- <div class="row">
 									<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12"></div>
 									<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
 										<div class="form-group">
@@ -259,10 +264,10 @@ if ($bank_qry->num_rows > 0) {
 										<div class="form-group">
 										</div>
 									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+								</div> -->
+							<!-- </div> -->
+						<!-- </div> -->
+					<!-- </div> -->
 					<div class="card-body">
 						<div class="row">
 							<div class="col-md-12">
@@ -278,7 +283,7 @@ if ($bank_qry->num_rows > 0) {
 						</div>
 					</div>
 				</div>
-				<!-- //////////////////////////////////////////////////////////// Collection Card ////////////////////////////////////////////////////////////////////////////-->
+				<!-- //////////////////////////////////////////////////////////// Collection Card ///////////////////////////////////////////////////////////////////////-->
 
 				<!-- //////////////////////////////////////////////////////////// Contra Card ////////////////////////////////////////////////////////////////////////////-->
 				<div class="card" id="other_transaction_card" style="display: none;">
@@ -369,8 +374,31 @@ if ($bank_qry->num_rows > 0) {
 						</div>
 					</div>
 				</div>
-				<!-- //////////////////////////////////////////////////////////// Other income Card ////////////////////////////////////////////////////////////////////////////-->
-				 <!-- //////////////////////////////////////////////////////////// Investment/Deposit/EL Card ////////////////////////////////////////////////////////////////////////////-->
+				<!-- //////////////////////////////////////////////////////////// Other income Card ///////////////////////////////////////////////////////////////////-->
+
+				<!-- //////////////////////////////////////////////////////////// Waiver Card ////////////////////////////////////////////////////////////////////////////-->
+
+				<div class="card waiver_card" style='display:none'>
+					<div class="card-header" style='font-size:18px;font-weight:bold;'>Waiver</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="row">
+
+									<div class="modal-body">
+										<div id="waiverTableDiv">
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- //////////////////////////////////////////////////////////// Waiver Card ////////////////////////////////////////////////////////////////////////////-->
+
+				<!-- //////////////////////////////////////// Investment/Deposit/EL Card /////////////////////////////////////////////////////////////////////////-->
 				<div class="card inv_card" style='display:none'>
 					<div class="card-header inv_card_header" style='font-size:18px;font-weight:bold;'>Investment</div>
 					<div class="card-body">
@@ -421,7 +449,7 @@ if ($bank_qry->num_rows > 0) {
 				<!-- //////////////////////////////////////////////////////////// Issued Card ////////////////////////////////////////////////////////////////////////////-->
 				<div class="card issued_card" style='display:none'>
 					<div class="card-header issued_card_header" style='font-size:18px;font-weight:bold;'>Issued</div>
-					<div class="card-body">
+					<!-- <div class="card-body">
 						<div class="row">
 							<div class="col-md-12">
 								<div class="row">
@@ -431,24 +459,24 @@ if ($bank_qry->num_rows > 0) {
 											<input type="radio" id="hand_cash_radio" name="issued_cash_type" value='0' />&emsp;<label class='radio-style'>Hand Cash</label>&emsp;
 										</div>
 									</div>
-									<!-- <?php if (isset($bank_details) && $bank_details != null) {
-										for ($i = 0; $i < sizeof($bank_name_arr); $i++) {  ?>
-											<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12" style="max-width: 30%;">
-												<div class="form-group">
-													<input type="radio" id="bank_cash_radio" name="issued_cash_type" value="<?php echo $bank_id_arr[$i]; ?>" class="bank_cash_radio" />&emsp;<label class='radio-style'><?php echo $bank_name_arr[$i]; ?></label>
-												</div>
-											</div>
-									<?php  }
-									} ?> -->
+									<?php #if (isset($bank_details) && $bank_details != null) {
+										// for ($i = 0; $i < sizeof($bank_name_arr); $i++) {  ?#>
+											// <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12" style="max-width: 30%;">
+											// 	<div class="form-group">
+											// 		<input type="radio" id="bank_cash_radio" name="issued_cash_type" value="<?php echo $bank_id_arr[$i]; ?>" class="bank_cash_radio" />&emsp;<label class='radio-style'><?php # echo $bank_name_arr[$i]; #?></label>
+											// 	</div>
+											// </div>
+									<?php #  }
+									// } #?>
 									<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
 										<div class="form-group">
-											<!-- <button type="button" name="blnc_sheet_btn" id="blnc_sheet_btn" class="btn btn-primary" data-toggle='modal' data-target='.blncModal' onclick="hideAllCardsfunction()">Balance Sheet</button> -->
-										</div>
+											<button type="button" name="blnc_sheet_btn" id="blnc_sheet_btn" class="btn btn-primary" data-toggle='modal' data-target='.blncModal' onclick="hideAllCardsfunction()">Balance Sheet</button> -->
+										<!-- </div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					</div>  -->
 					<div class="card-body">
 						<div class="row">
 							<div class="col-md-12">
@@ -507,6 +535,7 @@ if ($bank_qry->num_rows > 0) {
 				<!-- Submit Button Start -->
 				<div class="col-md-12 ">
 					<div class="text-right">
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tableModal" onclick="circulartAmount()">  Circular Amount </button>
 						<button type="button" name="blnc_sheet_btn" id="blnc_sheet_btn" class="btn btn-primary" data-toggle='modal' data-target='.blncModal' onclick="hideAllCardsfunction()">Balance Sheet</button>
 						<button name="submit_cash_tally" id="submit_cash_tally" class="btn btn-primary" value="Submit">Submit</button>
 						<!-- <button type="reset" class="btn btn-outline-secondary" tabindex="20">Clear</button> -->
@@ -543,6 +572,27 @@ if ($bank_qry->num_rows > 0) {
 	</div>
 </div>
 <!-- /////////////////////////////////////////////////////////////////// Collection Modal END ////////////////////////////////////////////////////////////////////// -->
+
+<!-- /////////////////////////////////////////////////////////////////// Waiver Modal START ////////////////////////////////////////////////////////////////////// -->
+<div class="modal fade waiver_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content" style="background-color: white">
+			<div class="modal-header">
+				<h5 class="modal-title" id="myLargeModalLabel">Receive Waiver</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="getWaiverDetails()">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div id="receiveWaiverDiv"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="getWaiverDetails()">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /////////////////////////////////////////////////////////////////// Waiver Modal END ////////////////////////////////////////////////////////////////////// -->
 
 <!-- /////////////////////////////////////////////////////////////////// Credit Cash Deposit Modal START ////////////////////////////////////////////////////////////////////// -->
 <div class="modal fade cd_modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -1023,3 +1073,31 @@ if ($bank_qry->num_rows > 0) {
 		</div>
 	</div>
 </div>
+
+<!------------------------------------------------------- circular amount model box Start -------------------------------------------------------------------------->
+
+<div class="modal fade" id="tableModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width:80%;">
+        <div class="modal-content" style="background-color: white">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Circular Amount</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive" id="circular_amount_div">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--------------------------------------------------------- circular amount model end ------------------------------------------------------------------------------------>

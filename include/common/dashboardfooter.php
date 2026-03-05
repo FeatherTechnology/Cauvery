@@ -1888,30 +1888,38 @@
 
         //Document Track on click function 
         function getDocOnClickFunction() {
-            $('.view-track').click(function() {
-                var cus_id = $(this).data('cusid');
+            $('.view-track, .combine-doc').click(function() {
                 var cus_name = $(this).data('cusname');
                 var req_id = $(this).data('reqid');
+                var useINcondition = $(this).data('multi-reqid') ?? '0';
+                var currentReqId = $(this).data('current-req-id');
+                if(useINcondition =='1'){
+                    $('#combine_doc')
+                    .attr('reqid', currentReqId)
+                    .show();
+                }else{
+                    $('#combine_doc')
+                    .removeAttr('reqid')
+                    .hide();
+                }
+
                 $.ajax({
                     url: 'documentTrackFile/viewTrack.php',
                     type: 'post',
-                    data: {
-                        'cus_id': cus_id,
-                        "req_id": req_id
-                    },
+                    data: {},
                     cache: false,
                     success: function(html) {
-                        $('#viewTrackDiv').empty();
                         $('#viewTrackDiv').html(html);
                     }
                 }).then(function() {
-                    getAllDocumentList(req_id, cus_name, cus_id);
+                    getAllDocumentList(req_id, cus_name);
                 }); //then function end
             }); //click function end
 
             $('.receive-track').click(function() {
                 var tableid = $(this).data('id');
                 let cusid = $(this).data('cusid');
+                let replace_status = $(this).data('replace-status');
                 event.preventDefault();
                 if (confirm('Are you sure to Mark this Track as Received?')) {
                     $.ajax({
@@ -1919,7 +1927,8 @@
                         type: 'post',
                         data: {
                             'id': tableid,
-                            'cus_id': cusid
+                            'cus_id': cusid,
+                            replace_status
                         },
                         cache: false,
                         success: function(response) {
@@ -2598,6 +2607,12 @@
     if ($current_page == 'finance_insight') { ?>
         <script src="js/finance_insight.js"></script>
     <?php }
+
+    //Hand Cash Balance Sheet
+    if ($current_page == 'hand_cash_balance_sheet') { ?>
+        <script src="js/hand_cash_balance_sheet.js"></script>
+    <?php }
+    
     // accounts loan Isue
     if ($current_page == 'edit_accounts_loan_issue') { ?>
         <script src="js/edit_accounts_loan_issue.js"></script>

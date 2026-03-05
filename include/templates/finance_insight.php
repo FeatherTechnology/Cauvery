@@ -25,7 +25,7 @@ $bank_details = $getuser['bank_details'];
 				<input type="button" class="toggle-button" data-toggle='modal' data-target='#dayModal' value='Day Wise'>
 				<input type="button" class="toggle-button" value='Today'>
 				<input type="button" class="toggle-button" data-toggle='modal' data-target='#monthModal' value='Month Wise'>
-				<select type="text" class="toggle-button" id='by_user' name='by_user'>
+				<select type="text" class="toggle-button" id='by_user' name='by_user' style="display: none;">    <!-- when we click the userwise it shows the wrong amount so tem rmve that -->
 					<option value=''>Select User</option>
 				</select>
 			</div>
@@ -57,6 +57,11 @@ $bank_details = $getuser['bank_details'];
 									</tr>
 									<tr>
 										<td>Due Collection</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Waiver</td>
 										<td></td>
 										<td></td>
 									</tr>
@@ -126,7 +131,42 @@ $bank_details = $getuser['bank_details'];
 										<td></td>
 									</tr>
 									<tr>
+										<td>Previous Uncleared</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Current Uncleared</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr class='break'>
 										<td>Agent Closing Balance</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Collection</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Issued</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Exchange</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Contra</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr class='break'>
+										<td>Circular Waiver</td>
 										<td></td>
 										<td></td>
 									</tr>
@@ -214,7 +254,7 @@ $bank_details = $getuser['bank_details'];
 										<td></td>
 									</tr>
 									<tr class='break'>
-										<td>Total Benefit</td>
+										<td>Net Benefit</td>
 										<td colspan="2"></td>
 									</tr>
 								</tfoot>
@@ -282,7 +322,7 @@ $bank_details = $getuser['bank_details'];
 										<td></td>
 									</tr>
 									<tr class='break'>
-										<td>Total Profit</td>
+										<td>Net Profit</td>
 										<td colspan="2"></td>
 									</tr>
 								</tfoot>
@@ -344,12 +384,48 @@ $bank_details = $getuser['bank_details'];
 										<td></td>
 									</tr>
 									<tr>
-										<td>Closing Outstanding</td>
+										<td>Previous Uncleared</td>
 										<td></td>
 										<td></td>
 									</tr>
 									<tr>
+										<td>Current Uncleared</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Closing Outstanding</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr class='break'>
 										<td>Agent Closing Balance</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Collection</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Issued</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Exchange</td>
+										<td></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Circular Contra</td>
+										<td></td>
+										<td></td>
+									</tr>
+
+									<tr class='break'>
+										<td>Circular Waiver</td>
 										<td></td>
 										<td></td>
 									</tr>

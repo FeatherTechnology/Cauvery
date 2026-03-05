@@ -201,12 +201,20 @@ $(document).ready(function () {
     $('#update_screen').change(function () {
         // Get values from multiselect and sort
         const screenList = updateScreen.getValue();
-        const screenSortedStr = screenList
-            .map(item => item.value)
+        const values = screenList.map(item => item.value);
+
+        const screenSortedStr = values
             .sort((a, b) => a - b)
             .join(',');
     
         $('#update_screen_id').val(screenSortedStr);
+
+        if(values.includes('1')){
+            $('.update_cp_edit_access_div').show();
+        }else{
+            $('#update_cp_edit_access').val('0');
+            $('.update_cp_edit_access_div').hide();
+        }
     });
 
     //modules checkbox events
@@ -533,6 +541,7 @@ $(document).ready(function () {
 $(function () {
 
     var user_id_upd = $('#user_id_upd').val();
+    getBankName();
     if (user_id_upd > 0) {
         var role_upd = $('#role_upd').val();
         var role_type_upd = $('#role_type_upd').val();
@@ -565,7 +574,6 @@ $(function () {
         getdueFollupLineDropdown(branch_id_upd);
         getBankDetails();
         getProAccess();
-        getBankName();
 
         var update_screen = document.querySelector('#update');
         if (update_screen.checked) {
@@ -575,6 +583,13 @@ $(function () {
                 selectedValues.forEach(value => {
                     updateScreen.setChoiceByValue(value.trim());
                 });
+
+                if(selectedValues.includes('1')){ //Customer Profile.
+                    $('.update_cp_edit_access_div').show();
+                }else{
+                    $('#update_cp_edit_access').val('0');
+                    $('.update_cp_edit_access_div').hide();
+                }
             }
 
             $('.update_screen_div').show()
@@ -1514,12 +1529,25 @@ function validation() {
         }else{
             $('.updateScreenCheck').hide();
         }
+
+        const values = update_screen.map(item => item.value);
+        let editAccess = $('#update_cp_edit_access').val();
+        if(values.includes('1') && editAccess =='0'){
+            $('.cpEditScreenCheck').show();
+            validation = false;
+        }else{
+            $('.cpEditScreenCheck').hide();
+        }
     }
 
     // validation for report
     var reportmodule = document.querySelector('#reportmodule');
     var report_access = $('#report_access').val();
     var reportmoduleChecked = $('#reportmodule').is(':checked');
+    
+    //Hand cash balance sheet validation
+    let hcbs = $('#hand_cash_balance_sheet').is(':checked');
+
     if(reportmoduleChecked) {
         // Count how many main reports are selected
         let mainReportsChecked = $('#work_report_module:checked, #monitor_report_module:checked, #analysis_report_module:checked, #accounts_report_module:checked').length;
@@ -1552,11 +1580,18 @@ function validation() {
     }
 
     // Case 2: Dropdown has value but checkbox not checked
-    if (!reportmodule.checked && report_access != '') {
+    if (!reportmodule.checked && report_access != '' && !hcbs) {
         $('.reportCheck').show();
         validation = false;
     } else {
         $('.reportCheck').hide();
+    }
+    
+    if(hcbs && report_access ==''){
+        $('#reportAccessCheck').show();
+        validation = false;
+    } else {
+        $('#reportAccessCheck').hide();
     }
 
     // Array of main reports with their sub-checkbox classes and error spans
@@ -1675,34 +1710,4 @@ function getRoleTypeBasedDetails(role, role_type) {
         $('.staff').show();
         getStaffName(role_type);
     }
-}
-
-function getcashTallyAccess() {
-    var cash_tally_access_upd = $('#cash_tally_access_upd').val().split(',');
-
-    const valueToLabelMap = {
-        '1': 'Collection',
-        '2': 'Loan Issued ',
-        '3': 'Expenses' ,
-        '4': 'Other Transaction' 
-    };
-    cash_tally_access_select.clearStore();
-
-    let items = [];
-
-    $.each(valueToLabelMap, function(val, label) {
-        let selected = '';
-
-        if (cash_tally_access_upd.includes(val)) {
-            selected = 'selected';
-        }
-
-        items.push({
-            value: val,  
-            label: label,
-            selected: selected 
-        });
-    });
-    cash_tally_access_select.setChoices(items);
-    cash_tally_access_select.init();
 }

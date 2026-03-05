@@ -3110,7 +3110,7 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 							<select type="text" class="form-control" id="proofof" name="proofof" tabindex='1'>
 								<option value=""> Select Proof Of </option>
 								<option value="0"> Customer </option>
-								<option value="1"> Guarantor </option>
+								<!-- <option value="1"> Guarantor </option> -->
 								<option value="2"> Family Members </option>
 								<!-- <option value="3"> Group Members </option> -->
 							</select>
