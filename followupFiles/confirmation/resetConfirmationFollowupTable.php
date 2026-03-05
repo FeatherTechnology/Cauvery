@@ -17,7 +17,7 @@ if ($_POST['length'] != -1) {
 
 $columns = [
     'rc.req_id',
-    'rc.updated_date',
+    'ii.updated_date',
     'rc.cus_id',
     'cr.autogen_cus_id',
     'CONCAT(rc.first_name, rc.last_name)',
@@ -25,7 +25,7 @@ $columns = [
     'bc.branch_name',
     'agm.group_name',
     'alm.line_name',
-    'rc.mobile1',
+    'cr.mobile1',
     'rc.req_id',
     'rc.req_id',
     'rc.req_id'
@@ -46,17 +46,17 @@ if ($searchValue != '') {
                     OR bc.branch_name LIKE '%" . $searchValue . "%'
                     OR agm.group_name LIKE '%" . $searchValue . "%'
                     OR alm.line_name LIKE '%" . $searchValue . "%'
-                    OR rc.mobile1 LIKE '%" . $searchValue . "%')";
+                    OR cr.mobile1 LIKE '%" . $searchValue . "%')";
 }
 
 $orderQuery = " ORDER BY " . $columns[$orderColumnIndex] . " " . $orderDir;
 
 $sql = "SELECT 
     rc.req_id,
-    rc.updated_date,
+    ii.updated_date,
     rc.cus_id,
     CONCAT(rc.first_name,' ', rc.last_name) AS customer_name,
-    rc.mobile1,
+    cr.mobile1,
     cr.autogen_cus_id,
     alc.area_name,
     bc.branch_name,
@@ -64,6 +64,7 @@ $sql = "SELECT
     alm.line_name
 FROM 
     request_creation rc
+LEFT JOIN in_issue ii ON rc.req_id = ii.req_id
 JOIN customer_register cr ON rc.cus_id = cr.cus_id
 JOIN acknowlegement_customer_profile acp ON rc.req_id = acp.req_id
 LEFT JOIN area_list_creation alc ON rc.area = alc.area_id

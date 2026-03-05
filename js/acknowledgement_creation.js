@@ -198,6 +198,7 @@ $(document).ready(function () {
             return false;
         } else {
             var signid = $(this).attr("value");
+            let screen = $(this).data('screen') ?? 0;
 
             $.ajax({
                 url: "verificationFile/documentation/signed_doc_delete.php",
@@ -218,7 +219,11 @@ $(document).ready(function () {
                         }, 2000);
                     }
 
-                    resetsignInfo();
+                    if(screen =='1'){
+                        resetsigninfoList();
+                    }else{
+                        resetsignInfo();
+                    }
                 },
             });
         }
@@ -522,6 +527,7 @@ $(document).ready(function () {
             return false;
         } else {
             var chequeid = $(this).attr("value");
+            let screen = $(this).data('screen') ?? 0;
 
             $.ajax({
                 url: "verificationFile/documentation/cheque_info_delete.php",
@@ -542,7 +548,11 @@ $(document).ready(function () {
                         }, 2000);
                     }
 
-                    resetchequeInfo();
+                    if(screen =='1'){
+                        chequeinfoList();
+                    }else{
+                        resetchequeInfo();
+                    }
                 },
             });
         }
@@ -969,6 +979,7 @@ $('#doc_remarkcheck').hide();
             return false;
         } else {
             var chequeid = $(this).attr('value');
+            let screen = $(this).data('screen') ?? 0;
 
             $.ajax({
                 url: 'verificationFile/documentation/gold_info_delete.php',
@@ -991,7 +1002,11 @@ $('#doc_remarkcheck').hide();
                         }, 2000);
                     }
 
-                    resetgoldInfo();
+                    if(screen =='1'){
+                        goldinfoList();
+                    }else{
+                        resetgoldInfo();
+                    }
                 }
             });
         }
@@ -2364,6 +2379,7 @@ $("body").on("click", "#doc_info_delete", function () {
         return false;
     } else {
         var id = $(this).attr('value');
+        let screen = $(this).data('screen') ?? 0;
 
         $.ajax({
             url: 'verificationFile/documentation/doc_info_delete.php',
@@ -2386,7 +2402,11 @@ $("body").on("click", "#doc_info_delete", function () {
                     }, 2000);
                 }
 
-                resetdocInfo();
+                if(screen =='1'){
+                    docinfoList();
+                }else{
+                    resetdocInfo();
+                }
             }
         });
     }

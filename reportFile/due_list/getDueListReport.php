@@ -72,7 +72,7 @@ $column = array(
     'lc.cus_id_loan',
     'cr.autogen_cus_id',
     'CONCAT(lc.first_name, " ", lc.last_name)',
-    'cp.mobile1',
+    'cr.mobile1',
     'al.area_name',
     'lcc.loan_category_creation_name',
     'ac.ag_name',
@@ -140,7 +140,7 @@ $query = "SELECT
     lc.due_start_from,
     lc.due_method_scheme,
     lc.due_method_calc,
-    cp.mobile1,
+    cr.mobile1,
     ag.group_name,
     alm.line_name AS line,
     adm.duefollowup_name,
@@ -222,7 +222,7 @@ if (isset($_POST['search'])) {
                         OR lc.cus_id_loan LIKE '%" . $_POST['search'] . "%'
                         OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
                         OR CONCAT(lc.first_name, ' ', lc.last_name) LIKE '%" . $_POST['search'] . "%'
-                        OR cp.mobile1 LIKE '%" . $_POST['search'] . "%'
+                        OR cr.mobile1 LIKE '%" . $_POST['search'] . "%'
                         OR al.area_name LIKE '%" . $_POST['search'] . "%'
                         OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
                          OR alm.line_name LIKE '%" . $_POST['search'] . "%' 

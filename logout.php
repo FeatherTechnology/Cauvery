@@ -20,8 +20,11 @@ if (ini_get("session.use_cookies")) {
         $params["httponly"]
     );
 }
-
-// Redirect the user
-header("Location: https://localhost/Cauvery/");
-exit();
 ?>
+<script>
+    // FORCE LOGOUT ACROSS ALL TABS
+    localStorage.setItem('force-logout', Date.now());
+
+    // Redirect after broadcast
+    window.location.href = "https://localhost/Cauvery/";
+</script>
