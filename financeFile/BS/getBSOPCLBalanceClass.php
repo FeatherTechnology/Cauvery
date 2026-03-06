@@ -74,6 +74,8 @@ class ClosingBalanceClass
             FROM (
                 (SELECT COALESCE(SUM(rec_amt), 0) AS amt FROM ct_hand_collection WHERE date(created_date) <= '$closing_date' $user_where)
                 UNION ALL
+                (SELECT COALESCE(SUM(rec_amt), 0) AS amt FROM ct_hand_waiver WHERE date(created_date) <= '$closing_date' $user_where)
+                UNION ALL
                 (SELECT COALESCE(SUM(amt), 0) AS amt FROM ct_cr_bank_withdraw WHERE date(created_date) <= '$closing_date' $user_where)
                 UNION ALL
                 (SELECT COALESCE(SUM(amt), 0) AS amt FROM ct_cr_hoti WHERE date(created_date) <= '$closing_date' $user_where)
@@ -256,6 +258,8 @@ class ClosingBalanceClass
             FROM (
                 (SELECT COALESCE(SUM(rec_amt), 0) AS amt FROM ct_hand_collection WHERE date(created_date) < '$op_date' $user_where )
                 UNION ALL
+                (SELECT COALESCE(SUM(rec_amt), 0) AS amt FROM ct_hand_waiver WHERE date(created_date) < '$op_date' $user_where )
+                UNION ALL
                 (SELECT COALESCE(SUM(amt), 0) AS amt FROM ct_cr_bank_withdraw WHERE date(created_date) < '$op_date' $user_where )
                 UNION ALL
                 (SELECT COALESCE(SUM(amt), 0) AS amt FROM ct_cr_hoti WHERE date(created_date) < '$op_date' $user_where )
@@ -427,42 +431,5 @@ class ClosingBalanceClass
             $records[0]['opening_balance'] = number_format($opening_total, 2, '.', '');
         }
         return $records;
-    }
-
-    function moneyFormatIndia($num)
-    {
-        $isNegative = false;
-        if ($num < 0) {
-            $isNegative = true;
-            $num = abs($num);
-        }
-
-        // 🔹 Split integer & decimal part (minimal addition)
-        $numStr = (string)$num;
-        $parts = explode('.', $numStr);
-        $intPart = $parts[0];
-        $decPart = isset($parts[1]) ? '.' . $parts[1] : '';
-
-        $explrestunits = "";
-        if (strlen($intPart) > 3) {
-            $lastthree = substr($intPart, -3);
-            $restunits = substr($intPart, 0, -3);
-            $restunits = (strlen($restunits) % 2 == 1) ? "0" . $restunits : $restunits;
-            $expunit = str_split($restunits, 2);
-
-            foreach ($expunit as $index => $value) {
-                if ($index == 0) {
-                    $explrestunits .= (int)$value . ",";
-                } else {
-                    $explrestunits .= $value . ",";
-                }
-            }
-
-            $thecash = $explrestunits . $lastthree . $decPart;
-        } else {
-            $thecash = $intPart . $decPart;
-        }
-
-        return $isNegative ? "-" . $thecash : $thecash;
     }
 }

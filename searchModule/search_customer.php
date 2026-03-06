@@ -29,7 +29,8 @@ if ($cus_id != '') {
     $fam_sql = "SELECT id from verification_family_info WHERE last_name LIKE '%$last_name%' ";
 } else if ($mobile != '') {
     $sql = "SELECT COALESCE(cr.cus_id, rc.cus_id) AS cus_id FROM request_creation rc LEFT JOIN customer_register cr 
-       ON cr.req_ref_id = rc.req_id WHERE cr.mobile1 LIKE '%$mobile%' OR cr.mobile2 LIKE '%$mobile%' OR rc.mobile1 LIKE '%$mobile%' OR rc.mobile2 LIKE '%$mobile%' LIMIT 1";
+    ON cr.req_ref_id = rc.req_id WHERE cr.mobile1 LIKE '%$mobile%' OR cr.mobile2 LIKE '%$mobile%' OR rc.mobile1 LIKE '%$mobile%' OR rc.mobile2 LIKE '%$mobile%' LIMIT 1";
+    $fam_sql = "SELECT id from verification_family_info WHERE relation_Mobile LIKE '%$mobile%' ";
 } else if ($area != '') {
     $sql = "SELECT DISTINCT cr.cus_id
 FROM customer_register cr

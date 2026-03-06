@@ -6727,7 +6727,7 @@ class admin
 					$row = $selectIC->fetch_assoc();
 					$loan_id = $row["loan_id"] ? $row["loan_id"] + 1 : 101;
 
-					if (!$mysqli->query("UPDATE in_issue SET loan_id = '$loan_id' WHERE req_id = '$req_id'")) {
+					if (!$mysqli->query("UPDATE in_issue SET loan_id = '$loan_id', updated_date = NOW(), update_login_id = '$userid' WHERE req_id = '$req_id'")) {
 						throw new Exception("Loan ID update failed: " . $mysqli->error);
 					}
 				} elseif ($issueresult && $issueresult->num_rows > 0) {
@@ -7054,7 +7054,7 @@ class admin
 	function getConcernCreation($mysqli, $idupd, $userid)
 	{
 		$detailrecords = array();
-		$Qry = $mysqli->query("SELECT * FROM `concern_creation` WHERE id = '" . strip_tags($idupd) . "' ");
+		$Qry = $mysqli->query("SELECT cc.*, cdn.dep_name as to_dept_name FROM `concern_creation` cc LEFT JOIN concern_dept_name cdn ON cc.to_dept_name = cdn.id WHERE cc.id = '" . strip_tags($idupd) . "' ");
 		if ($mysqli->affected_rows > 0) {
 			$row = $Qry->fetch_assoc();
 			$detailrecords['id'] = $row['id'];
