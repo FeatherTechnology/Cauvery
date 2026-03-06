@@ -104,6 +104,8 @@ $(document).ready(function () {
         lineMultiselect.clearStore();
         groupMultiselect.clearStore();
 
+        $('#branch_id_upd, #line_id_upd, #group_id_upd').val('');
+
         var role = $('#role').val();
         getRoleBasedDetails(role);
     });
@@ -118,6 +120,8 @@ $(document).ready(function () {
         lineMultiselect.clearStore();
         groupMultiselect.clearStore();
 
+        $('#branch_id_upd, #line_id_upd, #group_id_upd').val('');
+        
         var role = $('#role').val();
         var role_type = $('#role_type').val();
         getRoleTypeBasedDetails(role, role_type)
