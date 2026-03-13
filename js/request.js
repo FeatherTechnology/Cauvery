@@ -222,6 +222,7 @@ $(document).ready(function () {
             }
         } else {
             event.preventDefault();
+            scrollToFirstError('#request'); 
             return false;
         }
     })

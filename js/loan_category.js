@@ -241,6 +241,7 @@ $(document).ready(function () {
                 }
             } else {
                 event.preventDefault();
+                scrollToFirstError('#report_creation');
                 return false;
             }
 

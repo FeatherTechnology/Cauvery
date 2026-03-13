@@ -2393,6 +2393,7 @@ $('#submit_update_cus_profile').click(function () {
         }
     } else {
         event.preventDefault();
+        scrollToFirstError('#cus_Profiles');
         return false;
     }
 

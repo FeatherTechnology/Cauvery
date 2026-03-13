@@ -2479,6 +2479,7 @@ $('#submit_documentation').click(function () {
         }
     } else {
         event.preventDefault();
+        scrollToFirstError('#cus_doc'); 
         return false;
     }
 });

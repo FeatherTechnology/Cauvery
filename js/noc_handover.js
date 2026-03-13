@@ -121,6 +121,8 @@ $(document).ready(function () {
                 alert("Something went wrong!");
             });
 
+        }else{
+            scrollToFirstError('#noc_form');
         }
     });
 
