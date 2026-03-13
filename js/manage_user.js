@@ -520,7 +520,9 @@ $(document).ready(function () {
 					formEl.submit();
 				}
 			}
-		}
+		}else { 
+            scrollToFirstError('#manage_user_form');
+        }
 	});
     $('#cash_tally_access1').change(function () {
         
