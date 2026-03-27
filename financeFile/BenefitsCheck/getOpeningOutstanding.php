@@ -18,14 +18,14 @@ if ($user_id != '') {
 
         // 2️⃣ Get sub areas from normalized table
         $stmt = $connect->prepare("
-            SELECT DISTINCT sub_area_id
-            FROM area_group_mapping_sub_area
+            SELECT DISTINCT area_id
+            FROM area_group_mapping_area
             WHERE group_map_id IN ($placeholders)
         ");
         $stmt->execute($group_ids);
 
-        $sub_area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        $sub_area_list = implode(',', $sub_area_ids);
+        $area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $area_list = implode(',', $area_ids);
     }
 }
 
@@ -59,7 +59,7 @@ if ($type == 'today') {
     $li_where  = " AND date(li.created_date) <= date('$to_date') AND balance_amount = '0' "; 
 }
 
-$condition = (!empty($sub_area_list)) ? " AND iv.sub_area IN ($sub_area_list) ": '';
+$condition = (!empty($area_list)) ? " AND iv.area IN ($area_list) ": '';
 
 getDetials($connect, $condition, $li_where, $to_date);
 

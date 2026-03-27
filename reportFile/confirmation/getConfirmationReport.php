@@ -11,29 +11,12 @@ if (isset($_SESSION["userid"])) {
 $user_based = "";
 
 if ($userid != 1) {
-     $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid ");
+     $userQry = $connect->query("SELECT report_access FROM user WHERE user_id = $userid ");
     $rowuser = $userQry->fetch();
-    $line_id = $rowuser['line_id'];
     $report_access = $rowuser['report_access'];
 
     if ($report_access == '1') {
-         $line_ids = explode(',', $line_id);
-        $area_list_array = [];
-        foreach ($line_ids as $line) {
-            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
-            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
-                $area_list_array[] = $row_sub['area_id'];
-            }
-        }
-        $area_ids = [];
-        foreach ($area_list_array as $subarray) {
-            $area_ids = array_merge($area_ids, explode(',', $subarray));
-        }
-
-        $area_ids = array_unique($area_ids);
-        $area_list = implode(',', $area_ids);
-
-        $user_based = " AND cp.area_confirm_area IN ($area_list) AND cf.insert_login_id = '$userid' ";
+        $user_based = "AND cf.insert_login_id = '$userid' ";
     }
 }
 
@@ -55,6 +38,8 @@ $per_type_arr = [1 => 'Customer', 2 => 'Garentor', 3 => 'Family Member'];
 $column = array(
     'cf.id',
     'alm.line_name',
+    'agm.group_name',
+    'bc.branch_name',
     'ii.loan_id',
     'ii.updated_date',
     'cf.cus_id',
@@ -73,25 +58,7 @@ $column = array(
     'u.fullname',
 );
 
-$query = "SELECT 
-    alm.line_name AS line,
-    ii.loan_id,
-    ii.updated_date AS loan_date,
-    cf.cus_id,
-    cr.autogen_cus_id,
-    CONCAT(cp.first_name,' ',cp.last_name) As cus_name,
-    cf.mobile,
-    cf.person_type,
-    cf.person_name,
-    cf.relationship,
-    cf.status,
-    cf.sub_status,
-    cf.created_date,
-    cf.label,
-    cf.remark,
-    u.role,
-    u.fullname
-
+$baseQuery = "
 FROM 
     confirmation_followup cf   
 LEFT JOIN 
@@ -104,14 +71,24 @@ JOIN
     customer_register cr ON ii.cus_id = cr.cus_id
 JOIN 
     area_list_creation al ON cp.area_confirm_area = al.area_id
-JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
- JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+JOIN 
+    area_line_mapping_area alma ON alma.area_id = al.area_id
+JOIN 
+    area_line_mapping alm ON alm.map_id = alma.line_map_id
+JOIN 
+    area_group_mapping_area agma ON al.area_id = agma.area_id
+JOIN 
+     area_group_mapping agm ON agma.group_map_id = agm.map_id
+JOIN 
+      branch_creation bc ON agm.branch_id = bc.branch_id
 WHERE 1
     $where ";
 
 if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
         $query .= " and (alm.line_name LIKE '%" . $_POST['search'] . "%' OR
+            agm.group_name LIKE '%" . $_POST['search'] . "%' OR
+            bc.branch_name LIKE '%" . $_POST['search'] . "%' OR
             ii.loan_id LIKE '%" . $_POST['search'] . "%' OR
             cf.cus_id LIKE '%" . $_POST['search'] . "%' OR
             cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR
@@ -125,24 +102,52 @@ if (isset($_POST['search'])) {
 }
 
 if (isset($_POST['order'])) {
-    $query .= " ORDER BY " . $column[$_POST['order']['0']['column']] . ' ' . $_POST['order']['0']['dir'];
+     $orderBy = " ORDER BY " . $column[$_POST['order']['0']['column']] . " " . $_POST['order']['0']['dir'];
 }
 
-$query1 = "";
-if ($_POST['length'] != -1) {
-    $query1 = " LIMIT " . $_POST['start'] . ", " . $_POST['length'];
+$limit = '';
+if (!isset($_POST['download'])) {
+    if ($_POST['length'] != -1) {
+        $limit = " LIMIT " . $_POST['start'] . ", " . $_POST['length'];
+    }
 }
 
-$statement = $connect->prepare($query);
+$totalStmt = $connect->prepare("SELECT count(id) as count FROM confirmation_followup where 1 ");
+$totalStmt->execute();
+$recordsTotal = (int) $totalStmt->fetchColumn();
 
+/* ---------- Filtered records ---------- */
+$countStmt = $connect->prepare("SELECT COUNT(*) $baseQuery");
+$countStmt->execute();
+$recordsFiltered = (int) $countStmt->fetchColumn();
+
+/* ---------- Data query ---------- */
+$dataQuery = "SELECT 
+   agm.group_name,
+    alm.line_name AS line,
+    bc.branch_name,
+    ii.loan_id,
+    ii.updated_date AS loan_date,
+    cf.cus_id,
+    cr.autogen_cus_id,
+    cp.cus_name,
+    cf.mobile,
+    cf.person_type,
+    cf.person_name,
+    cf.relationship,
+    cf.status,
+    cf.sub_status,
+    cf.created_date,
+    cf.label,
+    cf.remark,
+    u.role,
+    u.fullname
+   $baseQuery
+     $orderBy
+    $limit
+        ";
+$statement = $connect->prepare($dataQuery);
 $statement->execute();
-
-$number_filter_row = $statement->rowCount();
-
-if ($_POST['length'] != -1) {
-    $statement = $connect->prepare($query . $query1);
-    $statement->execute();
-}
 $result = $statement->fetchAll();
 
 $data = array();
@@ -176,6 +181,8 @@ foreach ($result as $row) {
     $sub_array = array();
     $sub_array[] = $sno;
     $sub_array[] = $row['line'];
+    $sub_array[] = $row['group_name'];
+    $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['loan_id'];
     $sub_array[] = date('d-m-Y', strtotime($row['loan_date']));
     $sub_array[] = $row['cus_id'];
@@ -226,18 +233,10 @@ function getFamilyMember($connect, $fam_id)
     return $response;
 }
 
-function count_all_data($connect)
-{
-    $query = $connect->query("SELECT count(id) as count FROM confirmation_followup where 1 ");
-    $statement = $query->fetch();
-    return $statement['count'];
-}
-
-
 $output = array(
-    'draw' => intval($_POST['draw']),
-    'recordsTotal' => count_all_data($connect),
-    'recordsFiltered' => $number_filter_row,
+    'draw' => isset($_POST['draw']) ? intval($_POST['draw']) : 0, // ✅ safe for both table & download
+    'recordsTotal' => $recordsTotal,
+    'recordsFiltered' => $recordsFiltered,
     'data' => $data
 );
 

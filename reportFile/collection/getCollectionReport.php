@@ -2,7 +2,6 @@
 session_start();
 include '../../ajaxconfig.php';
 include '../../moneyFormatIndia.php';
-include "../../user_based_area_Ids.php";
 
 if (isset($_SESSION["userid"])) {
     $userid = $_SESSION["userid"];
@@ -17,8 +16,7 @@ if ($userid != 1) {
     $report_access = $rowuser['report_access'];
 
     if ($report_access == '1') { //Report access individual.
-        $area_list = getUserAreaList($connect, 'line');
-        $user_based = " AND cp.area_confirm_area IN ($area_list) AND coll.insert_login_id = '$userid' ";
+        $user_based = "AND coll.insert_login_id = '$userid' ";
     }
 }
 
@@ -57,9 +55,10 @@ $coll_method = [1 => 'By Self', 2 => 'On Spot'];
 
 $column = array(
     'coll.coll_id',
-    'agm.group_name',
     'alm.line_name',
+    'agm.group_name',
     'adm.duefollowup_name',
+    'bc.branch_name',
     'ii.loan_id',
     'ii.updated_date',
     'coll.cus_id',
@@ -99,6 +98,7 @@ $baseQuery = "FROM collection coll
         LEFT JOIN area_group_mapping agm ON agma.group_map_id = agm.map_id
         LEFT JOIN area_line_mapping_area alma ON al.area_id = alma.area_id
         LEFT JOIN area_line_mapping alm ON alma.line_map_id = alm.map_id
+        LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id
         LEFT JOIN area_duefollowup_mapping_area adma ON al.area_id = adma.area_id
         LEFT JOIN area_duefollowup_mapping adm ON adma.duefollowup_map_id = adm.map_id
         LEFT JOIN bank_creation b ON coll.bank_id = b.id
@@ -114,6 +114,7 @@ if (isset($_POST['search'])) {
         $baseQuery .= " AND (ii.loan_id LIKE '%" . $_POST['search'] . "%'
                     OR agm.group_name LIKE '%" . $_POST['search'] . "%' 
                     OR alm.line_name LIKE '%" . $_POST['search'] . "%'
+                    OR bc.branch_name LIKE '%" . $_POST['search'] . "%'
                     OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%'
                     OR ii.updated_date LIKE '%" . $_POST['search'] . "%'
                     OR coll.cus_id LIKE '%" . $_POST['search'] . "%'
@@ -162,6 +163,7 @@ $recordsFiltered = (int) $countStmt->fetchColumn();
 $dataQuery = "SELECT 
             agm.group_name,
             alm.line_name AS line,
+            bc.branch_name,
             adm.duefollowup_name,
             ii.loan_id,
             ii.updated_date AS loan_date,
@@ -209,9 +211,10 @@ $sno = 1;
 foreach ($result as $row) {
     $sub_array   = array();
     $sub_array[] = $sno++;
-    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line'];
+    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['duefollowup_name'];
+    $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['loan_id'];
     $sub_array[] = date('d-m-Y', strtotime($row['loan_date']));
     $sub_array[] = $row['cus_id'];

@@ -488,6 +488,7 @@ $(document).ready(function () {
 
     $("#addPromotion").find(".closeModal").click(function () {
         $('#addPromotion').find('.modal-body input').not('[readonly]').not('#orgin_table').val('');
+        $('#addPromotion').find('.modal-body select').prop('selectedIndex', 0);
         $("#addPromotion").find(".modal-body span").not('.required').hide();
     });
 
@@ -655,8 +656,8 @@ function validateNewCusAdd() {
 }
 
 function submitPromotion() {
-    let cus_id = $('#promo_cus_id').val(); let status = $('#promo_status').val(); let label = $('#promo_label').val(); let remark = $('#promo_remark').val(); let follow_date = $('#promo_fdate').val(); let orgin_table = $('#orgin_table').val();
-    let args = { cus_id, status, label, remark, follow_date, orgin_table };
+    let cus_id = $('#promo_cus_id').val();  let promo_type = $('#promo_type').val(); let status = $('#promo_status').val(); let label = $('#promo_label').val(); let remark = $('#promo_remark').val(); let follow_date = $('#promo_fdate').val(); let orgin_table = $('#orgin_table').val();
+    let args = { cus_id,promo_type, status, label, remark, follow_date, orgin_table };
 
     $.post('followupFiles/promotion/submitNewPromotion.php', args, function (response) {
         if (response.includes('Error')) {
@@ -666,6 +667,7 @@ function submitPromotion() {
                 $('#closeAddPromotionModal').trigger('click');
             });
             $('#addPromotion').find('.modal-body input').not('[readonly]').not('#orgin_table').val('');
+            $('#addPromotion').find('.modal-body select').prop('selectedIndex', 0);
         }
     })
 }
@@ -697,10 +699,12 @@ function getUserBasedArea() {
 
 function validatePromoAdd() {
     let response = true;
+    let promo_type = $('#promo_type').val();
     let status = $('#promo_status').val(); let label = $('#promo_label').val(); let remark = $('#promo_remark').val();
     let follow_date = $('#promo_fdate').val();
 
     validateField(status, '#promo_statusCheck');
+    validateField(promo_type, '#promo_typeCheck');
     validateField(label, '#promo_labelCheck');
     validateField(remark, '#promo_remarkCheck');
     validateField(follow_date, '#promo_fdateCheck');

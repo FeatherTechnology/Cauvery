@@ -9,31 +9,14 @@ if (isset($_SESSION["userid"])) {
 }
 
 $user_based = '';
-if ($userid != 1) {
+if ($userid && $userid != 1) {
+    $userQry = $connect->query("SELECT report_access FROM USER WHERE user_id = $userid");
+    $user = $userQry->fetch();
+    $report_access = $user['report_access'];
 
-    $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid ");
-    $rowuser = $userQry->fetch();
-    $line_id = $rowuser['line_id'];
-    $report_access = $rowuser['report_access'];
-
-    if ($report_access == '1') { //Report access individual.
-        $line_ids = explode(',', $line_id);
-        $area_list_array = [];
-        foreach ($line_ids as $line) {
-            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
-            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
-                $area_list_array[] = $row_sub['area_id'];
-            }
-        }
-        $area_ids = [];
-        foreach ($area_list_array as $subarray) {
-            $area_ids = array_merge($area_ids, explode(',', $subarray));
-        }
-
-        $area_ids = array_unique($area_ids);
-        $area_list = implode(',', $area_ids);
-
-        $user_based = " AND cp.area_confirm_area IN ($area_list)";
+    if ($report_access =='1') {
+        $user_based = " AND req.insert_login_id = '$userid' ";
+        
     }
 }
 
@@ -122,28 +105,35 @@ JOIN acknowlegement_customer_profile cp ON
     ii.req_id = cp.req_id
 JOIN area_list_creation al ON
     cp.area_confirm_area = al.area_id
- JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
-JOIN area_group_mapping ag ON ag.map_id = agma.group_map_id
-JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
- JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
- JOIN area_duefollowup_mapping_area adma ON adma.area_id = al.area_id
-JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id
-JOIN acknowlegement_loan_calculation lc ON
-    ii.req_id = lc.req_id
-JOIN loan_category_creation lcc ON
-    lc.loan_category = lcc.loan_category_creation_id
-JOIN request_creation req ON
-    ii.req_id = req.req_id
-LEFT JOIN agent_creation ac ON
-    req.agent_id = ac.ag_id
-LEFT JOIN closed_status cls ON
-    req.req_id = cls.req_id
-LEFT JOIN customer_status cs ON
-    cls.req_id = cs.req_id
-JOIN in_acknowledgement ack ON ack.req_id = req.req_id
-JOIN USER u ON
-    ii.insert_login_id = u.user_id
-    LEFT JOIN (
+JOIN 
+    area_group_mapping_area agma ON agma.area_id = al.area_id
+JOIN 
+    area_group_mapping ag ON ag.map_id = agma.group_map_id
+JOIN 
+    area_line_mapping_area alma ON alma.area_id = al.area_id
+JOIN 
+    area_line_mapping alm ON alm.map_id = alma.line_map_id
+JOIN 
+    area_duefollowup_mapping_area adma ON adma.area_id = al.area_id
+JOIN 
+    area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id
+JOIN 
+    acknowlegement_loan_calculation lc ON ii.req_id = lc.req_id
+JOIN 
+    loan_category_creation lcc ON lc.loan_category = lcc.loan_category_creation_id
+JOIN 
+    request_creation req ON  ii.req_id = req.req_id
+LEFT JOIN 
+    agent_creation ac ON  req.agent_id = ac.ag_id
+LEFT JOIN 
+    closed_status cls ON req.req_id = cls.req_id
+LEFT JOIN 
+    customer_status cs ON cls.req_id = cs.req_id
+JOIN 
+    in_acknowledgement ack ON ack.req_id = req.req_id
+JOIN 
+USER u ON  ii.insert_login_id = u.user_id
+LEFT JOIN (
     SELECT 
         req_id, 
         SUM(due_amt_track) AS total_due_amt_tract

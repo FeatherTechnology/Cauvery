@@ -94,8 +94,8 @@ $(document).ready(function () {
     /* 🔹 HEADER */
     printWindow.document.write(`
         <div style="text-align:center; margin-bottom:6px;">
-            <img src="img/logo.png" style="height:55px;">
-            <h3 style="margin:4px 0;">Marudham Capitals</h3>
+            <img src="img/cauvery_capitals_logo.jpeg" style="height:55px;">
+            <h3 style="margin:4px 0;">Cauvery Capitals</h3>
             <div style="font-weight:bold;">Partners Report</div>
             <div style="font-weight:bold; margin-top:2px;">
                 Date :  ${$('#to_date').val().split('-').reverse().join('-')}

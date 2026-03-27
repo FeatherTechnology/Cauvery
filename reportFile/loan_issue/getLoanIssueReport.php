@@ -58,8 +58,8 @@ $column = array(
     "CONCAT(fam.first_name, ' ', fam.last_name)",
     'fam.relationship',
     'al.area_name',
-    'ag.group_name',
     'alm.line_name',
+    'ag.group_name',
     'adm.duefollowup_name',
     'bc.branch_name',
     'lcc.loan_category_creation_name',
@@ -225,8 +225,8 @@ foreach ($result as $row) {
     $sub_array[] = $row['famname'];
     $sub_array[] = $row['relationship'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line_name'];
+    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['duefollowup_name'];
     $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['loan_cat_name'];

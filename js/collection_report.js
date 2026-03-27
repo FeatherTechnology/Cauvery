@@ -20,7 +20,7 @@ $(document).ready(function () {
                 icon: 'warning',
                 title: 'Missing Dates',
                 text: 'Please select both From and To dates.',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0c70ab'
             });
             return;
         }
@@ -131,7 +131,7 @@ function collectionReportTable(){
             };
 
             // Array of column indices to sum
-            var columnsToSum = [19, 20, 21, 22, 25, 26, 27, 28];
+            var columnsToSum = [20, 21, 22, 23, 26, 27, 28, 29];
 
             // Loop through each column index
             columnsToSum.forEach(function (colIndex) {

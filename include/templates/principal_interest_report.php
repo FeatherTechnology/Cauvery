@@ -26,6 +26,8 @@
                                 <thead>
                                     <th>S.No</th>
                                     <th>Line</th>
+                                    <th>Group</th>
+                                    <th>Branch</th>
                                     <th>Loan ID</th>
                                     <th>Loan Date</th>
                                     <th>Aadhaar Number</th>
@@ -57,6 +59,8 @@
                                         <td></td> <!-- 17 -->
                                         <td></td> <!-- 18 -->
                                         <td></td> <!-- 19 -->
+                                        <td></td> <!-- 20 -->
+                                        <td></td> <!-- 21 -->
                                     </tr>
                                 </tfoot>
 

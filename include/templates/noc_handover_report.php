@@ -32,6 +32,7 @@
 									<th>Cust. Name</th>
 									<th>Area</th>
 									<th>Line</th>
+									<th>Group</th>
 									<th>Branch</th>
 									<th>Handover Date</th>
 									<th>User Name</th>
@@ -42,6 +43,7 @@
 								<tfoot>
 									<tr>
 										<td colspan="6"></td>
+										<td></td>
 										<td></td>
 										<td></td>
 										<td colspan="5"></td>

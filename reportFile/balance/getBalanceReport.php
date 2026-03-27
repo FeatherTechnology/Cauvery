@@ -11,28 +11,12 @@ $area_list = '';
 $user_based = '';
 
 if ($userid && $userid != 1) {
-    $userQry = $connect->query("SELECT line_id, report_access FROM USER WHERE user_id = $userid");
+    $userQry = $connect->query("SELECT report_access FROM USER WHERE user_id = $userid");
     $user = $userQry->fetch();
     $report_access = $user['report_access'];
 
     if ($report_access == '1') {
-        $line_id = explode(',', $user['line_id']);
-        $area_list_array = [];
-        foreach ($line_id as $line) {
-            $lineQry = $connect->query("SELECT area_id FROM area_line_mapping_area where line_map_id = $line ");
-            while ($row_sub = $lineQry->fetch(PDO::FETCH_ASSOC)) {
-                $area_list_array[] = $row_sub['area_id'];
-            }
-        }
-        $area_ids = [];
-        foreach ($area_list_array as $subarray) {
-            $area_ids = array_merge($area_ids, explode(',', $subarray));
-        }
-
-        $area_ids = array_unique($area_ids);
-        $area_list = implode(',', $area_ids);
-
-        $user_based = " AND cp.area_confirm_area IN ($area_list) AND req.insert_login_id = '$userid' ";
+        $user_based = " AND req.insert_login_id = '$userid' ";
         
     }
 }
@@ -98,7 +82,11 @@ $req_id_list = [];
 while ($row = $run->fetch()) {
     $req_id_list[] = $row['req_id'];
 }
-$req_id_list = implode(',', $req_id_list);
+if (!empty($req_id_list)) {
+    $req_id_list = implode(',', $req_id_list);
+} else {
+    $req_id_list = '0';
+}
 
 $query = "SELECT 
             -- ag.group_name,

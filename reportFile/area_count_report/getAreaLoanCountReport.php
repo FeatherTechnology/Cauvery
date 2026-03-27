@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../../ajaxconfig.php';
+include "../../user_based_area_Ids.php";
 
 $userid = $_SESSION['userid'] ?? 0;
 $draw   = intval($_POST['draw'] ?? 1);
@@ -17,19 +18,8 @@ if ($userid != 1) {
     $userRow = $userQry->fetch(PDO::FETCH_ASSOC);
 
     if ($userRow && $userRow['report_access'] == '1') {
-        $line_ids = explode(',', $userRow['line_id']);
-        $area_ids = [];
-        foreach ($line_ids as $line) {
-            $subQry = $connect->query("SELECT area_id FROM area_line_mapping_area WHERE line_map_id = $line");
-            $subRow = $subQry->fetch(PDO::FETCH_ASSOC);
-            if (!empty($subRow['area_id'])) {
-                $area_ids = array_merge($area_ids, explode(',', $subRow['area_id']));
-            }
-        }
-        $area_ids = array_unique(array_filter($area_ids));
-        if (!empty($area_ids)) {
-            $user_filter = " AND cp.area_confirm_area IN (" . implode(',', $area_ids) . ")";
-        }
+        $area_list = getUserAreaList($connect, 'line');
+        $user_based = " AND cp.area_confirm_area IN ($area_list) ";
     }
 }
 
