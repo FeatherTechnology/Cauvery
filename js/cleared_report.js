@@ -99,12 +99,3 @@ function clearedReportTable() {
     // Pass the table variable to the initColVisFeatures function
     initColVisFeatures(cleared_report_table, 'cleared_report_table');
 }
-
-function swalError(title, text) {
-    Swal.fire({
-        icon: 'error',
-        title: title,
-        text: text,
-        confirmButtonColor: '#0C70AB',
-    });
-}

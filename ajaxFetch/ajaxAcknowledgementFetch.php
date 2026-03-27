@@ -5,14 +5,8 @@ include('..\moneyFormatIndia.php');
 include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
+$login_user_type = $_SESSION['role'] ?? 0;
 $area_list = getUserAreaList($connect, 'Group');
-
-if ($userid) {
-    $stmt = $connect->prepare("SELECT role FROM user WHERE user_id = ?");
-    $stmt->execute([$userid]);
-    $login_user_type = $stmt->fetchColumn();
-    $stmt->closeCursor();
-}
 
 if ($userid != 1) {
     $stmt = $connect->prepare("SELECT ack_loan_cat , acknowledgement_access FROM user WHERE user_id = ?");
@@ -76,9 +70,9 @@ $query = "SELECT DISTINCT
     agm.group_name, 
     bc.branch_name, 
     alm.line_name, 
-    lf.follow_date,
     lcc.loan_category_creation_name,
     ac.ag_name AS agent_name,
+    lf.follow_date,
     u.fullname AS acknowledgement_user_name,
     CASE u.role
         WHEN 1 THEN 'Director'
@@ -238,11 +232,11 @@ foreach ($result as $row) {
     <div class='dropdown-content'>";
 
     // Common buttons
-    $commonBtn = "<a class=' loan-follow-edit' data-cusid='" . $cus_id . "' data-stage='" . $stage_arr[$cus_status] . "' data-toggle='modal' data-target='#addLoanFollow'     value='Follow'><span> Followup </span></a>
-    <a class='loan-follow-chart' data-cusid='"  . $cus_id . "' data-toggle='modal' data-target='#loanFollowChartModal'><span> Followup Chart</span></a>";
+    $commonBtn = "<a class='loan-follow-edit' data-cusid='" . $cus_id . "' data-stage='" . $stage_arr[$cus_status] . "' data-toggle='modal' data-target='#addLoanFollow'     value='Follow'><span> Followup </span></a>
+    <a class='loan-follow-chart' data-cusid='"  . $cus_id . "' data-toggle='modal' data-target='#loanFollowChartModal'><span> Followup Chart </span></a>";
 
     if ($login_user_type != 2 || $userid == 1) {
-        $commonBtn .= "<a href='' data-value ='" . $cus_id . "' data-value1 = '$id' class='customer-status' data-toggle='modal' data-target='.customerstatus'> 
+        $commonBtn .= "<a href='' data-value ='" . $cus_id . "' data-screen = 'acknowledgement' class='customer-status' data-toggle='modal' data-target='.customerstatus'> 
         Customer Status </a>";
     }
 

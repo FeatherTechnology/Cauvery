@@ -883,15 +883,6 @@ function checkMinMaxValue(minSelector, maxSelector) {
     }
 }
 
-function swalError(title, text) {
-    Swal.fire({
-        icon: 'warning',
-        title: title,
-        text: text,
-        confirmButtonColor: '#0c70ab',
-    });
-}
-
 function swalSuccess(title, text) {
     Swal.fire({
         icon: 'success',

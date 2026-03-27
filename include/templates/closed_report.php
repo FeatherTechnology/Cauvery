@@ -25,8 +25,9 @@
 							<table id="closed_report_table" class="table custom-table">
 								<thead>
 									<th>S.No</th>
-									<th>Group</th>
 									<th>Line</th>
+									<th>Group</th>
+									<th>Branch</th>
 									<th>Loan ID</th>
 									<th>Doc ID</th>
 									<th>Loan Date</th>
@@ -39,6 +40,8 @@
 									<th>Loan Amount</th>
 									<th>Maturity Date</th>
 									<th>Closed Date</th>
+									<th>User Type</th>
+									<th>User Name</th>
 									<th>Collection Format</th>
 									<th>Status</th>
 									<th>Sub Status</th>
@@ -46,10 +49,9 @@
 								<tbody></tbody>
 								<tfoot>
 									<tr>
-										<td colspan="11"></td>
+										<td colspan="13"></td>
 										<td></td>
-										<td></td>
-										<td colspan="5"></td>
+										<td colspan="7"></td>
 									</tr>
 								</tfoot>
 							</table>

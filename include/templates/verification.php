@@ -781,6 +781,7 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 										<input type="text" class="form-control" name="cus_exist_type" id="cus_exist_type" value="<?php if (isset($cus_exist_type)) {
 																																		echo $cus_exist_type;
 																																	} ?>" readonly tabindex="25">
+										<span class="text-danger" style='display:none' id='cusExistTypeCheck'>Please Enter Exist Type</span>
 									</div>
 								</div>
 
@@ -2559,6 +2560,7 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 
 </div>
 
+<div id="printcollection" style="display: none"></div>
 
 <!-- Add Family Members Modal -->
 <div class="modal fade addGroup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
