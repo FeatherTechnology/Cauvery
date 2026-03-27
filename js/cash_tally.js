@@ -472,7 +472,7 @@ function submitCashTally(i) {
                         html: 'Please check: <br>1.Hand cash Waiver <br> has submitted before Closing!',
                         icon: 'error',
                         showConfirmButton: true,
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0c70ab'
                     });
                     return;
                 }
@@ -497,7 +497,7 @@ function submitCashTally(i) {
                                 title: 'Error',
                                 text: 'Unable to calculate Circular Balance',
                                 icon: 'error',
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0c70ab'
                             });
                             return;
                         }
@@ -510,7 +510,7 @@ function submitCashTally(i) {
                             showCancelButton: true,
                             confirmButtonText: 'Confirm & Submit',
                             cancelButtonText: 'Cancel',
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0c70ab'
                         }).then((result) => {
 
                             if (!result.isConfirmed) return;
@@ -524,7 +524,7 @@ function submitCashTally(i) {
                     title: 'Error',
                     text: 'Something went wrong. Please try again.',
                     icon: 'error',
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0c70ab'
                 });
             }
 
@@ -956,7 +956,7 @@ function collectWaiverBtnClick(button) {
                                 title: response,
                                 icon: 'success',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0c70ab'
                             }).then(function (result) {
                                 if (result.isConfirmed) {
                                     var user_id = $('#user_id_rec').val();
@@ -980,7 +980,7 @@ function collectWaiverBtnClick(button) {
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#009688'
+                                confirmButtonColor: '#0c70ab'
                             });
                         }
                         getClosingBalance();
@@ -5246,14 +5246,14 @@ function CashTallysubmit(i) {
                 Swal.fire({
                     title: response,
                     icon: 'success',
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0c70ab'
                 });
                 getOpeningDate();
             } else {
                 Swal.fire({
                     title: response,
                     icon: 'error',
-                    confirmButtonColor: '#009688'
+                    confirmButtonColor: '#0c70ab'
                 });
             }
         }

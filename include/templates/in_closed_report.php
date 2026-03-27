@@ -26,6 +26,8 @@
 								<thead>
 									<th>S.No</th>
 									<th>Line</th>
+									<th>Group</th>
+									<th>Branch</th>
 									<th>Loan ID</th>
 									<th>Doc ID</th>
 									<th>Loan Date</th>
@@ -44,6 +46,8 @@
 								<tfoot>
 									<tr>
 										<td colspan="11"></td>
+										<td></td>
+										<td></td>
 										<td></td>
 										<td colspan="3"></td>
 									</tr>

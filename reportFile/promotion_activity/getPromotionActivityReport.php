@@ -17,7 +17,7 @@ $id_list = implode(',', array_filter(explode(',', $user_ids), 'is_numeric'));
 if (!empty($id_list)) {
     $where .= " AND np.insert_login_id IN ($id_list) ";
 }
-
+$promo_type_arr = ['1'=>'Direct','2'=>'Mobile'];
 $column = array(
     'np.id',
     'np.cus_id',
@@ -132,9 +132,10 @@ foreach ($result as $row) {
     $sub_array[] = date('h:i:s A', strtotime($row['created_date']));
     $sub_array[] = $row['mobile1'];
     $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['branch_name'];
-    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line_name'];
+    $sub_array[] = $row['group_name'];
+    $sub_array[] = $row['branch_name'];   
+    $sub_array[] = $promo_type_arr[$row['promo_type']];
     $sub_array[] = $row['status'];
     $sub_array[] = $row['remark'];
     $sub_array[] = date('d-m-Y', strtotime($row['follow_date']));

@@ -13,73 +13,13 @@ $where = "";
 /* ---------------- USER ACCESS ---------------- */
 if ($userid != 1) {
 
-    $userQry = $connect->query("
-        SELECT group_id, line_id, due_followup_lines, report_access, noc_mapping_access 
-        FROM USER 
-        WHERE user_id = $userid
-    ");
+    $userQry = $connect->query("SELECT report_access FROM user WHERE user_id = $userid ");
     $rowuser = $userQry->fetch();
 
     $report_access = $rowuser['report_access'];
-    $accessType    = $rowuser['noc_mapping_access'];
-    $area_ids  = [];
-
-    if ($report_access == '1') {
-
-        /* 🔹 GROUP BASED */
-        if ($accessType == 1) {
-            $group_ids = explode(',', $rowuser['group_id']);
-            foreach ($group_ids as $group) {
-                $groupQry = $connect->query("
-                    SELECT area_id 
-                    FROM area_group_mapping_area
-                    WHERE group_map_id = $group
-                ");
-                if ($row = $groupQry->fetch()) {
-                    $area_ids = array_merge($area_ids, explode(',', $row['area_id']));
-                }
-            }
-        }
-
-        /* 🔹 LINE BASED */
-        elseif ($accessType == 2) {
-            $line_ids = explode(',', $rowuser['line_id']);
-            foreach ($line_ids as $line) {
-                $lineQry = $connect->query("
-                    SELECT area_id 
-                    FROM area_line_mapping_area
-                    WHERE line_map_id = $line
-                ");
-                if ($row = $lineQry->fetch()) {
-                    $area_ids = array_merge($area_ids, explode(',', $row['area_id']));
-                }
-            }
-        }
-
-        /* 🔹 DUE FOLLOWUP BASED */
-        elseif ($accessType == 3) {
-            $due_ids = explode(',', $rowuser['due_followup_lines']);
-            foreach ($due_ids as $due) {
-                $dueQry = $connect->query("
-                    SELECT area_id 
-                    FROM area_duefollowup_mapping_area
-                    WHERE duefollowup_map_id = $due
-                ");
-                if ($row = $dueQry->fetch()) {
-                    $area_ids = array_merge($area_ids, explode(',', $row['area_id']));
-                }
-            }
-        }
-
-        $area_ids  = array_unique(array_filter($area_ids));
-        $area_list = implode(',', $area_ids);
-
-        $colName ="cp.area_confirm_area";
-           
-
-        if ($area_list != '') {
-            $user_based = " AND $colName IN ($area_list) ";
-        }
+    
+     if ($report_access == '1') { //Report access individual.
+        $user_based = " AND nc.update_login_id = '$userid' ";
     }
 }
 
@@ -105,6 +45,7 @@ $column = array(
     'CONCAT(cp.first_name, " ", cp.last_name)',
     'al.area_name',
     'alm.line_name',
+    'agm.group_name',
     'bc.branch_name',
     'nc.noc_handover_date',
     'nc.noc_id',
@@ -122,6 +63,7 @@ $query = "SELECT
         fam.relationship,
         al.area_name,
         alm.line_name,
+        agm.group_name,
         bc.branch_name,
         nc.update_login_id,
         nc.noc_handover_date,
@@ -135,6 +77,8 @@ $query = "SELECT
         LEFT JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
         JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
         JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+        LEFT JOIN area_group_mapping_area agma ON al.area_id = agma.area_id
+        LEFT JOIN area_group_mapping agm ON agma.group_map_id = agm.map_id
         JOIN branch_creation bc ON alm.branch_id = bc.branch_id
         LEFT JOIN request_creation req ON ii.req_id = req.req_id
         LEFT JOIN verification_family_info fam ON nc.noc_member ='3' AND nc.mem_name = fam.id AND nc.cus_id = fam.cus_id
@@ -147,6 +91,7 @@ if (isset($_POST['search'])) {
         $query .= " and (ii.loan_id LIKE '" . $_POST['search'] . "%' 
             OR ad.doc_id LIKE '%" . $_POST['search'] . "%'
             OR ii.cus_id LIKE '%" . $_POST['search'] . "%'
+            OR agm.group_name LIKE '%" . $_POST['search'] . "%'
             OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
             OR CONCAT(cp.first_name, ' ', cp.last_name) LIKE '%" . $_POST['search'] . "%' 
             OR CONCAT(fam.first_name, ' ', fam.last_name) LIKE '%" . $_POST['search'] . "%' 
@@ -200,6 +145,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['area_name'];
     $sub_array[] = $row['line_name'];
+    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['branch_name'];
     $sub_array[] = date('d-m-Y', strtotime($row['noc_handover_date']));
     $sub_array[] = $user_name;

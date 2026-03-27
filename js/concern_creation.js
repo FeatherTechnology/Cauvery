@@ -254,7 +254,7 @@ $(document).ready(function () {
                 icon: 'question',
                 showConfirmButton: true,
                 showCancelButton: true,
-                confirmButtonColor: '#009688',
+                confirmButtonColor: '#0c70ab',
                 cancelButtonColor: '#cc4444',
                 cancelButtonText: 'No',
                 confirmButtonText: 'Yes'
@@ -276,7 +276,7 @@ $(document).ready(function () {
                                     title: 'Deleted Successfully',
                                     icon: 'success',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688',
+                                    confirmButtonColor: '#0c70ab',
                                     confirmButtonText: 'OK'
                                 }).then((swalResult) => {
                                     if (swalResult.isConfirmed) {
@@ -291,7 +291,7 @@ $(document).ready(function () {
                                     title: 'warning!',
                                     text: result.response,
                                     icon: 'warning',
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0c70ab'
                                 });
 
                             } else {
@@ -300,7 +300,7 @@ $(document).ready(function () {
                                     title: 'Error!',
                                     text: result.response,
                                     icon: 'error',
-                                    confirmButtonColor: '#009688'
+                                    confirmButtonColor: '#0c70ab'
                                 });
 
                             }
@@ -335,7 +335,7 @@ $(document).ready(function () {
                                     title: 'Department Name Added Succesfully..!',
                                     icon: 'success',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688',
+                                    confirmButtonColor: '#0c70ab',
                                     confirmButtonText: 'OK'
                             });
                         } else if (updresult) {
@@ -343,7 +343,7 @@ $(document).ready(function () {
                                     title: 'Department Name Updated Succesfully..!',
                                     icon: 'success',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688',
+                                    confirmButtonColor: '#0c70ab',
                                     confirmButtonText: 'OK'
                             });
                         }
@@ -352,7 +352,7 @@ $(document).ready(function () {
                                     title: 'Error While Submitting',
                                     icon: 'error',
                                     showConfirmButton: true,
-                                    confirmButtonColor: '#009688',
+                                    confirmButtonColor: '#0c70ab',
                                     confirmButtonText: 'OK'
                             })
                         }

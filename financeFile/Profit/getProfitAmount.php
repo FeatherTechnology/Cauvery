@@ -22,7 +22,7 @@ if ($type == 'today') {
     
 }
 
-$condition = getSubareaList($connect, $user_id); //condition will be returned if user id selected
+$condition = getareaList($connect, $user_id); //condition will be returned if user id selected
 getDetials($connect, $where, $condition);
 
 function getDetials($connect, $where, $condition)
@@ -62,7 +62,7 @@ function getDetials($connect, $where, $condition)
     echo json_encode($response);
 }
 
-function getSubareaList($connect, $user_id)
+function getareaList($connect, $user_id)
 {
     if (empty($user_id)) {
         return '';
@@ -84,22 +84,22 @@ function getSubareaList($connect, $user_id)
     // Build placeholders for IN clause
     $placeholders = implode(',', array_fill(0, count($line_ids), '?'));
 
-    // Fetch sub_area_ids from normalized table
+    // Fetch area_ids from normalized table
     $stmt = $connect->prepare("
-        SELECT DISTINCT sub_area_id
-        FROM area_line_mapping_sub_area
+        SELECT DISTINCT area_id
+        FROM area_line_mapping_area
         WHERE line_map_id IN ($placeholders)
     ");
     $stmt->execute($line_ids);
-    $sub_area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    if (empty($sub_area_ids)) return '';
+    if (empty($area_ids)) return '';
 
     // Build safe placeholders for final condition
-    $placeholders_sub = implode(',', array_fill(0, count($sub_area_ids), '?'));
-    $GLOBALS['sub_area_params'] = $sub_area_ids; // store params for later prepared statement
+    $placeholders_sub = implode(',', array_fill(0, count($area_ids), '?'));
+    $GLOBALS['area_params'] = $area_ids; // store params for later prepared statement
 
-    return " AND iv.sub_area IN ($placeholders_sub)";
+    return " AND iv.area IN ($placeholders_sub)";
 }
 
 // Close the database connection
