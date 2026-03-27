@@ -8,43 +8,24 @@ if (isset($_SESSION["userid"])) {
     $report_access = '2'; //if super Admin login use need to show overall.
 }
 
-$user_based = "";
+$user_based = '';
 if ($userid != 1) {
-    $userQry = $connect->query("SELECT group_id, report_access FROM USER WHERE user_id = $userid ");
+
+    $userQry = $connect->query("SELECT report_access FROM user WHERE user_id = $userid ");
     $rowuser = $userQry->fetch();
-        $group_id = $rowuser['group_id'];
-        $report_access = $rowuser['report_access'];
-    
-    if($report_access =='1'){
-         $group_id_array = explode(',', $group_id);
-        $area_list_array = [];
+    $report_access = $rowuser['report_access'];
 
-        foreach ($group_id_array as $group) {
-            $groupQry = $connect->query("SELECT area_id FROM area_group_mapping_area WHERE group_map_id = $group");
-
-            while ($row_sub = $groupQry->fetch(PDO::FETCH_ASSOC)) {
-                $area_list_array[] = $row_sub['area_id'];
-            }
-        }
-        $area_ids = [];
-        foreach ($area_list_array as $subarray) {
-            $area_ids = array_merge($area_ids, explode(',', $subarray));
-        }
-
-        $area_ids = array_unique($area_ids);
-        $area_list = implode(',', $area_ids);
-
-        $user_based = "AND (cp.area_confirm_area IN ($area_list) OR req.area IN ($area_list)) AND req.update_login_id = '$userid' ";
+    if ($report_access == '1') { //Report access individual.
+        $user_based = "AND req.update_login_id = '$userid' ";
     }
-    
 }
 
-$where = "1";
+$where = "1=1";
 
 if (isset($_POST['from_date']) && isset($_POST['to_date']) && $_POST['from_date'] != '' && $_POST['to_date'] != '') {
-    $from_date = date('Y-m-d', strtotime($_POST['from_date']));
-    $to_date = date('Y-m-d', strtotime($_POST['to_date']));
-    $where  = "(date(req.updated_date) >= '" . $from_date . "') and (date(req.updated_date) <= '" . $to_date . "') ";
+    $from_date = date('Y-m-d 00:00:00', strtotime($_POST['from_date']));
+    $to_date = date('Y-m-d 23:59:59', strtotime($_POST['to_date']));
+    $where = "req.updated_date BETWEEN '$from_date' AND '$to_date'";
 }
 
 $where  .= $user_based;
@@ -90,15 +71,16 @@ if (isset($_POST['type']) && isset($_POST['sel_screen'])) {
 if ($cus_status != "") {
     // Updated WHERE clause
     $where .= " AND req.cus_status = '$cus_status' ";
-
 } else {
     $where .= " AND req.cus_status BETWEEN 4 AND 9 ";
-
 }
 
-if($cus_status =='5' || $cus_status =='6' || $cus_status =='7' || $cus_status =='9'){
+$loan_amt_field = "req.loan_amt"; // default
+
+if ($cus_status == '5' || $cus_status == '6' || $cus_status == '7' || $cus_status == '9') {
     $join_condition = "JOIN in_verification iv ON req.req_id = iv.req_id";
     $ag_join = "iv.agent_id";
+    $loan_amt_field = "iv.loan_amt";
 }
 
 $statusLabels = [
@@ -116,12 +98,15 @@ $statusLabels = [
     '11' => 'In Verification',
     '12' => 'In Verification',
     '13' => 'In Issue',
-    '14' => 'Collection',
+    '14' => 'Present',
     '15' => 'Collection Error',
     '16' => 'Collection Legal',
-    '17' => 'Collection',
+    '17' => 'Present',
     '20' => 'Closed',
-    '21' => 'NOC',
+    '21' => 'NOC Pending',
+    '22' => 'NOC Completed',
+    '23' => 'NOC Completed',
+    '24' => 'NOC Handovered',
 ];
 
 $column = array(
@@ -132,17 +117,22 @@ $column = array(
     'cr.autogen_cus_id',
     "CONCAT(req.first_name, ' ', req.last_name)",
     'al.area_name',
+    'alm.line_name',
+    'agm.group_name',
+    'bc.branch_name',
     'lcc.loan_category_creation_name',
-    'req.loan_amt',
+    'loan_amt',
     'u.role',
     'u.fullname',
     'ag.ag_name',
     'req.responsible',
     'req.cus_data',
+    'req.req_id',
     'req.updated_date',
     'req.cus_status',
     'req.prompt_remark'
 );
+
 $query = "SELECT 
     req.req_code,
     req.dor,
@@ -150,8 +140,11 @@ $query = "SELECT
     cr.autogen_cus_id,
     CONCAT(req.first_name, ' ', req.last_name) AS cus_name,
     al.area_name,
+    alm.line_name,
+    agm.group_name,
+    bc.branch_name,
     lcc.loan_category_creation_name,
-    req.loan_amt,
+    $loan_amt_field AS loan_amt,
     u.role,
     u.fullname,
     ag.ag_name,
@@ -173,8 +166,16 @@ LEFT JOIN
     agent_creation ag ON $ag_join = ag.ag_id         
 JOIN 
     user u ON req.update_login_id = u.user_id
+JOIN 
+    area_group_mapping_area agma ON agma.area_id = al.area_id
+JOIN 
+    area_group_mapping agm ON agm.map_id = agma.group_map_id
 LEFT JOIN 
-    customer_profile cp ON req.req_id = cp.req_id
+    branch_creation bc ON agm.branch_id = bc.branch_id
+JOIN 
+    area_line_mapping_area alma ON alma.area_id = al.area_id
+JOIN 
+    area_line_mapping alm ON alm.map_id = alma.line_map_id
 WHERE 
     $where ";
 
@@ -228,6 +229,9 @@ foreach ($result as $row) {
     $sub_array[] = $row['autogen_cus_id'];
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['area_name'];
+    $sub_array[] = $row['line_name'];
+    $sub_array[] = $row['group_name'];
+    $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['loan_category_creation_name'];
     $sub_array[] = moneyFormatIndia($row['loan_amt']);
     $sub_array[] = $role_arr[$row['role']];
@@ -235,6 +239,60 @@ foreach ($result as $row) {
     $sub_array[] = $row['ag_name'];
     $sub_array[] = ($row['responsible'] == '0') ? 'Yes' : 'No';
     $sub_array[] = $row['cus_data'];
+
+    $cus_id = $row['cus_id'];
+    $dor = $row['dor'];
+
+    if (($row['cus_data']) === 'New') {
+
+        $existing_type = '';
+    } else {
+
+        $stmt = $connect->prepare("SELECT rc.cus_status, rc.dor, cc.closing_date
+            FROM request_creation rc
+            LEFT JOIN closing_customer cc ON cc.req_id = rc.req_id
+            WHERE rc.cus_id = :cus_id
+            AND rc.dor < :dor AND rc.cus_status NOT IN (4,5,6,7,8,9)
+            ORDER BY rc.dor DESC
+            LIMIT 1 
+        ");
+
+        $stmt->execute([
+            ':cus_id' => $cus_id,
+            ':dor' => $dor
+        ]);
+
+        $issue = $stmt->fetch();
+
+        if (!$issue) {
+
+            $existing_type = 'Existing New';
+        } elseif ($issue['cus_status'] >= 14 && $issue['cus_status'] < 20) {
+
+            $existing_type = 'Additional';
+        } else {
+
+            $dor = date('Y-m-d', strtotime($dor));
+            $closingDate = date('Y-m-d', strtotime($issue['closing_date']));
+            $monthEnd = date('Y-m-t', strtotime($issue['closing_date']));
+            $nextMonth = date('Y-m-d', strtotime($monthEnd . ' +1 day'));
+            $reactiveDate = date('Y-m-d', strtotime($nextMonth . ' +3 months'));
+
+            if ($closingDate > $dor) {
+
+                $existing_type = 'Additional';
+            } else {
+
+                if ($reactiveDate > $dor) {
+                    $existing_type = 'Renewal';
+                } else {
+                    $existing_type = 'Re-active';
+                }
+            }
+        }
+    }
+
+    $sub_array[] = $existing_type;
     $sub_array[] = date('d-m-Y', strtotime($row['updated_date']));
     $sub_array[] = $statusLabels[$row['cus_status']];
     $sub_array[] = $row['prompt_remark'];

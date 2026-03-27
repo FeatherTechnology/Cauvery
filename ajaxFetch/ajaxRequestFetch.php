@@ -6,13 +6,7 @@ include('../moneyFormatIndia.php');
 /* ---------------- USER CONTEXT ---------------- */
 $userid = $_SESSION['userid'] ?? 0;
 $request_list_access = $_SESSION['request_list_access'] ?? 0;
-
-if ($userid) {
-    $stmt = $connect->prepare("SELECT role FROM user WHERE user_id = ?");
-    $stmt->execute([$userid]);
-    $login_user_type = $stmt->fetchColumn();
-    $stmt->closeCursor();
-}
+$login_user_type = $_SESSION['role'] ?? 0;
 
 /* ---------------- DATATABLE COLUMN MAP ---------------- */
 $column = [
@@ -193,7 +187,7 @@ foreach ($result as $row) {
     }
 
     if ($login_user_type != 2 || $userid == 1) { //role 2- Agent 
-        $action .= "<a href='' data-value='$cus_id' data-value1='$id' class='customer-status' data-toggle='modal' data-target='.customerstatus'>Customer Status</a>";
+        $action .= "<a href='' data-value='$cus_id' data-screen = 'request' class='customer-status' data-toggle='modal' data-target='.customerstatus'>Customer Status</a>";
     }
 
     $action .= "</div></div>";
@@ -209,4 +203,3 @@ echo json_encode([
     "recordsFiltered" => $recordsFiltered,
     "data" => $data
 ]);
-

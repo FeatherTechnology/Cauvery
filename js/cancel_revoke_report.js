@@ -47,16 +47,6 @@ $(document).ready(function () {
 
 });
 
-//alert message
-function swalError(title, text) {
-    Swal.fire({
-        icon: 'error',
-        title: title,
-        text: text,
-        confirmButtonColor: '#0C70AB',
-    })
-}
-
 function cancelRevokeTable() {
     // Destroy any existing DataTable instance
     $('#cancel_revoke_table').DataTable().destroy();
@@ -118,7 +108,7 @@ function cancelRevokeTable() {
             };
 
             // Array of column indices to sum
-            var columnsToSum = [8];
+            var columnsToSum = [11];
 
             // Loop through each column index
             columnsToSum.forEach(function (colIndex) {

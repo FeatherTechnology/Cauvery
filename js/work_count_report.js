@@ -802,14 +802,3 @@ function resetAllTables() {
 
     $("th, td").show(); // reset any hidden columns
 }
-
-
-
-function swalError(title, text) {
-    Swal.fire({
-        icon: 'error',
-        title: title,
-        text: text,
-        confirmButtonColor: '#0C70AB',
-    });
-}

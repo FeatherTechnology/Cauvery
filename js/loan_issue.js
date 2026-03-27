@@ -616,6 +616,13 @@ $(document).ready(function () {
         }
     });
 
+    //Loan History.
+    $(document).on("click", "#hide_loan_history", function () {
+        $("#loanHistoryDiv").empty();
+        $("#show_loan_history").show();
+        $("#hide_loan_history").hide();
+    });
+
 });
 
 
@@ -1110,11 +1117,11 @@ function schemeCalAjax(scheme_id) {
 
 //To Get Loan Calculation for After Interest
 function getLoanAfterInterest() {
-    var loan_amt = $('#loan_amt').val().replace(/[, ]/g, '');
-    var int_rate = $('#int_rate').val().replace(/[, ]/g, '');
+    var loan_amt   = $('#loan_amt').val().replace(/[, ]/g, '');
+    var int_rate   = $('#int_rate').val().replace(/[, ]/g, '');
     var due_period = $('#due_period').val().replace(/[, ]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[, ]/g, '');
-    var proc_fee = $('#proc_fee').val().replace(/[, ]/g, '');
+    var proc_fee   = $('#proc_fee').val().replace(/[, ]/g, '');
 
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
@@ -1185,11 +1192,11 @@ function getLoanAfterInterest() {
 
 //To Get Loan Calculation for Pre Interest
 function getLoanPreInterest() {
-    var loan_amt = $('#loan_amt').val().replace(/[, ]/g, '');
-    var int_rate = $('#int_rate').val().replace(/[, ]/g, '');
+    var loan_amt   = $('#loan_amt').val().replace(/[, ]/g, '');
+    var int_rate   = $('#int_rate').val().replace(/[, ]/g, '');
     var due_period = $('#due_period').val().replace(/[, ]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[, ]/g, '');
-    var proc_fee = $('#proc_fee').val().replace(/[, ]/g, '');
+    var proc_fee   = $('#proc_fee').val().replace(/[, ]/g, '');
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
 
@@ -1261,10 +1268,10 @@ function getLoanPreInterest() {
 
 //To Get Loan Calculation for Interest due type
 function getLoanInterest() {
-    var loan_amt = $("#loan_amt").val().replace(/[, ]/g, '');
-    var int_rate = $("#int_rate").val().replace(/[, ]/g, '');
+    var loan_amt   = $("#loan_amt").val().replace(/[, ]/g, '');
+    var int_rate   = $("#int_rate").val().replace(/[, ]/g, '');
     var doc_charge = $("#doc_charge").val().replace(/[, ]/g, '');
-    var proc_fee = $("#proc_fee").val().replace(/[, ]/g, '');
+    var proc_fee   = $("#proc_fee").val().replace(/[, ]/g, '');
 
     var calc_method = $("#calc_method").val();
 
@@ -1321,11 +1328,11 @@ function getLoanInterest() {
 }
 
 function getSchemeAfterIntreset() {
-    var loan_amt = $('#loan_amt').val().replace(/[\s,]/g, '');
-    var int_rate = $('#int_rate').val().replace(/[\s,]/g, '');
+    var loan_amt   = $('#loan_amt').val().replace(/[\s,]/g, '');
+    var int_rate   = $('#int_rate').val().replace(/[\s,]/g, '');
     var due_period = $('#due_period').val().replace(/[\s,]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[\s,]/g, '');
-    var proc_fee = $('#proc_fee').val().replace(/[\s,]/g, '');
+    var proc_fee   = $('#proc_fee').val().replace(/[\s,]/g, '');
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
     // principal amt as same as loan amt for after interest
@@ -1335,7 +1342,7 @@ function getSchemeAfterIntreset() {
     } else if (intreset_type.includes('%')) {
         var int_amt = (parseInt(loan_amt) * (parseFloat(int_rate) / 100)).toFixed(0); //Calculate interest rate 
     }
-
+    
     var tot_amt = parseInt(loan_amt) + parseFloat(int_amt); //Calculate total amount from principal/loan amt and interest rate
 
     var due_amt = parseInt(tot_amt) / parseInt(due_period);//To calculate due amt by dividing total amount and due period given on loan info
@@ -1398,11 +1405,11 @@ function getSchemeAfterIntreset() {
     checkBalance()
 }
 function getSchemePreIntreset() {
-    var loan_amt = $('#loan_amt').val().replace(/[\s,]/g, '');
-    var int_rate = $('#int_rate').val().replace(/[\s,]/g, '');
+    var loan_amt   = $('#loan_amt').val().replace(/[\s,]/g, '');
+    var int_rate   = $('#int_rate').val().replace(/[\s,]/g, '');
     var due_period = $('#due_period').val().replace(/[\s,]/g, '');
     var doc_charge = $('#doc_charge').val().replace(/[\s,]/g, '');
-    var proc_fee = $('#proc_fee').val().replace(/[\s,]/g, '');
+    var proc_fee   = $('#proc_fee').val().replace(/[\s,]/g, '');
 
 
     $('#loan_amt_cal').val(formatIndianNumber(loan_amt)); //get loan amt from loan info card
@@ -1621,7 +1628,7 @@ function checkBalance() {
                     $('#submit_loanIssue').hide();
                 }
             } else {
-                var netcashamnt = $('#net_cash_cal').val();
+                var netcashamnt = $('#net_cash_cal').val(); 
                 $('#net_cash').val(netcashamnt);
 
             }
@@ -1635,14 +1642,14 @@ function checkBalance() {
 function loanIssueSumitValidation() {
     var issueMode = $('#issued_mode').val(); var paymenType = $('#payment_type').val(); var cash = $('#cash').val(); var guarentorName = $('#cash_guarentor_name').val();
     // var fingerMatch = $('#fingerValidation').val();
-    var ag_id = $('#agent_id').val();
+    var ag_id = $('#agent_id').val(); 
     // var bank_id = $('#bank_id').val();
-    var validation = true;
+    var validation = true ;
     //Check Issue Mode
     if (issueMode == '') {
         event.preventDefault();
         $('#issue').show();
-        validation = false;
+        validation = false ;
     } else {
         $('#issue').hide();
     }
@@ -1651,7 +1658,7 @@ function loanIssueSumitValidation() {
     if (paymenType == '') {
         event.preventDefault();
         $('#pay_type').show();
-        validation = false;
+        validation = false ;
     } else {
         $('#pay_type').hide();
     }
@@ -1661,7 +1668,7 @@ function loanIssueSumitValidation() {
         if (cash == '') {
             event.preventDefault();
             $('#cash_amnt').show();
-            validation = false;
+            validation = false ;
         } else {
             $('#cash_amnt').hide();
         }
@@ -1679,7 +1686,7 @@ function loanIssueSumitValidation() {
         if (!isAnyCheckboxChecked()) {
             event.preventDefault(); // Prevent form submission if no checkbox is checked
             alert('Please select Bank Info.'); // Show error message
-            validation = false;
+            validation = false ;
         }
     }
 
@@ -1688,7 +1695,7 @@ function loanIssueSumitValidation() {
             if (guarentorName == '') {
                 event.preventDefault();
                 $('#cash_guarentor').show();
-                validation = false;
+                validation = false ;
             } else {
                 $('#cash_guarentor').hide();
             }
@@ -1735,16 +1742,14 @@ function resetbankInfo() {
     });
 }
 
-function performLoanCalculation(callback) {
+function performLoanCalculation(callback){
     var intrest_rate = $("#int_rate").val();
     var doc_charge = $("#doc_charge").val();
     var proc_fee = $("#proc_fee").val();
     var due_period = $("#due_period").val();
     var profit_method = $("#profit_method").val();
-    var scheme_profit_method = $("#scheme_profit_method").val();
 
-
-    if (intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || (profit_method == "" && scheme_profit_method == "")) {
+    if( intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || profit_method == ""){
         Swal.fire({
             timerProgressBar: true,
             timer: 2000,
@@ -1763,23 +1768,23 @@ function performLoanCalculation(callback) {
 
     if (profit_method == "after_intrest" && due_type == "EMI") {
         getLoanAfterInterest();
-
+        
     } else if (profit_method == 'pre_intrest') {
         getLoanPreInterest();
-
+        
     }
 
     if (due_type == 'Interest') {
         getLoanInterest();
-
+        
     }
 
     var scheme_profit_method = $('#scheme_profit_method').val(); // if profit method changes, due type is EMI
     if (scheme_profit_method == 'after_intrest') {
-        getSchemeAfterIntreset();
+        getSchemeAfterIntreset(); 
 
     } else if (scheme_profit_method == 'pre_intrest') {
-        getSchemePreIntreset();
+        getSchemePreIntreset(); 
 
     }
 
@@ -1810,3 +1815,196 @@ function performLoanCalculation(callback) {
     if (typeof callback === 'function') callback();
 
 }
+
+//loan history table contents get from closed file loan lists
+function getLoanHistory() {
+  $("#show_loan_history").hide();
+  $("#hide_loan_history").show();
+  let cus_id = $("#cus_id").val();
+  let req_id = $("#req_id").val();
+  let cus_type = $("#cus_type").val();
+  //To get loan sub Status
+  var pending_arr = [];
+  var od_arr = [];
+  var due_nil_arr = [];
+  var closed_arr = [];
+  var balAmnt = [];
+  $.ajax({
+    url: "closedFile/resetCustomerStsForClosed.php",
+    data: { cus_id: cus_id },
+    dataType: "json",
+    type: "post",
+    cache: false,
+    success: function (response) {
+      if (cus_type == "Existing") {
+        if (response.length != 0) {//check json response is not empty
+          for (var i = 0; i < response["pending_customer"].length; i++) {
+            pending_arr[i] = response["pending_customer"][i];
+            od_arr[i] = response["od_customer"][i];
+            due_nil_arr[i] = response["due_nil_customer"][i];
+            closed_arr[i] = response["closed_customer"][i];
+            balAmnt[i] = response["balAmnt"][i];
+          }
+          var pending_sts = pending_arr.join(",");
+          $("#pending_sts").val(pending_sts);
+          var od_sts = od_arr.join(",");
+          $("#od_sts").val(od_sts);
+          var due_nil_sts = due_nil_arr.join(",");
+          $("#due_nil_sts").val(due_nil_sts);
+          var closed_sts = closed_arr.join(",");
+          $("#closed_sts").val(closed_sts);
+          balAmnt = balAmnt.join(",");
+        }
+      }
+    },
+  }).then(function () {
+        var pending_sts = $("#pending_sts").val();
+        var od_sts = $("#od_sts").val();
+        var due_nil_sts = $("#due_nil_sts").val();
+        var closed_sts = $("#closed_sts").val();
+        var bal_amt = balAmnt;
+        $.ajax({
+            //in this file, details gonna fetch by customer ID, Not by req id (Because we need all loans from customer)
+            url: "verificationFile/LoanCalculation/getLoanHistory.php",
+            data: {
+                req_id: req_id,
+                cus_id: cus_id,
+                pending_sts: pending_sts,
+                od_sts: od_sts,
+                due_nil_sts: due_nil_sts,
+                closed_sts: closed_sts,
+                bal_amt: bal_amt,
+            },
+            type: "post",
+            cache: false,
+            success: function (response) {
+                $("#loanHistoryDiv").empty();
+                $("#loanHistoryDiv").html(response);
+            },
+        }).then(function () {
+            $(document).on("click", ".due-chart", function () {
+                var req_id = $(this).data("reqid");
+                var cus_id = $(this).data("cusid");
+                dueChartList(req_id, cus_id);
+            });
+            $(document).on("click", ".penalty-chart", function () {
+                var req_id = $(this).data("reqid");
+                var cus_id = $(this).data("cusid");
+                penaltyChartList(req_id, cus_id);
+            });
+            $(document).on("click", ".collcharge-chart", function () {
+                var req_id = $(this).data("reqid");
+                collectionChargeChartList(req_id);
+            });
+            $(document).on("click", ".loansummary-chart", function () {
+                var req_id = $(this).data("reqid");
+                var cus_id = $(this).data("cusid");
+                loanSummaryList(req_id, cus_id);
+            });
+            $(document).on("click", ".commitment-chart", function () {
+                //Commitment chart
+                let req_id = $(this).data("reqid");
+                let cus_id = $(this).data("cusid");
+                $.post(
+                "followupFiles/dueFollowup/getCommitmentChart.php",
+                { cus_id, req_id },
+                function (html) {
+                    $("#commChartDiv").empty().html(html);
+                }
+                );
+            });
+        });
+  });
+}
+
+//Due Chart List
+function dueChartList(req_id, cus_id) {
+  $.ajax({
+    url: "collectionFile/getDueChartList.php",
+    data: { req_id: req_id, cus_id: cus_id },
+    type: "post",
+    cache: false,
+    success: function (response) {
+      $("#dueChartTableDiv").empty();
+      $("#dueChartTableDiv").html(response);
+    },
+  }).then(function () {
+    // print function
+    $(".print_due_coll").off("click");
+    $(".print_due_coll").click(function () {
+      var id = $(this).attr("value");
+      Swal.fire({
+        title: "Print",
+        text: "Do you want to print this collection?",
+        // icon: 'question',
+        // showConfirmButton: true,
+        // confirmButtonColor: '#009688',
+        imageUrl: "img/printer.png",
+        imageWidth: 300,
+        imageHeight: 210,
+        imageAlt: "Custom image",
+        showCancelButton: true,
+        confirmButtonColor: "#009688",
+        cancelButtonColor: "#d33",
+        cancelButtonText: "No",
+        confirmButtonText: "Yes",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: "collectionFile/print_collection.php",
+            data: { coll_id: id },
+            type: "post",
+            cache: false,
+            success: function (html) {
+              $("#printcollection").html(html);
+            },
+          });
+        }
+      });
+    });
+  });
+}
+
+//Penalty Chart List
+function penaltyChartList(req_id, cus_id) {
+  $.ajax({
+    url: "collectionFile/getPenaltyChartList.php",
+    data: { req_id: req_id, cus_id: cus_id },
+    type: "post",
+    cache: false,
+    success: function (response) {
+      $("#penaltyChartTableDiv").empty();
+      $("#penaltyChartTableDiv").html(response);
+    },
+  }); //Ajax End.
+}
+
+//Collection Charge Chart List
+function collectionChargeChartList(req_id) {
+  $.ajax({
+    url: "collectionFile/getCollectionChargeList.php",
+    data: { req_id: req_id },
+    type: "post",
+    cache: false,
+    success: function (response) {
+      $("#collectionChargeDiv").empty();
+      $("#collectionChargeDiv").html(response);
+    },
+  }); //Ajax End.
+}
+
+//Loan Summary Chart List
+function loanSummaryList(req_id, cus_id) {
+  $.ajax({
+    url: "closedFile/loan_summary_list.php",
+    type: "POST",
+    data: { reqId: req_id },
+    cache: false,
+    success: function (html) {
+      $("#loanSummaryDiv").empty();
+      $("#loanSummaryDiv").html(html);
+      // $('#feedback_table1').DataTable().destroy();
+    },
+  });
+}
+//////////////////////// Loan history END //////////////////////// 
