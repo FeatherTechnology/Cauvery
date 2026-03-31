@@ -208,8 +208,7 @@ if (sizeof($getCustomerReg) > 0) {
 										<input type="hidden" name="cus_image" id="cus_image" value="<?php if (isset($cus_pic)) {
 																										echo $cus_pic;
 																									} ?>">
-										<img id='imgshow' class="img_show" src=<?php //if (isset($cus_pic)){echo 'uploads/request/customer/'.$cus_pic ;}else{ echo 'img/avatar.png'; }
-																				?> />
+										<img id='imgshow' class="img_show" src="" />
 									</div>
 								</div>
 							</div>

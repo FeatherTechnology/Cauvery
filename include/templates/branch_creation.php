@@ -46,7 +46,7 @@ if ($idupd > 0) {
 
     if (sizeof($getBranchCreation) > 0) {
         for ($ibranch = 0; $ibranch < sizeof($getBranchCreation); $ibranch++) {
-            $branch_id                      = $getBranchCreation['branch_id'];
+            $branchid                      = $getBranchCreation['branch_id'];
             $branch_code                      = $getBranchCreation['branch_code'];
             $branch_name                       = $getBranchCreation['branch_name'];
             $mobile_number                       = $getBranchCreation['mobile_number'];
@@ -83,7 +83,7 @@ if ($idupd > 0) {
 <div class="main-container">
     <!--------form start-->
     <form id="branch_creation" name="branch_creation" action="" method="post" enctype="multipart/form-data">
-        <input type="hidden" class="form-control" value="<?php if (isset($branch_id)) echo $branch_id; ?>" id="id" name="id" aria-describedby="id" placeholder="Enter id">
+        <input type="hidden" class="form-control" value="<?php if (isset($branchid)) echo $branchid; ?>" id="id" name="id" aria-describedby="id" placeholder="Enter id">
         <input type="hidden" class="form-control" value="<?php if (isset($company_name)) echo $company_name; ?>" id="company_id_upd" name="company_id_upd" aria-describedby="id" placeholder="Enter id">
         <input type="hidden" class="form-control" value="<?php if (isset($state)) echo $state; ?>" id="state_upd" name="state_upd" aria-describedby="id" placeholder="Enter id">
         <input type="hidden" class="form-control" value="<?php if (isset($district)) echo $district; ?>" id="district_upd" name="district_upd" aria-describedby="id" placeholder="Enter id">

@@ -523,6 +523,11 @@ if (isset($getuserdetails['download_access'])) {
 				<?php include "include/templates/no_due_pay_report.php" ?>
 			<?php } else ?>
 
+			<!-- Branch Request Count Report -->
+			<?php if ($current_page == 'branch_request_count_report') { ?>
+				<?php include "include/templates/branch_request_count_report.php" ?>
+			<?php } else ?>
+
 			<!-- Other Transaction Report -->
 			<?php if ($current_page == 'other_transaction_report') { ?>
 				<?php include "include/templates/other_transaction_report.php" ?>

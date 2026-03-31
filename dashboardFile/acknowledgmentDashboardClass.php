@@ -115,12 +115,12 @@ class acknowledgmentClass
         // 2. Prepare placeholders
         $placeholders = implode(',', array_fill(0, count($group_ids), '?'));
 
-        // 3. Fetch sub_area_ids directly from normalized table
+        // 3. Fetch area_ids directly from normalized table
         $stmt = $connect->prepare(" SELECT DISTINCT area_id FROM area_group_mapping_area
         WHERE group_map_id IN ($placeholders) ");
         $stmt->execute(array_map('intval', $group_ids));
 
-        // 4. Fetch all sub_area_ids as array
+        // 4. Fetch all area_ids as array
         $area_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         if (empty($area_ids)) {

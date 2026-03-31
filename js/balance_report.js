@@ -111,7 +111,7 @@ function balanceReportTable(url, tid, columnsToSum) {
         'ajax': {
             'url': url,
             'data': function (data) {
-                var search = $('input[type=search]').val();
+                var search = $('#' + tid + '_filter input').val();
                 data.search = search;
                 data.to_date = $('#to_date').val();
                 data.loan_cat = $('#loan_category').val();

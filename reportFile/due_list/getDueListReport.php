@@ -24,13 +24,13 @@ $statusObj = [
 $column = array(
     'ii.loan_id',
     'alm.line_name',
-    'agm.group_name',
+    'ag.group_name',
     'adm.duefollowup_name',
     'bc.branch_name',
     'ii.loan_id',
     'ii.updated_date',
     'lc.due_start_from',
-    'lc.maturity_date',
+    'lc.maturity_month',
     'lc.cus_id_loan',
     'cr.autogen_cus_id',
     'CONCAT(lc.first_name, " ", lc.last_name)',
@@ -108,6 +108,8 @@ JOIN
     area_group_mapping_area agma ON agma.area_id = al.area_id
 JOIN 
     area_group_mapping ag ON ag.map_id = agma.group_map_id
+JOIN 
+    branch_creation bc ON ag.branch_id = bc.branch_id
 JOIN 
     area_line_mapping_area alma ON alma.area_id = al.area_id
 JOIN 
@@ -193,7 +195,7 @@ $countStmt->execute();
 $recordsFiltered = (int) $countStmt->fetchColumn();
 
 $dataQuery = "SELECT
- ii.updated_date AS loan_date,
+     ii.updated_date AS loan_date,
      lc.maturity_month AS maturity_date,
      lc.cus_id_loan,
      cr.autogen_cus_id,
@@ -209,6 +211,7 @@ $dataQuery = "SELECT
      ag.group_name,
      alm.line_name AS line,
      adm.duefollowup_name,
+     bc.branch_name,
      ii.loan_id,
      al.area_name,
      lcc.loan_category_creation_name AS loan_cat_name,

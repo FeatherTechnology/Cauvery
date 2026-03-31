@@ -127,7 +127,7 @@ class CircularAmountClass
         return $row['cur_circ_waiver'] ?? 0;
     }
 
-    public function getTotalIssued($from_date, $to_date)
+    public function getTotalIssued($to_date)
     {
         $sql = "
             SELECT SUM(user_balance) AS cur_circ_issued
@@ -155,7 +155,7 @@ class CircularAmountClass
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':from_date_time' => $from_date . ' 00:00:00',
+            ':from_date_time' => '2026-01-01 00:00:01',
             ':to_date_time' => $to_date . ' 23:59:59'
         ]);
 
@@ -163,18 +163,17 @@ class CircularAmountClass
         return $row['cur_circ_issued'] ?? 0;
     }
 
-    public function getTotalExchange( $from_date, $to_date)
+    public function getTotalExchange($to_date)
     {
         $sql = "
             SELECT SUM(amt) AS cur_circ_exchange
             FROM ct_db_hexchange
             WHERE received = 1
-            AND created_date BETWEEN :from_date_time AND :to_date_time
+            AND DATE(created_date) <= :to_date_time
         ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':from_date_time' => $from_date . ' 00:00:00',
             ':to_date_time' => $to_date . ' 23:59:59'
         ]);
 
@@ -182,18 +181,17 @@ class CircularAmountClass
         return $row['cur_circ_exchange'] ?? 0;
     }
 
-    public function getTotalWithdraw($from_date, $to_date)
+    public function getTotalWithdraw($to_date)
     {
         $sql = "
             SELECT SUM(amt) AS cur_circ_withdraw
             FROM ct_db_cash_withdraw
             WHERE received = 1
-            AND created_date BETWEEN :from_date_time AND :to_date_time
+            AND DATE(created_date) <= :to_date_time
         ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':from_date_time' => $from_date . ' 00:00:00',
             ':to_date_time' => $to_date . ' 23:59:59'
         ]);
 
@@ -294,7 +292,7 @@ class CircularAmountClass
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':from_date_time' => $prev_date_time . ' 00:00:00',
+            ':from_date_time' => '2026-01-01 00:00:01',
             ':to_date_time' => $prev_date_time . ' 23:59:59'
         ]);
 
@@ -311,12 +309,11 @@ class CircularAmountClass
             SELECT SUM(amt) AS pre_circ_exchange
             FROM ct_db_hexchange
             WHERE received = 1
-            AND created_date BETWEEN :from_date_time AND :to_date_time
+            AND DATE(created_date) <=  :to_date_time
         ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':from_date_time' => $prev_date_time . ' 00:00:00',
             ':to_date_time' => $prev_date_time . ' 23:59:59'
         ]);
 
@@ -331,12 +328,11 @@ class CircularAmountClass
             SELECT SUM(amt) AS pre_circ_withdraw
             FROM ct_db_cash_withdraw
             WHERE received = 1
-            AND created_date BETWEEN :from_date_time AND :to_date_time
+            AND DATE(created_date) <= :to_date_time
         ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':from_date_time' => $prev_date_time . ' 00:00:00',
             ':to_date_time' => $prev_date_time . ' 23:59:59'
         ]);
 

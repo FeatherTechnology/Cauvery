@@ -112,7 +112,7 @@ $query = "SELECT
         lc.due_start_from,
         lc.maturity_month,
         li.relationship as rec_relationship,
-        vfi_received_by.famname as received_by,
+        vfi_received_by.first_name as received_by,
         vfi_received_by.relationship as rel_name,
         u.fullname AS loan_issue_user_name,
         CASE u.role
