@@ -42,9 +42,10 @@ $role_arr = [1 => 'Director', 2 => 'Agent', 3 => 'Staff'];
 
 $column = array(
     'ii.req_id',
-    'ag.group_name',
     'alm.line_name',
+    'ag.group_name',
     'adm.duefollowup_name',
+    'bc.branch_name',
     'ii.loan_id',
     'ii.updated_date',
     'lc.maturity_month',
@@ -71,9 +72,10 @@ $column = array(
 
 $query = "SELECT
     ii.req_id,
-    ag.group_name,
     alm.line_name AS line,
+    ag.group_name,
     adm.duefollowup_name,
+    bc.branch_name,
     ii.loan_id,
     ii.updated_date AS loan_date,
     ii.cus_id,
@@ -109,6 +111,8 @@ JOIN
     area_group_mapping_area agma ON agma.area_id = al.area_id
 JOIN 
     area_group_mapping ag ON ag.map_id = agma.group_map_id
+JOIN 
+    branch_creation bc ON ag.branch_id = bc.branch_id
 JOIN 
     area_line_mapping_area alma ON alma.area_id = al.area_id
 JOIN 
@@ -161,6 +165,7 @@ if (isset($_POST['search'])) {
          OR ag.group_name LIKE '%" . $_POST['search'] . "%' 
                     OR alm.line_name LIKE '%" . $_POST['search'] . "%'
                     OR adm.duefollowup_name LIKE '%" . $_POST['search'] . "%'
+                    OR bc.branch_name LIKE '%" . $_POST['search'] . "%'
                     OR ii.updated_date LIKE '%" . $_POST['search'] . "%'
                     OR lc.maturity_month LIKE '%" . $_POST['search'] . "%'
                     OR ii.cus_id LIKE '%" . $_POST['search'] . "%'
@@ -232,9 +237,10 @@ foreach ($result as $row) {
 
     $sub_array   = array();
     $sub_array[] = $sno;
-    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['line'];
+    $sub_array[] = $row['group_name'];
     $sub_array[] = $row['duefollowup_name'];
+    $sub_array[] = $row['branch_name'];
     $sub_array[] = $row['loan_id'];
     $sub_array[] = date('d-m-Y', strtotime($row['loan_date']));
     $sub_array[] = date('d-m-Y', strtotime($row['maturity_date']));

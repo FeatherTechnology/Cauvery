@@ -1084,11 +1084,11 @@ function docinfoList() {
 }
 
 
-function getGroupandLine(sub_area_id) {
+function getGroupandLine(area_id) {
 
     $.ajax({
         url: 'verificationFile/getGroupandLine.php',
-        data: { 'sub_area_id': sub_area_id },
+        data: { 'area_id': area_id },
         dataType: 'json',
         type: 'post',
         cache: false,

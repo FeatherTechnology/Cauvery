@@ -58,7 +58,7 @@ $(document).ready(function () {
                                         title: response,
                                         icon: 'success',
                                         showConfirmButton: true,
-                                        confirmButtonColor: '#009688',
+                                        confirmButtonColor: '#0C70AB',
                                         confirmButtonText: 'OK'
                                     }).then((result) => {
                                         // Re-enable button regardless

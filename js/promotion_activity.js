@@ -858,11 +858,11 @@ function promotionListOnclick() {
         window.open('due_followup_info&upd=' + req_id + '&pgeView=1', '_blank');
     })
 
-    $('.customer-status, .loan-history, .doc-history').off('click').click(function () {
+    $('.customer-sts, .loan-history, .doc-history').off('click').click(function () {
         let cus_id = $(this).data('cusid');
         let type = $(this).attr('class');
         let url;
-        if (type == 'customer-status') {
+        if (type == 'customer-sts') {
             url = 'collectionFile/resetCustomerStatus.php';
         } else {
             url = 'closedFile/resetCustomerStsForClosed.php';
@@ -967,7 +967,7 @@ function historyTableContents(cus_id, type, url) {
         $('.re_active_card').hide();
         $('.repromotion_card').hide();
 
-        if (type == 'customer-status') {
+        if (type == 'customer-sts') {
 
             //for customer status
             $('.customer-status-card').show();
@@ -1050,9 +1050,13 @@ function historyTableContents(cus_id, type, url) {
 
         $('#close_history_card').off('click').click(() => {
             let typevalue = $(".toggle-container .active").val();//this will show back active tab's contents
-            if(typevalue == 'Renewal') { $('.renewal_card').show(); }  
-            if(typevalue == 'Re-active'){$('.re_active_card').show();} 
-            if(typevalue == 'Repromotion'){$('.repromotion_card').show();}
+            if (typevalue == 'Renewal') { 
+                $('.renewal_card').show(); 
+            } else if(typevalue == 'Re-active'){
+                $('.re_active_card').show();
+            } else if(typevalue == 'Repromotion'){ 
+                $('.repromotion_card').show(); 
+            }
 
             $('.filter_card').show();
             $('.customer-status-card, .loan-history-card, .doc-history-card, #close_history_card').hide();

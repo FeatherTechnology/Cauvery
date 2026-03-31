@@ -75,6 +75,8 @@ JOIN
 JOIN 
     area_group_mapping agm ON agm.map_id = agma.group_map_id
 LEFT JOIN 
+    branch_creation bc ON agm.branch_id = bc.branch_id
+LEFT JOIN 
     loan_category_creation lcc ON lcc.loan_category_creation_id = lc.loan_category
 LEFT JOIN 
     in_verification iv ON ii.req_id = iv.req_id
@@ -104,7 +106,7 @@ if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
         $baseQuery .= " and (alm.line_name LIKE '%" . $_POST['search'] . "%' OR
             ii.loan_id LIKE '%" . $_POST['search'] . "%' OR
-             agm.group_name LIKE '". $_POST['search']."%' OR
+            agm.group_name LIKE '". $_POST['search']."%' OR
             bc.branch_name LIKE '%" .  $_POST['search'] . "%' OR
             ad.doc_id LIKE '%" . $_POST['search'] . "%' OR
             ii.updated_date LIKE '%" . $_POST['search'] . "%' OR
@@ -143,7 +145,9 @@ $countStmt->execute();
 $recordsFiltered = (int) $countStmt->fetchColumn();
 
 $dataQuery = "SELECT 
- alm.line_name AS line,
+    alm.line_name AS line,
+    agm.group_name,
+    bc.branch_name,
     ii.loan_id,
     ad.doc_id,
     ii.updated_date AS loan_date,
@@ -158,9 +162,9 @@ $dataQuery = "SELECT
     lc.maturity_month,
     iv.updated_date,
     coll_most_frequent.coll_location
-     $baseQuery
-        $orderBy
-        $limit
+    $baseQuery
+    $orderBy
+    $limit
     ";
 
 $statement = $connect->prepare($dataQuery);

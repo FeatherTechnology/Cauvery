@@ -121,7 +121,7 @@ $(document).ready(function () {
                     await Swal.fire({
                         title: 'Submitted',
                         icon: 'success',
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
 
                     OnLoadFunctions();
@@ -131,7 +131,7 @@ $(document).ready(function () {
                     Swal.fire({
                         title: 'Error While Submitting',
                         icon: 'error',
-                        confirmButtonColor: '#009688'
+                        confirmButtonColor: '#0C70AB'
                     });
                 }
 

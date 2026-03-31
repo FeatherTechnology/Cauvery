@@ -203,9 +203,8 @@ if(isset($_POST['loan_cat'])){
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
     $search = $_POST['search'];
-    $query .= " AND (ag.group_name LIKE '%$search%' OR
-        alm.line_name LIKE '%$search%' OR
-        adm.duefollowup_name LIKE '%$search%' OR
+
+    $query .= " AND (alm.line_name LIKE '%$search%' OR
         ii.loan_id LIKE '%$search%' OR
         ad.doc_id LIKE '%$search%' OR
         ii.updated_date LIKE '%$search%' OR
@@ -213,7 +212,7 @@ if (isset($_POST['search']) && $_POST['search'] != "") {
         cp.cus_id LIKE '%$search%' OR
         cr.autogen_cus_id LIKE '%$search%' OR
         CONCAT(cp.first_name, ' ', cp.last_name) LIKE '%$search%' OR
-        al.area_name LIKE '%$search%' OR
+        al.area_name LIKE '%$search%'
     )";
 }
 

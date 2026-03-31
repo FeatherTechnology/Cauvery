@@ -100,7 +100,7 @@ $query = "SELECT
         JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
         JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
         JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-        JOIN area_group_mapping_area agma ON al.area_id = agma.sub_area_id
+        JOIN area_group_mapping_area agma ON al.area_id = agma.area_id
         JOIN area_group_mapping agm ON agma.group_map_id = agm.map_id
         JOIN branch_creation bc ON agm.branch_id = bc.branch_id
         JOIN acknowlegement_loan_calculation lc ON coll.req_id = lc.req_id
@@ -122,7 +122,7 @@ if (isset($_POST['search'])) {
                     OR ii.updated_date LIKE '%" . $_POST['search'] . "%'
                     OR coll.cus_id LIKE '%" . $_POST['search'] . "%'
                     OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-                    OR CONCAT(coll.first_name, ' ', coll.last_name) '%" . $_POST['search'] . "%'
+                    OR CONCAT(coll.first_name, ' ', coll.last_name) LIKE '%" . $_POST['search'] . "%'
                     OR al.area_name LIKE '%" . $_POST['search'] . "%'
                     OR lcc.loan_category_creation_name LIKE '%" . $_POST['search'] . "%'
                     OR u.role LIKE '%" . $_POST['search'] . "%'

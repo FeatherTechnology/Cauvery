@@ -38,7 +38,7 @@ $(document).ready(function () {
                             title: response,
                             icon: 'success',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688',
+                            confirmButtonColor: '#0C70AB',
                             confirmButtonText: 'OK'
                         }).then((result) => {
                             // Redirect only if user clicks OK
@@ -54,7 +54,7 @@ $(document).ready(function () {
                             title: response,
                             icon: 'error',
                             showConfirmButton: true,
-                            confirmButtonColor: '#009688'
+                            confirmButtonColor: '#0C70AB'
                         });
                     }
                 }
