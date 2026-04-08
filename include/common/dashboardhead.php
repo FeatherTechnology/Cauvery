@@ -12,9 +12,7 @@
 	<title>Cauvery Capitals </title>
 
 
-	<!-- *************
-		************ Common Css Files *************
-	************ -->
+	<!-- ************************* Common Css Files ************************* -->
 	<!-- Bootstrap css -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<!-- Icomoon Font Icons css -->
@@ -37,6 +35,7 @@
 
 	<!-- DateRange css -->
 	<link rel="stylesheet" href="vendor/daterange/daterange.css" />
+	
 	<!-- Datepicker css -->
 	<link rel="stylesheet" href="vendor/datepicker/css/classic.css" />
 	<link rel="stylesheet" href="vendor/datepicker/css/classic.date.css" />

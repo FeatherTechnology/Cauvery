@@ -28,23 +28,7 @@ if (isset($getuserdetails['download_access'])) {
 <!doctype html>
 <html lang="en">
 
-<!-- downlaod customer excel div -->
-<div id="backup_customer" style="display:none"></div>
-<div id="accountdata" style="display:none"></div>
-<!-- end customer excel div -->
-
-<!-- Important -->
-<?php if ($current_page != 'vendorcreation' and $current_page != 'auction_details') { ?>
-	<?php include "include/common/dashboardhead.php" ?>
-<?php  } ?>
-
-
-<?php if ($current_page == 'vendorcreation') { ?>
-	<?php include "include/common/dashboardfinancedatatablehead.php" ?>
-<?php } ?>
-<?php if ($current_page == 'auction_details') { ?>
-	<?php include "include/common/dashboardfinancedatatablehead.php" ?>
-<?php } ?>
+<?php include "include/common/dashboardhead.php" ?>
 
 <body>
 	<!-- Page wrapper start -->
@@ -53,6 +37,7 @@ if (isset($getuserdetails['download_access'])) {
 		if ($_SESSION['userid'] == "") {
 			echo "<script>location.href='index.php'</script>";
 		}
+		
 		include "include/common/leftbar.php" ?>
 
 		<!-- Page content start  -->
@@ -70,12 +55,12 @@ if (isset($getuserdetails['download_access'])) {
 				</div>
 				<div class="header-items">
 					<!-- Custom search start -->
-					<ul class="header-actions">
+					<!-- <ul class="header-actions">
 						<li class="dropdown"></li>
 						<li class="dropdown">
 							<div class="custom-search">
 								<input type="text" id="search_input_" class="search-query" placeholder="Search here ...">
-								<!-- <i class="icon-search1" id="search_screens" data-toggle="dropdown" aria-haspopup="true"></i> -->
+								<i class="icon-search1" id="search_screens" data-toggle="dropdown" aria-haspopup="true"></i>
 							</div>
 							<div class="dropdown-menu dropdown-menu-right lrg" aria-labelledby="notifications">
 								<div class="dropdown-menu-header">
@@ -86,7 +71,7 @@ if (isset($getuserdetails['download_access'])) {
 								</div>
 							</div>
 						</li>
-					</ul>
+					</ul> -->
 					<!-- Custom search end -->
 
 					<!-- Header actions start -->

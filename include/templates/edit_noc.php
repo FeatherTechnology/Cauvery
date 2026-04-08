@@ -97,6 +97,11 @@
 </div>
 
 <script>
+	
+	$(function() {
+		loadNotifications();
+	})
+
 	$(document).ready(function() {
 		$(document).on('click', '.remove-noc', function(event) {
 			event.preventDefault();
