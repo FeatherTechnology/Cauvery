@@ -50,7 +50,7 @@ if ($idupd > 0) {
 	$getStaffCreation = $userObj->getStaffCreation($mysqli, $idupd);
 	if (sizeof($getStaffCreation) > 0) {
 		for ($i = 0; $i < sizeof($getStaffCreation); $i++) {
-			$staff_id						= $getStaffCreation['staff_id'];
+			$staff_ids						= $getStaffCreation['staff_id'];
 			$staff_code					= $getStaffCreation['staff_code'];
 			$staff_name					= $getStaffCreation['staff_name'];
 			$staff_type					= $getStaffCreation['staff_type'];
@@ -94,7 +94,7 @@ if ($idupd > 0) {
 	<!--form start-->
 	<form id="staff_creation" name="staff_creation" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" class="form-control" value="<?php if (isset($idupd)) echo $idupd; ?>" id="id" name="id" aria-describedby="id" placeholder="Enter id">
-		<input type="hidden" class="form-control" value="<?php if (isset($staff_id)) echo $staff_id; ?>" id="staff_id_upd" name="staff_id_upd" aria-describedby="id" placeholder="Enter id">
+		<input type="hidden" class="form-control" value="<?php if (isset($staff_ids)) echo $staff_ids; ?>" id="staff_id_upd" name="staff_id_upd" aria-describedby="id" placeholder="Enter id">
 		<input type="hidden" class="form-control" value="<?php if (isset($staff_type)) echo $staff_type; ?>" id="staff_type_upd" name="staff_type_upd" aria-describedby="id" placeholder="Enter id">
 		<input type="hidden" class="form-control" value="<?php if (isset($company_id)) echo $company_id; ?>" id="company_id_upd" name="company_id_upd" aria-describedby="id" placeholder="Enter id">
 		<input type="hidden" class="form-control" value="<?php if (isset($state)) echo $state; ?>" id="state_upd" name="state_upd" aria-describedby="id" placeholder="Enter id">
