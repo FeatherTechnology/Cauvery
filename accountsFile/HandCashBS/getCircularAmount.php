@@ -406,9 +406,9 @@ class CircularAmountClass
     {
         $cur_circ_coll = $this->getTotalBalance( $to_date, $branch_id);
         $cur_circ_waiver = $this->getTotalwaiver($from_date, $to_date, $branch_id);
-        $cur_circ_issued = $this->getTotalIssued($from_date, $to_date);
-        $cur_circ_exchange = $this->getTotalExchange($user_id, $from_date, $to_date);
-        $cur_circ_withdraw = $this->getTotalWithdraw($from_date, $to_date);
+        $cur_circ_issued = $this->getTotalIssued($from_date);
+        $cur_circ_exchange = $this->getTotalExchange($user_id);
+        $cur_circ_withdraw = $this->getTotalWithdraw($from_date);
 
         $pre_circ_issued = $this->getTotalPreIssued($from_date);
         $pre_circ_coll= $this->getTotalPreviousCollection($from_date, $branch_id);

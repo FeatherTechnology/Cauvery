@@ -1292,11 +1292,9 @@ function getCashWithdrawalDetails() {
                 <span class="text-danger" id='amt_cwdCheck' style="display:none">Please Enter Amount</span>
             </div>
         </div>
-        <div class="col-12">
-            <div class="text-right">
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
                 <label style="visibility:hidden"></label><br>
                 <input type="button" id="submit_cwd" name="submit_cwd" class="btn btn-primary" value="Submit">
-            </div>
         </div>`;
     $('.contra_card_header').text('Contra - Cash Withdrawal')
     $('#contraTableDiv').addClass('row', !$('#contraTableDiv').hasClass('row'));
@@ -2139,12 +2137,9 @@ function getHotherincomeDetails() {
             <span id='amtCheck' class="text-danger" style="display:none">Please Enter Amount</span>
         </div>
     </div>
-    <div class="col-8"></div>
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
-        <div class="text-right">
             <label style="visibility:hidden"></label><br>
             <input type="button" id="submit_hoti" name="submit_hoti" class="btn btn-primary" value="Submit">
-        </div>
     </div>`;
 
     $('#otiDiv').addClass('row', !$('#otiDiv').hasClass('row'));
@@ -2514,12 +2509,9 @@ function hexpenseModalBtnClick() {
                             <input type="file" id="upd_hexp" name="upd_hexp" class="form-control" >
                         </div>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12"></div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-                        <div class="text-center">
                             <label style="visibility:hidden"></label><br>
                             <input type="button" id="submit_hexp" name="submit_hexp" class="btn btn-primary" value="Submit">
-                        </div>
                     </div>
                 </div>
             </div>

@@ -11,19 +11,32 @@ $(document).ready(function () {
         }
     });
 
+    $('#type').change(function () {
+        const type = $(this).val();
+        $('#branch').show();
+        let type = $('#type').val();
+        if (type === '2') { //branch
+            getUserNames();
+        } else if(type === '3'){ //group
+            getGroup();
+        } else{
+            $('#branch').empty().append("<option value=''>Select</option>");
+            $('#branch').hide();
+        }
+    });  
     // 🔹 Reset / Show Button Click
     $('#reset_btn').click(function () {
 
         let from_date = $('#from_date').val();
         let to_date = $('#to_date').val();
         let branch = $('#branch').val();
-        if (!from_date || !to_date || !branch) {
+        if (!from_date || !to_date || !type || (type !='1' && !branch)) {
             swalError('Please Select All Fields!', 'All fields are required.');
             return;
         }
         resetAllTables()
         // Load data
-        requestToIssuedReportCount(from_date, to_date, branch);
+        requestToIssuedReportCount(from_date, to_date, type, branch);
 
     });
 
@@ -31,7 +44,7 @@ $(document).ready(function () {
 
 // Load User List
 $(function () {
-    getUserNames();
+    // getUserNames();
 });
 
 function getUserNames() {
@@ -45,7 +58,23 @@ function getUserNames() {
     }, 'json');
 }
 
-function requestToIssuedReportCount(from_date, to_date, branch) {
+function getGroup() {
+    $.ajax({
+        url: 'reportFile/customer_status_report/ajaxGetGroup.php',
+        type: 'POST',
+        dataType: 'json',
+        success: function (response) {
+            $('#branch').empty()
+                .append("<option value=''>Select Group</option>") .append("<option value='0'>All</option>")
+
+            $.each(response, function (i, val) {
+                $('#branch').append("<option value='" + val.group_ids + "'>" + val.group_name + "</option>");
+            });
+        }
+    });
+}
+
+function requestToIssuedReportCount(from_date, to_date, type, branch) {
 
     $.ajax({
         url: 'reportFile/work_count_report/getBranchRequestCount.php',
@@ -54,6 +83,7 @@ function requestToIssuedReportCount(from_date, to_date, branch) {
             from_date: from_date,
             to_date: to_date,
             branch_id: branch,
+             type: type
         },
         dataType: 'json',
         success: function (res) {
@@ -233,13 +263,3 @@ function resetAllTables() {
     $("th, td").show(); // reset any hidden columns
 }
 
-
-
-function swalError(title, text) {
-    Swal.fire({
-        icon: 'error',
-        title: title,
-        text: text,
-        confirmButtonColor: '#0c70ab',
-    });
-}
