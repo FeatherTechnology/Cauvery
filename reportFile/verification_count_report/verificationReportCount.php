@@ -5,7 +5,9 @@ $from_date = $_POST['from_date'];
 $to_date   = $_POST['to_date'];
 $user_id   = $_POST['user_id'];
 
-/* =====================  USER FILTER (from in_approval) ===================== */
+/* =====================
+   USER FILTER (from in_approval)
+===================== */
 
 if ($user_id != 'all') {
     if (!is_array($user_id)) {
@@ -27,7 +29,9 @@ if (empty($userIds)) {
     exit;
 }
 
-/* =====================  SETUP ===================== */
+/* =====================
+   SETUP
+===================== */
 
 $placeholders = str_repeat('?,', count($userIds) - 1) . '?';
 
@@ -46,7 +50,9 @@ $loanCats = $connect->query("
     FROM loan_category_creation
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-/* ===================== HELPER FUNCTIONS ===================== */
+/* =====================
+   HELPER FUNCTIONS
+===================== */
 
 function emptyTypeCounter() {
     return ['new' => 0, 'renewal' => 0, 'reactive' => 0, 'additional' => 0, 'existing_new' => 0, 'total' => 0];
@@ -94,7 +100,7 @@ function processRecord($r, &$counters, $baseCounter, $from_date, $to_date) {
             $counters['status']['total']++;
         }
         
-    } elseif ($baseCounter === 'verification') {
+    } elseif ($baseCounter === 'verification' || $baseCounter === 'previous') {
         $counters['process'][$type]++;
         $counters['process']['total']++;
     }
@@ -109,7 +115,7 @@ $prevQuery = "
     SELECT 
         vlc.loan_category, ia.req_id, ia.insert_login_id, cp.cus_type, cp.cus_exist_type,
         req.cus_status, req.updated_date, ii.updated_date AS issue_date, cs.sub_status,
-        ia.created_date
+        vlc.create_date
     FROM verification_loan_calculation vlc
     JOIN in_approval ia ON ia.req_id = vlc.req_id
     JOIN request_creation req ON req.req_id = ia.req_id
@@ -131,7 +137,7 @@ $currentQuery = "
     SELECT 
         vlc.loan_category, ia.req_id, ia.insert_login_id, cp.cus_type, cp.cus_exist_type,
         req.cus_status, req.updated_date, ii.updated_date AS issue_date, cs.sub_status,
-        ia.created_date
+        vlc.create_date
     FROM verification_loan_calculation vlc
     JOIN in_approval ia ON ia.req_id = vlc.req_id
     JOIN request_creation req ON req.req_id = ia.req_id

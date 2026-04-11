@@ -5,7 +5,9 @@ $from_date = $_POST['from_date'];
 $to_date   = $_POST['to_date'];
 $user_id   = $_POST['user_id'];
 
-/* =====================  USER FILTER ===================== */
+/* =====================
+   USER FILTER
+===================== */
 
 if ($user_id != 'all') {
     if (!is_array($user_id)) {
@@ -62,7 +64,9 @@ while ($row = $historyStmt->fetch(PDO::FETCH_ASSOC)) {
     $historyData[$row['cus_id']][] = $row;
 }
 
-/* =====================  FAST CUSTOMER TYPE (Exact Logic) ===================== */
+/* =====================
+   FAST CUSTOMER TYPE (Exact Logic)
+===================== */
 
 function getCustomerTypeFast($cus_data, $reqDate, $cus_id, $req_id, $historyData) {
     if (strtolower($cus_data) === 'new') return 'new';
@@ -104,7 +108,9 @@ function getCustomerTypeFast($cus_data, $reqDate, $cus_id, $req_id, $historyData
     }
 }
 
-/* ===================== COUNTERS ===================== */
+/* =====================
+   COUNTERS
+===================== */
 
 function emptyTypeCounter() {
     return ['new' => 0, 'renewal' => 0, 'reactive' => 0, 'additional' => 0, 'existing_new' => 0, 'total' => 0];
@@ -250,7 +256,7 @@ function processRecord($r, &$counters, $baseCounter, $from_date, $to_date, $hist
             $counters['status']['total']++;
         }
         
-    } elseif ($baseCounter === 'request') {
+    } elseif ($baseCounter === 'request' || $baseCounter === 'previous') {
         $counters['process'][$type]++;
         $counters['process']['total']++;
     }

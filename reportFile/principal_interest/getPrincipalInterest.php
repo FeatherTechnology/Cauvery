@@ -17,10 +17,12 @@ if ($userid != 1) {
     $rowuser = $userQry->fetch();
     $report_access = $rowuser['report_access'];
 
- if ($report_access == '1') { //Report access individual. 
+    if ($report_access == '1') { //Report access individual.
+        
         $user_based = "AND coll.insert_login_id = '$userid' ";
     }
 }
+
 
 $where = "1";
 
@@ -61,8 +63,8 @@ $column = array(
 );
 
 $query = "SELECT 
-            alm.line_name AS line,
             agm.group_name,
+            alm.line_name AS line,
             bc.branch_name,
             ii.loan_id,
             ii.updated_date AS loan_date,
@@ -98,11 +100,11 @@ $query = "SELECT
         JOIN acknowlegement_customer_profile cp ON coll.req_id = cp.req_id
         JOIN in_issue ii ON coll.req_id = ii.req_id
         JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
-        JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
-        JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-        JOIN area_group_mapping_area agma ON al.area_id = agma.area_id
-        JOIN area_group_mapping agm ON agma.group_map_id = agm.map_id
-        JOIN branch_creation bc ON agm.branch_id = bc.branch_id
+        LEFT JOIN area_group_mapping_area agma ON al.area_id = agma.area_id
+        LEFT JOIN area_group_mapping agm ON agma.group_map_id = agm.map_id
+        LEFT JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
+        LEFT JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+        LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id
         JOIN acknowlegement_loan_calculation lc ON coll.req_id = lc.req_id
         JOIN in_verification iv ON coll.req_id = iv.req_id
         JOIN loan_category_creation lcc ON lc.loan_category = lcc.loan_category_creation_id
@@ -116,8 +118,8 @@ $query = "SELECT
 if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
         $query .= " and (ii.loan_id LIKE '%" . $_POST['search'] . "%'
-                    OR alm.line_name LIKE '%" . $_POST['search'] . "%'
                     OR agm.group_name LIKE '%" . $_POST['search'] . "%' 
+                    OR alm.line_name LIKE '%" . $_POST['search'] . "%'
                     OR bc.branch_name LIKE '%" . $_POST['search'] . "%'
                     OR ii.updated_date LIKE '%" . $_POST['search'] . "%'
                     OR coll.cus_id LIKE '%" . $_POST['search'] . "%'
@@ -179,7 +181,7 @@ foreach ($result as $row) {
     $sub_array[] = $role_arr[$row['role']];
     $sub_array[] = $row['fullname'];
     $sub_array[] = date('d-m-Y', strtotime($row['coll_date']));
-     $sub_array[] = moneyFormatIndia(intVal($row['due_amt_track']));
+    $sub_array[] = moneyFormatIndia(intVal($row['due_amt_track']));
     if ($row['due_type'] != 'Interest') {
         //to get the principal and interest amt separate in due amt paid
         // $response = calculatePrincipalAndInterest(intVal($row['principal_amt_cal']) / $row['due_period'], intVal($row['int_amt_cal']) / $row['due_period'], intVal($row['due_amt_track']));

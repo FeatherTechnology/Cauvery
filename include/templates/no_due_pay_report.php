@@ -25,9 +25,9 @@
 								<thead>
 									<th>S.No</th>
 									<th>Line</th>
-									<th>Group</th>
-									<th>Followup</th>
-									<th>Branch</th>
+									<!-- <th>Group</th> -->
+									<!-- <th>Followup</th> -->
+									<!-- <th>Branch</th> -->
 									<th>Loan ID</th>
 									<th>Loan Date</th>
 									<th>Maturity Date</th>
