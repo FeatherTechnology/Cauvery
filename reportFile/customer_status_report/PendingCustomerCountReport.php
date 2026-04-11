@@ -56,11 +56,11 @@ if ($type == 1) {
     }
     $user_id_str = implode(',', $user_id);
 
-    $userQry = $connect->query("
-        SELECT user_id, fullname, line_id 
+    $userQry = $connect->query("SELECT user_id, fullname, line_id 
         FROM user 
         WHERE user_id IN ($user_id_str) AND status = 0
     ");
+
     $userRows = $userQry->fetchAll();
     if (empty($userRows)) {
         echo json_encode(["data" => []]);
@@ -147,7 +147,7 @@ FROM customer_status cs4
 JOIN collection col ON cs4.req_id = col.req_id
 WHERE 
     cs4.sub_status = 'Due Nil'
-    AND col.coll_sub_status IN ('Current','Due Nil','Pending','OD')
+    AND col.coll_sub_status IN ('Current','Pending','OD')
     AND DATE_FORMAT(col.coll_date, '%Y-%m-01') >= DATE_FORMAT('$search_date', '%Y-%m-01');
 
 ");

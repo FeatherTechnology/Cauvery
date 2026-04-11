@@ -143,7 +143,7 @@ $DueNilQuery = $connect->query("SELECT DISTINCT cs4.req_id
     JOIN collection col ON cs4.req_id = col.req_id
     WHERE 
         cs4.sub_status = 'Due Nil'
-        AND col.coll_sub_status IN ('Current','Due Nil','Pending','OD')
+        AND col.coll_sub_status IN ('Current','Pending','OD')
         AND DATE_FORMAT(col.coll_date, '%Y-%m-01') >= DATE_FORMAT('$search_date', '%Y-%m-01');
 ");
 
@@ -155,6 +155,7 @@ $DueNilReqIdStr = !empty($DueNilReqIds) ? implode(',', $DueNilReqIds) : 'NULL';
 foreach ($loan_category as $cat_id) {
     // Step 1: Fetch customers
     $where = "AND alc.loan_category = $cat_id";
+
     $custQry = $connect->query("SELECT 
         ii.req_id,
         ii.loan_id,
