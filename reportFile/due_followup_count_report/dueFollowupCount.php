@@ -5,10 +5,22 @@ $from_date = $_POST['from_date'];
 $to_date   = $_POST['to_date'];
 $user_id   = $_POST['user_id'];
 
+$condition = "";
+
+$user_type = $_POST['user_type'] ?? '';
+
+if ($user_type == '2') {
+    $condition .= " AND u.status = 0";
+} elseif ($user_type == '3') {
+    $condition .= " AND u.status = 1";
+}
+
 $data = [];
 $sno = 1;
 
-/* -----------------------------  USER FILTER --------------------------------*/
+/* -----------------------------
+   USER FILTER
+--------------------------------*/
 
 $user_condition = "";
 
@@ -23,6 +35,7 @@ if ($user_id != 'all') {
 
     $user_condition = "AND c.insert_login_id IN ($user_id_str)";
 }
+
 
 /* -----------------------------
    MAIN QUERY
@@ -51,7 +64,7 @@ FROM commitment c
 LEFT JOIN user u ON u.user_id = c.insert_login_id
 
 WHERE DATE(c.created_date) BETWEEN '$from_date' AND '$to_date'
-$user_condition
+$user_condition $condition
 
 GROUP BY c.insert_login_id
 ORDER BY u.fullname
@@ -85,7 +98,9 @@ while ($row = $qry->fetch()) {
 }
 
 
-/* ----------------------------- TOTAL ROW --------------------------------*/
+/* -----------------------------
+   TOTAL ROW
+--------------------------------*/
 
 $total_customer = array_sum(array_column($data,'total_customer'));
 $total_entries = array_sum(array_column($data,'total_entries'));
