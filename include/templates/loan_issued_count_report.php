@@ -9,7 +9,7 @@
 <br><br>
 <div class="page-header">
 	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
-		Cauvery CApitals - Loan Issued Count Report
+		Cauvery Capitals - Loan Issued Count Report
 	</div>
 </div><br>
 <!-- Main container start -->
@@ -21,6 +21,12 @@
 			<div class="toggle-container col-12">
 				<input type="date" id='from_date' name='from_date' class="toggle-button" value=''>
 				<input type="date" id='to_date' name='to_date' class="toggle-button" value=''>
+				<select type="text" class="toggle-button" id='user_type' name='user_type'>
+                    <option value=''>Select User Type</option>
+                    <option value='1'>All</option>
+                    <option value='2'>Active</option>
+                    <option value='3'>In Active</option>
+                </select>
 				<select type="text" class="toggle-button" id='by_user' name='by_user'>
 					<option value=''>Select User</option>
 				</select>
