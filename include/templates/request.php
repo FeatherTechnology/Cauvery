@@ -201,7 +201,7 @@ if ($idupd > 0) {
 	<!--form start-->
 	<form id="request" name="request" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="page_view" id="page_view" value="<?php if (isset($pgeView)) {echo $pgeView;}else{ echo '2';} ?>" />
-		<input type="hidden" id="pending_sts"> <input type="hidden" id="od_sts"> <input type="hidden" id="due_nil_sts"> <input type="hidden" id="closed_sts"><input type="hidden" id="bal_amt">
+		<input type="hidden" id="pending_sts"> <input type="hidden" id="od_sts"> <input type="hidden" id="due_nil_sts"> <input type="hidden" id="closed_sts"><input type="hidden" id="bal_amt"> <input type="hidden" id="agent_loan">
 		<?php if ($idupd == 0) { ?>
 			<input type="hidden" class="form-control" value="<?php if (isset($user_id)) echo $user_id; ?>" id="user_id_load" name="user_id_load" aria-describedby="id" placeholder="Enter id">
 			<input type="hidden" class="form-control" value="<?php if (isset($role)) echo $role; ?>" id="role_load" name="role_load" aria-describedby="id" placeholder="Enter id">
@@ -623,7 +623,7 @@ if ($idupd > 0) {
 										$was_originally_selected = (isset($idupd) && $idupd > 0 && isset($loan_category) && $loanCategoryList[$j]['loan_category_name_id'] == $loan_category);
 										$should_disable = ($is_inactive && !$was_originally_selected);
 										?>
-										<option <?php if ($is_selected) echo 'selected '; if ($should_disable) echo 'disabled'; ?> value="<?php echo $loanCategoryList[$j]['loan_category_name_id']; ?>">
+										<option <?php if ($is_selected) echo 'selected '; if ($should_disable) echo 'disabled'; ?> value="<?php echo $loanCategoryList[$j]['loan_category_name_id']; ?>" data-agent_loan="<?php echo $loanCategoryList[$j]['agent_loan']; ?>">
 											<?php echo $loanCategoryList[$j]['loan_category_name']; ?></option>
 								<?php }
 								} ?>

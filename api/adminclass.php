@@ -1158,7 +1158,7 @@ class admin
 	// Get Loan caltegory list for loan calculation
 	public function getloanCategoryList($mysqli)
 	{
-		$loanCatSelect = "SELECT loan_category_id, loan_category_name, status FROM loan_category GROUP BY loan_category_name";
+		$loanCatSelect = "SELECT loan_category_id, loan_category_name, status , agent_loan FROM loan_category GROUP BY loan_category_name";
 		$res = $mysqli->query($loanCatSelect) or die("Error in Get All Records" . $mysqli->error);
 		$detailrecords = array();
 		if ($mysqli->affected_rows > 0) {
@@ -1167,6 +1167,7 @@ class admin
 				$detailrecords[$i]['loan_category_id']      = $row->loan_category_id;
 				$detailrecords[$i]['loan_category_name_id']    = $row->loan_category_name;
 				$detailrecords[$i]['loan_category_status']    = $row->status;
+				$detailrecords[$i]['agent_loan']    = $row->agent_loan;
 
 				$Qry = "SELECT loan_category_creation_name FROM loan_category_creation WHERE loan_category_creation_id = '" . $detailrecords[$i]['loan_category_name_id'] . "' and status = 0 ";
 				$res1 = $mysqli->query($Qry) or die("Error in Get All Records" . $mysqli->error);

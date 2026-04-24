@@ -14,7 +14,6 @@ $(document).ready(function () {
     $('#type').change(function () {
         const type = $(this).val();
         $('#branch').show();
-        let type = $('#type').val();
         if (type === '2') { //branch
             getUserNames();
         } else if(type === '3'){ //group
@@ -23,12 +22,14 @@ $(document).ready(function () {
             $('#branch').empty().append("<option value=''>Select</option>");
             $('#branch').hide();
         }
-    });  
+    });            
+
     // 🔹 Reset / Show Button Click
     $('#reset_btn').click(function () {
 
         let from_date = $('#from_date').val();
         let to_date = $('#to_date').val();
+        let type = $('#type').val();
         let branch = $('#branch').val();
         if (!from_date || !to_date || !type || (type !='1' && !branch)) {
             swalError('Please Select All Fields!', 'All fields are required.');
@@ -37,7 +38,6 @@ $(document).ready(function () {
         resetAllTables()
         // Load data
         requestToIssuedReportCount(from_date, to_date, type, branch);
-
     });
 
 });
@@ -49,8 +49,8 @@ $(function () {
 
 function getUserNames() {
     $.post('manageUser/getBranchList.php',  function (response) {
-         $('#branch').empty()
-        .append("<option value=''>Select Branch</option>") .append("<option value='0'>All</option>")
+        $('#branch').empty()
+            .append("<option value=''>Select Branch</option>") .append("<option value='0'>All</option>")
 
         $.each(response, function (i, val) {
             $('#branch').append("<option value='" + val.branch_id + "'>" + val.branch_name + "</option>");
@@ -83,7 +83,7 @@ function requestToIssuedReportCount(from_date, to_date, type, branch) {
             from_date: from_date,
             to_date: to_date,
             branch_id: branch,
-             type: type
+            type: type
         },
         dataType: 'json',
         success: function (res) {
@@ -262,4 +262,3 @@ function resetAllTables() {
     $("#request_count_table tfoot").show();
     $("th, td").show(); // reset any hidden columns
 }
-
