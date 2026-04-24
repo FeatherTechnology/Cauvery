@@ -62,7 +62,7 @@ if(isset($_POST['lusername'])) {
 		<!-- Meta -->
 		<meta name="description" content="Responsive Bootstrap4 Dashboard Template">
 		<meta name="author" content="ParkerThemes">
-		<link rel="shortcut icon" href="img/MC-Logo.png" />
+		<link rel="shortcut icon" href="img/cauvery.png" style="height:200px;" />
 
 		<!-- Title -->
 		<title>Marudham Capitals - Login</title>
@@ -84,7 +84,7 @@ if(isset($_POST['lusername'])) {
 							<div class="login-box">
 								<a href="#" class="login-logo">
 									<h3 style="color: #0C70AB; position: relative;left: 41px;font-weight: bolder;">CAUVERY CAPITALS</h3>
-									<!-- <img src="img/cauvery_capitals_logo.jpeg" alt="Auction Dashboard" /> -->
+									<!-- <img src="img/cauvery.png" alt="Auction Dashboard" /> -->
 								</a>
 								<span class="text-danger" id="cinnocheck">
 									<!-- <input type="hidden" id="err_msg" value=' -->
