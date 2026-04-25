@@ -65,7 +65,7 @@ if(isset($_POST['lusername'])) {
 		<link rel="shortcut icon" href="img/cauvery.png" style="height:200px;" />
 
 		<!-- Title -->
-		<title>Marudham Capitals - Login</title>
+		<title>Cauvery Capitals - Login</title>
 		
 		<!-- ************************* Common Css Files ************************* -->
 		<!-- Bootstrap CSS -->

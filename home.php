@@ -607,6 +607,11 @@ if (isset($getuserdetails['download_access'])) {
 			<?php if ($current_page == 'duefollowup_count_report') { ?>
 				<?php include "include/templates/duefollowup_count_report.php" ?>
 			<?php } else ?>
+			
+			<!-- Back Office Count report -->
+			<?php if ($current_page == 'back_office_count_report') { ?>
+				<?php include "include/templates/back_office_count_report.php" ?>
+			<?php } else ?>
 
 			<!-- Concern report -->
 			<?php if ($current_page == 'concern_report') { ?>
