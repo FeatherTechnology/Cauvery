@@ -123,6 +123,7 @@ $area_loan_count_report = '';
 // $work_count_report = '';
 $noc_handover_report = '';
 $confirmation_count_report = '';
+$back_office_count_report = '';
 $concern_report  = '';
 $partners_report  = '';
 $location_track_report = '';
@@ -317,6 +318,7 @@ if($idupd>0)
 			$loan_issue_count_report = $getUser['loan_issue_count_report'];
 			$promotion_count_report = $getUser['promotion_count_report'];
 			$due_followup_count_report = $getUser['due_followup_count_report'];
+			$back_office_count_report = $getUser['back_office_count_report'];
 			$branch_request_count_report = $getUser['branch_request_count_report'];
 			$location_track_report = $getUser['location_track_report'];
 			$search_module = $getUser['search_module'];
@@ -1419,6 +1421,12 @@ if($idupd>0)
 								<div class="custom-control custom-checkbox">
 									<input type="checkbox" value="Yes" <?php if($idupd > 0){ if($due_followup_count_report==0){ echo'checked'; }} ?> tabindex="113" class="count-checkbox screen-validations" id="due_followup_count_report" name="due_followup_count_report" disabled>&nbsp;&nbsp;
 									<label class="custom-control-label" for="due_followup_count_report">Due Followup Count</label>
+								</div>
+							</div>
+							<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" value="Yes" <?php if($idupd > 0){ if($back_office_count_report==0){ echo'checked'; }} ?> tabindex="113" class="count-checkbox screen-validations" id="back_office_count_report" name="back_office_count_report" disabled>&nbsp;&nbsp;
+									<label class="custom-control-label" for="back_office_count_report">Back Office Count</label>
 								</div>
 							</div>
 						</div>
