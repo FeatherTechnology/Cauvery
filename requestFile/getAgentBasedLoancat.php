@@ -19,6 +19,7 @@ if ($ag_id != '') {
         $row = $qry->fetch();
         $detailrecords[$i]['loan_category_id'] = $row['loan_category_creation_id'];
         $detailrecords[$i]['loan_category_name'] = $row['loan_category_creation_name'];
+         $detailrecords[$i]['agent_loan'] = $row['agent_loan']; // ✅ IMPORTANT
         $i++;
     }
 } else if ($ag_id == '') {
@@ -26,6 +27,7 @@ if ($ag_id != '') {
     while ($row = $qry->fetch()) {
         $detailrecords[$i]['loan_category_id'] = $row['loan_category_creation_id'];
         $detailrecords[$i]['loan_category_name'] = $row['loan_category_creation_name'];
+        $detailrecords[$i]['agent_loan'] = $row['agent_loan'];
         $i++;
     }
 }

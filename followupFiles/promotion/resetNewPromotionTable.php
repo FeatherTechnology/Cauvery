@@ -156,7 +156,7 @@ if ($role_type == 7 || $role_type == 3) {
 
             // apply color coding on every redraw
             $('#new_promo_table tbody tr').each(function() {
-                let tddate = $(this).find('td:eq(11)').text().trim(); 
+                let tddate = $(this).find('td:eq(10)').text().trim(); 
                 if (tddate === '') return;
 
                 // normalize DD-MM-YYYY to YYYY-MM-DD
@@ -175,11 +175,11 @@ if ($role_type == 7 || $role_type == 3) {
 
                 if (!isNaN(values)) {
                     if (values < curDate) {
-                        $(this).find('td:eq(11)').css({'background-color': colors.past, 'color': 'white'});
+                        $(this).find('td:eq(10)').css({'background-color': colors.past, 'color': 'white'});
                     } else if (values > curDate) {
-                        $(this).find('td:eq(11)').css({'background-color': colors.future, 'color': 'white'});
+                        $(this).find('td:eq(10)').css({'background-color': colors.future, 'color': 'white'});
                     } else {
-                        $(this).find('td:eq(11)').css({'background-color': colors.current, 'color': 'white'});
+                        $(this).find('td:eq(10)').css({'background-color': colors.current, 'color': 'white'});
                     }
                 }
             });

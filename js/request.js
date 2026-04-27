@@ -224,7 +224,7 @@ $(document).ready(function () {
             }
         } else {
             event.preventDefault();
-            scrollToFirstError('#request'); 
+            scrollToFirstError('#request');
             return false;
         }
     })
@@ -253,7 +253,8 @@ $(function () {//For Update
         } else if (role_upd == '1') {
             getAllAgentDropdown();//for directors
         }
-
+        var agent_loan = $('#loan_category').find(':selected').data('agent_loan');
+        $('#agent_loan').val(agent_loan);
         var cus_id = $('#cus_id_upd').val();
         value = cus_id.replace(/\D/g, "").split(/(?:([\d]{4}))/g).filter(s => s.length > 0).join(" ");
         $('#cus_id').val(value);
@@ -398,8 +399,8 @@ function getCustomerDetails(cus_id) {
                     $('#mobile2_radio').prop('checked', true);
                     $('#mobile1_radio').prop('checked', false);
                     mobileNumber = response['mobile2'];
-                }else{
-                   mobileNumber ='';
+                } else {
+                    mobileNumber = '';
                 }
                 $('#whatsapp_no').val(mobileNumber);
                 $('#selected_mobile_radio').val(response['mobile_whatsapp']);
@@ -860,29 +861,48 @@ function getAllAgentDropdown() {
 }
 //Fetch Loan category list Based on Agent
 function getAgentBasedLoanCategory(ag_id) {
+
     var loan_category_upd = $('#loan_category_upd').val();
+
     $.ajax({
         url: 'requestFile/getAgentBasedLoancat.php',
         data: { 'ag_id': ag_id },
         dataType: 'json',
         type: 'post',
         cache: false,
+
         success: function (response) {
+
             $('#loan_category').empty();
-            $('#loan_category').append("<option value='' >Select Loan Category</option>");
+            $('#loan_category').append("<option value=''>Select Loan Category</option>");
+
             for (var i = 0; i < response.length; i++) {
+
                 var selected = '';
-                if (loan_category_upd != undefined && loan_category_upd != '' && loan_category_upd == response[i]['loan_category_id']) {
+
+                if (loan_category_upd !== undefined && loan_category_upd !== '' &&
+                    loan_category_upd == response[i]['loan_category_id']) {
                     selected = 'selected';
                 }
-                $('#loan_category').append("<option value='" + response[i]['loan_category_id'] + "' " + selected + " >" + response[i]['loan_category_name'] + " </option>");
+
+                $('#loan_category').append(
+                    "<option value='" + response[i]['loan_category_id'] + "' " + selected +
+                    " data-agent_loan='" + response[i]['agent_loan'] + "'>" +
+                    response[i]['loan_category_name'] +
+                    "</option>"
+                );
             }
-            // Sort loan_category dropdown
+
+            // 🔹 Sort dropdown
             sortDropdownAlphabetically("#loan_category");
 
-            getresponsiblecolumn(ag_id); //To Hide/show responsible.
+            // 🔹 Trigger change to set agent_loan automatically (IMPORTANT)
+            $('#loan_category').trigger('change');
+
+            // 🔹 Other function
+            getresponsiblecolumn(ag_id);
         }
-    })
+    });
 }
 
 //Category info based on sub category

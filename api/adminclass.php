@@ -4386,6 +4386,7 @@ class admin
 		if (isset($_POST['mobile2'])) {
 			$mobile2 = $_POST['mobile2'];
 		}
+		$mobile_whatsapp = '';
 		if (isset($_POST['mobile_whatsapp'])) {
 			$mobile_whatsapp = $_POST['mobile_whatsapp'];
 		}
@@ -4693,6 +4694,7 @@ class admin
 		if (isset($_POST['mobile2'])) {
 			$mobile2 = $_POST['mobile2'];
 		}
+		$mobile_whatsapp = ''; 
 		if (isset($_POST['mobile_whatsapp'])) {
 			$mobile_whatsapp = $_POST['mobile_whatsapp'];
 		}

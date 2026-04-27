@@ -1333,7 +1333,11 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 							</div>
 
 							<hr>
-							<br>
+							<div class="row">
+								<div class="col-12">
+									<button type="button" class="btn btn-primary" id="add_cus_label" name="add_cus_label" data-toggle="modal" data-target=".addCusLabel" style="padding: 5px 35px; float: right;" tabindex="63" onclick="resetfeedback();"><span class="icon-add"></span></button>
+								</div>
+							</div> <br>
 
 							<div class="row">
 								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
