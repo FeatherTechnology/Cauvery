@@ -2387,7 +2387,7 @@ $('#guarentor_name').change(function () { //Select Guarantor Name relationship w
 ///Customer profile submit///
 $('#submit_update_cus_profile').click(function () {
     if (validation()) {
-        let confirmAction = confirm("Are you sure you want to submit Loan Issue ?");
+        let confirmAction = confirm("Are you sure you want to submit Customer Profile ?");
         if (!confirmAction) {
             event.preventDefault(); // Stop form submission if canceled
             return false;

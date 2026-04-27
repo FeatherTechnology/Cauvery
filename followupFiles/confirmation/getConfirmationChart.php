@@ -16,7 +16,7 @@ $sno = 1;
 
 function getCustomer($connect, $cus_id)
 {
-    $result = $connect->query("SELECT customer_name from customer_register where cus_id = '$cus_id' ");
+    $result = $connect->query("SELECT CONCAT(first_name, ' ',last_name) AS customer_name from customer_register where cus_id = '$cus_id' ");
     $cus_name = $result->fetch()['customer_name'];
     return $cus_name;
 }

@@ -53,7 +53,8 @@ $query = "SELECT
     agm.group_name, 
     alm.line_name, 
     np.follow_date, 
-    np.orgin_table
+    np.orgin_table,
+    np.promo_type
 FROM 
     new_promotion np
 LEFT JOIN 
