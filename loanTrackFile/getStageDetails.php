@@ -35,12 +35,12 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
     }
 } elseif ($stage == 'li') { //Loan Issue, So show Cash Acknowledgement info
 
-    $qry = $connect->query("SELECT cus_id,issued_to,cash_guarentor_name,agent_id from loan_issue where req_id = '" . strip_tags($req_id) . "' ");
+    $qry = $connect->query("SELECT cus_id,issued_to,cash_guarentor_name,cash_guarentor_name,agent_id from loan_issue where req_id = '" . strip_tags($req_id) . "' ");
     if ($qry->rowCount() > 0) {
 
         $row = $qry->fetch();
 
-        if (empty($row['agent_id']) && $row['cus_id'] != $row['cash_guarentor_name'] && !empty($row['cash_guarentor_name'])) {
+        if (empty($row['agent_id']) && $row['cus_id'] != $row['cash_guarentor_name']) {
             //if agent id is empty and cash gurarantor is not the customer, then we need to search in family table
 
             $fam_qry = $connect->query("SELECT CONCAT(first_name,' ',last_name) As famname,relationship from verification_family_info where relation_aadhar = '" . strip_tags($row['cash_guarentor_name']) . "' ");
@@ -53,7 +53,7 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
             $ag_row = $ag_qry->fetch();
             $detail_arr['issued_to'] = $ag_row['ag_name'];
             $detail_arr['relationship'] = 'Agent';
-        } else if ($row['cus_id'] == $row['cash_guarentor_name'] || empty($row['cash_guarentor_name'])) { //if issued and customer are same then direclty take values from issue table
+        } else if ($row['cus_id'] == $row['cash_guarentor_name']) { //if issued and customer are same then direclty take values from issue table
 
             $detail_arr['issued_to'] = $row['issued_to'];
             $detail_arr['relationship'] = 'Customer';
@@ -66,7 +66,7 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
     $qry = $connect->query("SELECT noc_handover_date,noc_member,mem_name from noc where req_id = '" . strip_tags($req_id) . "'");
     $row = $qry->fetch();
     $response = $row;
-    $detail_arr['noc_handover_date'] = date('d-m-Y', strtotime($response['noc_handover_date']));
+    $detail_arr['noc_handover_date'] = !empty($response['noc_handover_date']) ? date('d-m-Y', strtotime($response['noc_handover_date'])) : '';
     if ($response['noc_member'] == '1') {
         // 1 = Customer
         $detail_arr['noc_member'] = $response['mem_name'];
@@ -103,16 +103,14 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
         ?>
     </thead>
     <tbody>
-        <tr>
-            <td><?php echo 1; ?></td>
-            <?php
-            foreach ($detail_arr as $item) {
-            ?>
-                <td><?php echo $item; ?></td>
-            <?php
-            }
-            ?>
-        </tr>
+        <?php if (!empty(array_filter($detail_arr))) { ?>
+            <tr>
+                <td><?php echo 1; ?></td>
+                <?php foreach ($detail_arr as $item) { ?>
+                    <td><?php echo $item; ?></td>
+                <?php } ?>
+            </tr>
+        <?php } ?>
     </tbody>
 </table>
 
