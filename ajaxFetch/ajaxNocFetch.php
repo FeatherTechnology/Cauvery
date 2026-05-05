@@ -71,52 +71,30 @@ $column = array(
 //22 NOC given
 //23 send NOC Handover
 //24 NOC Handovered.
-if ($userid == 1) {
-    $query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) AS customer_name, ac.area_name, alm.line_name, bc.branch_name, cr.mobile1
-    FROM in_issue ii 
-    JOIN customer_register cr ON ii.cus_id = cr.cus_id
-    JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
-    JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
-    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-    JOIN branch_creation bc ON alm.branch_id = bc.branch_id
-    LEFT JOIN (
-        SELECT cs.cus_id, MAX(cs.created_date) AS latest_date
-        FROM closed_status cs
-        INNER JOIN (
-            SELECT DISTINCT cus_id 
-            FROM in_issue 
-            WHERE status = 0 
-            AND cus_status IN (21,22,23)
-        ) filtered_customers ON cs.cus_id = filtered_customers.cus_id
-        GROUP BY cs.cus_id
-    ) cs
-    ON cs.cus_id = cr.cus_id
-    WHERE ii.status = 0
-        AND ii.cus_status IN (21,22,23) "; // Only Issued and all lines not relying on sub area
-} else {
-    $query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) AS customer_name, ac.area_name, alm.line_name, bc.branch_name, cr.mobile1
-    FROM in_issue ii 
-    LEFT JOIN noc nc ON ii.req_id = nc.req_id 
-    JOIN customer_register cr ON ii.cus_id = cr.cus_id
-    JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
-    JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
-    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-    JOIN branch_creation bc ON alm.branch_id = bc.branch_id
-    LEFT JOIN (
-        SELECT cs.cus_id, MAX(cs.created_date) AS latest_date
-        FROM closed_status cs
-        INNER JOIN (
-            SELECT DISTINCT cus_id 
-            FROM in_issue 
-            WHERE status = 0 
-            AND cus_status IN (21,22,23)
-        ) filtered_customers ON cs.cus_id = filtered_customers.cus_id
-        GROUP BY cs.cus_id
-    ) cs
-    ON cs.cus_id = cr.cus_id
-    WHERE ii.status = 0
-        AND ii.cus_status IN (21,22,23)
-        AND $colName IN ($area_list) AND (nc.receive_status = 0 OR nc.req_id IS NULL) ";
+$query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) AS customer_name, ac.area_name, alm.line_name, bc.branch_name, cr.mobile1
+FROM in_issue ii 
+LEFT JOIN noc nc ON ii.req_id = nc.req_id 
+JOIN customer_register cr ON ii.cus_id = cr.cus_id
+JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
+JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
+JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+JOIN branch_creation bc ON alm.branch_id = bc.branch_id
+LEFT JOIN (
+    SELECT cs.cus_id, MAX(cs.created_date) AS latest_date
+    FROM closed_status cs
+    INNER JOIN (
+        SELECT DISTINCT cus_id 
+        FROM in_issue 
+        WHERE status = 0 
+        AND cus_status IN (21,22,23)
+    ) filtered_customers ON cs.cus_id = filtered_customers.cus_id
+    GROUP BY cs.cus_id
+) cs
+ON cs.cus_id = cr.cus_id
+WHERE ii.status = 0 AND ii.cus_status IN (21,22,23) AND (nc.receive_status = 0 OR nc.req_id IS NULL) ";
+
+if ($userid != 1) {
+    $query .= " AND $colName IN ($area_list) ";
 }
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
