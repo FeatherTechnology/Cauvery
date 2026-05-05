@@ -96,6 +96,7 @@ if ($userid == 1) {
 } else {
     $query = "SELECT cs.latest_date, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) AS customer_name, ac.area_name, alm.line_name, bc.branch_name, cr.mobile1
     FROM in_issue ii 
+    LEFT JOIN noc nc ON ii.req_id = nc.req_id 
     JOIN customer_register cr ON ii.cus_id = cr.cus_id
     JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
     JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
@@ -115,7 +116,7 @@ if ($userid == 1) {
     ON cs.cus_id = cr.cus_id
     WHERE ii.status = 0
         AND ii.cus_status IN (21,22,23)
-        AND $colName IN ($area_list) ";
+        AND $colName IN ($area_list) AND (nc.receive_status = 0 OR nc.req_id IS NULL) ";
 }
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
@@ -181,7 +182,7 @@ foreach ($result as $row) {
     $sub_array[] = $row['line_name'];
     $sub_array[] = $row['mobile1'];
 
-    if ((in_array(21, $allStatus) || in_array(22, $allStatus)) && !in_array(23, $allStatus)) {
+    if ((in_array(21, $allStatus) || in_array(22, $allStatus))) {
         $noc_status = 'NOC';
     } elseif (in_array(23, $allStatus)) {
         $noc_status = isset($pendingReceive[$cus_id]) ? 'Pending' : 'Completed';
@@ -207,7 +208,7 @@ foreach ($result as $row) {
     }
 
     // For status 22 or 23 → show Summary + Letter
-    if (in_array(22, $allStatus) || in_array(23, $allStatus)) {
+    if (in_array(22, $allStatus) || in_array(23, $allStatus) && $noc_status == 'Pending') {
         $action .= "<a href='noc&cusidupd=$cus_id'>NOC Summary & Letter</a>";
     }
     $action .= "</div></div>";

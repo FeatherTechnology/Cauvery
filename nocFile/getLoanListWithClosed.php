@@ -46,13 +46,13 @@ if (isset($_SESSION["userid"])) {
         background-color: #fafafa;
     }
 
-    .dropdown:hover .dropdown-content {
+    /* .dropdown:hover .dropdown-content {
         display: block;
-    }
+    } */
 
-    .dropdown:hover .dropbtn {
-        background-color: #3E8E41;
-    }
+    /* .dropdown:hover .dropbtn {
+        background-color: #0C70AB;
+    } */
 
     .btn-outline-secondary {
         color: #383737;
@@ -85,15 +85,18 @@ if (isset($_SESSION["userid"])) {
             $rowuser = $userQry->fetch();
             $nocReplaceAccess = $rowuser['noc_replace_access'];
             
-            $cus_id = $_POST['cus_id'];
+            $cus_id = $_POST['cus_id'] ?? '';
+            $req_id = $_POST['reqid'] ?? '';
             $screen = $_POST['screen'] ?? '';
 
             //for both NOC & NOC handover using this screen for loan list so if noc screen means show till handover but action may vary and handover screen means show only in noc handover. 
+            $screen_condition = ""; 
             if($screen == 'nochandover'){
                 $cus_sts = "23";
-
+                $screen_condition = " AND lc.req_id = $req_id "; 
             }else{
                 $cus_sts = "21,22,23";
+                $screen_condition = " AND lc.cus_id_loan = $cus_id AND (n.receive_status = 0 OR n.req_id IS NULL)"; 
             }
 
             $run = $connect->query("SELECT ii.loan_id, CONCAT(lc.first_name, ' ', lc.last_name) AS cus_name, ad.doc_id, lcc.loan_category_creation_name as loan_catrgory_name, iv.agent_id, ii.updated_date, lc.loan_amt_cal, ii.req_id, ii.cus_status
@@ -102,7 +105,8 @@ if (isset($_SESSION["userid"])) {
             JOIN in_issue ii ON lc.req_id = ii.req_id 
             JOIN in_verification iv ON ii.req_id = iv.req_id 
             JOIN loan_category_creation lcc ON lc.loan_category = lcc.loan_category_creation_id
-            WHERE lc.cus_id_loan = $cus_id and ii.cus_status IN ($cus_sts) "); //21 means loan has been closed form closed window for noc
+            LEFT JOIN noc n ON ii.req_id = n.req_id
+            WHERE ii.cus_status IN ($cus_sts) $screen_condition "); //21 means loan has been closed form closed window for noc
 
             while ($row = $run->fetch()) {
                 $qry = $connect->query("SELECT created_date, closed_sts, consider_level FROM `closed_status` WHERE req_id = '" . $row['req_id'] . "' ");

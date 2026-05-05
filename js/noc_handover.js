@@ -14,6 +14,7 @@ $(document).ready(function () {
         var noc_member = parseInt($(this).val());
         var cus_id = $('#cusidupd').val();
         var req_id = $('#req_id').val();
+
         //if Noc Member is Family member or Guarentor then get member names
         if (noc_member > 1) {
             $.ajax({
@@ -33,12 +34,13 @@ $(document).ready(function () {
                         $('#mem_name').val(response['guarentor_name'] ?? '');
                         $('#compare_finger').val(response['fingerprint'] ?? '');
                         showHandText(response.hand ?? '');
+
                     } else if (noc_member == 3) {
                         //if Family member then show dropdown
                         $('.mem_relation_name').show();
                         $('.mem_name').hide();
                         $('#mem_name').val('');
-                         $("#hand_type").text('');
+                        $("#hand_type").text('');
 
                         $('#mem_relation_name').empty();
                         $('#mem_relation_name').append("<option value=''>Select Member Name</option>")
@@ -167,6 +169,7 @@ $(function () {
 
     var cus_pic = $('#cuspicupd').val();
     $('#imgshow').attr('src', 'uploads/request/customer/' + cus_pic);
+
     mantraInitDevice(); //to initialize the fingerprint scanner.
 });
 
@@ -184,13 +187,14 @@ function showHandText(hand){
     }
     $("#hand_type").text(handText).attr('class', 'text-danger');
 }
+
 function OnLoadFunctions() {
-    const cus_id = $('#cusidupd').val();
+const reqid = $('#reqidupd').val();
 
     $.ajax({
         //in this file, details gonna fetch by customer ID, Not by req id (Because we need all loans from customer)
         url: 'nocFile/getLoanListWithClosed.php',
-        data: { 'cus_id': cus_id, 'screen': 'nochandover' },
+        data: { reqid, 'screen': 'nochandover' },
         type: 'post',
         cache: false,
         success: function (response) {
@@ -511,7 +515,7 @@ async function validations() {
 
     let noc_member = $('#noc_member').val();
     let mem_relation_name = $('#mem_relation_name').val();
-    // let fingerprint = $('.scanBtn').attr('disabled');
+    // let fingerprint = $('#fingerValidation').val();
 
     // Case 1
     if (noc_member == '') {
@@ -576,10 +580,10 @@ function updateNocTable() {
 }
 
 function getReceiveUserDetails() {
-    let cusId = $('#cusidupd').val();
+    let reqId = $('#reqidupd').val();
 
     return new Promise((resolve, reject) => {
-        $.post('nocFile/getReceiveUserDetails.php', { cusId }, function (response) {
+        $.post('nocFile/getReceiveUserDetails.php', { reqId }, function (response) {
             resolve(response == 1 ? true : false);
         }, 'json').fail(function () {
             reject(false);
