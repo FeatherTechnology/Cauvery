@@ -243,7 +243,7 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="area">Area</label><span class="required">&nbsp;*</span>
-                                        <input type="text" class="form-control" id="cus_area" name="cus_area" value="<?php if (isset($cus_area)) echo $cus_area; ?>" readonly tabindex='12'>
+                                        <input type="text" class="form-control" id="cus_area" name="cus_area" value="<?php if (isset($cus_area)) echo $cus_area; ?>" readonly tabindex='13'>
                                     </div>
                                 </div>
 
@@ -301,7 +301,7 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 dept">
                                     <div class="form-group">
                                         <label for="toname">Department Name </label> <span class="required">&nbsp;*</span>
-                                        <input tabindex="19" type="text" class="form-control" id="to_dept_name" name="to_dept_name" value="<?php if (isset($toDeptName)) echo $toDeptName; ?>" readonly>
+                                        <input tabindex="18" type="text" class="form-control" id="to_dept_name" name="to_dept_name" value="<?php if (isset($toDeptName)) echo $toDeptName; ?>" readonly>
                                         <span class="text-danger" style='display:none' id='todeptnameCheck'>Please Select Department Name</span>
                                     </div>
                                 </div>
@@ -326,7 +326,7 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="comsub">Concern Subject</label><span class="required">&nbsp;*</span>
-                                        <select type="text" class="form-control" id="com_sub" name="com_sub" tabindex='21' disabled>
+                                        <select type="text" class="form-control" id="com_sub" name="com_sub" tabindex='19' disabled>
                                             <option value=""> Select Concern Subject </option>
                                         </select>
                                         <span class="text-danger" style='display:none' id='concernsubCheck'>Please Select Concern Subject</span>
@@ -349,14 +349,14 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="comremark">Concern Remark</label><span class="required">&nbsp;*</span>
-                                        <textarea class="form-control" id="com_remark" name="com_remark" tabindex='23' onkeydown="return /[a-z ]/i.test(event.key)" readonly><?php if (isset($conRemark)) echo $conRemark; ?></textarea>
+                                        <textarea class="form-control" id="com_remark" name="com_remark" tabindex='20' onkeydown="return /[a-z ]/i.test(event.key)" readonly><?php if (isset($conRemark)) echo $conRemark; ?></textarea>
                                         <span class="text-danger" style='display:none' id='comRemarkCheck'>Please Enter Concern Remark</span>
                                     </div>
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="role_type">Role Type</label><span class="required">&nbsp;*</span>
-                                        <select class="form-control" id="role_type" name="role_type"  style="<?php echo (!isset($pgid) || $pgid != '1') ? 'pointer-events:none;background:#e9ecef;' : ''; ?>" tabindex='19'>
+                                        <select class="form-control" id="role_type" name="role_type"  style="<?php echo (!isset($pgid) || $pgid != '1') ? 'pointer-events:none;background:#e9ecef;' : ''; ?>" tabindex='21'>
                                             <option value="">Select Role Type</option>
                                         </select>
                                         <span class="text-danger" style='display:none' id='roleTypeCheck'>Please Select Role Type</span>
@@ -365,7 +365,7 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="assign-to">Pass To</label><span class="required">&nbsp;*</span>
-                                        <select class="form-control" id="staff_assign_to" name="staff_assign_to"  style="<?php echo (!isset($pgid) || $pgid != '1') ? 'pointer-events:none;background:#e9ecef;' : ''; ?>"tabindex='19'>
+                                        <select class="form-control" id="staff_assign_to" name="staff_assign_to"  style="<?php echo (!isset($pgid) || $pgid != '1') ? 'pointer-events:none;background:#e9ecef;' : ''; ?>"tabindex='22'>
                                             <option value="">Select Pass To</option>
                                         </select>
                                         <span class="text-danger" style='display:none' id='staffAssignCheck'>Please Select Pass To </span>
@@ -390,14 +390,14 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="sol-date"> Solution Date </label> <span class="required">*</span>
-                                        <input type="date" class="form-control" name="solution_date" id="solution_date" tabindex="24" value="<?php echo date('Y-m-d'); ?>" readonly>
+                                        <input type="date" class="form-control" name="solution_date" id="solution_date" tabindex="23" value="<?php echo date('Y-m-d'); ?>" readonly>
                                     </div>
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="Communitcation"> Communication </label> <span class="required">*</span>
-                                        <select type="text" class="form-control" name="Com_for_solution" id="Com_for_solution" tabindex="25">
+                                        <select type="text" class="form-control" name="Com_for_solution" id="Com_for_solution" tabindex="24">
                                             <option value=""> Select Communication </option>
                                             <option value="1"> Phone </option>
                                             <option value="2"> Direct </option>
@@ -409,14 +409,14 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12" style="display: none;" id="solutionUploads">
                                     <div class="form-group">
                                         <label for="Communitcation"> Uploads </label><span class="text-danger">*</span>
-                                        <input type="file" class="form-control" name="concern_upload[]" id="concern_upload" tabindex="26" multiple>
+                                        <input type="file" class="form-control" name="concern_upload[]" id="concern_upload" tabindex="25" multiple>
                                         <span class="text-danger" style='display:none' id='updCheck'>Please Upload </span>
                                     </div>
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 location-div" style="display: none;">
                                     <div class="form-group">
                                         <label for="location">Location </label><span class="text-danger">*</span>
-                                        <select type="text" class="form-control" id="location" name="location" tabindex="8">
+                                        <select type="text" class="form-control" id="location" name="location" tabindex="26">
                                             <option value="">Select Location</option>
                                             <option value="1">Office</option>
                                             <option value="2">On Spot</option>
@@ -428,7 +428,7 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="sol_participants">Participants</label><span class="text-danger">*</span>
-                                        <textarea class="form-control" name="sol_participants" id="sol_participants" placeholder="Enter Participants" tabindex="12"></textarea>
+                                        <textarea class="form-control" name="sol_participants" id="sol_participants" placeholder="Enter Participants" tabindex="27"></textarea>
                                          <span class="text-danger" style='display:none' id='participantsCheck'>Please Enter Participants </span>
                                         
                                     </div>
@@ -437,7 +437,7 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="reamrk"> Solution Remark </label> <span class="required">*</span>
-                                        <textarea type="text" class="form-control" name="solution_remark" id="solution_remark" tabindex="27"></textarea>
+                                        <textarea type="text" class="form-control" name="solution_remark" id="solution_remark" tabindex="28"></textarea>
                                         <span class="text-danger" style='display:none' id='solutionRemarkCheck'>Please Enter Solution Remark </span>
                                     </div>
                                 </div>
@@ -451,8 +451,8 @@ if (isset($_POST['submit_concern_solution']) && $_POST['submit_concern_solution'
 
                     <div class="col-md-12 ">
                         <div class="text-right">
-                            <button type="submit" name="submit_concern_solution" id="submit_concern_solution" class="btn btn-primary" value="Submit" tabindex="28"><span class="icon-check"></span>&nbsp;Submit</button>
-                            <button type="reset" class="btn btn-outline-secondary" tabindex="29">Clear</button>
+                            <button type="submit" name="submit_concern_solution" id="submit_concern_solution" class="btn btn-primary" value="Submit" tabindex="29"><span class="icon-check"></span>&nbsp;Submit</button>
+                            <button type="reset" class="btn btn-outline-secondary" tabindex="30">Clear</button>
                         </div>
                     </div>
 
