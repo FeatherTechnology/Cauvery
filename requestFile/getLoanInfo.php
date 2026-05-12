@@ -8,7 +8,7 @@ if (isset($_POST['cus_id'])) {
 }
 
 $response = array();
-$result = $connect->query(query: "SELECT lc.collection_info,lcat.loan_limit,lcat.agent_loan,ls.advance_type FROM loan_category lcat LEFT JOIN loan_calculation lc ON lcat.loan_category_name = lc.loan_category LEFT JOIN loan_scheme ls ON lcat.loan_category_name = ls.loan_category where lcat.status=0 and lcat.loan_category_name = '" . strip_tags($loan_category_upd) . "' ");
+$result = $connect->query("SELECT lc.collection_info,lcat.loan_limit,lcat.agent_loan,ls.advance_type FROM loan_category lcat LEFT JOIN loan_calculation lc ON lcat.loan_category_name = lc.loan_category LEFT JOIN loan_scheme ls ON lcat.loan_category_name = ls.loan_category where lcat.status=0 and lcat.loan_category_name = '" . strip_tags($loan_category_upd) . "' ");
 if ($result->rowCount() > 0) {
 
     $row = $result->fetch();
