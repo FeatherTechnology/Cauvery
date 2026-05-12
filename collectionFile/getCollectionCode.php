@@ -10,9 +10,7 @@ if($selectIC->rowCount()>0)
         $ac2 = $row["coll_code"];
     }
     $appno2 = ltrim(strstr($ac2, '-'), '-'); $appno2 = $appno2+1;
-    // $appno1 = substr($appno2, 4, strpos($appno2, "/")) + 101 ;
     $coll_code = $myStr."-". "$appno2";
-	// print_r($branch_code);die;
 }
 else
 {
