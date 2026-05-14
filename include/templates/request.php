@@ -616,7 +616,7 @@ if ($idupd > 0) {
 								<option value="">Select Loan Category</option>
 								<?php if (sizeof($loanCategoryList) > 0) {
 									for ($j = 0; $j < count($loanCategoryList); $j++) { 
-										$is_selected = (isset($loan_category) && $loanCategoryList[$j]['loan_category_name_id'] == $loan_category);
+										$is_selected = ( isset($idupd) && $idupd > 0 && isset($loan_category) && $loanCategoryList[$j]['loan_category_name_id'] == $loan_category);
 										$is_inactive = ($loanCategoryList[$j]['loan_category_status'] == '1');
 										// In edit mode, if category is inactive but was originally selected, allow it to be selectable
 										// This allows users to change back to the original category if they mistakenly changed it
