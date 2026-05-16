@@ -7,7 +7,7 @@ class CircularAmountClass
     {
         $this->db = $connect;
     }
-    
+
     public function getTotalBalance($to_date, $branch_id)
     {
         $next_date = date('Y-m-d', strtotime($to_date . ' +1 day'));
@@ -184,21 +184,17 @@ class CircularAmountClass
     public function getTotalWithdraw($to_date)
     {
         $sql = "
-            SELECT SUM(amt) AS cur_circ_withdraw
-            FROM ct_db_cash_withdraw
-            WHERE received = 1
-            AND date(created_date) <= :to_date_time
-        ";
+        SELECT SUM(amt) AS cur_circ_withdraw
+        FROM ct_db_cash_withdraw
+        WHERE (  received = 1 AND DATE(created_date) <= :to_date_time) OR (received = 0 AND DATE(created_date) <= :to_date_time AND DATE(updated_date) > :to_date_time)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':to_date_time' => $to_date . ' 23:59:59'
         ]);
-
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['cur_circ_withdraw'] ?? 0;
     }
-
     public function getTotalPreviousCollection($from_date, $branch_id)
     {
         $prev_date = date('Y-m-d', strtotime($from_date . ' -1 day'));
@@ -292,7 +288,7 @@ class CircularAmountClass
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':from_date_time' =>'2026-01-01 00:00:00',
+            ':from_date_time' => '2026-01-01 00:00:00',
             ':to_date_time' => $prev_date_time . ' 23:59:59'
         ]);
 
@@ -303,7 +299,7 @@ class CircularAmountClass
     public function getTotalpreExchange($from_date)
     {
 
-    $prev_date_time = date('Y-m-d', strtotime($from_date . ' -1 day'));
+        $prev_date_time = date('Y-m-d', strtotime($from_date . ' -1 day'));
 
         $sql = "
             SELECT SUM(amt) AS pre_circ_exchange
@@ -324,11 +320,9 @@ class CircularAmountClass
     public function getTotalpreWithdraw($from_date)
     {
         $prev_date_time = date('Y-m-d', strtotime($from_date . ' -1 day'));
-        $sql = "
-            SELECT SUM(amt) AS pre_circ_withdraw
-            FROM ct_db_cash_withdraw
-            WHERE received = 1
-            AND date(created_date) <= :to_date_time
+        $sql = "SELECT SUM(amt) AS pre_circ_withdraw
+        FROM ct_db_cash_withdraw
+        WHERE (  received = 1 AND DATE(created_date) <= :to_date_time) OR (received = 0 AND DATE(created_date) <= :to_date_time AND DATE(updated_date) > :to_date_time)
         ";
 
         $stmt = $this->db->prepare($sql);
