@@ -34,8 +34,8 @@ $(document).ready(function () {
         }
     });
 
-    $('#hands_cash_radio , #banks_cash_radio').click(function () {
-        // hideAllCardsfunction();
+   $(document).on('click', '#hands_cash_radio, #banks_cash_radio', function () {
+        hideAllCardsfunction();
         var cash_type = $('input[name=other_trans_cash_type]:checked').val();
         if (cash_type == '0') {//hand cash
             appendHandCreditDropdown();
@@ -47,13 +47,14 @@ $(document).ready(function () {
     })
 
     //On change of types other type shoult be empty
-    $('#credit_type').change(function () {
+   $(document).on('change', '#credit_type', function () {
         var credit_type = $(this).val();
         if (credit_type != '') {
             $('#debit_type').val('');
         }
     })
-    $('#debit_type').change(function () {
+
+     $(document).on('change', '#debit_type', function () {
         var debit_type = $(this).val();
         if (debit_type != '') {
             $('#credit_type').val('');
@@ -62,7 +63,7 @@ $(document).ready(function () {
 
 
     //Credit Type on change event
-    $('#credit_type').change(function () {
+    $(document).on('change', '#credit_type', function () {
         hideAllCardsfunction()
         var credit_type = $(this).val();
         var cash_type = $('input[name=other_trans_cash_type]:checked').val();
@@ -135,7 +136,7 @@ $(document).ready(function () {
         }
     })
 
-    $('#debit_type').change(function () {
+    $(document).on('change', '#debit_type', function () {
         hideAllCardsfunction()
         var debit_type = $(this).val();
         var cash_type = $('input[name=other_trans_cash_type]:checked').val();
