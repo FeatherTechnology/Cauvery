@@ -192,7 +192,7 @@ foreach ($result as $row) {
         // Always show In Accounts if issue_by = 2
         $sub_array[] = 'In Accounts';
     } else {
-        if (empty($ag_id)) { // only check balance amount if request is not on agent
+        if (empty($ag_id) || strtolower(trim($ag_id)) == 'null'){ // only check balance amount if request is not on agent
             if ($cus_status == '13') {
                 if (isset($loan_issued_db['balance_amount']) && $loan_issued_db['balance_amount'] == '0') {
                     $sub_array[] = "<button class='btn btn-outline-secondary complete_issue' value='$id'><span class='icon-arrow_forward'></span></button>";
@@ -222,7 +222,7 @@ foreach ($result as $row) {
         <div class='dropdown-content'>";
 
         if ($issue_by == 1) { // Only add options if issue_by = 1
-            if ($cus_status == '13' and empty($ag_id)) {
+            if ($cus_status == '13' and (empty($ag_id)  || strtolower(trim($ag_id)) == 'null')) {
                 $action .= "<a href='loan_issue&upd=$id' class='customer_profile' value='$id' > Edit Loan Issue </a>";
             } else if ($cus_status == '14') {
                 $action .= "<a href=''class='iss-remove' data-value='$id' > Remove </a>";
