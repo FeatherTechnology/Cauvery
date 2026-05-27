@@ -9,7 +9,7 @@ $(document).ready(function () {
             $('#to_date').val(''); // Clear the invalid value
         }
     });
-    const toggleButtons = $(".toggle-button");
+    const toggleButtons = $(".toggle-button").not("#print_btn");
     toggleButtons.removeClass('active'); //initially make all buttons unchecked
     toggleButtons.on("click", function () {
         // Reset active class for all buttons
@@ -74,6 +74,11 @@ $(document).ready(function () {
         }
     })
 
+    // Print Button Click Event
+    $(document).off('click', '#print_btn').on('click', '#print_btn', function () {
+        printFinancialTables();
+    });
+
 })//Document Ready End
 
 $(function () {
@@ -95,15 +100,15 @@ function getUserNames() {
 
 //it will calculate for all type of searches handling by type, after ajax calls are completed then it will trigger to calculate closing details
 function BalanceSheetCalculations(type, from_date, to_date, month) {
-  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         var user_id = $('#by_user').val();
         var bankDetail = $('#bank_detail').val();
         branch_id = $('#by_user option:selected').data('branch');
 
-        if (type == 'today') { var args = { 'type': 'today', 'user_id': user_id, 'bankDetail': bankDetail ,'branch_id' : branch_id }; } else
-            if (type == 'day') { var args = { 'type': 'day', 'from_date': from_date, 'to_date': to_date, 'user_id': user_id, 'bankDetail': bankDetail ,'branch_id' : branch_id }; } else
-                if (type == 'month') { var args = { 'type': 'month', 'month': month, 'user_id': user_id, 'bankDetail': bankDetail ,'branch_id' : branch_id}; }
+        if (type == 'today') { var args = { 'type': 'today', 'user_id': user_id, 'bankDetail': bankDetail, 'branch_id': branch_id }; } else
+            if (type == 'day') { var args = { 'type': 'day', 'from_date': from_date, 'to_date': to_date, 'user_id': user_id, 'bankDetail': bankDetail, 'branch_id': branch_id }; } else
+                if (type == 'month') { var args = { 'type': 'month', 'month': month, 'user_id': user_id, 'bankDetail': bankDetail, 'branch_id': branch_id }; }
 
         // Create an array to store all the Ajax calls
         let ajaxCalls = [];
@@ -112,50 +117,50 @@ function BalanceSheetCalculations(type, from_date, to_date, month) {
         let ajaxCall1 = $.post('financeFile/BS/getOpeningDate.php', args, function (response) {
             let opBal = response[1][0]['opening_balance'];
             let opAgBal = response[1][0]['agent_opening'];
-            $('.balance-sheet-card').find('tbody tr:first td:nth-child(2)').text(moneyFormatIndia(opBal)) 
-            $('.balance-sheet-card').find('tbody tr:nth-child(2) td:nth-child(2)').text(moneyFormatIndia(opAgBal)) 
+            $('.balance-sheet-card').find('tbody tr:first td:nth-child(2)').text(moneyFormatIndia(opBal))
+            $('.balance-sheet-card').find('tbody tr:nth-child(2) td:nth-child(2)').text(moneyFormatIndia(opAgBal))
             $('.benefits-check-card').find('tbody tr:nth-child(2) td:nth-child(2)').text(moneyFormatIndia(opBal)) //it will get the 2nd column value inside tbody // will take you to opening balance credit column
-            $('.benefits-check-card').find('tbody tr:nth-child(3) td:nth-child(2)').text(moneyFormatIndia(opAgBal)) 
+            $('.benefits-check-card').find('tbody tr:nth-child(3) td:nth-child(2)').text(moneyFormatIndia(opAgBal))
             let clBal = response[0][0]?.closing_balance || 0;
             let agBal = response[0][0]?.agent_closing || 0;
             let previous_uncleared_credit = response[2]?.previous_uncleared_credit || 0;
-            let previous_uncleared_debit  = response[2]?.previous_uncleared_debit  || 0;
-            let current_uncleared_credit  = response[2]?.current_uncleared_credit  || 0;
-            let current_uncleared_debit  = response[2]?.current_uncleared_debit  || 0;
-            let circularData  = response[3];
+            let previous_uncleared_debit = response[2]?.previous_uncleared_debit || 0;
+            let current_uncleared_credit = response[2]?.current_uncleared_credit || 0;
+            let current_uncleared_debit = response[2]?.current_uncleared_debit || 0;
+            let circularData = response[3];
 
-       
-            let cur_circ_withdraw  = circularData.cur_circ_withdraw || 0;
-            let cur_waiver  = circularData.cur_circ_waiver || 0;
-            let cur_circ_exchange  = circularData.cur_circ_exchange || 0;
-            let cur_circ_coll  = circularData.cur_circ_coll || 0;
-            let cur_circ_issued  = circularData.cur_circ_issued || 0;
 
-            let pre_circ_coll  = circularData.pre_circ_coll || 0;
-            let pre_circ_issued  = circularData.pre_circ_issued || 0;
-            let pre_circ_exchange  = circularData.pre_circ_exchange || 0;
-            let pre_circ_withdraw  = circularData.pre_circ_withdraw || 0;
-            let pre_circ_Waiver  = circularData.pre_circ_Waiver || 0;
-            
+            let cur_circ_withdraw = circularData.cur_circ_withdraw || 0;
+            let cur_waiver = circularData.cur_circ_waiver || 0;
+            let cur_circ_exchange = circularData.cur_circ_exchange || 0;
+            let cur_circ_coll = circularData.cur_circ_coll || 0;
+            let cur_circ_issued = circularData.cur_circ_issued || 0;
+
+            let pre_circ_coll = circularData.pre_circ_coll || 0;
+            let pre_circ_issued = circularData.pre_circ_issued || 0;
+            let pre_circ_exchange = circularData.pre_circ_exchange || 0;
+            let pre_circ_withdraw = circularData.pre_circ_withdraw || 0;
+            let pre_circ_Waiver = circularData.pre_circ_Waiver || 0;
+
             $('.balance-sheet-card').find('tbody tr:nth-child(17) td:nth-child(3)').text(moneyFormatIndia(agBal));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(18) td:nth-child(3)') .text(moneyFormatIndia(cur_circ_coll));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(19) td:nth-child(2)') .text(moneyFormatIndia(cur_circ_issued));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(20) td:nth-child(3)') .text(moneyFormatIndia(cur_circ_exchange));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(21) td:nth-child(3)') .text(moneyFormatIndia(pre_circ_withdraw));
+            $('.balance-sheet-card').find('tbody tr:nth-child(18) td:nth-child(3)').text(moneyFormatIndia(cur_circ_coll));
+            $('.balance-sheet-card').find('tbody tr:nth-child(19) td:nth-child(2)').text(moneyFormatIndia(cur_circ_issued));
+            $('.balance-sheet-card').find('tbody tr:nth-child(20) td:nth-child(3)').text(moneyFormatIndia(cur_circ_exchange));
+            $('.balance-sheet-card').find('tbody tr:nth-child(21) td:nth-child(3)').text(moneyFormatIndia(pre_circ_withdraw));
             $('.balance-sheet-card').find('tbody tr:nth-child(22) td:nth-child(3)').text(moneyFormatIndia(cur_waiver));
-            
+
             $('.benefits-check-card').find('tbody tr:nth-child(13) td:nth-child(3)').text(moneyFormatIndia(cur_circ_coll));
             $('.benefits-check-card').find('tbody tr:nth-child(14) td:nth-child(2)').text(moneyFormatIndia(cur_circ_issued));
             $('.benefits-check-card').find('tbody tr:nth-child(15) td:nth-child(3)').text(moneyFormatIndia(cur_circ_exchange));
             $('.benefits-check-card').find('tbody tr:nth-child(16) td:nth-child(3)').text(moneyFormatIndia(pre_circ_withdraw));
-            $('.benefits-check-card').find('tbody tr:nth-child(17) td:nth-child(3)').text(moneyFormatIndia(cur_waiver)); 
+            $('.benefits-check-card').find('tbody tr:nth-child(17) td:nth-child(3)').text(moneyFormatIndia(cur_waiver));
 
 
-            
-            $('.balance-sheet-card') .find('tbody tr:nth-child(18) td:nth-child(2)') .text(moneyFormatIndia(pre_circ_coll));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(19) td:nth-child(3)') .text(moneyFormatIndia(pre_circ_issued));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(20) td:nth-child(2)') .text(moneyFormatIndia(pre_circ_exchange));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(21) td:nth-child(2)') .text(moneyFormatIndia(cur_circ_withdraw));
+
+            $('.balance-sheet-card').find('tbody tr:nth-child(18) td:nth-child(2)').text(moneyFormatIndia(pre_circ_coll));
+            $('.balance-sheet-card').find('tbody tr:nth-child(19) td:nth-child(3)').text(moneyFormatIndia(pre_circ_issued));
+            $('.balance-sheet-card').find('tbody tr:nth-child(20) td:nth-child(2)').text(moneyFormatIndia(pre_circ_exchange));
+            $('.balance-sheet-card').find('tbody tr:nth-child(21) td:nth-child(2)').text(moneyFormatIndia(cur_circ_withdraw));
             $('.balance-sheet-card').find('tbody tr:nth-child(22) td:nth-child(2)').text(moneyFormatIndia(pre_circ_Waiver));
 
             $('.benefits-check-card').find('tbody tr:nth-child(13) td:nth-child(2)').text(moneyFormatIndia(pre_circ_coll));
@@ -163,20 +168,20 @@ function BalanceSheetCalculations(type, from_date, to_date, month) {
             $('.benefits-check-card').find('tbody tr:nth-child(15) td:nth-child(2)').text(moneyFormatIndia(pre_circ_exchange));
             $('.benefits-check-card').find('tbody tr:nth-child(16) td:nth-child(2)').text(moneyFormatIndia(cur_circ_withdraw));
             $('.benefits-check-card').find('tbody tr:nth-child(17) td:nth-child(2)').text(moneyFormatIndia(pre_circ_Waiver));
-            
+
 
             // $('.balance-sheet-card').find('tbody tr:nth-child(23) td:nth-child(2)').text(moneyFormatIndia(pre_circ_coll));
             $('.balance-sheet-card').find('tbody tr:nth-child(23) td:nth-child(3)').text(moneyFormatIndia(clBal));
             $('.benefits-check-card').find('tbody tr:nth-child(12) td:nth-child(3)').text(moneyFormatIndia(agBal));//benefit check table also will have same Agent balance
             $('.benefits-check-card').find('tbody tr:nth-child(18) td:nth-child(3)').text(moneyFormatIndia(clBal));
 
-            $('.balance-sheet-card') .find('tbody tr:nth-child(15) td:nth-child(2)') .text(moneyFormatIndia(-previous_uncleared_credit));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(15) td:nth-child(3)') .text(moneyFormatIndia(-previous_uncleared_debit));
+            $('.balance-sheet-card').find('tbody tr:nth-child(15) td:nth-child(2)').text(moneyFormatIndia(-previous_uncleared_credit));
+            $('.balance-sheet-card').find('tbody tr:nth-child(15) td:nth-child(3)').text(moneyFormatIndia(-previous_uncleared_debit));
             $('.benefits-check-card').find('tbody tr:nth-child(9) td:nth-child(2)').text(moneyFormatIndia(-previous_uncleared_credit));
             $('.benefits-check-card').find('tbody tr:nth-child(9) td:nth-child(3)').text(moneyFormatIndia(-previous_uncleared_debit));
 
-            $('.balance-sheet-card') .find('tbody tr:nth-child(16) td:nth-child(2)') .text(moneyFormatIndia(current_uncleared_credit));
-            $('.balance-sheet-card') .find('tbody tr:nth-child(16) td:nth-child(3)') .text(moneyFormatIndia(current_uncleared_debit));
+            $('.balance-sheet-card').find('tbody tr:nth-child(16) td:nth-child(2)').text(moneyFormatIndia(current_uncleared_credit));
+            $('.balance-sheet-card').find('tbody tr:nth-child(16) td:nth-child(3)').text(moneyFormatIndia(current_uncleared_debit));
             $('.benefits-check-card').find('tbody tr:nth-child(10) td:nth-child(2)').text(moneyFormatIndia(current_uncleared_credit));
             $('.benefits-check-card').find('tbody tr:nth-child(10) td:nth-child(3)').text(moneyFormatIndia(current_uncleared_debit));
 
@@ -237,7 +242,7 @@ function BalanceSheetCalculations(type, from_date, to_date, month) {
             $('.benefits-card').find('tbody tr:nth-child(7) td:nth-child(3)').text(response['expense']);
 
             $('.profit-card').find('tbody tr:nth-child(7) td:nth-child(3)').text(response['expense']);
-            
+
         }, 'json');
 
         ajaxCalls.push(ajaxCall1, ajaxCall2, ajaxCall3, ajaxCall4, ajaxCall5, ajaxCall6);
@@ -260,7 +265,7 @@ function calculateClosingForBS() {
     let credit = 0; let debit = 0;
 
     $('.balance-sheet-card').find('tbody tr').each(function () { //included opening balance also for credit total//only removed closing balance while summarizing debit amount for closing bal calculation
-       let credit_val = $(this).find('td:nth-child(2)').text() || '0';
+        let credit_val = $(this).find('td:nth-child(2)').text() || '0';
         credit += parseFloat(credit_val.replaceAll(',', '')) || 0;
 
         let debit_val = $(this).find('td:nth-child(3)').text() || '0';
@@ -284,7 +289,7 @@ function calculateClosingForBS() {
 
 //it will calculate for all type of searches handling by type, after ajax calls are completed then it will trigger to calculate closing details
 function BenefitCalculations(type, from_date, to_date, month) {
-  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         var user_id = $('#by_user').val();
         if (type == 'today') { var args = { 'type': 'today', 'user_id': user_id }; } else
@@ -404,7 +409,7 @@ function calculateClosingForProfit() {
 
 //it will calculate for all type of searches handling by type, after ajax calls are completed then it will trigger to calculate closing details
 function BenefitCheckCalculations(type, from_date, to_date, month) {
-  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         var user_id = $('#by_user').val();
         if (type == 'today') { var args = { 'type': 'today', 'user_id': user_id }; } else
@@ -445,7 +450,7 @@ function calculateClosingForBenefitCheck() {
 
     $('.benefits-check-card').find('tbody tr').each(function () {
         //this will take rows from investment till end of tr's
-         let credit_val = $(this).find('td:nth-child(2)').text() || '0';
+        let credit_val = $(this).find('td:nth-child(2)').text() || '0';
         credit += parseFloat(credit_val.replaceAll(',', '')) || 0;
 
         let debit_val = $(this).find('td:nth-child(3)').text() || '0';
@@ -484,8 +489,188 @@ function clearAllContents() {
 }
 
 //After all function completed then calculate the total.
-function callCalculateFunctions(){
-    calculateClosingForBenefit();
-    calculateClosingForBenefitCheck();
-    calculateClosingForProfit();
+async function callCalculateFunctions() {
+
+    await calculateClosingForBenefit();
+    await calculateClosingForBenefitCheck();
+    await calculateClosingForProfit();
+    await calculateClosingForBS();
+
+    // After all functions completed
+    $('#print_btn').show();
+}
+
+function printFinancialTables() {
+
+    // Open Print Window
+    const printWindow = window.open('', '_blank', 'width=1200,height=800');
+
+    const pageTitle = $('.page-header div').first().text().trim();
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${pageTitle}</title>
+
+            <style>
+                @page {
+                    size: A4 landscape;
+                    margin: 10mm;
+                   
+                }
+
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 10px;
+                    font-size: 10px;
+                }
+
+                .print-header {
+                    text-align: center;
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+
+                .print-date {
+                    text-align: center;
+                    font-size: 11px;
+                    margin-bottom: 15px;
+                }
+
+                /* Main 3 Column Layout */
+                .print-layout {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr;
+                    gap: 12px;
+                    align-items: start;
+                }
+
+                /* Middle Column = Benefit + Profit */
+                .middle-column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+              /* REMOVE CARD BOX DESIGN */
+               .print-card {
+                     border: none;
+                     padding: 0;
+                     border-radius: 0;
+                     background: transparent;
+                }
+
+                .print-card-header {
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 13px;
+                    margin-bottom: 6px;
+                    padding-bottom: 4px;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 10px;
+                }
+
+                th, td {
+                    border: 1px solid #000;
+                    padding: 3px;
+                    text-align: center;
+                }
+
+                th {
+                    background: #0C70AB;
+                    text-align: center;
+                }
+
+                .totals-row td {
+                    background: #7479c0 !important;
+                    font-weight: bold;
+                }
+
+                .difference-row td {
+                    background: #e2929a !important;
+                    font-weight: bold;
+                }
+
+                @media print {
+                    body {
+                        -webkit-print-color-adjust: exact;
+                    }
+                }
+            </style>
+        </head>
+
+        <body>
+
+            <div class="print-header">${pageTitle}</div>
+
+            <div class="print-date">
+                Printed Date: ${new Date().toLocaleDateString('en-IN')}
+            </div>
+
+            <div class="print-layout">
+
+                <!-- Left -->
+                <div id="left-column"></div>
+
+                <!-- Middle -->
+                <div class="middle-column" id="middle-column"></div>
+
+                <!-- Right -->
+                <div id="right-column"></div>
+
+            </div>
+
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+
+    function getCardHtml(selector, title) {
+
+        const table = $(selector).first().clone();
+
+        if (table.length > 0) {
+
+            table.find('thead tr:last').addClass('totals-row');
+            table.find('tfoot tr:first').addClass('totals-row');
+            table.find('tfoot tr:last').addClass('difference-row');
+
+            return `
+                <div class="print-card">
+                    <div class="print-card-header">${title}</div>
+                    ${table.prop('outerHTML')}
+                </div>
+            `;
+        }
+
+        return '';
+    }
+
+    printWindow.onload = function () {
+
+        // Left = Balance Sheet
+        printWindow.document.getElementById('left-column').innerHTML =
+            getCardHtml('.balance-sheet-card table', 'Balance Sheet');
+
+        // Middle = Benefit + Profit (Profit Below Benefit)
+        printWindow.document.getElementById('middle-column').innerHTML =
+            getCardHtml('.benefits-card table', 'Benefit') +
+            getCardHtml('.profit-card table', 'Profit');
+
+        // Right = Benefit Check
+        printWindow.document.getElementById('right-column').innerHTML =
+            getCardHtml('.benefits-check-card table', 'Benefit Check');
+
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    };
 }
