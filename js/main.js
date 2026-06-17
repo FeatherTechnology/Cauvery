@@ -40,6 +40,10 @@ $(function () {
 		}
 	});
 });
+// Remove single quote globally (entire project)
+$(document).on('input', 'input:not([type="hidden"]):not([type="file"]), textarea', function () {
+    $(this).val($(this).val().replace(/'/g, ""));
+});
 
 // Todo list
 $('.todo-body').on('click', 'li.todo-list', function () {

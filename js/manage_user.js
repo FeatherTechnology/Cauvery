@@ -36,13 +36,13 @@ const acknowledgementloanCatMultiselect = new Choices('#loan_cat3', {
 
 const lineMultiselect = new Choices('#line1', {
     removeItemButton: true,
-    noChoicesText: 'Select Line Name',
+    noChoicesText: 'Select Region Name',
     allowHTML: true
 });
 
 const groupMultiselect = new Choices('#group1', {
     removeItemButton: true,
-    noChoicesText: 'Select Group Name',
+    noChoicesText: 'Select Sector Name',
     allowHTML: true
 });
 
@@ -1001,7 +1001,7 @@ function getLoanCatDropdown(updId, multipleSelectID) {
     })
 }
 
-//get Line Dropdown
+//get Region Dropdown
 function getLineDropdown(branch_id) {
     var line_id_upd = $('#line_id_upd').val().split(',');
     $.ajax({

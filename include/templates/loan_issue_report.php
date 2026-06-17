@@ -38,9 +38,9 @@
 									<th>Guarantor Name</th>
 									<th>Relationship</th>
 									<th>Area</th>
-									<th>Line</th>
-									<th>Group</th>
-									<th>Followup</th>
+									<th>Region</th>
+									<th>Sector</th>
+									<th>Zone</th>
 									<th>Branch</th>
 									<th>Loan Category</th>
 									<th>Agent</th>
@@ -67,11 +67,13 @@
 									<th>Customer Data</th>
 									<th>Existing Type</th>
 									<th>Sub Status</th>
+									<th>Document Status</th>
+									<th>Document Holder</th>
 								</thead>
 								<tbody></tbody>
 								<tfoot>
 									<tr>
-										<td colspan="18"></td>
+										<td colspan="20"></td>
 										<td></td>
 										<td></td>
 										<td></td>
@@ -82,7 +84,7 @@
 										<td></td>
 										<td></td>
 										<td></td>
-										<td colspan="10"></td>
+										<td colspan="12"></td>
 									</tr>
 								</tfoot>
 							</table>

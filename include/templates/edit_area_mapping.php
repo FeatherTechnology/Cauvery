@@ -18,9 +18,9 @@
 		<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 			<div class="form-group" style="text-align:center">
 				<label for=''style="font-size:16px" >Mapping Type:</label><br><br>
-				<input type="radio" name="mapping_type" id="group" value="group" <?php if(isset($_GET['type']) and $_GET['type'] == 'group') echo 'checked';?>></input><label for='group'>&nbsp;&nbsp;Group</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="mapping_type" id="line" value="line" <?php if(isset($_GET['type']) and $_GET['type'] == 'line') echo 'checked';?>></input><label for='line' >&nbsp;&nbsp;Line</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<input type="radio" name="mapping_type" id="due_followup" value="duefollowup" <?php if(isset($_GET['type']) and $_GET['type'] == 'duefollowup') echo 'checked';?>></input><label for='due_followup' >&nbsp;&nbsp;Followup</label>
+				<input type="radio" name="mapping_type" id="group" value="group" <?php if(isset($_GET['type']) and $_GET['type'] == 'group') echo 'checked';?>></input><label for='group'>&nbsp;&nbsp;Sector</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="mapping_type" id="line" value="line" <?php if(isset($_GET['type']) and $_GET['type'] == 'line') echo 'checked';?>></input><label for='line' >&nbsp;&nbsp;Region</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="mapping_type" id="due_followup" value="duefollowup" <?php if(isset($_GET['type']) and $_GET['type'] == 'duefollowup') echo 'checked';?>></input><label for='due_followup' >&nbsp;&nbsp;Zone</label>
 			</div>
 		</div>
 		<!-- <div class="col-md-12 "> 
@@ -38,7 +38,7 @@
 			<div class="table-container line_mapping" <?php if(isset($_GET['type']) and $_GET['type'] == 'line') {?> style="display:block"<?php }else{ ?> style="display:none"<?php } ?>>
 				<div class="text-right" style="margin-right: 25px;">
 					<a href="area_mapping&type=line">
-						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Line Mapping</button>
+						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Region Mapping</button>
 					</a>
 				</div><br><br>
 
@@ -80,7 +80,7 @@
 						<thead>
 							<tr>
 								<th width="50">S. No.</th>
-								<th>Line Name</th>
+								<th>Region Name</th>
 								<th>Company Name</th>
 								<th>Branch Name</th>
 								<th>Area Name</th>
@@ -97,7 +97,7 @@
 			<div class="table-container group_mapping" <?php if(isset($_GET['type']) and $_GET['type'] == 'group') {?> style="display:block"<?php }else{ ?> style="display:none"<?php } ?>>
 				<div class="text-right" style="margin-right: 25px;">
 					<a href="area_mapping&type=group">
-						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Group Mapping</button>
+						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Sector Mapping</button>
 					</a>
 				</div><br><br>
 
@@ -137,7 +137,7 @@
 						<thead>
 							<tr>
 								<th width="50">S. No.</th>
-								<th>Group Name</th>
+								<th>Sector Name</th>
 								<th>Company Name</th>
 								<th>Branch Name</th>
 								<th>Area Name</th>
@@ -155,7 +155,7 @@
 			<div class="table-container due_followup_mapping" <?php if(isset($_GET['type']) and $_GET['type'] == 'duefollowup') {?> style="display:block"<?php }else{ ?> style="display:none"<?php } ?>>
 				<div class="text-right" style="margin-right: 25px;">
 					<a href="area_mapping&type=duefollowup">
-						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Due Followup Mapping</button>
+						<button type="button" class="btn btn-primary"><span class="icon-add"></span>&nbsp; Add Zone Mapping</button>
 					</a>
 				</div><br><br>
 
@@ -194,7 +194,7 @@
 						<thead>
 							<tr>
 								<th width="50">S. No.</th>
-								<th>Due Followup Name</th>
+								<th>Zone Name</th>
 								<th>Company Name</th>
 								<th>Branch Name</th>
 								<th>Area Name</th>

@@ -64,7 +64,7 @@ $countStmt->execute();
 $number_filter_row = (int) $countStmt->fetchColumn();
 
 /* ---------- Data query ---------- */
-$data_query = "SELECT cc.com_code, cc.com_date, u.fullname, cc.raising_for, cc.self_code, cc.self_name, ag.ag_code, ag.ag_name, cc.cus_id, CONCAT(cc.first_name, ' ', cc.last_name) AS cus_name, cdn.dep_name, GROUP_CONCAT(DISTINCT us.fullname ORDER BY us.fullname SEPARATOR ', ') AS staff_name, cs.concern_subject, cc.status, cc.id, cc.role_type $base_query $orderBy $limit ";
+$data_query = "SELECT cc.com_code, cc.com_date, u.fullname, cc.raising_for, cc.self_code, cc.self_name, ag.ag_code, ag.ag_name, cc.cus_id, CONCAT(cc.first_name, ' ', cc.last_name) AS cus_name, cdn.dep_name, GROUP_CONCAT(DISTINCT us.fullname ORDER BY us.fullname SEPARATOR ', ') AS staff_name, cs.concern_subject, cc.concern_creation_uploads, cc.status, cc.id, cc.role_type $base_query $orderBy $limit ";
 
 $statement = $connect->prepare($data_query);
 $statement->execute();
@@ -93,6 +93,16 @@ foreach ($result as $row) {
     $sub_array[] = $row['dep_name'] ?? '';
     $sub_array[] = $row['staff_name'];
     $sub_array[] = $row['concern_subject'];
+    
+    $concernCreationupload = explode(',', $row['concern_creation_uploads']) ?? '';
+    $doc_upd_name = '';
+    foreach ($concernCreationupload as $concernupd) {
+        if ($concernupd != null) {
+            $doc_upd_name .= "<a href=uploads/concern/concern_creation/".$concernupd ." target='_blank' >" . $concernupd . "</a>, " ;
+        }
+    }
+
+    $sub_array[] = rtrim($doc_upd_name,', ');// to trim the comma at end
 
     //Status
     $con_sts = $row['status'];
@@ -106,20 +116,20 @@ foreach ($result as $row) {
     $id = $row['id'];
 
     if ($con_sts == 0) {
-            $action = "<div class='dropdown'>
+        $action = "<div class='dropdown'>
                 <button class='btn btn-outline-secondary'><i class='fa'>&#xf107;</i></button>
                 <div class='dropdown-content'>";
 
-            if ($row['role_type'] == "2" || $row['role_type'] == "4") {
+            if ($row['role_type'] == "8" || $row['role_type'] == "3" || $row['role_type'] == "7" || $row['role_type'] == "1" || $row['role_type'] == "9") {
 
                 $action .= "<a href='concern_solution&upd=$id&pageId=1' title='Concern Pass'>Pass</a>";
                 $action .= "<a href='concern_solution&upd=$id&pageId=2' class = 'concern_solution' title='Concern Solution'>Solution</a>";
                 
-        } else {
+            } else {
                 $action .= "<a href='concern_solution&upd=$id&pageId=2' title='Concern Solution'>Solution</a>";
             }
 
-            $action .= "</div></div>";
+        $action .= "</div></div>";
 
     } else if ($con_sts == 1) {
         $action = "<a href='concern_solution_view&upd=$id&pageId=4'>

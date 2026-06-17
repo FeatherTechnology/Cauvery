@@ -1721,10 +1721,9 @@
         $(document).on('click', '.dropdown', function(event) {
             var $target = $(event.target);
 
-            // If a link inside the dropdown content is clicked, let the browser handle it.
+            // If clicking inside dropdown content
             if ($target.closest('.dropdown-content').length) {
-                // But if it's a link with href='#', prevent default to avoid page jump.
-                 if ($target.is('a')) {
+                if ($target.is('a')) {
                     let href = $target.attr('href');
                     if (href === '#' || href === '') {
                         event.preventDefault();
@@ -1733,15 +1732,15 @@
                 return;
             }
 
-            // This part runs if the dropdown toggle itself (not content) was clicked.
+            // Toggle dropdown
             event.preventDefault();
-            event.stopPropagation(); // Prevent the document click handler from closing it immediately.
+            event.stopPropagation();
 
-               $('.dropdown').not(this).removeClass('active');
+            $('.dropdown').not(this).removeClass('active');
             $(this).toggleClass('active');
         });
 
-        // Close dropdowns when clicking anywhere else on the document.
+        // Close on outside click
         $(document).on('click', function(event) {
             if (!$(event.target).closest('.dropdown').length) {
                 $('.dropdown').removeClass('active');
@@ -2541,7 +2540,7 @@
             });
         }
         //////////////////////////////////Notification///////////////////////////////////////////////
-         
+        
         ////////////////////////////////// Mantra device initialize START //////////////////////////////////
         function mantraInitDevice() {
             const deviceList = GetConnectedDeviceList();
@@ -2567,6 +2566,23 @@
             }
         }
         ////////////////////////////////// Mantra device initialize END //////////////////////////////////
+
+        function getUserMappedDetails(typeVal){
+            if(typeVal != '1'){ //if type user then no need to show mapping.
+                $.post('reportFile/promotion_activity/getUserMappedDetails.php', {typeVal}, function (response) {
+
+                    map_name.clearStore();
+
+                    const items = response.map(row => ({
+                        value: row.ids,
+                        label: row.map_name
+                    }));
+
+                    map_name.setChoices(items);
+
+                },'json');
+            }
+        }
     </script>
 
     <?php

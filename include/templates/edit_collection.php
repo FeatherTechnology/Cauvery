@@ -80,7 +80,7 @@
 								<th>Customer Name</th>
 								<th>Area</th>
 								<th>Branch</th>
-								<th>Line</th>
+								<th>Region</th>
 								<th>Mobile</th>
 								<th>Action</th>
 							</tr>

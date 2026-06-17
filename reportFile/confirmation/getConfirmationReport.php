@@ -86,7 +86,7 @@ WHERE 1
 
 if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
-        $query .= " and (alm.line_name LIKE '%" . $_POST['search'] . "%' OR
+        $baseQuery .= " and (alm.line_name LIKE '%" . $_POST['search'] . "%' OR
             agm.group_name LIKE '%" . $_POST['search'] . "%' OR
             bc.branch_name LIKE '%" . $_POST['search'] . "%' OR
             ii.loan_id LIKE '%" . $_POST['search'] . "%' OR

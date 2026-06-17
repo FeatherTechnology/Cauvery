@@ -1,7 +1,42 @@
+const map_name = new Choices('#map_name', {
+    removeItemButton: true,
+    noChoicesText: 'Select Zone',
+    allowHTML: true
+});
+
+$('#map_name').closest('.choices').hide();
+
 $(document).ready(function () {
 
+    $('#type').change(function (e) {
+        let type = $(this).val();
+        $('#map_name').closest('.choices').hide();
+        map_name.clearStore();
+        $('#due_followup_customer_count_report_table').DataTable().destroy();
+        $('#due_followup_customer_count_report_table tbody').empty();
+        $('#due_followup_customer_count_report_table tfoot').empty();
+
+        if (type == '1') {
+            $('#user_type, #by_user').val('').show();
+            $('#by_user').empty().append("<option value=''>Select User</option>");
+
+        } else if (type == '4') { //Zone - Followup
+            $('#user_type, #by_user').val('').hide();
+            $('#map_name').closest('.choices').show();
+            getUserMappedDetails(type); //to Mapping details.
+
+        } else if (type == '0') {
+            $('#user_type, #by_user').val('').hide();
+        }
+    });
+
     $('#user_type').change(function () {
-        getUserNames();
+        let userType = $('#user_type').val();
+        $('#by_user').empty().append("<option value=''>Select User</option>");
+
+        if (userType != '') {
+            getUserNames();
+        }
     });
 
     $('#reset_btn').click(function () {
@@ -13,8 +48,7 @@ function getUserNames() {
     let user_type = $('#user_type').val();
 
     $.post('reportFile/due_followup_customer_count/user_list.php', { user_type: user_type }, function (response) {
-        $('#by_user').empty();
-        $('#by_user').append("<option value=''>Select User</option>");
+        $('#by_user').empty().append("<option value=''>Select User</option>");
         $.each(response, function (index, val) {
             $('#by_user').append("<option value='" + val['user_id'] + "'>" + val['fullname'] + "</option>");
         });
@@ -23,21 +57,21 @@ function getUserNames() {
 
 function dueFollowUpCustomerCountReportTable() {
     let to_date = $('#to_date').val();
+    let selectedType = $('#type').val();
     let user_type = $('#user_type').val();
     let selected_user = $('#by_user').val();
 
-    if (!to_date) {
-        swalError('Please Select Date!', 'To Date is required.');
-        return;
+    let selectedVal = '';
+
+    if (selectedType == '1') { //user
+        selectedVal = '1'; //dummy
+
+    } else if (selectedType == '4') { //Zone - Followup
+        selectedVal = $('#map_name').val();
     }
 
-    if (!user_type) {
-        swalError('Please Select User Type!', 'User Type selection is required.');
-        return;
-    }
-
-    if (!selected_user) {
-        swalError('Please Select User!', 'User selection is required.');
+    if (!to_date || !selectedVal || (selectedType == '1' && (!user_type || !selected_user))) {
+        swalError('Warning', `All Fields are required.`);
         return;
     }
 
@@ -46,7 +80,9 @@ function dueFollowUpCustomerCountReportTable() {
         method: 'POST',
         data: {
             user_id: selected_user,
-            to_date: to_date
+            to_date: to_date,
+            selectedType: selectedType,
+            selectedVal: selectedVal,
         },
         success: function (res) {
             const parsed = JSON.parse(res);
@@ -67,7 +103,10 @@ function dueFollowUpCustomerCountReportTable() {
             // Define columns
             const columns = [
                 { data: 'sno' },
-                { data: 'fullname' },
+                {
+                    data: 'fullname',
+                    title: (selectedType == '4') ? 'Zone Name' : 'User Name'
+                },
                 { data: 'loan_category' },
                 { data: 't_current_count' },
                 { data: 'payable_zero' },
@@ -126,23 +165,22 @@ function dueFollowUpCustomerCountReportTable() {
 
             // Render footer
             let footerHtml = `<tr>
-        <td></td>
-        <td><b>Total</b></td>
-        <td></td>
-        <td><b>${totalRow.t_current_count}</b></td>
-        <td><b>${totalRow.payable_zero}</b></td>
-        <td><b>${totalRow.responsible_zero}</b></td>
-        <td><b>${totalRow.balance_count}</b></td>
-        <td><b>${totalRow.paid}</b></td>
-        <td><b>${totalRow.partially_paid}</b></td>
-        <td><b>${totalRow.total_paid}</b></td>
-        <td><b>${totalRow.paid_percentage} %</b></td>
-        <td><b>${totalRow.unpaid}</b></td>
-        <td><b>${totalRow.unpaid_percentage} %</b></td>
-    </tr>`;
+                <td></td>
+                <td><b>Total</b></td>
+                <td></td>
+                <td><b>${totalRow.t_current_count}</b></td>
+                <td><b>${totalRow.payable_zero}</b></td>
+                <td><b>${totalRow.responsible_zero}</b></td>
+                <td><b>${totalRow.balance_count}</b></td>
+                <td><b>${totalRow.paid}</b></td>
+                <td><b>${totalRow.partially_paid}</b></td>
+                <td><b>${totalRow.total_paid}</b></td>
+                <td><b>${totalRow.paid_percentage} %</b></td>
+                <td><b>${totalRow.unpaid}</b></td>
+                <td><b>${totalRow.unpaid_percentage} %</b></td>
+            </tr>`;
 
             $('#due_followup_customer_count_report_table tfoot').html(footerHtml);
         }
-
     });
 }

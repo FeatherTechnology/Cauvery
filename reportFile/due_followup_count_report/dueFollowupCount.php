@@ -15,6 +15,29 @@ if ($user_type == '2') {
     $condition .= " AND u.status = 1";
 }
 
+$selectedType = $_POST['selectedType'] ?? '';
+$selectedVal = $_POST['selectedVal'] ?? '';
+
+if(is_array($selectedVal)) {
+    $selectedVal = implode(',', $selectedVal);
+}
+
+$joinTable ='';
+$mapidcondition = '';
+
+if ($selectedType == '2') { //Sector
+    $joinTable  = "  JOIN area_group_mapping_area agma ON cr.area_confirm_area = agma.area_id";
+    $mapidcondition  = "AND agma.group_map_id IN ($selectedVal)";
+
+} else if ($selectedType == '3') { //Region
+    $joinTable = "  JOIN area_line_mapping_area alma ON cr.area_confirm_area = alma.area_id";
+    $mapidcondition = "AND alma.line_map_id IN ($selectedVal)";
+    
+} else if ($selectedType == '4') { //Zone
+    $joinTable = "  JOIN area_duefollowup_mapping_area adma ON cr.area_confirm_area = adma.area_id";
+    $mapidcondition = "AND adma.duefollowup_map_id IN ($selectedVal)";
+} 
+
 $data = [];
 $sno = 1;
 
@@ -24,7 +47,7 @@ $sno = 1;
 
 $user_condition = "";
 
-if ($user_id != 'all') {
+if ($user_id != 'all' && !empty($user_id)) {
 
     if (!is_array($user_id)) {
         $user_id = explode(',', $user_id);
@@ -62,9 +85,10 @@ SUM(CASE WHEN c.ftype = 1 THEN 1 ELSE 0 END) AS direct_total
 
 FROM commitment c
 LEFT JOIN user u ON u.user_id = c.insert_login_id
-
-WHERE DATE(c.created_date) BETWEEN '$from_date' AND '$to_date'
-$user_condition $condition
+LEFT JOIN customer_register cr ON c.cus_id = cr.cus_id
+$joinTable
+WHERE (DATE(c.created_date) BETWEEN '$from_date' AND '$to_date')
+$user_condition $condition $mapidcondition
 
 GROUP BY c.insert_login_id
 ORDER BY u.fullname

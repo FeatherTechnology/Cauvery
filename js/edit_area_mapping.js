@@ -32,7 +32,7 @@ $(function () {
 function dT1() {
     $('#area_mapping_line_info').DataTable().destroy();
     $('#area_mapping_line_info').empty();
-    $('#area_mapping_line_info').append(`<thead><tr><th width="50">S. No.</th><th>Line Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
+    $('#area_mapping_line_info').append(`<thead><tr><th width="50">S. No.</th><th>Region Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
 
     $('#area_mapping_line_info').DataTable({
 
@@ -55,7 +55,7 @@ function dT1() {
                 const {
                     title,
                     filename
-                } = generateReportTitle('Line List');
+                } = generateReportTitle('Region List');
 
                 // Create a hidden temporary export button
                 const tmpBtn = new $.fn.dataTable.Buttons(dt, {
@@ -92,7 +92,7 @@ function dT1() {
 function dT2() {
     $('#area_mapping_group_info').DataTable().destroy();
     $('#area_mapping_group_info').empty();
-    $('#area_mapping_group_info').append(`<thead><tr><th width="50">S. No.</th><th>Group Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
+    $('#area_mapping_group_info').append(`<thead><tr><th width="50">S. No.</th><th>Sector Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
 
     $('#area_mapping_group_info').DataTable({
         "order": [[0, "desc"]],
@@ -115,7 +115,7 @@ function dT2() {
                 const {
                     title,
                     filename
-                } = generateReportTitle('Group List');
+                } = generateReportTitle('Sector List');
 
                 // Create a hidden temporary export button
                 const tmpBtn = new $.fn.dataTable.Buttons(dt, {
@@ -152,7 +152,7 @@ function dT2() {
 function dT3() {
     $('#area_mapping_duefollowup_info').DataTable().destroy();
     $('#area_mapping_duefollowup_info').empty();
-    $('#area_mapping_duefollowup_info').append(`<thead><tr><th width="50">S. No.</th><th>Due Followup Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
+    $('#area_mapping_duefollowup_info').append(`<thead><tr><th width="50">S. No.</th><th>Zone Name</th><th>Company Name</th><th>Branch Name</th><th>Area Name</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody>`);
 
     $('#area_mapping_duefollowup_info').DataTable({
         "order": [[0, "desc"]],
@@ -175,7 +175,7 @@ function dT3() {
                 const {
                     title,
                     filename
-                } = generateReportTitle('Due Followup List');
+                } = generateReportTitle('Zone List');
 
                 // Create a hidden temporary export button
                 const tmpBtn = new $.fn.dataTable.Buttons(dt, {

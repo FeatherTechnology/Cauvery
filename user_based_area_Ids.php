@@ -37,14 +37,14 @@ function getUserAreaList(PDO $connect, string $module): string
     /* ======================= MODULE → ACCESS MAP ======================= */
 
     $config = [
-        // Group → Sub Area
-        'Group'    => $GROUP_AREA,
+        // Sector → Sub Area
+        'Sector'    => $GROUP_AREA,
 
-        // Line → Sub Area
-        'Line'     => $LINE_AREA,
+        // Region → Sub Area
+        'Region'     => $LINE_AREA,
 
-        // Due Follow-up → Area
-        'DueFollowup' => $DUEFOLLOWUP_AREA,
+        // Zone → Area
+        'Zone' => $DUEFOLLOWUP_AREA,
     ];
 
     if (!isset($config[$module])) {

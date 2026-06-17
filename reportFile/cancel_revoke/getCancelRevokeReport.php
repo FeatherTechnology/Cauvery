@@ -150,6 +150,8 @@ $query = "SELECT
     ag.ag_name,
     req.responsible,
     req.cus_data,
+    us.role AS cancel_by_role,
+    us.fullname AS cancel_by_fullname,
     req.updated_date,
     req.cus_status,
     req.prompt_remark
@@ -165,7 +167,9 @@ JOIN
 LEFT JOIN 
     agent_creation ag ON $ag_join = ag.ag_id         
 JOIN 
-    user u ON req.update_login_id = u.user_id
+    user u ON req.insert_login_id = u.user_id
+JOIN 
+    user us ON req.update_login_id = us.user_id
 JOIN 
     area_group_mapping_area agma ON agma.area_id = al.area_id
 JOIN 
@@ -182,7 +186,7 @@ WHERE
 if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
 
-        $query .= " and (req.cus_id LIKE '%" . $_POST['search'] . "%' OR
+        $query .= " AND (req.cus_id LIKE '%" . $_POST['search'] . "%' OR
                 cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR
                 CONCAT(req.first_name, ' ', req.last_name) LIKE '%" . $_POST['search'] . "%' OR
                 al.area_name LIKE '%" . $_POST['search'] . "%' OR
@@ -293,6 +297,8 @@ foreach ($result as $row) {
     }
 
     $sub_array[] = $existing_type;
+    $sub_array[] = $role_arr[$row['cancel_by_role']];
+    $sub_array[] = $row['cancel_by_fullname'];
     $sub_array[] = date('d-m-Y', strtotime($row['updated_date']));
     $sub_array[] = $statusLabels[$row['cus_status']];
     $sub_array[] = $row['prompt_remark'];

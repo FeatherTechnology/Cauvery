@@ -1,13 +1,13 @@
 <?php
 @session_start();
 include('..\ajaxconfig.php');
-include('..\user_based_area_Ids.php');
 
 if (isset($_SESSION["userid"])) {
     $userid = $_SESSION["userid"];
 }
 
-$area_list = getUserAreaList($connect, 'Group');
+include('..\user_based_area_Ids.php');
+$area_list = getUserAreaList($connect, 'Sector');
 
 $column = array(
     'rc.req_id',
@@ -100,13 +100,13 @@ foreach ($result as $row) {
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['mobile1'];
 
-    $areaqry = $connect->query(" SELECT area_name FROM area_list_creation WHERE area_id = '". $row ['area'] ."'");
+    $areaqry = $connect->query(" SELECT area_name FROM area_list_creation WHERE area_id = '" . $row['area'] . "'");
     $sub_array[] = $areaqry->fetch()['area_name'] ?? '';
 
     $branchqry = $connect->query("SELECT bc.branch_name FROM area_group_mapping_area agma 
     JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
     JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
-    WHERE agma.area_id = '". $row ['area'] ."'");
+    WHERE agma.area_id = '" . $row['area'] . "'");
     $sub_array[] = $branchqry->fetch()['branch_name'] ?? '';
 
     $sub_array[] = $row['area_group'];
@@ -119,10 +119,10 @@ foreach ($result as $row) {
 
     $id          = $row['cus_id'];
     $cus_id      = $row['cus_id'];
-    if($_POST["doc_sts"]!=''){
-         $action = "<a href='update&upd=$id&docstatus=NO' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
-    }else{
-         $action = "<a href='update&upd=$id' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
+    if ($_POST["doc_sts"] != '') {
+        $action = "<a href='update&upd=$id&docstatus=NO' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
+    } else {
+        $action = "<a href='update&upd=$id' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
     }
 
     $sub_array[] = $action;
@@ -154,20 +154,12 @@ function getDocumentStatus($connect, $cus_id)
         SELECT a.doc_sts 
         FROM acknowlegement_documentation a
         JOIN request_creation r ON a.req_id = r.req_id
-        WHERE a.cus_id_doc = '$cus_id' AND r.cus_status > 13
-        ORDER BY r.req_id DESC
-        LIMIT 1
+        WHERE a.cus_id_doc = '$cus_id' AND r.cus_status > 13 AND a.doc_sts ='NO'
     ");
 
-    if ($qry->rowCount() == 0) {
-        // No valid entry → treat as pending
-        return false;
-    }
-
-    $row = $qry->fetch();
-
-    if ($row['doc_sts'] == 'NO') {
-        return false; // pending
+    if ($qry->rowCount() > 0) {
+        // If pending status doc entry → treat as pending
+        return false; //pending
     }
 
     return true; // completed

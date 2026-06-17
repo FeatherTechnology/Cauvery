@@ -8,7 +8,7 @@ include '../../ajaxconfig.php';
 $loan_category_arr = array();
 
 // if ($type == '1' || $type == '3' || $type == '4' ) {
-    // 🔹 Type = Line / Group → Show only active loan categories used in acknowledgement_loan_calculation
+    // 🔹 Type = Region / Sector → Show only active loan categories used in acknowledgement_loan_calculation
     $catQry = $connect->query("
         SELECT DISTINCT lcc.loan_category_creation_id, lcc.loan_category_creation_name
         FROM loan_category_creation lcc

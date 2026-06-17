@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="css/ledger_report.css">
+    <link rel="stylesheet" type="text/css" href="css/ledger_report.css">
 <br><br>
 <div class="page-header">
     <div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px;">
@@ -25,8 +25,8 @@
                             <table id="confirmation_followup_report_table" class="table custom-table">
                                 <thead>
                                     <th>S.No</th>
-                                    <th>Line</th>
-                                    <th>Group</th>
+                                    <th>Region</th>
+                                    <th>Sector</th>
                                     <th>Branch</th>
                                     <th>Loan ID</th>
                                     <th>Loan Date</th>

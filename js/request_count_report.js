@@ -1,3 +1,11 @@
+const map_name = new Choices('#map_name', {
+    removeItemButton: true,
+    noChoicesText: 'Select Sector',
+    allowHTML: true
+});
+
+$('#map_name').closest('.choices').hide();
+
 $(document).ready(function () {
 
     // 🔹 Date validation
@@ -11,8 +19,35 @@ $(document).ready(function () {
         }
     });
 
+    $('#type').change(function (e) {
+        let type = $(this).val();
+        $('#user_type, #by_user').val('').hide();
+        $('#map_name').closest('.choices').hide();
+        map_name.clearStore();
+        if ($.fn.DataTable.isDataTable('#request_count_table')) {
+            $('#request_count_table').DataTable().clear().destroy();
+
+            $('#request_count_table tbody').empty(); // Remove old rows
+            $('#request_count_table tfoot').empty(); // Remove old footer
+        }
+        
+        if(type == '1'){ 
+            $('#user_type, #by_user').val('').show();
+            $('#by_user').empty().append("<option value=''>Select User</option>");
+
+        } else if(type == '2' || type == '3' || type == '4') { //sector - group, Region - Line, Zone - Follow up
+            $('#map_name').closest('.choices').show();
+            getUserMappedDetails(type); //to Mapping details. 
+        }
+    });
+
     $('#user_type').change(function () {
-        getUserNames();
+        let userType = $('#user_type').val();
+        $('#by_user').empty().append("<option value=''>Select User</option>");  
+
+        if(userType != ''){
+            getUserNames();
+        }
     });
 
     // 🔹 Reset / Show Button Click
@@ -20,15 +55,24 @@ $(document).ready(function () {
 
         let from_date = $('#from_date').val();
         let to_date = $('#to_date').val();
+        let selectedType = $('#type').val();
         let user_type = $('#user_type').val();
         let selected_user = $('#by_user').val();
-        if (!from_date || !to_date || !user_type || !selected_user) {
-            swalError('Please Select All Fields!', 'All fields are required.');
-            return;
+        let selectedVal = '';
+
+        if(selectedType == '1'){ //user
+            selectedVal = '1'; //dummy
+            
+        } else if(selectedType == '2' || selectedType == '3' || selectedType == '4'){ //sector - group //Region - Line //Zone - Followup
+            selectedVal = $('#map_name').val();
         }
-        requestToIssuedReportCount(from_date, to_date, user_type, selected_user);
 
+        if(!from_date || !to_date || !selectedVal || (selectedType == '1' && (!user_type || !selected_user))){
+            swalError('Warning', `All Fields are required.`);
+            return;
+        } 
 
+        requestToIssuedReportCount(from_date, to_date, selectedType, user_type, selected_user, selectedVal);
     });
 
 });
@@ -47,17 +91,12 @@ function getUserNames() {
     }, 'json');
 }
 
-function requestToIssuedReportCount(from_date, to_date, user_type, selected_user) {
+function requestToIssuedReportCount(from_date, to_date, selectedType, user_type, user_id, selectedVal) {
 
     $.ajax({
         url: 'reportFile/request_count_report/requestCountReport.php',
         type: 'POST',
-        data: {
-            from_date: from_date,
-            to_date: to_date,
-            user_type: user_type,
-            user_id: selected_user
-        },
+        data: { from_date, to_date, selectedType, user_type, user_id, selectedVal },
         dataType: 'json',
         success: function (res) {
 
@@ -226,8 +265,3 @@ function requestToIssuedReportCount(from_date, to_date, user_type, selected_user
         }
     });
 }
-
-
-
-
-

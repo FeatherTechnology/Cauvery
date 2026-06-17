@@ -20,7 +20,7 @@ $columns = [
     'ii.updated_date',
     'rc.cus_id',
     'cr.autogen_cus_id',
-    'CONCAT(rc.first_name, rc.last_name)',
+    'CONCAT(cr.first_name, cr.last_name)',
     'alc.area_name',
     'bc.branch_name',
     'agm.group_name',
@@ -35,13 +35,13 @@ if (isset($_SESSION["userid"])) {
     $userid = $_SESSION["userid"];
 }
 
-$area_list = getUserAreaList($connect, 'DueFollowup');
+$area_list = getUserAreaList($connect, 'Zone');
 
 $searchQuery = "";
 if ($searchValue != '') {
     $searchQuery = " AND (rc.cus_id LIKE '%" . $searchValue . "%' 
                     OR cr.autogen_cus_id LIKE '%" . $searchValue . "%'
-                    OR CONCAT(rc.first_name,' ', rc.last_name) LIKE '%" . $searchValue . "%' 
+                    OR CONCAT(cr.first_name,' ', cr.last_name) LIKE '%" . $searchValue . "%' 
                     OR alc.area_name LIKE '%" . $searchValue . "%'
                     OR bc.branch_name LIKE '%" . $searchValue . "%'
                     OR agm.group_name LIKE '%" . $searchValue . "%'
@@ -55,7 +55,7 @@ $sql = "SELECT
     rc.req_id,
     ii.updated_date,
     rc.cus_id,
-    CONCAT(rc.first_name,' ', rc.last_name) AS customer_name,
+    CONCAT(cr.first_name,' ', cr.last_name) AS customer_name,
     cr.mobile1,
     cr.autogen_cus_id,
     alc.area_name,

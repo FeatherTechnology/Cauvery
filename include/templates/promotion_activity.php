@@ -82,6 +82,16 @@ if (sizeof($getUser) > 0) {
 							<input type="date" class="form-control" name="follow_up_todate" id="follow_up_todate">
 						</div>
 					</div>
+					<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
+						<div class="form-group">
+							<label for="followuptype">Follow up Type</label>
+							<select class="form-control" name="followuptype" id="followuptype">
+								<option value="0">Select Followup Type</option>
+								<option value="1">Direct</option>
+								<option value="2">Clear</option>
+							</select>
+						</div>
+					</div>
 					<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12" style="margin-top:20px">
 						<div class="form-group">
 							<button class="btn btn-primary" name="followup_search" id="followup_search">Search</button>
@@ -104,16 +114,18 @@ if (sizeof($getUser) > 0) {
 								<th>Customer Name</th>
 								<th>Area</th>
 								<th>Branch</th>
-								<th>Group</th>
-								<th>Line</th>
+								<th>Sector</th>
+								<th>Region</th>
 								<th>Mobile</th>
 								<th>Status</th>
 								<th>Sub Status</th>
 								<th>Closed Date</th>
+								<th>NOC Status</th>
 								<th>View</th>
 								<th>Action</th>
 								<th>Follow up status</th>
 								<th>Follow Date</th>
+								<th>Follow up Type</th>
 							</thead>
 							<tbody></tbody>
 						</table>
@@ -134,16 +146,18 @@ if (sizeof($getUser) > 0) {
 								<th>Customer Name</th>
 								<th>Area</th>
 								<th>Branch</th>
-								<th>Group</th>
-								<th>Line</th>
+								<th>Sector</th>
+								<th>Region</th>
 								<th>Mobile</th>
 								<th>Status</th>
 								<th>Sub Status</th>
 								<th>Closed Date</th>
+								<th>NOC Status</th>
 								<th>View</th>
 								<th>Action</th>
 								<th>Follow up status</th>
 								<th>Follow Date</th>
+								<th>Follow up Type</th>
 							</thead>
 							<tbody></tbody>
 						</table>
@@ -294,17 +308,19 @@ if (sizeof($getUser) > 0) {
 								<th>Customer Name</th>
 								<th>Area</th>
 								<th>Branch</th>
-								<th>Group</th>
-								<th>Line</th>
+								<th>Sector</th>
+								<th>Region</th>
 								<th>Mobile</th>
 								<th>Status</th>
 								<th>Sub Status</th>
 								<th>Customer Data</th>
 								<th>Closed Date</th>
+								<th>NOC Status</th>
 								<th>View</th>
 								<th>Action</th>
 								<th>Follow up status</th>
 								<th>Follow Date</th>
+								<th>Follow up Type</th>
 							</thead>
 							<tbody></tbody>
 						</table>
@@ -375,33 +391,34 @@ if (sizeof($getUser) > 0) {
 											<th colspan="2">Action</th>
 										</tr>
 									</thead>
-										<tbody>
-											<tr>
-												<td class="current_date"></td>
-												<td>
-													<input type="text"  name="cus_first_name" id="cus_first_name" oninput="formatFirstName(this)" class="form-control cus_first_name" value="" placeholder="Enter First Name">
-												</td>
+									<tbody>
+										<tr>
+											<td class="current_date"></td>
+											<td>
+												<input type="text" name="cus_first_name" id="cus_first_name" oninput="formatFirstName(this)" class="form-control cus_first_name" value="" placeholder="Enter First Name">
+											</td>
 
-												<td>
-													<input type="text"  name="cus_last_name" id="cus_last_name" oninput="formatLastName(this)" class="form-control cus_last_name" value="" placeholder="Enter Last Name">
-												</td>
-												<td>
-												<input type="text" class="form-control cus_mobile_num" id="cus_mobile_num" name="cus_mobile_num" value='' placeholder="Enter Mobile Number" oninput="validateInputNumber(this,'withOutDot')"></td>
+											<td>
+												<input type="text" name="cus_last_name" id="cus_last_name" oninput="formatLastName(this)" class="form-control cus_last_name" value="" placeholder="Enter Last Name">
+											</td>
+											<td>
+												<input type="text" class="form-control cus_mobile_num" id="cus_mobile_num" name="cus_mobile_num" value='' placeholder="Enter Mobile Number" oninput="validateInputNumber(this,'withOutDot')">
+											</td>
 
-												<td><select type="text" class="form-control cus_area_name" id="cus_area_name" name="area_name" >
-														<option value="">Select Area Name</option>
-													</select></td>
+											<td><select type="text" class="form-control cus_area_name" id="cus_area_name" name="area_name">
+													<option value="">Select Area Name</option>
+												</select></td>
 
-												<td class="user"></td>
-												<td>
+											<td class="user"></td>
+											<td>
 
-													<button type="button"  id="add_event_mem" name="add_event_mem" value="Submit" class="btn btn-primary add_event_mem">Add</button>
-												</td>
-												<td>
-													<span class='icon-trash-2 delet_event'></span>
-												</td>
-											</tr>
-										</tbody>
+												<button type="button" id="add_event_mem" name="add_event_mem" value="Submit" class="btn btn-primary add_event_mem">Add</button>
+											</td>
+											<td>
+												<span class='icon-trash-2 delet_event'></span>
+											</td>
+										</tr>
+									</tbody>
 								</table>
 							</div>
 						</div>
@@ -429,37 +446,43 @@ if (sizeof($getUser) > 0) {
 				<div class="container-fluid row">
 
 					<div class="col-12">
-						<div class="row">
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<label for="cus_id">Aadhaar Number</label><span class="required">&nbsp;*</span>
-								<input type="text" name="cus_id" id="cus_id" class='form-control' placeholder="Enter Aadhaar Number" tabindex="1" onKeyPress="if(this.value.length==14) return false;">
-								<span class="text-danger" id='cus_idCheck' style="display: none;">Please Enter Aadhaar Number</span>
-							</div>
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<label for="first_names">First Name</label><span class="required">&nbsp;*</span>
-								<input type="text" name="first_names" id="first_names" class='form-control' oninput="formatFirstName(this)" placeholder="Enter First Name" tabindex="2">
-								<span class="text-danger" id='first_nameCheck' style="display: none;">Please Enter First Name</span>
-							</div>
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<label for="last_names">Last Name</label><span class="required">&nbsp;*</span>
-								<input type="text" name="last_names" id="last_names" class='form-control' oninput="formatLastName(this)" placeholder="Enter Last Name" tabindex="3">
-								<span class="text-danger" id='last_nameCheck' style="display: none;">Please Enter Last Name</span>
-							</div>
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<label for="cus_mob">Mobile Number</label><span class="required">&nbsp;*</span>
-								<input type="text" name="cus_mob" id="cus_mob" class='form-control' placeholder="Enter Mobile Number" tabindex="4" onKeyPress="if(this.value.length==10) return false;" oninput="validateInputNumber(this,'withOutDot')">
-								<span class="text-danger" id='cus_mobCheck' style="display: none;">Please Enter Mobile Number </span>
-							</div> <!-- Use input type='text' for numeric validation, because type='number' always resets the cursor when you block invalid characters-->
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-								<div class="form-group">
-									<label for="area">Area</label>&nbsp;<span class="text-danger">*</span>
-									<select tabindex="8" type="text" class="form-control" id="area" name="area">
-										<option value="">Select Area</option>
-									</select>
-									<span class="text-danger" style='display:none' id='areaCheck'>Please Select Area</span>
+						<form id="new_promotion_form">
+							<div class="row">
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<label for="cus_id">Aadhaar Number</label><span class="required">&nbsp;*</span>
+									<input type="text" name="cus_id" id="cus_id" class='form-control' placeholder="Enter Aadhaar Number" tabindex="1" onKeyPress="if(this.value.length==14) return false;">
+									<span class="text-danger" id='cus_idCheck' style="display: none;">Please Enter Aadhaar Number</span>
+								</div>
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<label for="cus_data">Customer Data</label><span class="required">&nbsp;*</span>
+									<input class='form-control' name="cus_data" id="cus_data" tabindex="2" readonly>
+								</div>
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<label for="first_names">First Name</label><span class="required">&nbsp;*</span>
+									<input type="text" name="first_names" id="first_names" class='form-control' oninput="formatFirstName(this)" placeholder="Enter First Name" tabindex="3">
+									<span class="text-danger" id='first_nameCheck' style="display: none;">Please Enter First Name</span>
+								</div>
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<label for="last_names">Last Name</label><span class="required">&nbsp;*</span>
+									<input type="text" name="last_names" id="last_names" class='form-control' oninput="formatLastName(this)" placeholder="Enter Last Name" tabindex="4">
+									<span class="text-danger" id='last_nameCheck' style="display: none;">Please Enter Last Name</span>
+								</div>
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<label for="cus_mob">Mobile Number</label><span class="required">&nbsp;*</span>
+									<input type="text" name="cus_mob" id="cus_mob" class='form-control' placeholder="Enter Mobile Number" tabindex="5" onKeyPress="if(this.value.length==10) return false;" oninput="validateInputNumber(this,'withOutDot')">
+									<span class="text-danger" id='cus_mobCheck' style="display: none;">Please Enter Mobile Number </span>
+								</div> <!-- Use input type='text' for numeric validation, because type='number' always resets the cursor when you block invalid characters-->
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<div class="form-group">
+										<label for="area">Area</label>&nbsp;<span class="text-danger">*</span>
+										<select tabindex="6" type="text" class="form-control" id="area" name="area">
+											<option value="">Select Area</option>
+										</select>
+										<span class="text-danger" style='display:none' id='areaCheck'>Please Select Area</span>
+									</div>
 								</div>
 							</div>
-						</div>
+						</form>
 					</div>
 
 				</div>
@@ -531,6 +554,14 @@ if (sizeof($getUser) > 0) {
 								<label for="promo_fdate">Follow Date</label><span class="required">&nbsp;*</span>
 								<input type="date" name="promo_fdate" id="promo_fdate" class='form-control' placeholder="Enter Follow Date" tabindex="7">
 								<span class="text-danger" id='promo_fdateCheck' style="display: none;">Please Choose Follow Date </span>
+							</div>
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+								<label for="followup_type">Follow up Type</label>
+								<select class="form-control" name="followup_type" id="followup_type">
+									<option value="0">Select Followup Type</option>
+									<option value="1">Direct</option>
+									<option value="2">Clear</option>
+								</select>
 							</div>
 						</div>
 					</div>

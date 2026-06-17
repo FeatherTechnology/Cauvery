@@ -141,8 +141,8 @@ $isAdminOrNoAccess = function($access) use ($userid) {
 };
 
 // — Step 1: compute area_list per stage
-$area_list_group = getUserAreaList($connect, 'Group');
-$area_list_line  = getUserAreaList($connect, 'Line'); // for closed
+$area_list_group = getUserAreaList($connect, 'Sector');
+$area_list_line  = getUserAreaList($connect, 'Region'); // for closed
 
 // For noc & noc_handover
 $noc_area_list = $area_list_group;
@@ -150,7 +150,7 @@ $noc_column_type = 'area';
 if ($noc_mapping_access == 2) {
     $noc_area_list = $area_list_line;
 } elseif ($noc_mapping_access == 3) {
-    $noc_area_list = getUserAreaList($connect, 'DueFollowup');
+    $noc_area_list = getUserAreaList($connect, 'Zone');
     $noc_column_type = 'area';
 }
 

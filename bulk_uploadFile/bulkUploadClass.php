@@ -766,12 +766,12 @@ class bulkUploadClass
 
         // Condition 2
         if ($data['area_id'] != 'Not Found' && $data['group_name'] == 'Invalid') {
-            $errcolumns[] = 'Group Name';
+            $errcolumns[] = 'Sector Name';
         }
 
         // Condition 3
         if ($data['area_id'] != 'Not Found' && $data['line_name'] == 'Invalid') {
-            $errcolumns[] = 'Line Name';
+            $errcolumns[] = 'Region Name';
         }
 
         // Condition 4

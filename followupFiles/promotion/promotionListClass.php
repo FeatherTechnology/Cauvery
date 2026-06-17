@@ -32,13 +32,13 @@ class promotionListClass
 
         /* =====================================Decide mapping table based on access===================================== */
         if ($this->accessType == 1) {
-            // Group-based
+            // Sector-based
             $ids = array_filter(explode(',', $rowuser['group_id']));
             $table = 'area_group_mapping_area';
             $column = 'group_map_id';
             $selectColumn = 'area_id';
         } elseif ($this->accessType == 2) {
-            // Line-based
+            // Region-based
             $ids = array_filter(explode(',', $rowuser['line_id']));
             $table = 'area_line_mapping_area';
             $column = 'line_map_id';

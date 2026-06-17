@@ -23,7 +23,7 @@ if (!$run) {
     $accessType = (int)$run['promotion_activity_mapping_access'];
 
     if ($accessType === 1 && !empty($run['group_id'])) {
-        // 🔹 Group-based access
+        // 🔹 Sector-based access
         $group_ids = array_map('intval', array_filter(explode(',', $run['group_id'])));
         $placeholders = implode(',', array_fill(0, count($group_ids), '?'));
 
@@ -38,7 +38,7 @@ if (!$run) {
         $user_area = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     } elseif ($accessType === 2 && !empty($run['line_id'])) {
-        // 🔹 Line-based access
+        // 🔹 Region-based access
         $line_ids = array_map('intval', array_filter(explode(',', $run['line_id'])));
         $placeholders = implode(',', array_fill(0, count($line_ids), '?'));
 

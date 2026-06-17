@@ -17,29 +17,38 @@ $(document).ready(function () {
         var typevalue = this.value;
         $('.renewal_card, .re_active_card, .new_card, .new_promo_card, .customer-status-card, .loan-history-card, .doc-history-card, #close_history_card, .repromotion_card, .filter_card').hide();
         // $('#follow_up_sts, #date_type, #follow_up_fromdate, #follow_up_todate').val('');
+
+        //except new promotion all had closing date.
+        $('#date_type')
+        .empty()
+        .append(`<option value="">Select Date</option>
+                <option value="1">Closed Date</option>
+                <option value="2">Followup Date</option>`);
+
         if (typevalue == 'New') {
-            $('.new_card, .new_promo_card').show()
-            $('.event_card').hide()
-            $('.add_event_card').hide()
+            $('#date_type')
+            .empty()
+            .append(`<option value="">Select Date</option>
+                    <option value="2">Followup Date</option>`);
+
+            $('.new_promo_card, .filter_card').show();
+            $('.event_card, .add_event_card').hide();
             resetNewPromotionTable();
         } else if (typevalue == 'Renewal') {
             $('.renewal_card, .filter_card').show();
-            $('.event_card').hide()
-            $('.add_event_card').hide()
-            showPromotionList('followupFiles/promotion/showPromotionList.php', 'expromotion_list', '15');
+            $('.event_card, .add_event_card').hide();
+            showPromotionList('followupFiles/promotion/showPromotionList.php', 'expromotion_list', '17');
         } else if (typevalue == 'Re-active') {
             $('.re_active_card, .filter_card').show();
-            $('.event_card').hide()
-            $('.add_event_card').hide()
-            showPromotionList('followupFiles/promotion/showPromotionList.php', 're_active_promotion_list', '15');
+            $('.event_card, .add_event_card').hide();
+            showPromotionList('followupFiles/promotion/showPromotionList.php', 're_active_promotion_list', '17');
         } else if (typevalue == 'Repromotion') {
-            $('.event_card').hide()
-            $('.add_event_card').hide()
-            $('.repromotion_card, .filter_card').show()
-            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '16');
+            $('.event_card, .add_event_card').hide();
+            $('.repromotion_card, .filter_card').show();
+            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '18');
         } else if (typevalue == 'Events') {
-            $('.event_card').show()
-            $('.add_event_card').hide()
+            $('.event_card').show();
+            $('.add_event_card').hide();
             eventsTable();
         }
     })
@@ -95,13 +104,16 @@ $(document).ready(function () {
         let btnName = $(".toggle-button.active").first().val();
 
         if (btnName == 'Renewal') {
-            showPromotionList('followupFiles/promotion/showPromotionList.php', 'expromotion_list', '15');
+            showPromotionList('followupFiles/promotion/showPromotionList.php', 'expromotion_list', '16');
 
         } else if (btnName == 'Repromotion') {
-            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '16');
+            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '17');
 
         } else if (btnName == 'Re-active') {
-            showPromotionList('followupFiles/promotion/showPromotionList.php', 're_active_promotion_list', '15');
+            showPromotionList('followupFiles/promotion/showPromotionList.php', 're_active_promotion_list', '17');
+
+        } else if (btnName == 'New') {
+            resetNewPromotionTable();
         }
     });
 
@@ -492,7 +504,34 @@ $(document).ready(function () {
         $("#addPromotion").find(".modal-body span").not('.required').hide();
     });
 
-});
+    $(document).on('change', '#promo_type', function(e){
+        let promoType = $(this).val();
+        let followupTypeOption;
+        
+        if(promoType =='1'){//Direct, if direct means no need to show Direct option in Followup status.
+            followupTypeOption = `<option value="0">Select Followup Type</option>
+                    <option value="2">Clear</option>`;
+        }else{
+            followupTypeOption = `<option value="0">Select Followup Type</option>
+                    <option value="1">Direct</option>
+                    <option value="2">Clear</option>`;           
+        }
+
+        $('#followup_type')
+        .empty()
+        .append(followupTypeOption);
+    });
+
+    $(document).on('change', '#cus_id', function(e){
+        var cus_id = $(this).val();
+        cus_id = cus_id.replace(/\s+/g, "");
+        $.post('requestFile/getCustomerDetail.php',{cus_id}, function(response){
+            let cusData = (response.message == 'Existing') ? 'Existing' : 'New';
+            $('#cus_data').val(cusData);
+        },'json');
+    });
+
+}); //Document END.
 
 $(function () {
     getPromotionAccess();
@@ -590,7 +629,13 @@ function validateCustSearch() {
 }
 
 function resetNewPromotionTable() {
-    $.post('followupFiles/promotion/resetNewPromotionTable.php', {}, function (html) {
+    let followUpSts = $('#follow_up_sts').val();
+    let dateType = $('#date_type').val();
+    let followUpFromDate = $('#follow_up_fromdate').val();
+    let followUpToDate = $('#follow_up_todate').val();
+    let followupType = $('#followuptype').val();
+
+    $.post('followupFiles/promotion/resetNewPromotionTable.php', {followUpSts, dateType, followUpFromDate, followUpToDate, followupType}, function (html) {
         $('#new_promo_div').empty().html(html);
 
     }).then(function () {
@@ -598,6 +643,7 @@ function resetNewPromotionTable() {
         intNotintOnclick();
         promoChartOnclick();
     })
+    $("#new_promotion_form input").val("");
 }
 
 function submitNewCustomer() {
@@ -656,8 +702,8 @@ function validateNewCusAdd() {
 }
 
 function submitPromotion() {
-    let cus_id = $('#promo_cus_id').val();  let promo_type = $('#promo_type').val(); let status = $('#promo_status').val(); let label = $('#promo_label').val(); let remark = $('#promo_remark').val(); let follow_date = $('#promo_fdate').val(); let orgin_table = $('#orgin_table').val();
-    let args = { cus_id,promo_type, status, label, remark, follow_date, orgin_table };
+    let cus_id = $('#promo_cus_id').val(); let promo_type = $('#promo_type').val(); let status = $('#promo_status').val(); let label = $('#promo_label').val(); let remark = $('#promo_remark').val(); let follow_date = $('#promo_fdate').val(); let followupType = $('#followup_type').val(); let orgin_table = $('#orgin_table').val();
+    let args = { cus_id, promo_type, status, label, remark, follow_date, followupType, orgin_table };
 
     $.post('followupFiles/promotion/submitNewPromotion.php', args, function (response) {
         if (response.includes('Error')) {
@@ -700,12 +746,14 @@ function getUserBasedArea() {
 function validatePromoAdd() {
     let response = true;
     let promo_type = $('#promo_type').val();
-    let status = $('#promo_status').val(); let label = $('#promo_label').val(); let remark = $('#promo_remark').val();
+    let status = $('#promo_status').val(); 
+    let label = $('#promo_label').val(); 
+    let remark = $('#promo_remark').val();
     let follow_date = $('#promo_fdate').val();
 
     validateField(status, '#promo_statusCheck');
-    validateField(promo_type, '#promo_typeCheck');
     validateField(label, '#promo_labelCheck');
+    validateField(promo_type, '#promo_typeCheck');
     validateField(remark, '#promo_remarkCheck');
     validateField(follow_date, '#promo_fdateCheck');
 
@@ -751,7 +799,7 @@ function promoChartOnclick() { // function of on click event for promo chart
 
 function intNotintOnclick() {
     // click for add promotion modal
-    $(document).off('click', '.intrest, .not-intrest').on('click', '.intrest, .not-intrest', function () {
+    $(document).off('click', '.intrest, .not-intrest, .un-available, .noc-call').on('click', '.intrest, .not-intrest, .un-available, .noc-call', function () {
         let value = $(this).children().text(); // span inner html
         let cus_id = $(this).data('id'); // customer id
 
@@ -784,6 +832,7 @@ function showPromotionList(url, tableid, colNo) {
     let dateType = $('#date_type').val();
     let followUpFromDate = $('#follow_up_fromdate').val();
     let followUpToDate = $('#follow_up_todate').val();
+    let followupType = $('#followuptype').val();
     let re_active ="";
     if(tableid === 're_active_promotion_list'){
         re_active ="re_active_table"
@@ -810,6 +859,7 @@ function showPromotionList(url, tableid, colNo) {
                 data.dateType = dateType;
                 data.followUpFromDate = followUpFromDate;
                 data.followUpToDate = followUpToDate;
+                data.followupType = followupType;
                 data.re_active = re_active;
             }
         },

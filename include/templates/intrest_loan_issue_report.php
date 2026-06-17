@@ -33,8 +33,8 @@
 									<th>Guarantor Name</th>
 									<th>Relationship</th>
 									<th>Area</th>
-									<th>Group</th>
-									<th>Line</th>
+									<th>Sector</th>
+									<th>Region</th>
 									<th>Branch</th>
 									<th>Loan Category</th>
 									<th>Agent</th>

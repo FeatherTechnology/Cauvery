@@ -191,32 +191,35 @@ $(document).ready(function () {
     }
   });
 
-  let isSubmitting = false;
-  $("#submit_collection").click(function (event) {
+let isSubmitting = false;
+$("#submit_collection").click(async function (event) {
     event.preventDefault();
     if (isSubmitting) return;
     let submit_btn = $(this);
+
+    await getUpdatedCollectionInfo();  // Wait until AJAX completes
+
     if (validations()) {
-      let totAmt = $("#total_paid_track").val();
-      Swal.fire({
-        title: `The Total Paid Amount is  ${totAmt}`,
-        text: "Are you sure to Submit?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#0C70AB",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          isSubmitting = true;
-          submit_btn.attr("disabled", true);
-          submitCollection();
-        }
-      });
+        let totAmt = $("#total_paid_track").val();
+        Swal.fire({
+            title: `The Total Paid Amount is ${totAmt}`,
+            text: "Are you sure to Submit?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#0C70AB",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes"
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                isSubmitting = true;
+                submit_btn.attr("disabled", true);
+                submitCollection();
+            }
+        });
     } else {
-      scrollToFirstError('#collectionForm');
+        scrollToFirstError('#collectionForm');
     }
-  });
+});
 
   window.onscroll = function () {
     let navbar = document.getElementById("navbar");
@@ -530,11 +533,7 @@ function OnLoadFunctions(cus_id) {
                 $(".intLoanDiv").show();
 
                 //Show all in span class
-                $(".totspan").text("*");
-                $(".paidspan").text("*");
-                $(".balspan").text("*");
-                $(".pendingspan").text("*");
-                $(".payablespan").text("*");
+                $(".totspan, .paidspan, .balspan, .pendingspan, .payablespan").text("*");
               } else {
                 $(".till-date-int").hide();
                 $("#till_date_int").val("");
@@ -624,48 +623,47 @@ function OnLoadFunctions(cus_id) {
 
               //To set Limitation that should not cross its limit with considering track values and previous readonly values
               $('#pre_close_waiver').on('input', function () {
-                
-                    if (response['loan_type'] == "emi") {
-                        var due_track = $('#due_amt_track').val().replace(/,/g, '');
-                        let value = $('#pre_close_waiver').val().replace(/,/g, '');
-                        $('#pre_close_waiver').val(formatIndianNumber(value));
-                        if (parseFloat(value) > response['balance'] - due_track) {
-                            alert("Enter a Lesser Value");
-                            $(this).val("");
-                            $('#total_waiver').val("");
-                        }
-                    }
-                });
+                if (response['loan_type'] == "emi") {
+                  var due_track = $('#due_amt_track').val().replace(/,/g, '');
+                  let value = $('#pre_close_waiver').val().replace(/,/g, '');
+                  $('#pre_close_waiver').val(formatIndianNumber(value));
+                  if (parseFloat(value) > response['balance'] - due_track) {
+                    alert("Enter a Lesser Value");
+                    $(this).val("");
+                    $('#total_waiver').val("");
+                  }
+                }
+              });
 
               $('#principal_waiver').on('input', function () {
-                    if (response['loan_type'] == 'interest') {
-                          let value = $('#principal_waiver').val().replace(/,/g, '');
-                          $('#principal_waiver').val(formatIndianNumber(value));
-                          var princ_track = $('#princ_amt_track').val().replace(/,/g, '');
-                        if (parseFloat(value) > response['balance'] - princ_track) {
-                            alert("Enter a Lesser Value");
-                            $(this).val("");
-                            $('#total_waiver').val("");
-                        }
-                    }
-                });
+                if (response['loan_type'] == 'interest') {
+                  let value = $('#principal_waiver').val().replace(/,/g, '');
+                  $('#principal_waiver').val(formatIndianNumber(value));
+                  var princ_track = $('#princ_amt_track').val().replace(/,/g, '');
+                  if (parseFloat(value) > response['balance'] - princ_track) {
+                    alert("Enter a Lesser Value");
+                    $(this).val("");
+                    $('#total_waiver').val("");
+                  }
+                }
+              });
 
-                $('#interest_waiver').on('input', function () {
-                    if (response['loan_type'] == 'interest') {
-                      let value = $('#interest_waiver').val().replace(/,/g, '');
-                          $('#interest_waiver').val(formatIndianNumber(value));
-                        if (parseFloat($(this).val()) > response['till_date_int']) {
-                            alert("Enter a Lesser Value");
-                            $(this).val("");
-                            $('#total_waiver').val("");
-                        }
-                    }
-                });
+              $('#interest_waiver').on('input', function () {
+                if (response['loan_type'] == 'interest') {
+                  let value = $('#interest_waiver').val().replace(/,/g, '');
+                  $('#interest_waiver').val(formatIndianNumber(value));
+                  if (parseFloat($(this).val()) > response['till_date_int']) {
+                    alert("Enter a Lesser Value");
+                    $(this).val("");
+                    $('#total_waiver').val("");
+                  }
+                }
+              });
                 
               $("#penalty_waiver").on('input', function () {
                 var penalty_track = $("#penalty_track").val();
                 let value = $('#penalty_waiver').val().replace(/,/g, '');
-                          $('#penalty_waiver').val(formatIndianNumber(value));
+                $('#penalty_waiver').val(formatIndianNumber(value));
                 if (
                   parseFloat(value) >
                   response["penalty"] - penalty_track
@@ -679,7 +677,7 @@ function OnLoadFunctions(cus_id) {
               $("#coll_charge_waiver").on('input', function () {
                 var coll_charge_track = $("#coll_charge_track").val();
                 let value = $('#coll_charge_waiver').val().replace(/,/g, '');
-                          $('#coll_charge_waiver').val(formatIndianNumber(value));
+                $('#coll_charge_waiver').val(formatIndianNumber(value));
                 if (
                   parseFloat(value) >
                   response["coll_charge"] - coll_charge_track
@@ -690,8 +688,10 @@ function OnLoadFunctions(cus_id) {
                 }
               });
             },
-          });
-        });
+          });//Loandetails END.
+
+        }); //collection-window click END.
+
         $("#close_collection_card").click(function () {
           $(".personalinfo_card").show();
           $(".loanlist_card").show();
@@ -700,6 +700,7 @@ function OnLoadFunctions(cus_id) {
           $("#close_collection_card").hide();
           $("#submit_collection").hide();
         });
+
         $(".due-chart").click(function () {
           var req_id = $(this).attr("value");
           dueChartList(req_id, cus_id, function () {
@@ -734,6 +735,7 @@ function OnLoadFunctions(cus_id) {
             });
           }); // To show Due Chart List.
         });
+
         $(".penalty-chart").click(function () {
           var req_id = $(this).attr("value");
           $.ajax({
@@ -748,18 +750,22 @@ function OnLoadFunctions(cus_id) {
             },
           });
         });
+
         $(".coll-charge-chart").click(function () {
           var req_id = $(this).attr("value");
           collectionChargeChartList(req_id); //To Show Fine Chart List
         });
+
         $(".coll-charge").click(function () {
           var req_id = $(this).attr("value");
           resetcollCharges(req_id); //Fine
         });
+
         $(".add-commitment-chart").click(function () {
           let req_id = $(this).data("reqid");
           $("#comm_req_id").val(req_id);
         });
+
         $(".commitment-chart")
           .off("click")
           .click(function () {
@@ -774,6 +780,7 @@ function OnLoadFunctions(cus_id) {
               }
             );
           });
+
         $(".move-error").click(function () {
           if (confirm("Are you Sure To move this Loan to Error?")) {
             let getidupd = $("#idupd").val();
@@ -816,6 +823,7 @@ function OnLoadFunctions(cus_id) {
             event.preventDefault();
           }
         });
+
         $(".move-legal").click(function () {
           if (confirm("Are you Sure To move this Loan to Legal?")) {
             let getidupd = $("#idupd").val();
@@ -859,6 +867,7 @@ function OnLoadFunctions(cus_id) {
             event.preventDefault();
           }
         });
+
         $(".return-sub").click(function () {
           if (confirm("Are you Sure To move this Loan to Sub Status?")) {
             let getidupd = $("#idupd").val();
@@ -902,6 +911,7 @@ function OnLoadFunctions(cus_id) {
             event.preventDefault();
           }
         });
+
         $(".move-closed").click(function () {
           if (confirm("Are you Sure To move this Loan to Closed?")) {
             let getidupd = $("#idupd").val();
@@ -937,6 +947,7 @@ function OnLoadFunctions(cus_id) {
     });
     hideOverlay(); //loader stop
   }, 2000);
+
 } //Auto Load function END
 
 //to get Cheque Numbers list based on the request id
@@ -1144,9 +1155,11 @@ function validations() {
     $(".totalpaidCheck").hide();
   }
 
+  hideOverlay(); //loader stop
   // submit_btn.removeAttr('disabled');
   return retVal;
 }
+
 function submitCollection() {
 
     $.post( "collectionFile/submitCollection.php", $("#collectionForm").serialize(),
@@ -1171,6 +1184,7 @@ function submitCollection() {
         isSubmitting = false;
     });
 }
+
 function printCollection(coll_id) {
   Swal.fire({
     title: "Print",
@@ -1382,6 +1396,7 @@ function swarlInfoAlert(title, text) {
     }
   });
 }
+
 function swarlSuccessAlert(response, callback) {
   Swal.fire({
     title: response,
@@ -1398,4 +1413,27 @@ function swarlSuccessAlert(response, callback) {
       }
     },
   });
+}
+
+async function getUpdatedCollectionInfo() {
+  showOverlay();// Loader start because after click submit button no action in screen until this function execution complete so restrict unnecessary submit click by user.
+  let req_id = $("#req_id").val();
+
+  const response = await $.ajax({
+      url: "collectionFile/getLoanDetails.php",
+      data: { req_id },
+      dataType: "json",
+      type: "post"
+  });
+
+  $("#tot_amt").val(moneyFormatIndia(response.total_amt));
+  $("#paid_amt").val(moneyFormatIndia(response.total_paid));
+  $("#bal_amt").val(moneyFormatIndia(response.balance));
+  $("#due_amt").val(moneyFormatIndia(response.due_amt));
+  $("#pending_amt").val(moneyFormatIndia(response.pending));
+  $("#pend_amt").val(moneyFormatIndia(response.pending));
+  $("#payable_amt").val(moneyFormatIndia(response.payable));
+  $("#payableAmount").val(moneyFormatIndia(response.payable));
+  $("#penalty").val(moneyFormatIndia(response.penalty));
+  $("#coll_charge").val(moneyFormatIndia(response.coll_charge));
 }

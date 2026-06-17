@@ -5,20 +5,39 @@ include '../../ajaxconfig.php';
 
 $where = "";
 
-if (isset($_POST['selected_date']) && $_POST['selected_date'] != '') {
-    $selected_date = date('Y-m-d', strtotime($_POST['selected_date']));
-    $where  = "AND np.created_date >= '" . $selected_date . " 00:00:00' 
-          AND np.created_date <= '" . $selected_date . " 23:59:59'";
+if ((isset($_POST['fromdate']) && $_POST['fromdate'] != '') && isset($_POST['todate']) && $_POST['todate'] != '') {
+    $from_date = date('Y-m-d', strtotime($_POST['fromdate']));
+    $to_date = date('Y-m-d', strtotime($_POST['todate']));
+    $where  = "AND (np.created_date >= '" . $from_date . " 00:00:00' AND np.created_date <= '" . $to_date . " 23:59:59')";
 }
+
+$selectedType = $_POST['selectedType'] ?? '';
+$selectedVal = $_POST['selectedVal'] ?? '';
+
+if(is_array($selectedVal)) {
+    $selectedVal = implode(',', $selectedVal);
+}
+
+if ($selectedType == '2') { //Sector
+    $where .= " AND agm.map_id IN ($selectedVal)";
+
+} else if ($selectedType == '3') { //Region
+    $where .= " AND alm.map_id IN ($selectedVal)";
+    
+} else if ($selectedType == '4') { //Zone
+    $where .= " AND adm.map_id IN ($selectedVal)";
+
+} 
 
 $user_ids = $_POST['user_id'] ?? '';
 $user_ids = preg_replace('/[^0-9,]/', '', $user_ids); // clean
 $id_list = implode(',', array_filter(explode(',', $user_ids), 'is_numeric'));
+
 if (!empty($id_list)) {
     $where .= " AND np.insert_login_id IN ($id_list) ";
 }
-$promo_type_arr = ['1'=>'Direct','2'=>'Mobile'];
-$column = array(
+
+$column = [
     'np.id',
     'np.cus_id',
     'cp.autogen_cus_id',
@@ -27,21 +46,26 @@ $column = array(
     'np.created_date',
     'COALESCE(cp.mobile1, ncp.mobile)',
     'COALESCE(al.area_name, ncp.area)',
-    'bc.branch_name',
-    'agm.group_name',
     'alm.line_name',
+    'agm.group_name',
+    'adm.duefollowup_name',
+    'bc.branch_name',
+    'np.promo_type',
     'np.status',
     'np.remark',
     'np.follow_date',
+    'np.followup_type',
     'u.role',
     'u.fullname',
+    'np.id',
     'np.id'
-);
+];
 
 $query = "SELECT 
     np.cus_id, 
     cp.autogen_cus_id,
     np.created_date, 
+    np.promo_type,
     np.status, 
     np.remark, 
     u.role,
@@ -52,48 +76,45 @@ $query = "SELECT
     bc.branch_name, 
     agm.group_name, 
     alm.line_name, 
+    adm.duefollowup_name, 
     np.follow_date, 
+    np.followup_type, 
     np.orgin_table,
-    np.promo_type
+    cp.cus_status
 FROM 
     new_promotion np
-LEFT JOIN 
-    user u ON u.user_id = np.insert_login_id
-LEFT JOIN 
-    customer_register cp ON np.cus_id = cp.cus_id
-LEFT JOIN 
-    new_cus_promo ncp ON np.cus_id = ncp.cus_id
-LEFT JOIN 
-    area_list_creation al ON al.area_id = COALESCE(cp.area, ncp.area)
-
+LEFT JOIN user u ON u.user_id = np.insert_login_id
+LEFT JOIN customer_register cp ON np.cus_id = cp.cus_id
+LEFT JOIN new_cus_promo ncp ON np.cus_id = ncp.cus_id
+LEFT JOIN area_list_creation al ON al.area_id = COALESCE(cp.area, ncp.area)
 LEFT JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
-
 LEFT JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id  
-
 LEFT JOIN area_line_mapping_area alma ON alma.area_id = al.area_id  
-
 LEFT JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-LEFT JOIN 
-    branch_creation bc ON agm.branch_id = bc.branch_id  
+LEFT JOIN area_duefollowup_mapping_area adma ON al.area_id = adma.area_id
+LEFT JOIN area_duefollowup_mapping adm ON adma.duefollowup_map_id = adm.map_id
+LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id  
 
 WHERE 1 $where";
 
 if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
-        $query .= " and (np.created_date LIKE '%" . $_POST['search'] . "%' OR
+        $query .= " AND (np.created_date LIKE '%" . $_POST['search'] . "%' OR
             np.cus_id LIKE '%" . $_POST['search'] . "%' OR
             cp.autogen_cus_id LIKE '%" . $_POST['search'] . "%' OR
-             COALESCE(cp.first_name, ncp.first_name) LIKE '%" . $_POST['search'] . "%' OR
+            COALESCE(cp.first_name, ncp.first_name) LIKE '%" . $_POST['search'] . "%' OR
             COALESCE(al.area_name, ncp.area) LIKE '%" . $_POST['search'] . "%' OR
             bc.branch_name LIKE '%" . $_POST['search'] . "%' OR
             agm.group_name LIKE '%" . $_POST['search'] . "%' OR
             alm.line_name LIKE '%" . $_POST['search'] . "%' OR
+            adm.duefollowup_name LIKE '%" . $_POST['search'] . "%' OR
             np.status LIKE '%" . $_POST['search'] . "%' OR
             np.remark LIKE '%" . $_POST['search'] . "%' OR
             u.role LIKE '%" . $_POST['search'] . "%' OR
             u.fullname LIKE '%" . $_POST['search'] . "%' OR
             COALESCE(cp.mobile1, ncp.mobile) LIKE '%" . $_POST['search'] . "%' OR
-            np.follow_date LIKE '%" . $_POST['search'] . "%' )";
+            np.follow_date LIKE '%" . $_POST['search'] . "%' OR
+            np.followup_type LIKE '%" . $_POST['search'] . "%') ";
     }
 }
 
@@ -118,35 +139,46 @@ if ($_POST['length'] != -1) {
 }
 $result = $statement->fetchAll();
 
-$data = array();
+$data = [];
 $sno = 1;
 $role_arr = [1 => 'Director', 2 => 'Agent', 3 => 'Staff'];
 $originName = [1 => 'Renewal', 2 => 'New Promotion', 3 => 'Repromotion', 4=> 'Re-active']; 
+$promo_type_arr = ['1'=>'Direct','2'=>'Mobile'];
+$statusObj = ['0' => 'Request','1' => 'Verification','2' => 'Approval','3' => 'Acknowledgement','4' => 'Promotion','5' => 'Promotion','6' => 'Promotion','7' => 'Promotion','8' => 'Promotion','9' => 'Promotion','10' => 'Verification','11' => 'Verification','12' => 'Verification','13' => 'Loan Issue','14' => 'Collection','15' => 'Collection','16' => 'Collection','17' => 'Collection','20' => 'Promotion','21' => 'Promotion', '22' => 'Promotion', '23' => 'Promotion', '24' => 'Promotion'];
 
 foreach ($result as $row) {
-    $sub_array = array();
-    $sub_array[] = $sno;
-    $sub_array[] = $row['cus_id'];
-    $sub_array[] = $row['autogen_cus_id'];
-    $sub_array[] = $row['customer_name'];
-    $sub_array[] = date('d-m-Y', strtotime($row['created_date']));
-    $sub_array[] = date('h:i:s A', strtotime($row['created_date']));
-    $sub_array[] = $row['mobile1'];
-    $sub_array[] = $row['area_name'];
-    $sub_array[] = $row['line_name'];
-    $sub_array[] = $row['group_name'];
-    $sub_array[] = $row['branch_name'];   
-    $sub_array[] = $promo_type_arr[$row['promo_type']];
-    $sub_array[] = $row['status'];
-    $sub_array[] = $row['remark'];
-    $sub_array[] = date('d-m-Y', strtotime($row['follow_date']));
-    $sub_array[] = isset($role_arr[$row['role']]) ? $role_arr[$row['role']] : '';
-    $sub_array[] = $row['fullname'];
-    $sub_array[] = isset($originName[$row['orgin_table']]) ? $originName[$row['orgin_table']] : '';
+        
+    $followup_type =''; 
+    if($row['followup_type'] =='1'){
+        $followup_type = 'Direct';  
+    }else if($row['followup_type'] =='2'){
+        $followup_type = 'Clear';  
+    }
 
-    $data[] = $sub_array;
-    $sno++;
-}
+    $data[] = [
+        $sno++,
+        $row['cus_id'],
+        $row['autogen_cus_id'],
+        $row['customer_name'],
+        date('d-m-Y', strtotime($row['created_date'])),
+        date('h:i:s A', strtotime($row['created_date'])),
+        $row['mobile1'],
+        $row['area_name'],
+        $row['line_name'],
+        $row['group_name'],
+        $row['duefollowup_name'],
+        $row['branch_name'],
+        $promo_type_arr[$row['promo_type']] ?? '',
+        $row['status'],
+        $row['remark'],
+        date('d-m-Y', strtotime($row['follow_date'])),
+        $followup_type,
+        $role_arr[$row['role']] ?? '',
+        $row['fullname'],
+        $originName[$row['orgin_table']] ?? '',
+        $statusObj[$row['cus_status']] ?? ''
+    ];
+}    
 
 function count_all_data($connect)
 {
