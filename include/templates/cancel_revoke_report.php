@@ -42,8 +42,8 @@
                                     <th>Cust. ID</th>
                                     <th>Cust. Name</th>
                                     <th>Area</th>
-									<th>Line</th>
-                                    <th>Group</th>
+									<th>Region</th>
+                                    <th>Sector</th>
 									<th>Branch</th>
                                     <th>Loan Category</th>
                                     <th>Loan Amount</th>
@@ -53,6 +53,8 @@
                                     <th>Responsible</th>
                                     <th>Cust. Data</th>
                                     <th>Existing Type</th>
+                                    <th>User Type</th>
+                                    <th>User Name</th>
                                     <th>Cancel/Revoke Date</th>
                                     <th>Cust. Status</th>
                                     <th>Remarks</th>
@@ -60,9 +62,9 @@
                                 <tbody></tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="11"></td>
+                                        <td colspan="13"></td>
                                         <td></td>
-                                        <td colspan="9"></td>
+                                        <td colspan="11"></td>
                                     </tr>
                                 </tfoot>
                             </table>

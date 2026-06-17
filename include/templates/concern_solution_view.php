@@ -46,6 +46,7 @@ if (count($getConcernCreation) > 0) {
     $assignStaffName      = $getConcernCreation['staff_assign_to'];
     $passRole    = $getConcernCreation['pass_role'];
     $passTo    = $getConcernCreation['pass_to'];
+    $concernCreationupload    = explode(',', $getConcernCreation['concern_creation_uploads']) ?? '';
     $solution_date        = $getConcernCreation['solution_date'];
     $communication          = $getConcernCreation['communication'];
     $location          = $getConcernCreation['location'];
@@ -233,7 +234,7 @@ if (count($getConcernCreation) > 0) {
                                         <input type="text" class="form-control" id="first_name" name="first_name" tabindex='11' value="<?php if (isset($first_name)) echo $first_name; ?>" readonly>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
                                         <label for="last_name">Last Name</label><span class="required">&nbsp;*</span>
@@ -250,14 +251,14 @@ if (count($getConcernCreation) > 0) {
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
-                                        <label for="group">Group</label><span class="required">&nbsp;*</span>
+                                        <label for="group">Sector</label><span class="required">&nbsp;*</span>
                                         <input type="text" class="form-control" id="cus_group" name="cus_group" value="<?php if (isset($cus_grp)) echo $cus_grp; ?>" readonly tabindex='14'>
                                     </div>
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
-                                        <label for="line">Line</label><span class="required">&nbsp;*</span>
+                                        <label for="line">Region</label><span class="required">&nbsp;*</span>
                                         <input type="text" class="form-control" id="cus_line" name="cus_line" value="<?php if (isset($cus_line)) echo $cus_line; ?>" readonly tabindex='15'>
                                     </div>
                                 </div>
@@ -373,6 +374,21 @@ if (count($getConcernCreation) > 0) {
                                         <span class="text-danger" style='display:none' id='staffAssignCheck'>Please Select Staff Assign</span>
                                     </div>
                                 </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label for="concern_creation_upload">Uploads</label><br>
+                                        <?php 
+                                        $doc_upd_name = '';
+                                        foreach ($concernCreationupload as $concernupd) {
+                                            if ($concernupd != null) {
+                                                $doc_upd_name .= "<a href=uploads/concern/concern_creation/".$concernupd ." target='_blank' download>Click Here To Download Your " . $concernupd . " File </a> <br/><br/>" ;
+                                            }
+                                        }
+
+                                        echo rtrim($doc_upd_name,', ');// to trim the comma at end
+                                        ?>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -446,7 +462,7 @@ if (count($getConcernCreation) > 0) {
                                         <?php foreach ($upds as $fileupd) {
                                             if ($fileupd != null) {
                                         ?>
-                                                <a href="<?php echo "uploads/concern/" . $fileupd; ?>" target="_blank" download>Click Here To Download Your <?php if (isset($fileupd)) echo $fileupd; ?> File </a> <br><br>
+                                                <a href="<?php echo "uploads/concern/concern_solution/" . $fileupd; ?>" target="_blank" download>Click Here To Download Your <?php if (isset($fileupd)) echo $fileupd; ?> File </a> <br><br>
                                         <?php }
                                         } ?>
 

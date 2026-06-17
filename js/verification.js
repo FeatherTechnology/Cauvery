@@ -84,7 +84,7 @@ $(document).ready(function () {
 
   function famNameList() {
     // To show family name for Data Check.
-
+    let req_id = $("#req_id").val();
     var first_name = $("#first_name").val();
     var last_name = $("#last_name").val();
     var cus_name = first_name + " " + last_name;
@@ -126,6 +126,7 @@ $(document).ready(function () {
 
   function mobileList() {
     // To show Mobile No for Data Checking.
+    let req_id = $("#req_id").val();
     var mobile1 = $("#mobile1").val();
     var cus_id = $("#cus_id").val(); //customer id
 
@@ -167,6 +168,7 @@ $(document).ready(function () {
 
   function aadharList() {
     // To show Aadhar No for Data Checking.
+    let req_id = $("#req_id").val();
     var first_name = $("#first_name").val();
     var last_name = $("#last_name").val();
     var cus_name = first_name + " " + last_name; //Customer name for display
@@ -346,8 +348,10 @@ $(document).ready(function () {
       success: function (result) {
         $("#feedbackID").val(result["id"]);
         $("#feedback_label").val(result["feedback_label"]);
+        $("#cus_feedback_department").val(result["cus_feedback_dept"]);
         $("#cus_feedback").val(result["cus_feedback"]);
         $("#feedback_remark").val(result["feedback_remark"]);
+        $("#cus_summary_upload").val(result["upload"]);
       },
     });
   });
@@ -1350,6 +1354,7 @@ function getCustomerLoanCounts() {
     },
   });
 }
+// Modal Box for Agent Group
 
 $(document).on("click", "#submitFamInfoBtn", function () {
   let req_id = $("#req_id").val();
@@ -1562,14 +1567,21 @@ $("body").on("click", "#verification_fam_delete", function () {
           setTimeout(function () {
             $("#FamDeleteOk").fadeOut("fast");
           }, 2000);
-          resetFamInfo();
+
+        } else if(response.includes("Guarantor")){
+          $('#FamDeleteValidateFail').show();
+          setTimeout(function () {
+              $('#FamDeleteValidateFail').fadeOut('slow');
+          }, 5000);
+
         } else {
           $("#FamDeleteNotOk").show();
           setTimeout(function () {
             $("#FamDeleteNotOk").fadeOut("fast");
           }, 2000);
-          resetFamInfo();
         }
+        
+        resetFamInfo();
       },
     });
   }
@@ -3339,30 +3351,43 @@ function getTalukBasedArea(talukselected) {
 
 
 //Customer Feedback Modal
-$("#feedbacklabelCheck").hide();
-$("#feedbackCheck").hide();
+$("#feedbacklabelCheck, #feedbackCheck, #departmentCheck").hide();
 
 $(document).on("click", "#feedbackBtn", function () {
   let req_id = $("#req_id").val();
   let cus_id = $("#cus_id").val();
   let feedback_label = $("#feedback_label").val();
   let cus_feedback = $("#cus_feedback").val();
+  let cus_feedback_dept = $("#cus_feedback_department").val();
+  let files = $("#customer_summary_uploads")[0].files;
+  let cus_summary_upload = $("#cus_summary_upload").val();
   let feedback_remark = $("#feedback_remark").val();
   let feedbackID = $("#feedbackID").val();
 
-  if (feedback_label != "" && cus_feedback != "" && req_id != "") {
+  if (feedback_label != "" && cus_feedback_dept !="" && cus_feedback != "" && req_id != "") {
+    // Using FormData to send file and other data
+    let formData = new FormData();
+    formData.append("reqId", req_id);
+    formData.append("cus_id", cus_id);
+    formData.append("feedback_label", feedback_label);
+    formData.append("cus_feedback", cus_feedback);
+    formData.append("cus_feedback_dept", cus_feedback_dept);
+
+    for (let i = 0; i < files.length; i++) {
+        formData.append("customer_summary_uploads[]", files[i]);
+    } // Append the file
+
+    formData.append("cus_summary_upload", cus_summary_upload); //edit value.
+    formData.append("feedback_remark", feedback_remark); 
+    formData.append("feedbackID", feedbackID);
+
     $.ajax({
       url: "verificationFile/customer_feedback_submit.php",
       type: "POST",
-      data: {
-        feedback_label: feedback_label,
-        cus_feedback: cus_feedback,
-        feedback_remark: feedback_remark,
-        feedbackID: feedbackID,
-        reqId: req_id,
-        cus_id: cus_id,
-      },
+      data: formData ,
       cache: false,
+      contentType: false, // Important: Do not process contentType
+      processData: false, // Important: Do not process data
       success: function (response) {
         var insresult = response.includes("Inserted");
         var updresult = response.includes("Updated");
@@ -3387,8 +3412,7 @@ $(document).on("click", "#feedbackBtn", function () {
       },
     });
 
-    $("#feedbacklabelCheck").hide();
-    $("#feedbackCheck").hide();
+    $("#feedbacklabelCheck, #feedbackCheck, #departmentCheck").hide();
   } else {
     if (feedback_label == "") {
       $("#feedbacklabelCheck").show();
@@ -3401,6 +3425,12 @@ $(document).on("click", "#feedbackBtn", function () {
     } else {
       $("#feedbackCheck").hide();
     }
+
+    if (cus_feedback_dept == "") {
+      $("#departmentCheck").show();
+    } else {
+      $("#departmentCheck").hide();
+    }
   }
 });
 
@@ -3412,13 +3442,8 @@ function resetfeedback() {
     data: { cus_id: cus_id },
     cache: false,
     success: function (html) {
-      $("#feedbackTable").empty();
       $("#feedbackTable").html(html);
-
-      $("#feedback_label").val("");
-      $("#cus_feedback").val("");
-      $("#feedbackID").val("");
-      $("#feedback_remark").val("");
+      $("#feedback_label, #cus_feedback_department, #cus_feedback, #feedback_remark, #feedbackID, #customer_summary_uploads").val('');
     },
   });
 }
@@ -3431,13 +3456,7 @@ function feedbackList() {
     data: { cus_id: cus_id },
     cache: false,
     success: function (html) {
-      $("#feedbackListTable").empty();
       $("#feedbackListTable").html(html);
-
-      $("#feedback_label").val("");
-      $("#cus_feedback").val("");
-      $("#feedback_remark").val("");
-      $("#feedbackID").val("");
     },
   });
 }
@@ -5015,6 +5034,7 @@ function onLoadEditFunction() {
   verificationPerson(); //To Select verification Person in Verification Info.//////
   // getLoanHistory();//to get loan history, as same as document history but here action buttons are changing
 }
+
 $("#loan_category").change(function () {
   var loan_cat = $("#loan_category").val();
   $.ajax({
@@ -5098,7 +5118,7 @@ function runRefreshCalculation() {
     Swal.fire({
       title: "Warning!",
       text: "Loan amount must be greater than zero",
-      icon: 'error',
+      icon: 'warning',
       showConfirmButton: true,
       confirmButtonColor: '#0C70AB'
     });
@@ -5115,6 +5135,7 @@ function runRefreshCalculation() {
     });
     return false;
   }
+
   if (intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || (profit_method == "" && scheme_profit_method == "")) {
     Swal.fire({
       title: 'Warning!',

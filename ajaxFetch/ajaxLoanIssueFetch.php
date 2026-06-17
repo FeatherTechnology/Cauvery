@@ -6,7 +6,7 @@ include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
 $login_user_type = $_SESSION['role'] ?? 0;
-$area_list = getUserAreaList($connect, 'Group');
+$area_list = getUserAreaList($connect, 'Sector');
 
 /* ---------------- DATATABLE COLUMN MAP ---------------- */
 $column = [

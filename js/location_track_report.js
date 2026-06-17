@@ -27,7 +27,7 @@ $(document).ready(function () {
                 icon: 'warning',
                 title: 'Warning',
                 text: 'All fields are required to generate the report.',
-                confirmButtonColor: '#009688'
+                confirmButtonColor: '#0C70AB'
             });
         }
     });

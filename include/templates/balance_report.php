@@ -47,9 +47,9 @@
 							<table id="balance_report_table" class="table custom-table">
 								<thead>
 									<th>S.No</th>
-									<!-- <th>Group</th> -->
-									<th>Line</th>
-									<!-- <th>Followup</th> -->
+									<!-- <th>Sector</th> -->
+									<th>Region</th>
+									<!-- <th>Zone</th> -->
 									<th>Loan ID</th>
 									<th>Doc ID</th>
 									<th>Loan Date</th>
@@ -96,9 +96,9 @@
 							<table id="princ_intrst_table" class="table custom-table">
 								<thead>
 									<th>S.No</th>
-									<!-- <th>Group</th> -->
-									<th>Line</th>
-									<!-- <th>Followup</th> -->
+									<!-- <th>Sector</th> -->
+									<th>Region</th>
+									<!-- <th>Zone</th> -->
 									<th>Loan ID</th>
 									<th>Doc ID</th>
 									<th>Loan Date</th>

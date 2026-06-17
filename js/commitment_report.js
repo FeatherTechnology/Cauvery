@@ -1,3 +1,11 @@
+const map_name = new Choices('#map_name', {
+    removeItemButton: true,
+    noChoicesText: 'Select',
+    allowHTML: true
+});
+
+$('#map_name').closest('.choices').hide();
+
 $(document).ready(function () {
 
     $('#from_date').change(function () {
@@ -11,8 +19,31 @@ $(document).ready(function () {
         }
     });
 
+    $('#type').change(function (e) {
+        let type = $(this).val();
+        $('#user_type, #by_user').val('').hide();
+        $('#map_name').closest('.choices').hide();
+        map_name.clearStore();
+        $('#commitment_report_table').DataTable().destroy();
+        $('#commitment_report_table tbody').empty();
+        
+        if(type == '1'){ 
+            $('#user_type, #by_user').val('').show();
+            $('#by_user').empty().append("<option value=''>Select User</option>");
+
+        } else if(type == '2' || type == '3' || type == '4') { //sector - group, Region - Line, Zone - Follow up
+            $('#map_name').closest('.choices').show();
+            getUserMappedDetails(type); //to Mapping details.
+        }
+    });
+
     $('#user_type').change(function () {
-        getUserNames();
+        let userType = $('#user_type').val();
+        $('#by_user').empty().append("<option value=''>Select User</option>");  
+
+        if(userType != ''){
+            getUserNames();
+        }
     });
 
     //commitment Report Table
@@ -35,27 +66,24 @@ function getUserNames() {
     }, 'json');
 }
 
-
 function commitmentReportTable() {
     let from_date = $('#from_date').val();
     let to_date = $('#to_date').val();
+    let selectedType = $('#type').val();
     let user_type = $('#user_type').val();
     let selected_user = $('#by_user').val();
-
-    if (!to_date || !from_date) {
-        swalError('Please Select Date!', 'From Date and To Date is required.');
-        return;
+    
+    if(selectedType == '1'){ //user
+        selectedVal = '1'; //dummy
+        
+    } else if(selectedType == '2' || selectedType == '3' || selectedType == '4'){ //sector - group //Region - Line //Zone - Followup
+        selectedVal = $('#map_name').val();
     }
 
-    if (!user_type) {
-        swalError('Please Select User Type!', 'User Type selection is required.');
+    if((!from_date || !to_date) || !selectedVal || (selectedType == '1' && (!user_type || !selected_user))){
+        swalError('Warning', `All Fields are required.`);
         return;
-    }   
-
-    if (!selected_user) {
-        swalError('Please Select User!', 'User selection is required.');
-        return;
-    }
+    } 
 
     $('#commitment_report_table').DataTable().destroy();
     // Declare table variable to store the DataTable instance
@@ -70,10 +98,11 @@ function commitmentReportTable() {
         'ajax': {
             'url': 'reportFile/commitment/getCommitmentReport.php',
             'data': function (data) {
-                var search = $('input[type=search]').val();
-                data.search = search;
+                data.search = $('#search').val();
                 data.from_date = $('#from_date').val();
                 data.to_date = $('#to_date').val();
+                data.selectedType = $('#type').val();
+                data.selectedVal = selectedVal;
                 data.user_id = $('#by_user').val();
             }
         },

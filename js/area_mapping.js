@@ -59,7 +59,7 @@ $(document).ready(function () {
         $("#area2").prepend(firstOption);
     }
 
-    // ************************************************************** Line Mapping *************************************************************************************** 
+    // ************************************************************** Region Mapping *************************************************************************************** 
 
     $('#area_dummy').change(function () {
         //Area Multi select store
@@ -84,7 +84,7 @@ $(document).ready(function () {
 
         if (validateLineAreaMappingForm()) {
             // Ask confirmation only if validation passed
-            let confirmAction = confirm("Are you sure you want to submit Line area mapping?");
+            let confirmAction = confirm("Are you sure you want to submit Region area mapping?");
             if (!confirmAction) {
                 event.preventDefault(); // stop default form submission
                 return false; // user canceled
@@ -95,7 +95,7 @@ $(document).ready(function () {
         }
     });
 
-    // ************************************************************** Group Mapping *************************************************************************************** 
+    // ************************************************************** Sector Mapping *************************************************************************************** 
 
     $('#area_dummy1').change(function () {
         //Area Multi select store
@@ -119,7 +119,7 @@ $(document).ready(function () {
     $('#submit_area_mapping_group').click(function (event) {
         
         if (validateGroupAreaMappingForm()) {
-            let confirmAction = confirm("Are you sure you want to submit Group Area Mapping?");
+            let confirmAction = confirm("Are you sure you want to submit Sector Area Mapping?");
             if (!confirmAction) {
                 event.preventDefault();
                 return false; // user cancelled
@@ -131,7 +131,7 @@ $(document).ready(function () {
     });
 
 
-    // ************************************************************** Due Followup Mapping ****************************************************************** 
+    // ************************************************************** Zone Mapping ****************************************************************** 
 
     $('#branch2').change(function(){
         let branchId = $(this).val();
@@ -178,7 +178,7 @@ $(document).ready(function () {
 
         if (validateDueFollowupForm()) {
             // Ask confirmation only if validation passed
-            let confirmAction = confirm("Are you sure you want to submit Due Followup?");
+            let confirmAction = confirm("Are you sure you want to submit Zone?");
             if (!confirmAction) {
                 event.preventDefault();
                 return false;

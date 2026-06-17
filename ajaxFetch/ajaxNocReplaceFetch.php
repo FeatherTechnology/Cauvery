@@ -20,17 +20,17 @@ if ($userid != 1) {  // super admin bypass
     $area_ids = [];
 
     if ($accessType == 1) {
-        // 🔹 Group-based access
+        // 🔹 Sector-based access
         $group_ids = $rowuser['group_id'];
         $qry = $connect->query("SELECT DISTINCT area_id FROM area_group_mapping_area WHERE group_map_id IN ($group_ids)");
         $area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
     } elseif ($accessType == 2) {
-        // 🔹 Line-based access
+        // 🔹 Region-based access
         $line_ids = $rowuser['line_id'];
         $qry = $connect->query("SELECT DISTINCT area_id FROM area_line_mapping_area WHERE line_map_id IN ($line_ids)");
         $area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
     } elseif ($accessType == 3) {
-        // 🔹 Due Followup-based access
+        // 🔹 Due Zone-based access
         $due_ids = $rowuser['due_followup_lines'];
         $qry = $connect->query("SELECT DISTINCT area_id FROM area_duefollowup_mapping_area WHERE duefollowup_map_id IN ($due_ids)");
         $area_ids = $qry->fetchAll(PDO::FETCH_COLUMN);
@@ -38,7 +38,7 @@ if ($userid != 1) {  // super admin bypass
 
     // Remove duplicates and store final list
     $area_list = implode(',', $area_ids);
-    $colName =  "cp.area_confirm_area";      // Group/Line
+    $colName =  "cp.area_confirm_area";      // Sector/Region
 }
 
 $column = array(

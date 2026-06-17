@@ -4,7 +4,6 @@ include('../../ajaxconfig.php');
 
 $cus_id = $_POST['cus_id'];
 $promo_arr = [ 1 => 'Direct', 2 => 'Mobile'];
-
 $sql = $connect->query("SELECT a.*,b.fullname, CASE b.role WHEN 1 then 'Director' when 2 then 'Agent' when 3 then 'Staff' end as role FROM new_promotion a 
         JOIN user b ON a.insert_login_id = b.user_id WHERE a.cus_id = '$cus_id'  ORDER BY a.id DESC "); //order by desc will show last entered data of promotion table
 
@@ -23,6 +22,7 @@ $sql = $connect->query("SELECT a.*,b.fullname, CASE b.role WHEN 1 then 'Director
         <th>User Type</th>
         <th>User</th>
         <th>Follow Date</th>
+        <th>Follow up type</th>
     </thead>
     <tbody>
         <?php while($row =  $sql->fetch()){?>
@@ -35,7 +35,17 @@ $sql = $connect->query("SELECT a.*,b.fullname, CASE b.role WHEN 1 then 'Director
                 <td><?php echo $row['role']; ?></td>
                 <td><?php echo $row['fullname']; ?></td>
                 <td><?php echo date('d-m-Y',strtotime($row['follow_date'])); ?></td>
-                
+                <td>
+                    <?php 
+                        $followup_type =''; 
+                        if($row['followup_type'] =='1'){
+                            $followup_type = 'Direct';  
+                        }else if($row['followup_type'] =='2'){
+                            $followup_type = 'Clear';  
+                        }  
+                        echo $followup_type;
+                    ?>
+                </td>
             </tr>
         <?php } ?>
 
@@ -46,6 +56,7 @@ $sql = $connect->query("SELECT a.*,b.fullname, CASE b.role WHEN 1 then 'Director
     // Declare table variable to store the DataTable instance
     var promo_chart = $('#promo_chart').DataTable({
         ...getStateSaveConfig('promo_chart'),
+        order: [], // disable default ordering
         'processing': true,
         'iDisplayLength': 5,
         "lengthMenu": [

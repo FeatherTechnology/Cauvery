@@ -32,8 +32,8 @@
 									<th>Cust. ID</th>
 									<th>Cust. Name</th>
 									<th>Area</th>
-									<th>Line</th>
-									<th>Group</th>
+									<th>Region</th>
+									<th>Sector</th>
 									<th>Branch</th>
 									<th>Loan Category</th>
 									<th>Loan Amount</th>

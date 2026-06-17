@@ -7,7 +7,7 @@ if (isset($_SESSION["userid"])) {
     $userid = $_SESSION["userid"];
 }
 
-$area_list = getUserAreaList($connect, 'Line');
+$area_list = getUserAreaList($connect, 'Region');
 
 $column = array(
     'cp.id',

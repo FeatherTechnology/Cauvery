@@ -5,11 +5,13 @@ include '../ajaxconfig.php';
 <table class="table custom-table" id="feedback_table_data">
     <thead>
         <tr>
-            <th width="20%"> S.No </th>
+            <th width="20px"> S.No </th>
             <th> User Name</th>
             <th> Created Date </th>
             <th> Feedback Label </th>
+            <th> Department </th>
             <th> Feedback </th>
+            <th> Upload </th>
             <th> Remarks </th>
             <th> ACTION </th>
 
@@ -30,7 +32,23 @@ include '../ajaxconfig.php';
                 <td><?php echo $feedback["fullname"]; ?></td>
                 <td><?php echo date('d-m-Y', strtotime($feedback["inserted_date"])); ?></td>
                 <td><?php echo $feedback["feedback_name"]; ?></td>
-                <td><?php if ($feedback["cus_feedback"] == '1') {
+                <td>
+                    <?php if ($feedback["cus_feedback_dept"] == '1') {
+                        echo 'Front Office';
+                    } else if ($feedback["cus_feedback_dept"] == '2') {
+                        echo 'Back Office';
+                    } else if ($feedback["cus_feedback_dept"] == '3') {
+                        echo 'Sales';
+                    } else if ($feedback["cus_feedback_dept"] == '4') {
+                        echo 'Verification';
+                    } else if ($feedback["cus_feedback_dept"] == '5') {
+                        echo 'Refine';
+                    } else if ($feedback["cus_feedback_dept"] == '6') {
+                        echo 'Other';
+                    }?>
+                </td>
+                <td>
+                    <?php if ($feedback["cus_feedback"] == '1') {
                         echo 'Bad';
                     } else if ($feedback["cus_feedback"] == '2') {
                         echo 'Poor';
@@ -40,7 +58,20 @@ include '../ajaxconfig.php';
                         echo 'Good';
                     } else if ($feedback["cus_feedback"] == '5') {
                         echo 'Excellent';
-                    } ?></td>
+                    } ?>
+                </td>
+                <td> 
+                    <?php
+                        $upload = explode(',', $feedback['upload']) ?? '';
+                        $upd_name = '';
+                        foreach ($upload as $upd) {
+                            if ($upd != null) {
+                                $upd_name .= "<a href=uploads/customer_summary/".$upd ." target='_blank' style='color: #4ba39b;'>" . $upd . "</a>, " ;
+                            }
+                        } 
+                        echo rtrim($upd_name,', ');// to trim the comma at end;
+                    ?>
+                </td>
                 <td><?php echo $feedback["feedback_remark"]; ?></td>
 
                 <td>

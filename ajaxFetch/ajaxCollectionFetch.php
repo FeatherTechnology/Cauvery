@@ -7,7 +7,7 @@ if (isset($_SESSION["userid"])) {
     $userid = $_SESSION["userid"];
 }
 
-$area_list = getUserAreaList($connect, 'Line');
+$area_list = getUserAreaList($connect, 'Region');
 
 if ($userid != 1) {
     $stmt = $connect->prepare("SELECT ag_id , role FROM user WHERE user_id = ?");

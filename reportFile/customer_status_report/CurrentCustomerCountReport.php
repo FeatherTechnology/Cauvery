@@ -4,13 +4,14 @@ include '../../ajaxconfig.php';
 
 $search_date        = $_POST['search_date'];
 $type               = $_POST['type'];
-$line               = isset($_POST['line']) ? $_POST['line'] : '';
+// $line               = isset($_POST['line']) ? $_POST['line'] : '';
 $user_id            = isset($_POST['user_id']) ? $_POST['user_id'] : '';
-$group_map          = isset($_POST['group_map']) ? $_POST['group_map'] : '';
-$due_followup       = isset($_POST['due_followup']) ? $_POST['due_followup'] : '';
+$map_name          = isset($_POST['map_name']) ? $_POST['map_name'] : '';
+// $due_followup       = isset($_POST['due_followup']) ? $_POST['due_followup'] : '';
 $sub_status_type    = $_POST['sub_status_type'];
 $loan_category      = $_POST['loan_category'];
 $toDate_month_start = date('Y-m-01', strtotime($search_date));
+
 function monthDiff($start, $end)
 {
     return ((date('Y', strtotime($end)) - date('Y', strtotime($start))) * 12)
@@ -26,31 +27,33 @@ if (!is_array($user_id)) {
 }
 $user_id = array_unique(array_map('intval', $user_id));
 
-if (!is_array($line)) {
-    $line = explode(',', $line);
+// if (!is_array($line)) {
+//     $line = explode(',', $line);
+// }
+
+if (!is_array($map_name)) {
+    $map_name = explode(',', $map_name);
 }
 
-if (!is_array($group_map)) {
-    $group_map = explode(',', $group_map);
-}
-
-if (!is_array($due_followup)) {
-    $due_followup = explode(',', $due_followup);
-}
+// if (!is_array($due_followup)) {
+//     $due_followup = explode(',', $due_followup);
+// }
 
 // ==== Build condition depending on type ====
-if ($type == 1) {
+if ($type == 3) {
     // 🔹 Line based
-    if (empty($line)) {
+    if (empty($map_name)) {
         echo json_encode(["data" => []]);
         exit;
     }
 
-    $line_str  = implode(',', $line);
+    $line_str  = implode(',', $map_name);
     $condition = "alm.map_id IN ($line_str)";
-    $joinTable = "JOIN area_line_mapping_area alma ON al.area_id = alma.area_id JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id";
+    $joinTable = "JOIN area_list_creation al ON cp.area_confirm_area = al.area_id 
+    JOIN area_line_mapping_area alma ON al.area_id = alma.area_id 
+    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id";
     $nameField = "alm.line_name";
-} else if ($type == 2) {
+} else if ($type == 1) {
     // 🔹 User based
     if (empty($user_id)) {
         echo json_encode(["data" => []]);
@@ -83,30 +86,32 @@ if ($type == 1) {
     }
     $line_id_str = implode(',', $line_ids);
     $condition   = "alm.map_id IN ($line_id_str)";
-    $joinTable   = "JOIN area_line_mapping_area alma ON al.area_id = alma.area_id
+    $joinTable   = "JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
+    JOIN area_line_mapping_area alma ON al.area_id = alma.area_id
     JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id";
     $userName    = implode(', ', array_unique($display_names));
     $nameField   = "NULL";
-} else if ($type == 3) {
+} else if ($type == 2) {
     // 🔹 Group based
-    if (empty($group_map)) {
+    if (empty($map_name)) {
         echo json_encode(["data" => []]);
         exit;
     }
 
-    $group_str  = implode(',', $group_map);
+    $group_str  = implode(',', $map_name);
     $condition  = "agm.map_id IN ($group_str)";
-    $joinTable  = "JOIN area_group_mapping_area agma ON al.area_id = agma.area_id
+    $joinTable  = "JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
+    JOIN area_group_mapping_area agma ON al.area_id = agma.area_id
     JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id";
     $nameField  = "agm.group_name";
 } else if ($type == 4) {
-    if (empty($due_followup)) {
+    if (empty($map_name)) {
         echo json_encode(["data" => []]);
         exit;
     }
 
-    $due_followup_str = implode(',', $due_followup);
-    $joinTable = "  JOIN area_duefollowup_mapping_area adma ON al.area_id = adma.area_id
+    $due_followup_str = implode(',', $map_name);
+    $joinTable = "    JOIN area_list_creation al ON cp.area_confirm_area = al.area_id JOIN area_duefollowup_mapping_area adma ON al.area_id = adma.area_id
     JOIN area_duefollowup_mapping adm ON adm.map_id = adma.duefollowup_map_id";
     // Condition only for line_ids
     $condition = "adm.map_id IN ($due_followup_str)";
@@ -174,7 +179,6 @@ foreach ($loan_category as $cat_id) {
         JOIN acknowlegement_customer_profile cp ON ii.req_id = cp.req_id
         JOIN acknowlegement_loan_calculation alc ON ii.req_id = alc.req_id
         LEFT JOIN customer_status cs ON ii.req_id = cs.req_id
-        JOIN area_list_creation al ON cp.area_confirm_area = al.area_id
         $joinTable
         LEFT JOIN closing_customer cc ON ii.req_id = cc.req_id
         WHERE $condition
@@ -333,7 +337,7 @@ foreach ($loan_category as $cat_id) {
     // Step 4: Decide grouping
     $groups = [];
     foreach ($customers as $cust) {
-        if ($type == 1 || $type == 3 || $type == 4) {
+        if ($type == 2 || $type == 3 || $type == 4) {
             $groups[$cust['map_name']][] = $cust;
         } else { // type 2
             $groups[$userName][] = $cust;
@@ -496,11 +500,14 @@ foreach ($loan_category as $cat_id) {
         }
 
         if ($type == 1) {
-            $display_name = $groupName; // Line name
-        } elseif ($type == 2) {
             $display_name = $userName;  // User fullname
-        } elseif ($type == 3) {
+
+        } else if ($type == 2) {
             $display_name = $groupName; // Group name
+
+        } else if ($type == 3) {
+            $display_name = $groupName; // Line name
+            
         } elseif ($type == 4) {
             $display_name = $groupName; // Due Followup name
         }

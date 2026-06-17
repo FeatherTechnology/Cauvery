@@ -6,7 +6,7 @@ include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
 $login_user_type = $_SESSION['role'] ?? 0;
-$area_list = getUserAreaList($connect, 'Group');
+$area_list = getUserAreaList($connect, 'Sector');
 
 if ($userid != 1) {
     $stmt = $connect->prepare("SELECT ack_loan_cat , acknowledgement_access FROM user WHERE user_id = ?");

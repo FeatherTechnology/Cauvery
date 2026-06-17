@@ -136,8 +136,10 @@ $(document).ready(function () {
 
                 $("#feedbackID").val(result['id']);
                 $("#feedback_label").val(result['feedback_label']);
+                $("#cus_feedback_department").val(result["cus_feedback_dept"]);
                 $("#cus_feedback").val(result['cus_feedback']);
                 $("#feedback_remark").val(result['feedback_remark']);
+                $("#cus_summary_upload").val(result["upload"]);
 
             }
         });
@@ -198,12 +200,9 @@ $(document).ready(function () {
             $('#customer_old_div').show();
             showCustomerOldData();
         }
-    })
+    });
 
-
-
-    ///Documentation 
-
+    ///Documentation
     $('#Propertyholder_type').change(function () {
         let type = $(this).val();
         let req_id = $('#req_id').val();
@@ -858,7 +857,7 @@ function callCustomerProfileFunctn() {
     }
 
     let updateCPEditAccess = $('#update_cp_edit_access').val();
-    if(updateCPEditAccess !='2'){ //Overall
+    if(updateCPEditAccess !='2'){ //1-Customer feedback, 2-Overall Customer profile
         let form = $('form#cus_Profiles');
 
         // inputs except inside customer_summary_card
@@ -868,11 +867,14 @@ function callCustomerProfileFunctn() {
 
         // button except inside customer_summary_card
         form.find('select, button')
-            .not('#customer_summary_card button, #back_btn')
+            .not('#customer_summary_card button, #back_btn, #reminder_call')
             .prop('disabled', true);
 
         form.find('#pic, #guarentorpic')
             .prop('disabled', true);
+
+    } else if(updateCPEditAccess =='2'){
+        $('#reminder_submit_div').hide();
     }
 }
 
@@ -1091,8 +1093,7 @@ $("body").on("click", "#verification_fam_edit", function () {
                 $('#remark').hide();
                 $('#address').hide();
             }
-            $("#famFirstnameCheck").hide(); $("#famLastnameCheck").hide(); $('#famrelationCheck').hide(); $('#famremarkCheck').hide(); $('#famaddressCheck').hide(); 
-            $('#famageCheck').hide(); $('#famaadharCheck').hide(); $('#fammobileCheck').hide(); $('#famoccCheck').hide(); $('#famincomeCheck').hide();
+            $('#famnameCheck').hide(); $('#famrelationCheck').hide(); $('#famremarkCheck').hide(); $('#famaddressCheck').hide(); $('#famageCheck').hide(); $('#famaadharCheck').hide(); $('#fammobileCheck').hide(); $('#famoccCheck').hide(); $('#famincomeCheck').hide();
         }
     });
 
@@ -1117,8 +1118,14 @@ $("body").on("click", "#verification_fam_delete", function () {
                     setTimeout(function () {
                         $('#FamDeleteOk').fadeOut('fast');
                     }, 2000);
-                }
-                else {
+
+                } else if(response.includes("Guarantor")){
+                    $('#FamDeleteValidateFail').show();
+                    setTimeout(function () {
+                        $('#FamDeleteValidateFail').fadeOut('slow');
+                    }, 5000);
+
+                } else {
 
                     $('#FamDeleteNotOk').show();
                     setTimeout(function () {
@@ -2251,22 +2258,40 @@ function getGroupandLine(area_id) {
 }
 
 //Customer Feedback Modal 
-
 $(document).on("click", "#feedbackBtn", function () {
 
     let cus_id = $('#cus_id').val();
     let feedback_label = $("#feedback_label").val();
+    let cus_feedback_dept = $("#cus_feedback_department").val();
     let cus_feedback = $("#cus_feedback").val();
+    let files = $("#customer_summary_uploads")[0].files;
+    let cus_summary_upload = $("#cus_summary_upload").val();
     let feedback_remark = $("#feedback_remark").val();
     let feedbackID = $("#feedbackID").val();
 
+    if (feedback_label != "" && cus_feedback_dept !="" && cus_feedback != "" && cus_id != "") {
+        // Using FormData to send file and other data
+        let formData = new FormData();
+        formData.append("cus_id", cus_id);
+        formData.append("feedback_label", feedback_label);
+        formData.append("cus_feedback", cus_feedback);
+        formData.append("cus_feedback_dept", cus_feedback_dept);
 
-    if (feedback_label != "" && cus_feedback != "" && cus_id != "") {
+        for (let i = 0; i < files.length; i++) {
+            formData.append("customer_summary_uploads[]", files[i]);
+        } // Append the file
+        
+        formData.append("cus_summary_upload", cus_summary_upload); //edit value.
+        formData.append("feedback_remark", feedback_remark); 
+        formData.append("feedbackID", feedbackID);
+
         $.ajax({
             url: 'updateFile/update_cus_feedback_submit.php',
             type: 'POST',
-            data: { "feedback_label": feedback_label, "cus_feedback": cus_feedback, "feedback_remark": feedback_remark, "feedbackID": feedbackID, "cus_id": cus_id },
+            data: formData,
             cache: false,
+            contentType: false, // Important: Do not process contentType
+            processData: false, // Important: Do not process data
             success: function (response) {
 
                 var insresult = response.includes("Inserted");
@@ -2294,7 +2319,7 @@ $(document).on("click", "#feedbackBtn", function () {
             }
         });
 
-        $('#feedbacklabelCheck').hide(); $('#feedbackCheck').hide();
+        $('#feedbacklabelCheck, #feedbackCheck').hide();
     }
     else {
 
@@ -2309,9 +2334,13 @@ $(document).on("click", "#feedbackBtn", function () {
         } else {
             $('#feedbackCheck').hide();
         }
-
+         
+        if (cus_feedback_dept == "") {
+            $('#departmentCheck').show();
+        } else {
+            $('#departmentCheck').hide();
+        }
     }
-
 });
 
 function resetfeedback() {
@@ -2322,14 +2351,8 @@ function resetfeedback() {
         data: { "cus_id": cus_id },
         cache: false,
         success: function (html) {
-            $("#feedbackTable").empty();
             $("#feedbackTable").html(html);
-
-            $("#feedback_label").val('');
-            $("#cus_feedback").val('');
-            $("#feedback_remark").val('');
-            $("#feedbackID").val('');
-
+            $("#feedback_label, #cus_feedback_department, #cus_feedback, #feedback_remark, #feedbackID, #customer_summary_uploads").val('');
         }
     });
 }
@@ -2342,13 +2365,7 @@ function feedbackList() {
         data: { "cus_id": cus_id },
         cache: false,
         success: function (html) {
-            $("#feedbackListTable").empty();
             $("#feedbackListTable").html(html);
-
-            $("#feedback_label").val('');
-            $("#cus_feedback").val('');
-            $("#feedback_remark").val('');
-            $("#feedbackID").val('');
         }
     });
 }
@@ -2387,7 +2404,7 @@ $('#guarentor_name').change(function () { //Select Guarantor Name relationship w
 ///Customer profile submit///
 $('#submit_update_cus_profile').click(function () {
     if (validation()) {
-        let confirmAction = confirm("Are you sure you want to submit Customer Profile ?");
+        let confirmAction = confirm("Are you sure you want to submit Loan Issue ?");
         if (!confirmAction) {
             event.preventDefault(); // Stop form submission if canceled
             return false;
@@ -2410,7 +2427,7 @@ function validation() {
     var cus_occ_type = $('#cus_occ_type').val(); var cus_occ_detail = $('#cus_occ_detail').val(); var cus_occ_income = $('#cus_occ_income').val(); var cus_occ_address = $('#cus_occ_address').val(); var cus_occ_dow = $('#cus_occ_dow').val(); var cus_occ_abt = $('#cus_occ_abt').val();
     var area_state = $('#area_state').val(); var area_district = $('#area_district').val(); var area_taluk = $('#area_taluk').val();
     var area_confirm = $('#area_confirm').val();
-    var cus_how_know = $('#cus_how_know').val(); var cus_monthly_income = $('#cus_monthly_income').val(); var cus_other_income = $('#cus_other_income').val(); var cus_support_income = $('#cus_support_income').val(); var cus_Commitment = $('#cus_Commitment').val(); var cus_monDue_capacity = $('#cus_monDue_capacity').val(); var cus_loan_limit = $('#cus_loan_limit').val(); var about_cus = $('#about_cus').val();
+    var cus_how_know = $('#cus_how_know').val(); var cus_monthly_income = $('#cus_monthly_income').val(); var cus_other_income = $('#cus_other_income').val(); var cus_support_income = $('#cus_support_income').val(); var cus_Commitment = $('#cus_Commitment').val(); var cus_monDue_capacity = $('#cus_monDue_capacity').val(); var cus_loan_limit = $('#cus_loan_limit').val(); var about_cus = $('#about_cus').val(); let reminderCall = $('#reminder_call').val();
     var guarentor_name = $('#guarentor_name').val(); var guarentor_image = $('#guarentor_image').val(); var guarentorpic = $('#guarentorpic').val(); var loan_id = $('#loan_id').val(); var validation = true;
 
     if (cus_id == '') {
@@ -2635,6 +2652,13 @@ function validation() {
         $('#aboutcusCheck').show();
     } else {
         $('#aboutcusCheck').hide();
+    }
+    if (reminderCall == '') {
+        event.preventDefault();
+        validation = false;
+        $('#reminderCallCheck').show();
+    } else {
+        $('#reminderCallCheck').hide();
     }
     if (pic == '') {
         if (cus_image == '') {
@@ -3743,7 +3767,7 @@ function getFingerPrintDetails(cus_id, cus_name) {
             $('.scanBtn').click(function () {
                 var hand = $(this).prev().val();
                 var name = $(this).parent().prev().find('input[id="name_print"]').val(); 
-                var adhar = $(this).parent().prev().prev().find('input[id="adhar_print"]').val();               
+                var adhar = $(this).parent().prev().prev().find('input[id="adhar_print"]').val();
                 if (hand == '') { //prevent if hand is not selected
                     $(this).prev().css('border-color', 'red');
                 } else {

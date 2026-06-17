@@ -24,7 +24,7 @@
 								<th>Customer Name</th>
 								<th>Area</th>
 								<th>Branch</th>
-								<th>Line</th>
+								<th>Region</th>
 								<th>Mobile</th>
 								<th>Customer Status</th>
 								<th>Action</th>

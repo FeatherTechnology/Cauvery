@@ -189,7 +189,7 @@ function showHandText(hand){
 }
 
 function OnLoadFunctions() {
-const reqid = $('#reqidupd').val();
+    const reqid = $('#reqidupd').val();
 
     $.ajax({
         //in this file, details gonna fetch by customer ID, Not by req id (Because we need all loans from customer)
@@ -500,8 +500,7 @@ const reqid = $('#reqidupd').val();
         $(document).on('click', '.noc-letter', function (event) {
             event.preventDefault();
             let req_id = $(this).data('reqid');
-            let cus_id = $(this).data('cusid');
-            $.post('nocFile/nocLetter.php', { req_id, cus_id }, function (html) {
+            $.post('nocFile/nocLetter.php', { req_id }, function (html) {
                 $('#printnocletter').html(html);
             });
         });

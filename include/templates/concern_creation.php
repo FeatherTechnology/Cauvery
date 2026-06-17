@@ -4,7 +4,7 @@ $getUserDetails = $userObj->getUserDetails($mysqli, $userid);
 if ($getUserDetails) {
     $company_id = $getUserDetails['company_id'];
     $user_name = $getUserDetails['fullname'];
-    $staff_code = $getUserDetails['staff_code'];
+    $staff_code = $getUserDetails['staff_code'] ?? '';
 }
 
 
@@ -179,14 +179,14 @@ if (isset($_POST['submit_concern']) && $_POST['submit_concern'] != '') {
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
-                                        <label for="group">Group</label><span class="required">&nbsp;*</span>
+                                        <label for="group">Sector</label><span class="required">&nbsp;*</span>
                                         <input type="text" class="form-control" id="cus_group" name="cus_group" readonly tabindex='13'>
                                     </div>
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
                                     <div class="form-group">
-                                        <label for="line">Line</label><span class="required">&nbsp;*</span>
+                                        <label for="line">Region</label><span class="required">&nbsp;*</span>
                                         <input type="text" class="form-control" id="cus_line" name="cus_line" readonly tabindex='14'>
                                     </div>
                                 </div>
@@ -327,6 +327,12 @@ if (isset($_POST['submit_concern']) && $_POST['submit_concern'] != '') {
                                         <span class="text-danger" style='display:none' id='staffAssignCheck'>Please Select Staff Assign</span>
                                     </div>
                                 </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="form-group">
+                                        <label for="concern_creation_upload">Uploads</label>
+                                        <input type="file" class="form-control" name="concern_creation_upload[]" id="concern_creation_upload" tabindex="23" multiple>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -336,8 +342,8 @@ if (isset($_POST['submit_concern']) && $_POST['submit_concern'] != '') {
 
                     <div class="col-md-12 ">
                         <div class="text-right">
-                            <button type="submit" name="submit_concern" id="submit_concern" class="btn btn-primary" value="Submit" tabindex="23"><span class="icon-check"></span>&nbsp;Submit</button>
-                            <button type="reset" class="btn btn-outline-secondary" tabindex="24">Clear</button>
+                            <button type="submit" name="submit_concern" id="submit_concern" class="btn btn-primary" value="Submit" tabindex="24"><span class="icon-check"></span>&nbsp;Submit</button>
+                            <button type="reset" class="btn btn-outline-secondary" tabindex="25">Clear</button>
                         </div>
                     </div>
 

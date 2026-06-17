@@ -1,5 +1,6 @@
 <?php
 require_once 'moneyFormatIndia.php';
+$approvalaccess = $userObj->getuser($mysqli, $userid)['approval'];
 
 if (isset($_GET['upd'])) {
 	$idupd = $_GET['upd'];
@@ -175,7 +176,7 @@ if (sizeof($getcusInfoForDoc) > 0) {
 
 ////   Documentation ////////////
 $documentationInfo = $userObj->getAcknowlegementDocument($mysqli, $req_id);
-$checkedStatus = 'checked';
+	 $checkedStatus = 'checked';
 if (sizeof($documentationInfo) > 0) {
 	$document_table_id = $documentationInfo['doc_Tableid'];
 	$document_sts = $documentationInfo['cus_status'];
@@ -225,6 +226,7 @@ if (sizeof($documentationInfo) > 0) {
 	$noc_replace_doc_id = $documentationInfo['noc_replace_doc_id'];
 	$submitted = $documentationInfo['submitted'];
 	$checkedStatus = ($doc_sts == 'YES' || $doc_sts == '' || $doc_sts === null) ? 'checked' : '';
+	
 } { //to find the documentation has been submitted in acknowledgement screen or not
 	$cus_doc = $mysqli->query("SELECT submitted FROM `acknowlegement_documentation` WHERE `req_id` ='$idupd'");
 	$cus_doc_row =  $cus_doc->fetch_assoc();
@@ -234,7 +236,9 @@ if (sizeof($documentationInfo) > 0) {
 	} else {
 		$document_sts = '';
 	}
-} //////   Documentation End ////////////
+	
+	
+}//////   Documentation End ////////////
 
 ///////// Loan Calculation ///////////////
 $getCusInfoForLoanCal = $userObj->getAcknowlegeCusInfoForLoanCal($mysqli, $idupd);
@@ -307,7 +311,7 @@ if (sizeof($getLoanCalculation) > 0) {
 		$getLoanCalCategory = $userObj->getAckVerificationLoanCalCategory($mysqli, $loan_cal_id);
 	}
 
-	$emicheck = strpos($due_type_lc, 'Interest') === false;
+	$emicheck = strpos($due_type_lc, 'Interest') === false; 
 }
 
 ///////// Loan Calculation End ///////////////
@@ -489,8 +493,8 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 		left: 22px;
 		/* text moves to left side when active */
 	}
-
 	/* Replace status design END */
+
 </style>
 
 <!-- Page header start -->
@@ -1102,7 +1106,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 								</div>
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 									<div class="form-group">
-										<label for="area_group">Group</label>
+										<label for="area_group">Sector</label>
 										<input type="text" class="form-control" name="area_group" id="area_group" value="<?php if (isset($area_group)) {
 																																echo $area_group;
 																															} ?>" readonly tabindex="40">
@@ -1111,7 +1115,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 									<div class="form-group">
-										<label for="area_line">Line</label>
+										<label for="area_line">Region</label>
 										<input type="text" class="form-control" name="area_line" id="area_line" value="<?php if (isset($area_line)) {
 																															echo $area_line;
 																														} ?>" readonly tabindex="41">
@@ -1385,8 +1389,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 		</form>
 	</div>
 	<!-- Customer Form End -->
-	<div id="printcollection" style="display: none"></div>
-
+<div id="printcollection" style="display: none"></div>
 
 	<!--  ///////////////////////////////////////////////////////////////// Documentation  start ////////////////////////////////////////////////////////// -->
 	<div id="cus_document" style="display: none;">
@@ -1525,7 +1528,6 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 						</div>
 					</div>
 					<!-- Document History END -->
-
 					<!-- Choosing Document START -->
 					<div class="card">
 						<div class="card-header"> Documents</div>
@@ -1750,7 +1752,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 										</div>
 									</div>
 
-									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12" id="docUpd">
+									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12" id="docUpd" >
 										<div class="form-group">
 											<label for="MortgageDocumentUpd"> Mortgage Document Uploads </label>
 											<input type="file" onchange="compressImage(this,200)" class="form-control" id="mortgage_document_upd" name="mortgage_document_upd" tabindex="78">
@@ -1759,7 +1761,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 											<span class="text-danger" id="mortgagedocUpdCheck"> Upload Mortgage Document </span>
 										</div>
 									</div>
-									<!-- 
+<!-- 
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="pendingDocument"> Pending </label> <span class="required">&nbsp;*</span>
@@ -3290,12 +3292,12 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 </div>
 <!-- END  Add Document Info Modal -->
 <!-- Add Customer Label Modal  START -->
-<div class="modal fade addCusLabel" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addCusLabel" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="myLargeModalLabel">Add Customer Feedback </h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="feedbackList()">
+				<button type="button" class="close" data-dismiss="modal" onclick="feedbackList()">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -3339,8 +3341,24 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
+							<label for="cus_feedback_department"> Department </label> <span class="required">&nbsp;*</span>
+							<select type="text" class="form-control" id="cus_feedback_department" name="cus_feedback_department" tabindex='3'>
+								<option value=""> Select Feedback </option>
+								<option value="1"> Front Office </option>
+								<option value="2"> Back Office </option>
+								<option value="3"> Sales </option>
+								<option value="4"> Verification </option>
+								<option value="5"> Refine </option>
+								<option value="6"> Other </option>
+							</select>
+							<span class="text-danger" id="departmentCheck"> Select Department </span>
+						</div>
+					</div>
+
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+						<div class="form-group">
 							<label for="cus_feedback"> Feedback </label> <span class="required">&nbsp;*</span>
-							<select type="text" class="form-control" id="cus_feedback" name="cus_feedback" tabindex='3'>
+							<select type="text" class="form-control" id="cus_feedback" name="cus_feedback" tabindex='4'>
 								<option value=""> Select Feedback </option>
 								<option value="5"> Excellent </option>
 								<option value="4"> Good </option>
@@ -3352,18 +3370,25 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 						</div>
 					</div>
 
-					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12"></div>
-					<div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
-							<label for="feedback_remark"> Remarks </label>
-							<textarea class="form-control" name="feedback_remark" id="feedback_remark" tabindex='4'></textarea>
+							<label for="customer_summary_uploads">Uploads</label>
+							<input type="file" class="form-control" name="customer_summary_uploads[]" id="customer_summary_uploads" tabindex="5" multiple>
+							<input type="hidden" id="cus_summary_upload">
 						</div>
 					</div>
 
-					<div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-12"></div>
+					<div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12">
+						<div class="form-group">
+							<label for="feedback_remark"> Remarks </label>
+							<textarea class="form-control" name="feedback_remark" id="feedback_remark" tabindex='6'></textarea>
+						</div>
+					</div>
+
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12"></div>
 					<div class="col-xl-2 col-lg-2 col-md-6 col-sm-4 col-12">
 						<input type="hidden" name="feedbackID" id="feedbackID">
-						<button type="button" name="feedbackBtn" id="feedbackBtn" class="btn btn-primary" style="margin-top: 35px;" tabindex='5'> Submit </button>
+						<button type="button" name="feedbackBtn" id="feedbackBtn" class="btn btn-primary" style="margin-top: 5px;" tabindex='7'> Submit </button>
 					</div>
 				</div>
 				</br>
@@ -3376,7 +3401,9 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 								<th width="50"> S.No </th>
 								<th> Date</th>
 								<th> Feedback Label </th>
+								<th> Department </th>
 								<th> Feedback </th>
+								<th> Upload </th>
 								<th> ACTION </th>
 							</tr>
 						</thead>
@@ -3387,14 +3414,14 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="feedbackList();" tabindex='6'>Close</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="feedbackList();" tabindex='8'>Close</button>
 			</div>
 		</div>
 	</div>
 </div>
 <!-- END  Add Customer Label Info Modal -->
 <!--  Add Customer Label Info Modal -->
- <div class="modal fade" id="add_feedback_lable" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+ <div class="modal fade" id="add_feedback_lable" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg " role="document">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
@@ -3594,5 +3621,4 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 	</div>
 </div>
  <!-- /////////////////////////////////////////////////////////////////// Commitment chart Modal End ////////////////////////////////////////////////////////////////////// -->
-
 <?php require_once __DIR__ . "/../common/fingerprintlibrary.php"; ?>

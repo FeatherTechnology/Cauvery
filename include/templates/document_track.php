@@ -26,8 +26,8 @@
 								<th>Customer Name</th>
 								<th>Branch</th>
 								<th>Area</th>
-								<th>Group</th>
-								<th>Line</th>
+								<th>Sector</th>
+								<th>Region</th>
 								<th>Document Holder</th>
 								<th>Replace Doc</th>
 								<th>Action</th>
