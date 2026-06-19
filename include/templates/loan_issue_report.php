@@ -16,11 +16,11 @@
 				<input type="date" id='from_date' name='from_date' class="toggle-button" value=''>
 				<input type="date" id='to_date' name='to_date' class="toggle-button" value=''>
 				<select type="text" class="toggle-button" id='loan_category' name='loan_category'>
-                    <option value=''>Select Loan Category</option>
-                </select>
+					<option value=''>Select Loan Category</option>
+				</select>
 				<input type="button" id='reset_btn' name='reset_btn' class="toggle-button" style="background-color: #0C70AB;color:white" value='Reload'>
 				<?php if (DACC != 1) { ?><input type="button" id='download_btn' name='download_btn' class="toggle-button" style="background-color: #0C70AB;color:white" value='Download'>
-					<?php } ?>
+				<?php } ?>
 			</div>
 			<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 				<div class="card">
@@ -84,7 +84,7 @@
 										<td></td>
 										<td></td>
 										<td></td>
-										<td colspan="12"></td>
+										<td colspan="10"></td>
 									</tr>
 								</tfoot>
 							</table>

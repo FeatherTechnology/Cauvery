@@ -128,7 +128,7 @@ $(document).ready(function () {
             Swal.fire({
               title: "Feedback Label Deleted!",
               icon: "success",
-              confirmButtonColor: "#009688",
+              confirmButtonColor: "#0C70AB",
             });
             cusfeedbacklist();
           } else if (result === "USED") {
@@ -136,13 +136,13 @@ $(document).ready(function () {
               title: "Already Used!",
               text: "This feedback label is already used in Customer Feedback.",
               icon: "warning",
-              confirmButtonColor: "#009688",
+              confirmButtonColor: "#0C70AB",
             });
           } else {
             Swal.fire({
               title: "Error Occurred!",
               icon: "error",
-              confirmButtonColor: "#009688",
+              confirmButtonColor: "#0C70AB",
             });
           }
         },
