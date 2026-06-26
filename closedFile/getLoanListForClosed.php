@@ -178,13 +178,13 @@ if (isset($_POST["bal_amt"])) {
             dom: 'lBfrtip',
             buttons: [{
                     extend: 'excel',
-                    action: function (e, dt, button, config) {
-                            var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-                            var dynamic = curDateJs('Loan_List'); // or any base
-                            config.title = dynamic;      // for versions that use title as filename
-                            config.filename = dynamic;   // for html5 filename
-                            defaultAction.call(this, e, dt, button, config);
-                        }
+                    action: function(e, dt, button, config) {
+                        var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
+                        var dynamic = curDateJs('Loan_List'); // or any base
+                        config.title = dynamic; // for versions that use title as filename
+                        config.filename = dynamic; // for html5 filename
+                        defaultAction.call(this, e, dt, button, config);
+                    }
                 },
                 {
                     extend: 'colvis',
@@ -201,7 +201,7 @@ if (isset($_POST["bal_amt"])) {
     });
 </script>
 
-<?php 
+<?php
 // Close the database connection
 $connect = null;
 ?>
