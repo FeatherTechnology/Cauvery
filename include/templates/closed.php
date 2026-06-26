@@ -44,7 +44,7 @@ if ($idupd > 0) {
 }
 
 $getCustomerReg = $userObj->getCustomerRegister($mysqli, $cus_id);
-if (sizeof($getCustomerReg) > 0) { 
+if (sizeof($getCustomerReg) > 0) {
 	$autogen_cus_id 			= $getCustomerReg['autogen_cus_id'];
 }
 ?>
@@ -136,7 +136,9 @@ if (sizeof($getCustomerReg) > 0) {
 									<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 										<div class="form-group">
 											<label for="autogen_cus_id">Customer ID</label>
-											<input type="text" class="form-control" id="autogen_cus_id" name="autogen_cus_id" value='<?php if (isset($autogen_cus_id)) { echo $autogen_cus_id; } ?>' readonly>
+											<input type="text" class="form-control" id="autogen_cus_id" name="autogen_cus_id" value='<?php if (isset($autogen_cus_id)) {
+																																			echo $autogen_cus_id;
+																																		} ?>' readonly>
 										</div>
 									</div>
 
@@ -144,8 +146,8 @@ if (sizeof($getCustomerReg) > 0) {
 										<div class="form-group">
 											<label for="first_name">First Name</label>
 											<input type="text" class="form-control" id="first_name" name="first_name" value='<?php if (isset($first_name)) {
-																																echo $first_name;
-																															} ?>' readonly>
+																																	echo $first_name;
+																																} ?>' readonly>
 										</div>
 									</div>
 
@@ -209,8 +211,7 @@ if (sizeof($getCustomerReg) > 0) {
 										<input type="hidden" name="cus_image" id="cus_image" value="<?php if (isset($cus_pic)) {
 																										echo $cus_pic;
 																									} ?>">
-										<img id='imgshow' class="img_show" src=<?php //if (isset($cus_pic)){echo 'uploads/request/customer/'.$cus_pic ;}else{ echo 'img/avatar.png'; }
-																				?> />
+										<img id='imgshow' class="img_show" />
 									</div>
 								</div>
 							</div>
@@ -693,11 +694,11 @@ if (sizeof($getCustomerReg) > 0) {
 								<span class="text-danger" id="feedbacklabelCheck" style='display:none'> Select Feedback Label</span>
 							</div>
 							<div style="padding: 20px 0px 0px 10px;  ">
-							    <button type="button" class="btn btn-primary" id="add_cus_feedback" name="add_cus_feedback" data-toggle="modal" data-target="#add_feedback_lable" style="display: <?= ($approvalaccess == '0' ? 'inline-block' : 'none'); ?>;" tabindex="2"><span class="icon-add"></span></button>
+								<button type="button" class="btn btn-primary" id="add_cus_feedback" name="add_cus_feedback" data-toggle="modal" data-target="#add_feedback_lable" style="display: <?= ($approvalaccess == '0' ? 'inline-block' : 'none'); ?>;" tabindex="2"><span class="icon-add"></span></button>
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label for="cus_feedback_department"> Department </label> <span class="required">&nbsp;*</span>
@@ -757,7 +758,7 @@ if (sizeof($getCustomerReg) > 0) {
 						<thead>
 							<tr>
 								<th width="50"> S.No </th>
-								<th > User Name </th>
+								<th> User Name </th>
 								<th> Created Date </th>
 								<th> Feedback Label </th>
 								<th> Department </th>
@@ -781,14 +782,14 @@ if (sizeof($getCustomerReg) > 0) {
 	<div class="modal-dialog modal-lg " role="document">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add Feedback Label  </h5>
+				<h5 class="modal-title" id="exampleModalLongTitle">Add Feedback Label </h5>
 				<button type="button" class="close" data-dismiss="modal" tabindex="7" aria-label="Close" onclick="getFeedbackLable()">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
 				<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-					
+
 					<div class="card-body" style="height: 400px;">
 						<div class="row ">
 							<!--Fields -->
@@ -811,27 +812,27 @@ if (sizeof($getCustomerReg) > 0) {
 								</div>
 								<br>
 							</div>
-							<div  class="col-md-12" id="cus_feedbackListTable_div">
-									<table class="table custom-table" id="cus_feedbackListTable">
-										<thead>
-											<tr>
-												<th width="50"> S.No </th>
-												<th> Feedback Label  </th>
-												<th> ACTION </th>
-											</tr>
-										</thead>
-										<tbody>
+							<div class="col-md-12" id="cus_feedbackListTable_div">
+								<table class="table custom-table" id="cus_feedbackListTable">
+									<thead>
+										<tr>
+											<th width="50"> S.No </th>
+											<th> Feedback Label </th>
+											<th> ACTION </th>
+										</tr>
+									</thead>
+									<tbody>
 
-										</tbody>
-									</table>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
-					
+
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-secondary" data-dismiss="modal" tabindex="6"  onclick="getFeedbackLable()">Close</button>
+				<button class="btn btn-secondary" data-dismiss="modal" tabindex="6" onclick="getFeedbackLable()">Close</button>
 			</div>
 		</div>
 	</div>
