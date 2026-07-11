@@ -2738,14 +2738,15 @@ function bexpenseModalBtnClick() {
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
                         <div class="form-group">
                             <label for="trans_id_bexp">Transaction ID</label><span class='text-danger'>&nbsp;*</span>
-                            <input type='text' id="trans_id_bexp" name="trans_id_bexp" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=expense_cash_type]:checked').val(),dateField: '#trans_date'})">
+                            <input type='text' id="trans_id_bexp" name="trans_id_bexp" class="form-control" placeholder="Enter Transaction ID" onblur="checkTransactionCommon({transInput: this, type: 'debit',  bankId: $('input[name=expense_cash_type]:checked').val(),dateField: '#trans_date_bexp'})">
                             <span id='trans_id_bexpCheck' class="text-danger" style="display:none">Please Enter Transaction ID</span>
                         </div>
                     </div>
                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
                         <div class="form-group">
-                            <label for="trans_date">Transaction Date</label><span class='text-danger'>&nbsp;*</span>
-                            <input type="text" id="trans_date" name="trans_date" class="form-control" placeholder="Transaction Date" readonly >
+                            <label for="trans_date_bexp">Transaction Date</label><span class='text-danger'>&nbsp;*</span>
+                            <input type="text" id="trans_date_bexp" name="trans_date_bexp" class="form-control" placeholder="Transaction Date" readonly>
+                              <span id='trans_date_bexpCheck' class="text-danger" style="display:none">Please Enter Transaction Date</span>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-8">
@@ -2826,7 +2827,7 @@ function bexpenseModalBtnClick() {
 
                 var user_id = $('#user_id_bexp').val(); var username = $('#username_bexp').val(); var usertype = $('#usertype_bexp').val(); var ref_code = $('#ref_code_bexp').val(); var cat_bexp = $('#cat_bexp').val();
                 var bank_id = $('#bank_id_bexp').val(); var part_bexp = $('#part_bexp').val(); var vou_id_bexp = $('#vou_id_bexp').val(); var trans_id_bexp = $('#trans_id_bexp').val(); var rec_per_bexp = $('#rec_per_bexp').val(); var remark_bexp = $('#remark_bexp').val();
-                var amt_bexp = $('#amt_bexp').val(); var upd_bexp = $('#upd_bexp')[0].files[0]; var trans_date = $('#trans_date').val(); var sts = 'debit';
+                var amt_bexp = $('#amt_bexp').val(); var upd_bexp = $('#upd_bexp')[0].files[0]; var trans_date_bexp = $('#trans_date_bexp').val(); var sts = 'debit';
 
                 var upload = $("#upd_bexp")[0];
                 var file = upload.files[0];
@@ -2845,7 +2846,7 @@ function bexpenseModalBtnClick() {
                 formData.append('rec_per', rec_per_bexp);
                 formData.append('remark', remark_bexp);
                 formData.append('amt', amt_bexp);
-                formData.append('trans_date', trans_date);
+                formData.append('trans_date', trans_date_bexp);
                 formData.append('sts', sts);
 
 
@@ -2893,7 +2894,7 @@ function bexpenseModalBtnClick() {
 
 // Validation for bank expenses
 function bexpenseValidation() {
-    var cat_bexp = $('#cat_bexp').val(); var part_bexp = $('#part_bexp').val(); var trans_id_bexp = $('#trans_id_bexp').val(); var vou_id_bexp = $('#vou_id_bexp').val(); var rec_per_bexp = $('#rec_per_bexp').val();
+    var cat_bexp = $('#cat_bexp').val(); var part_bexp = $('#part_bexp').val(); var trans_id_bexp = $('#trans_id_bexp').val(); var trans_date_bexp = $('#trans_date_bexp').val(); var vou_id_bexp = $('#vou_id_bexp').val(); var rec_per_bexp = $('#rec_per_bexp').val();
     var remark_bexp = $('#remark_bexp').val(); var amt_bexp = $('#amt_bexp').val();
     var response = 0;
 
@@ -2911,6 +2912,7 @@ function bexpenseValidation() {
     validateField(part_bexp, '#part_bexpCheck');
     validateField(vou_id_bexp, '#vou_id_bexpCheck');
     validateField(trans_id_bexp, '#trans_id_bexpCheck');
+    validateField(trans_date_bexp, '#trans_date_bexpCheck');
     validateField(rec_per_bexp, '#rec_per_bexpCheck');
     validateField(remark_bexp, '#remark_bexpCheck');
     validateField(amt_bexp, '#amt_bexpCheck');

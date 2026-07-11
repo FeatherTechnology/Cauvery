@@ -190,6 +190,7 @@ $(document).ready(function () {
         
         if(!transactionValue){
             swarlErrorAlert("Kindly Fill Value!"); 
+            $('#transaction_id').val('')
             return;
         }
 
