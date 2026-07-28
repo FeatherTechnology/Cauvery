@@ -52,19 +52,30 @@
 								<thead>
 									<tr>
 										<th rowspan="3">User Name</th>
-										<th colspan="10">Mobile</th>
-										<th colspan="10">Direct</th>
+										<th colspan="20">Mobile</th>
+										<th colspan="20">Direct</th>
 									</tr>
 									<tr>
 										<!-- For Mobile -->
+										<th colspan="5">NOC Call</th>
 										<th colspan="5">Interest</th>
 										<th colspan="5">Not Interest</th>
+										<th colspan="5">Unavailable</th>
 
 										<!-- For Direct -->
+										<th colspan="5">NOC Call</th>
 										<th colspan="5">Interest</th>
 										<th colspan="5">Not Interest</th>
+										<th colspan="5">Unavailable</th>
 									</tr>
 									<tr>
+										<!-- For Mobile NOC Call -->
+										<th>New</th>
+										<th>Renewal</th>
+										<th>Re-Active</th>
+										<th>Repromotion</th>
+										<th>Total</th>
+
 										<!-- For Mobile interest -->
 										<th>New</th>
 										<th>Renewal</th>
@@ -73,6 +84,19 @@
 										<th>Total</th>
 
 										<!-- For Mobile not interest -->
+										<th>New</th>
+										<th>Renewal</th>
+										<th>Re-Active</th>
+										<th>Repromotion</th>
+										<th>Total</th>
+											<!-- For Mobile Unavailable -->
+										<th>New</th>
+										<th>Renewal</th>
+										<th>Re-Active</th>
+										<th>Repromotion</th>
+										<th>Total</th>
+
+										<!-- For Direct NOC Call -->
 										<th>New</th>
 										<th>Renewal</th>
 										<th>Re-Active</th>
@@ -92,6 +116,13 @@
 										<th>Re-Active</th>
 										<th>Repromotion</th>
 										<th>Total</th>
+
+										<!-- For Direct Unavailable -->
+										<th>New</th>
+										<th>Renewal</th>
+										<th>Re-Active</th>
+										<th>Repromotion</th>
+										<th>Total</th></tfoot>
 									</tr>
 								</thead>
 
@@ -99,6 +130,13 @@
 								<tfoot>
 									<tr>
 										<td>Total</td>
+										<!-- For Mobile NOC Call -->
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										
 										<!-- For Mobile interest -->
 										<td></td>
 										<td></td>
@@ -113,6 +151,20 @@
 										<td></td>
 										<td></td>
 
+										<!-- For Mobile Unavailable -->
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+
+										<!-- For Direct NOC Call -->
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+
 										<!-- For Direct interest -->
 										<td></td>
 										<td></td>
@@ -121,6 +173,13 @@
 										<td></td>
 
 										<!-- For Direct not interest -->
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+
+										<!-- For Direct Unavailable -->
 										<td></td>
 										<td></td>
 										<td></td>

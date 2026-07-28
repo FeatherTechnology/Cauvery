@@ -46,6 +46,7 @@ $column = [
     'v.responsible',
     'v.cus_data',
     'v.cus_data',
+    'lf.follow_date',
     'v.cus_status',
     'v.req_id'
 ];
@@ -70,7 +71,8 @@ $query = "SELECT DISTINCT
     bc.branch_name,  
     alm.line_name, 
     lcc.loan_category_creation_name,
-    ac.ag_name AS agent_name
+    ac.ag_name AS agent_name,
+    lf.follow_date
 
     FROM in_verification v
     LEFT JOIN agent_creation ac ON ac.ag_id = v.agent_id
@@ -82,6 +84,7 @@ $query = "SELECT DISTINCT
     JOIN area_line_mapping_area almsa ON almsa.area_id = a.area_id
     JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
     JOIN loan_category_creation lcc ON lcc.loan_category_creation_id = v.loan_category
+    LEFT JOIN loan_followup lf ON lf.cus_id = v.cus_id AND lf.follow_date = (SELECT MAX(lf1.follow_date) FROM loan_followup lf1 WHERE lf1.cus_id = v.cus_id)
     WHERE v.status = 0 and (v.cus_status NOT IN(4, 5, 6, 7, 8, 9) and v.cus_status < 14) "; //  < 14 means issued
 
 /* user-level restriction */
@@ -218,8 +221,8 @@ foreach ($result as $row) {
                     // First day of next month
                     $nextMonthStart = date('Y-m-d', strtotime($monthEnd . ' +1 day'));
 
-                    // Add 3 months to calculate reactive date
-                    $reactiveDate = date('Y-m-d', strtotime($nextMonthStart . ' +3 months'));
+                    // Add 6 months to calculate reactive date
+                    $reactiveDate = date('Y-m-d', strtotime($nextMonthStart . ' +6 months'));
 
                     $today = date('Y-m-d');
 
@@ -240,6 +243,7 @@ foreach ($result as $row) {
     }
 
     $sub[] = $existing_type;
+    $sub[] = !empty($row['follow_date']) ? date('d-m-Y', strtotime($row['follow_date'])) : '';
     $id = $row['req_id'];
 
     $cus_status = $row['cus_status'];

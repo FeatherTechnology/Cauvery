@@ -22,6 +22,7 @@ $group_id           = '';
 $download_access = '';
 $report_access = '';
 $home_access = '';
+$cus_summary_access = '';
 $promotion_access = '';
 $promotion_activity_mapping_access = '';
 $mastermodule    = '';
@@ -56,11 +57,18 @@ $closed = '';
 $nocmodule = '';
 $noc = '';
 $noc_mapping_access = '';
+$req_mapping_access = '';
+$noc_handover = '';
+$noc_replace = '';
+$doc_replace_remove_access = '';
 $doctrackmodule = '';
 $doctrack = '';
 $doc_rec_access = '';
 $updatemodule = '';
 $update_screen = '';
+$update_cp_edit_access = '';
+$update_documentation = '';
+$update_doc_edit_access = '';
 $concernmodule = '';
 $concern_creation = '';
 $concern_solution = '';
@@ -127,6 +135,7 @@ $back_office_count_report = '';
 $concern_report  = '';
 $partners_report  = '';
 $location_track_report = '';
+$outstanding_report = '';
 $search_module = '';
 $search_screen = '';
 $bulk_upload_module = '';
@@ -201,6 +210,7 @@ if($idupd>0)
 			$download_access          		     = $getUser['download_access'];
 			$report_access          		     = $getUser['report_access'];
 			$home_access          		     = $getUser['home_access'];
+			$cus_summary_access          		     = $getUser['cus_summary_access'];
 			$promotion_access          		     = $getUser['promotion_access'];
 			$promotion_activity_mapping_access = $getUser['promotion_activity_mapping_access'];
 			$mastermodule          		     = $getUser['mastermodule'];
@@ -238,15 +248,18 @@ if($idupd>0)
 			$noc          		     	= $getUser['noc'];
 			$noc_handover          		     = $getUser['noc_handover'];
 			$noc_replace          		     = $getUser['noc_replace'];
+			$doc_replace_remove_access          		     = $getUser['doc_replace_remove_access'];
 			$noc_replace_access          		     = $getUser['noc_replace_access'];
 			$noc_mapping_access          		     = $getUser['noc_mapping_access'];
+			$req_mapping_access          		     = $getUser['req_mapping_access'];
 			$doctrackmodule 				= $getUser['doctrackmodule'];
 			$doctrack 				= $getUser['doctrack'];
 			$doc_rec_access 				= $getUser['doc_rec_access'];
 			$updatemodule 				= $getUser['updatemodule'];
 			$update_screen 				= $getUser['update_screen'];
-			$update_screen_id 				= $getUser['update_screen_id'];
 			$update_cp_edit_access 				= $getUser['update_cp_edit_access'];
+			$update_documentation              = $getUser['update_documentation'];
+			$update_doc_edit_access              = $getUser['update_doc_edit_access'];
 			$concernmodule          		     = $getUser['concernmodule'];
 			$concern_creation          		     = $getUser['concern_creation'];
 			$concern_solution          		     = $getUser['concern_solution'];
@@ -321,6 +334,7 @@ if($idupd>0)
 			$back_office_count_report = $getUser['back_office_count_report'];
 			$branch_request_count_report = $getUser['branch_request_count_report'];
 			$location_track_report = $getUser['location_track_report'];
+			$outstanding_report = $getUser['outstanding_report'];
 			$search_module = $getUser['search_module'];
 			$search_screen = $getUser['search'];
 			$bulk_upload_module = $getUser['bulk_upload_module'];
@@ -631,17 +645,29 @@ if($idupd>0)
                                         </div>
                                     </div>	
 									  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-											<div class="form-group">
-												<label for="home_access">Home Upload Access</label>&nbsp;<span class="text-danger">*</span>
-												<select class="form-control" name="home_access" id="home_access" tabindex="18">
-													<option value="">Select Home Upload Access</option>
-													<option value="0" <?php if($home_access == '0') echo 'selected';?> >Yes</option>
-													<option value="1" <?php if($home_access == '1') echo 'selected';?> >No</option>
-												</select>
-												<br>
-												<span class="text-danger" style='display:none' id='HomeAccessCheck'>Please select Home Upload Access</span>
-											</div>
-										</div>								
+										<div class="form-group">
+											<label for="home_access">Home Upload Access</label>&nbsp;<span class="text-danger">*</span>
+											<select class="form-control" name="home_access" id="home_access" tabindex="18">
+												<option value="">Select Home Upload Access</option>
+												<option value="0" <?php if($home_access == '0') echo 'selected';?> >Yes</option>
+												<option value="1" <?php if($home_access == '1') echo 'selected';?> >No</option>
+											</select>
+											<br>
+											<span class="text-danger" style='display:none' id='HomeAccessCheck'>Please select Home Upload Access</span>
+										</div>
+									</div>								
+									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+										<div class="form-group">
+											<label for="cus_summary_access">Customer Summary Access</label>&nbsp;<span class="text-danger">*</span>
+											<select class="form-control" name="cus_summary_access" id="cus_summary_access" tabindex="18">
+												<option value="">Select Customer Summary Access</option>
+												<option value="0" <?php if($cus_summary_access == '0') echo 'selected';?> >Yes</option>
+												<option value="1" <?php if($cus_summary_access == '1') echo 'selected';?> >No</option>
+											</select>
+											<br>
+											<span class="text-danger" style='display:none' id='cusSummaryAccessCheck'>Please select Customer Summary Access</span>
+										</div>
+									</div>									
 								</div>
 							</div>
 						</div>
@@ -747,7 +773,7 @@ if($idupd>0)
 						<input type="checkbox" value="Yes" <?php if($idupd > 0){ if($requestmodule==0){ echo'checked'; }} ?> tabindex="32" class="" id="requestmodule" name="requestmodule" >&nbsp;&nbsp;
 						<label class="custom-control-label" for="requestmodule">
 							<h5>Request</h5>
-						</label>
+						</label>&nbsp;&nbsp; <span class="text-danger" style='display:none' id='requestCheck'>Please Check Request </span>
 					</div>
 					<br>
 					<div class="row">
@@ -757,7 +783,7 @@ if($idupd>0)
                                 <label class="custom-control-label" for="request">Request</label>
                             </div>
                         </div>
-					<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12 agent_div" style="display: none">
+					<div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12 agent_div" style="display: none">
                         <div class="form-group">
                             <label for="agent1">Agent Name</label>
 							<input type='hidden' class='form-control' id="agentforstaff" name="agentforstaff" value="<?php if(isset($agentforstaff)){echo $agentforstaff;}?>">
@@ -773,6 +799,19 @@ if($idupd>0)
 								<label class="custom-control-label" for="request_list_access">All Request List Access</label>
 							</div>
 						</div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+							  <div class="custom-control custom-checkbox">
+								<label for="req_mapping_access">Request Mapping Access</label>&nbsp;<span class="text-danger">*</span>
+								<select tabindex="64" type="text" class="form-control request-checkbox screen-validations" id="req_mapping_access" name="req_mapping_access" style="width: 250px;" <?php if($req_mapping_access =='') echo 'disabled'; ?> >
+									<option value="">Select Request Mapping Access</option>
+									<option value="1" <?php if($req_mapping_access == '1') echo 'selected';?> >Sector</option>
+									<option value="2" <?php if($req_mapping_access == '2') echo 'selected';?> >Region</option>
+									<option value="3" <?php if($req_mapping_access == '3') echo 'selected';?> >Zone</option>
+								</select>
+								<br>
+								<span class="text-danger" style='display:none' id='reqCheck'>Please Select Request Mapping Access</span>
+							</div>
+                        </div>
 					</div>
 					
 					<hr>
@@ -918,6 +957,17 @@ if($idupd>0)
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($noc_replace==0){ echo'checked'; }} ?> tabindex="52" class="doctrack-checkbox screen-validations" id="noc_replace" name="noc_replace" disabled>&nbsp;&nbsp;
                                 <label class="custom-control-label" for="noc_replace">DOC Replace</label>
+                            </div>
+							</div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" tabindex="55">
+                            <div class="custom-control custom-checkbox">
+                                <select class='form-control' id='doc_replace_remove_access' name='doc_replace_remove_access' style="width: 250px;" disabled>
+									<option value="">Select Remove Access</option>
+									<option value="1" <?php if(isset($doc_replace_remove_access) && $doc_replace_remove_access == '1') echo 'selected'; ?>>Yes</option>
+									<option value="2" <?php if(isset($doc_replace_remove_access) && $doc_replace_remove_access == '2') echo 'selected'; ?>>No</option>
+								</select>
+								<br/>
+								<span class='text-danger removeAccessCheck' style="display:none">Please Select Remove Access</span>
                             </div>
                         </div>
 					</div>
@@ -1082,28 +1132,37 @@ if($idupd>0)
                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($update_screen==0){ echo'checked'; }} ?> tabindex="70" class="update-checkbox screen-validations" id="update" name="update" disabled>&nbsp;&nbsp;
-                                <label class="custom-control-label" for="update">Update</label>
+                                <label class="custom-control-label" for="update">Customer Profile</label>
                             </div>
                         </div>
-						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 update_screen_div"  style='display:none;' tabindex="71">
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" tabindex="71">
                             <div class="custom-control custom-checkbox">
-								<input type='hidden' id='update_screen_id' name='update_screen_id' value='<?php if(isset($update_screen_id)) echo $update_screen_id; ?>'>
-                                <select class='form-control' id='update_screen' name='update_screen' multiple>
-									<option value="">Select Update screen</option>
-									<option value="1">Customer Profile</option>
-									<option value="2">Documentation</option>
+								<input type='hidden' id='update_cp_edit_access_id' name='update_cp_edit_access_id' value='<?php if(isset($update_cp_edit_access)) echo $update_cp_edit_access; ?>'>
+                                <select class='form-control' name='update_cp_edit_access' id='update_cp_edit_access' multiple>
+									<option value="">Select Customer Profile Access</option>
+									<option value="1">Customer Feedback</option>
+									<option value="2">Overall Customer Profile</option>
+									<option value="3">Fingerprint Info</option>
 								</select>
-								<span class='text-danger updateScreenCheck' style="display:none">Please Select Update Screen</span>
+								<span class='text-danger cpEditScreenCheck' style="display:none">Please Select Customer Profile Access</span>
                             </div>
                         </div>
-						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 update_cp_edit_access_div" style='display:none;' tabindex="72">
+						
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
                             <div class="custom-control custom-checkbox">
-                                <select class='form-control' name='update_cp_edit_access' id='update_cp_edit_access'>
-									<option value="0">Select Customer Profile Edit Access</option>
-									<option value="1" <?php if(isset($update_cp_edit_access) && $update_cp_edit_access == '1') echo 'selected'; ?>>Customer Feedback</option>
-									<option value="2" <?php if(isset($update_cp_edit_access) && $update_cp_edit_access == '2') echo 'selected'; ?>>Overall Customer Profile</option>
+                                <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($update_documentation==0){ echo'checked'; }} ?> tabindex="72" class="update-checkbox screen-validations" id="update_documentation" name="update_documentation" disabled>&nbsp;&nbsp;
+                                <label class="custom-control-label" for="update_documentation">Documentation</label>
+                            </div>
+                        </div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" tabindex="73">
+                            <div class="custom-control custom-checkbox">
+                                 <select class='form-control' name='update_doc_edit_access' id='update_doc_edit_access' style="width: 250px;" disabled>
+									<option value="">Select Documentation Edit Access</option>
+									<option value="1" <?php if(isset($update_doc_edit_access) && $update_doc_edit_access == '1') echo 'selected'; ?>>Yes</option>
+									<option value="2" <?php if(isset($update_doc_edit_access) && $update_doc_edit_access == '2') echo 'selected'; ?>>No</option>
 								</select>
-								<span class='text-danger cpEditScreenCheck' style="display:none">Please Select Customer Profile Edit Access</span>
+								<br/>
+								<span class='text-danger updateScreenCheck' style="display:none">Please Select Documentation Edit Access</span>
                             </div>
                         </div>
 					</div>
@@ -1518,6 +1577,12 @@ if($idupd>0)
                             </div>
 						
                         </div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" value="Yes" <?php if($idupd > 0){ if($outstanding_report==0){ echo'checked'; }} ?> tabindex="127" class="acounts-checkbox    screen-validations" id="outstanding_report" name="outstanding_report" disabled>&nbsp;&nbsp;
+									<label class="custom-control-label" for="outstanding_report">Outstanding</label>
+								</div>
+							</div>
 							
 						</div>
 					</div>

@@ -1,7 +1,25 @@
 /**
  * Centralized logic for Mantra Fingerprint Scanner
  */
-function commonCaptureFinger(successCallback, errorCallback) {
+$(document).on('click','.scanBtn', function () {
+    let hand = $(this).prev().val();
+    let aadhaarprint = $(this).parent().prev().prev().prev().find('input[id="adhar_print"]');
+    let aadhaar = aadhaarprint.attr('data-no');
+    let name = aadhaarprint.val();
+    
+    if (hand == '') { //prevent if hand is not selected
+        $(this).prev().css('border-color', 'red');
+    } else {
+        $(this).prev().css('border-color', '#009688');
+        let btn = $(this);
+        commonCaptureFinger((ansi) => {
+            btn.next().val(ansi);
+            commonStoreFingerprint(ansi, hand, aadhaar, name);
+        });
+    }
+});
+
+function commonCaptureFinger(successCallback) {
 
     const quality = 60;
     const timeout = 10000;
@@ -27,7 +45,7 @@ function commonCaptureFinger(successCallback, errorCallback) {
                     // Fetch template separately
                     setTimeout(() => {
 
-                        const tempRes = GetTemplate("ANSI");
+                        const tempRes = GetTemplate("2");
                         if (
                             tempRes &&
                             tempRes.httpStaus &&
@@ -45,19 +63,12 @@ function commonCaptureFinger(successCallback, errorCallback) {
                                 successCallback(tpl);
                             } else {
                               
-                                alert("ANSI Template not received");
-
-                                if (typeof errorCallback === "function") {
-                                    errorCallback("NO_TEMPLATE");
-                                }
+                                handleMantraError(0,"ANSI Template not received");
                             }
 
 
                         } else {
-                            alert("GetTemplate failed");
-                            if (typeof errorCallback === "function") {
-                                errorCallback("GET_TEMPLATE_FAILED");
-                            }
+                              handleMantraError(0,"GetTemplate failed");
                         }
 
                         hideOverlay();
@@ -67,27 +78,16 @@ function commonCaptureFinger(successCallback, errorCallback) {
 
             } else {
 
-                handleMantraError(
-                    res.data.ErrorCode,
-                    res.data.ErrorDescription
-                );
+                
+                handleMantraError(res.data.ErrorCode,res.data.ErrorDescription);
 
-                hideOverlay();
-
-                if (typeof errorCallback === "function") {
-                    errorCallback(res.data.ErrorCode);
-                }
+                hideOverlay();               
             }
 
         } else {
 
-            alert("Device service not responding");
-
+            handleMantraError(0,"Device service not responding");
             hideOverlay();
-
-            if (typeof errorCallback === "function") {
-                errorCallback("SERVICE_DOWN");
-            }
         }
 
     }, 500);
@@ -99,16 +99,28 @@ function handleMantraError(errorCode, errorDescription) {
         "-1140": 'Timeout',
         "700": 'Timeout',
         "720": 'Reconnect Device',
+        "-2023": 'Capture Already Started',
+        "-2025": 'Device not initialized',
+        "-2027": 'Device not connected',
         "2038": 'Capture Finger Again'
     };
-    alert(errorMessages[errorCode] || `Error: ${errorDescription} Error Code: ${errorCode}`);
+    swalError('Warning', errorMessages[errorCode] || `Error: ${errorDescription}, Error Code: ${errorCode}`);
 }
 
-function commonStoreFingerprint(fdata, hand, id, name, successCallback) {
-    $.post('updateFile/storeFingerprints.php', { 'fdata': fdata, 'hand': hand, 'cus_id': id, 'cus_name': name }, function (response) {
+function commonStoreFingerprint(ansi, hand, aadhaar, name) {
+    $.post('updateFile/storeFingerprints.php', { ansi, hand, aadhaar, name }, function (response) {
         if (response.includes('Successfully')) {
-            Swal.fire({ title: response, icon: 'success', confirmButtonColor: '#0C70AB' });
-            if (typeof successCallback === 'function') successCallback();
+            Swal.fire({ 
+                title: response, 
+                icon: 'success', 
+                confirmButtonColor: '#009688' 
+            }).then((result) => {
+                if(result.isConfirmed){
+                    fingerprintTable(); //Call fingerprint data after stored to get updated data.
+                }
+            });
+        } else {
+            swalError('Warning', 'Fingerprint submission failed.')
         }
     }, 'json');
 }
@@ -116,20 +128,37 @@ function commonStoreFingerprint(fdata, hand, id, name, successCallback) {
 function commonMatchFinger(compare_template, successCallback, errorCallback) {
     const quality = 60;
     const timeout = 10;
-    const matchResult = MatchFinger(quality, timeout, compare_template, "ANSI");
+    const matchResult = MatchFinger(quality, timeout, compare_template, "2");
     if (matchResult.httpStaus) {
         if (matchResult.data.Status) {
             Swal.fire({ title: 'Fingerprint Matching', icon: 'success', showConfirmButton: true, confirmButtonColor: '#0C70AB' });
             if (typeof successCallback === 'function') successCallback();
         } else {
             if (matchResult.data.ErrorCode != "0") {
-                alert(matchResult.data.ErrorDescription);
+                swalError('Warning', matchResult.data.ErrorDescription);
             } else {
                 Swal.fire({ title: 'Fingerprint Not Matching', icon: 'error', showConfirmButton: true, confirmButtonColor: '#0C70AB' });
                 if (typeof errorCallback === 'function') errorCallback();
             }
         }
     } else {
-        alert(matchResult.err);
+        swalError('Warning', matchResult.err);
     }
+}
+
+function getMatchFingerDetails(){
+    let btn = $(this);
+    btn.attr('disabled', true);
+    let compare_finger = $('#compare_finger').val();
+    commonCaptureFinger((ansi) => {
+        $('#ack_fingerprint').val(ansi);
+        commonMatchFinger(compare_finger, () => {
+            $('#fingerValidation').val('1');
+            btn.attr('disabled', true);
+            $("#hand_type").text('Done').attr('class', 'text-success');
+        }, () => {
+            $('#fingerValidation').val('');
+            btn.removeAttr('disabled');
+        });
+    });
 }

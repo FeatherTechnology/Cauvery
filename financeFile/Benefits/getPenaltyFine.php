@@ -1,11 +1,8 @@
 <?php
-include('../../ajaxconfig.php');
-include('../../moneyFormatIndia.php');
-
+include('../../ajaxconfig.php'); 
 
 $type = $_POST['type'];
 $user_id = ($_POST['user_id'] != '') ? $_POST['user_id'] : '';
-
 
 
 if ($type == 'today') {
@@ -40,7 +37,6 @@ if ($type == 'today') {
     getDetials($connect, $where);
 }
 
-
 function getDetials($connect, $where)
 {
 
@@ -53,13 +49,11 @@ function getDetials($connect, $where)
     }
     $response['penalty'] = $row['penalty']; // - $row['penalty_waiver'];
 
-
     //To get the collection charges //,SUM(coll_charge_waiver) as coll_charge_waiver
     $result = $connect->query("SELECT SUM(coll_charge_track) as coll_charge_track FROM `collection` WHERE $where ");
     $row = $result->fetch();
     $coll_charge_track = $row['coll_charge_track'] ?? 0;
     $response['fine'] = $coll_charge_track; // - $coll_charge_waiver;
-
 
 
     echo json_encode($response);

@@ -6,19 +6,15 @@ if (isset($_GET['upd'])) {
 }
 
 @session_start();
-$update_screen_id = ''; // Default value
-$selected_screens = [];
+
 
 if (isset($_SESSION['userid'])) {
 	$userid = $_SESSION['userid'];
 	$getUser = $userObj->getuser($mysqli, $userid);
-	// Check if user record exists and update_screen_id is not empty
-	if (!empty($getUser) && !empty($getUser['update_screen_id'])) {
-		$update_screen_id = $getUser['update_screen_id'];
-		$selected_screens = array_filter(explode(',', $update_screen_id));
-	}
-		$approvalaccess = $getUser['approval'];
-		$update_cp_edit_access = $getUser['update_cp_edit_access'] ?? 0;
+	$customer_profile = $getUser['update_screen'] ?? '1';
+	$update_documentation = $getUser['update_documentation']  ?? '1';
+	$approvalaccess = $getUser['approval'] ?? '1';
+	$update_cp_edit_access = $getUser['update_cp_edit_access'] ?? 0;
 }
 
 if (isset($_POST['submit_update_cus_profile']) && $_POST['submit_update_cus_profile'] != '') {
@@ -232,15 +228,15 @@ if (sizeof($getCustomerReg) > 0) {
 
 	<div class="col-md-12">
 		<div class="form-group" style="text-align:center">
-			<input type="hidden" name="selected_screens" id="selected_screens" value="<?php if (isset($selected_screens)) {
-																							echo implode(',', $selected_screens);
-																						} ?>">
-			<?php if (!empty($selected_screens)) { ?>
-				<?php if (in_array("1", $selected_screens)) { ?>
+			<input type="hidden" name="cp_screen" id="cp_screen" value="<?php echo $customer_profile; ?>">
+			<input type="hidden" name="doc_screen" id="doc_screen" value="<?php echo $update_documentation; ?>">
+
+			<?php if ($customer_profile == '0' || $update_documentation == '0') { ?>
+				<?php if ($customer_profile == '0') { ?>
 					<input type="radio" name="verification_type" id="cus_profile" value="cus_profile">
 					<label for="cus_profile">&nbsp;&nbsp; Customer Profile </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<?php } ?>
-				<?php if (in_array("2", $selected_screens)) { ?>
+				<?php } 
+				 if ($update_documentation =='0') { ?>
 					<input type="radio" name="verification_type" id="documentation" value="documentation">
 					<label for="documentation">&nbsp;&nbsp; Documentation </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<?php } ?>
@@ -545,7 +541,9 @@ if (sizeof($getCustomerReg) > 0) {
 													<th>S.No</th>
 													<th>Name</th>
 													<th>Relationship</th>
+													<th>DOB</th>
 													<th>Age</th>
+													<th>Live Status</th>
 													<th>Aadhar No</th>
 													<th>Mobile No</th>
 													<th>Occupation</th>
@@ -941,6 +939,20 @@ if (sizeof($getCustomerReg) > 0) {
 						</div>
 					</div>
 					<!-- KYC info END -->
+					 <!-- Fingerprint Info start-->
+					<div class="card">
+						<div class="card-header"> Fingerprint Info </div><span class="text-danger fingerSpan" style="margin-left:25px;display: none;">Please Scan Customer Fingerprint</span>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+									<div class="form-group table-responsive fingerprintTable">
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Fingerprint Info End-->
 
 
 					<!-- ///////////////////////////////////////////////// Customer Summary START ///////////////////////////////////////////////////////////// -->
@@ -1122,22 +1134,6 @@ if (sizeof($getCustomerReg) > 0) {
 						</div>
 					</div>
 					<!-- ///////////////////////////////////////////////  Customer Summary  END /////////////////////////////////////////////////////////// -->
-
-					<!-- Fingerprint Info start-->
-					<div class="card ">
-						<div class="card-header"> Fingerprint Info </div><span class="text-danger fingerSpan" style="margin-left:25px;display: none;">Please Scan Customer Fingerprint</span>
-						<div class="card-body">
-							<div class="row">
-								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-									<div class="form-group table-responsive fingerprintTable">
-
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- Fingerprint Info End-->
-
 
 					<div class="col-md-12 ">
 						<div class="text-right">
@@ -1749,13 +1745,13 @@ if (sizeof($getCustomerReg) > 0) {
 
 
 <!-- Add Family Members Modal -->
-<div class="modal fade addGroup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addGroup" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="">Add Family Info</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeFamModal()">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -1862,19 +1858,37 @@ if (sizeof($getCustomerReg) > 0) {
 							<span class="text-danger" id="fammobileCheck" style='display:none'>Enter Mobile Number</span>
 						</div>
 					</div>
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+						<div class="form-group">
+							<label for="relation_dob">Date of Birth</label><span class="required">&nbsp;*</span>
+							<input type="date" class="form-control" id="relation_dob" name="relation_dob" tabindex='8'>
+							<span class="text-danger" id='famdobCheck' style='display:none'>Please Select DOB</span>
+						</div>
+					</div>
 
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label"> Age </label>
-							<input type="text" class="form-control" name="relation_age" id="relation_age" placeholder="Enter Age" tabindex='8' oninput="validateInputNumber(this,'withOutDot')">
+							<input type="text" class="form-control" name="relation_age" id="relation_age" placeholder="Enter Age" tabindex='9' readonly>
 							<span class="text-danger" id="famageCheck" style='display:none'>Enter Age</span>
+						</div>
+					</div>
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+						<div class="form-group">
+							<label class="label" for="relation_live_deceased"> Live Status </label><span class="required">&nbsp;*</span>
+							<select class="form-control" name="relation_live_deceased" id="relation_live_deceased" tabindex="10">
+								<option value=''>Select Live Status</option>
+								<option value='1'>Live</option>
+								<option value='2'>Deceased</option>
+							</select>
+							<span class="text-danger" id="famLiveDeceasedCheck" style='display:none'>Select Live Status</span>
 						</div>
 					</div>
 
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label"> Occupation </label>
-							<input type="text" class="form-control" name="relation_Occupation" id="relation_Occupation" onkeydown="return /[a-z ]/i.test(event.key)" placeholder="Enter Occupation" tabindex='9'>
+							<input type="text" class="form-control" name="relation_Occupation" id="relation_Occupation" onkeydown="return /[a-z ]/i.test(event.key)" placeholder="Enter Occupation" tabindex='11'>
 							<span class="text-danger" id="famoccCheck" style='display:none'>Enter Occupation</span>
 						</div>
 					</div>
@@ -1882,7 +1896,7 @@ if (sizeof($getCustomerReg) > 0) {
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label"> Income </label>
-							<input type="text" class="form-control" name="relation_Income" id="relation_Income" placeholder="Enter Income" tabindex='10' oninput="validateInputNumber(this,'withOutDot')">
+							<input type="text" class="form-control" name="relation_Income" id="relation_Income" placeholder="Enter Income" tabindex='12' oninput="validateInputNumber(this,'withOutDot')">
 							<span class="text-danger" id="famincomeCheck" style='display:none'>Enter Income</span>
 						</div>
 					</div>
@@ -1890,14 +1904,14 @@ if (sizeof($getCustomerReg) > 0) {
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label"> Blood Group </label>&nbsp;
-							<input type="text" class="form-control" name="relation_Blood" id="relation_Blood" placeholder="Enter Blood Group" tabindex='11'>
+							<input type="text" class="form-control" name="relation_Blood" id="relation_Blood" placeholder="Enter Blood Group" tabindex='13'>
 						</div>
 					</div>
 
 
 					<div class="col-xl-2 col-lg-2 col-md-6 col-sm-4 col-12">
 						<input type="hidden" name="famID" id="famID">
-						<button type="button" tabindex="12" name="submitFamInfoBtn" id="submitFamInfoBtn" class="btn btn-primary" style="margin-top: 19px;">Submit</button>
+						<button type="button" tabindex="14" name="submitFamInfoBtn" id="submitFamInfoBtn" class="btn btn-primary" style="margin-top: 19px;">Submit</button>
 					</div>
 
 				</div>
@@ -1928,13 +1942,13 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add Family Members Modal -->
 
 <!-- Add Property Modal  START -->
-<div class="modal fade addproperty" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addproperty" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="">Add Property Info</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="resetPropertyinfoList()">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -2029,13 +2043,13 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add Property Modal -->
 
 <!-- Add Bank info Modal  START -->
-<div class="modal fade addbank" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addbank" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="">Add Bank Info</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="resetbankinfoList()">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -2144,7 +2158,7 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add Bank Info Modal -->
 
 <!-- Add Signed Doc info Modal  START -->
-<div class="modal fade addSignDoc" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addSignDoc" tabindex="-1" role="dialog">
 	<form method="POST" enctype="multipart/form-data" id="signDocUploads">
 		<input type="hidden" name="doc_req_id" id="doc_req_id" value="">
 		<input type="hidden" name="doc_cus_id" id="doc_cus_id" value="">
@@ -2153,7 +2167,7 @@ if (sizeof($getCustomerReg) > 0) {
 				<div class="modal-header">
 					<h5 class="modal-title" id="">Add Signed Doc Info</h5>
 					<button type="button" class="close closeSignedInfo" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
+						<span>&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
@@ -2278,7 +2292,7 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add Signed Doc Info Modal -->
 
 <!-- Add Cheque info Modal  START -->
-<div class="modal fade addCheque" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addCheque" tabindex="-1" role="dialog">
 	<form method="POST" enctype="multipart/form-data" id="chequeUploads">
 		<input type="hidden" name="cheque_req_id" id="cheque_req_id" value="">
 		<div class="modal-dialog modal-lg">
@@ -2286,7 +2300,7 @@ if (sizeof($getCustomerReg) > 0) {
 				<div class="modal-header">
 					<h5 class="modal-title" id="">Add Cheque Info</h5>
 					<button type="button" class="close closeChequeInfo" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
+						<span>&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
@@ -2417,7 +2431,7 @@ if (sizeof($getCustomerReg) > 0) {
 			<div class="modal-header">
 				<h5 class="modal-title" id="">Add Customer Feedback </h5>
 				<button type="button" class="close" data-dismiss="modal" onclick="feedbackList()">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -2542,14 +2556,14 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add Customer Label Info Modal -->
 
 <!-- Add Gold info Modal  START -->
-<div class="modal fade addGold" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addGold" tabindex="-1" role="dialog">
 	<form method="POST" enctype="multipart/form-data" id="goldform">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content" style="background-color: white">
 				<div class="modal-header">
 					<h5 class="modal-title" id="">Add Gold Info</h5>
 					<button type="button" class="close closeGoldInfo" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
+						<span>&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
@@ -2673,14 +2687,14 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add Gold Info Modal -->
 
 <!-- Add Document info Modal  START -->
-<div class="modal fade addDocument" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addDocument" tabindex="-1" role="dialog">
 	<form method="POST" enctype="multipart/form-data" id="docUploads">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content" style="background-color: white">
 				<div class="modal-header">
 					<h5 class="modal-title" id="">Add Document Info</h5>
 					<button type="button" class="close closeDocInfo" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
+						<span>&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
@@ -2812,13 +2826,13 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add Document Info Modal -->
 
 <!-- Add KYC info Modal  START -->
-<div class="modal fade addkyc" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addkyc" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="">Add KYC Info</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="resetkycinfoList()">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -2947,7 +2961,7 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- END  Add KYC Info Modal -->
 
 <!-- /////////////////////////////////////////////////////////////////// NOC Summary Modal START ////////////////////////////////////////////////////////////// -->
-<div class="modal fade noc-summary-modal " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade noc-summary-modal " tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
@@ -2955,7 +2969,7 @@ if (sizeof($getCustomerReg) > 0) {
 					data-base-title="NOC Summary - Customer ID: <?php echo $autogen_cus_id ?>">
 				</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -2972,14 +2986,14 @@ if (sizeof($getCustomerReg) > 0) {
 <!-- /////////////////////////////////////////////////////////////////// NOC Summary Modal END ////////////////////////////////////////////////////////////////////// -->
 
 <!-- /////////////////////////////////////////////////////////////////// Temp document OUT Modal START ////////////////////////////////////////////////////////////// -->
-<div class="modal fade temp-take-out-modal " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade temp-take-out-modal " tabindex="-1" role="dialog">
 	<form method="POST" enctype="multipart/form-data" id="tempoutform">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content" style="background-color: white">
 				<div class="modal-header">
 					<h5 class="modal-title" id=""> Document Take Out </h5>
 					<button type="button" class="close closetempout" data-dismiss="modal" aria-label="Close" onclick="">
-						<span aria-hidden="true">&times;</span>
+						<span>&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
@@ -3045,14 +3059,14 @@ if (sizeof($getCustomerReg) > 0) {
 </div>
 <!-- /////////////////////////////////////////////////////////////////// Temp document OUT Modal END ////////////////////////////////////////////////////////////////////// -->
 <!-- /////////////////////////////////////////////////////////////////// Temp document IN Modal START ////////////////////////////////////////////////////////////// -->
-<div class="modal fade temp-take-in-modal " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade temp-take-in-modal " tabindex="-1" role="dialog">
 	<form method="POST" enctype="multipart/form-data" id="tempinform">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content" style="background-color: white">
 				<div class="modal-header">
 					<h5 class="modal-title" id=""> Document Take In </h5>
 					<button type="button" class="close closetempin" data-dismiss="modal" aria-label="Close" onclick="">
-						<span aria-hidden="true">&times;</span>
+						<span>&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
@@ -3120,13 +3134,13 @@ if (sizeof($getCustomerReg) > 0) {
 
 
 <!-- Modal for Customer Old Data Adding   -->
-<div class="modal fade add_cus_old" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade add_cus_old" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg " role="document">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="exampleModalLongTitle">Add Old Data</h5>
 				<button type="button" class="close closeBtn_old" data-dismiss="modal" aria-label="Close" onclick="showCustomerOldData()">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -3198,13 +3212,13 @@ if (sizeof($getCustomerReg) > 0) {
 </div>
 
 
-<div class="modal fade" id="add_feedback_lable" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="add_feedback_lable" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg " role="document">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="exampleModalLongTitle">Add Feedback Label  </h5>
 				<button type="button" class="close" data-dismiss="modal" tabindex="7" aria-label="Close" onclick="getFeedbackLable()">
-					<span aria-hidden="true">&times;</span>
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">

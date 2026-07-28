@@ -37,6 +37,7 @@
                 <select class="toggle-button" name='type' id='type'>
 					<option value='0'>Select Type</option>
 					<option value='1'>User</option>
+					<option value='3'>Region</option><!-- using common API to get mapped zone so not changed value -->
 					<option value='4'>Zone</option><!-- using common API to get mapped zone so not changed value -->
 				</select>
 
@@ -52,8 +53,12 @@
 				</select>
 	
                 <select class="form-control hidefield" id="map_name" name="map_name" multiple>
-                    <option value="">Select Zone</option>
-                </select>
+                    <option value="">Select</option>
+                </select>&nbsp;&nbsp;
+	
+				<select class="form-control hidefield" id="loan_category" name="loan_category" multiple>
+					<option value="">Select Loan Category</option>
+				</select>
 
 				<input type="button" id='reset_btn' name='reset_btn' class="toggle-button" style="background-color: #0c70ab;color:white" value='Search'>
 			</div>
@@ -69,7 +74,8 @@
 									<!-- GROUP HEADER -->
 									<tr>
 										<th rowspan="2">S.No</th>
-										<th rowspan="2">User Name</th>
+										<th rowspan="2" id="th_name">User Name</th>
+										<th rowspan="2">Loan Category</th>
 										<th rowspan="2">Total Customer</th>
 										<th rowspan="2">Total Entries</th>
 
@@ -99,6 +105,7 @@
 								<tbody></tbody>
 								<tfoot>
 									<tr>
+										<td></td>
 										<td></td>
 										<td></td>
 

@@ -18,8 +18,8 @@ $(document).ready(function () {
 
     });
 
-    $('#dob').change(function () {
-        let dobirth = $('#dob').val();
+     $('#dob, #relation_dob').change(function () {
+        let dobirth = $(this).val();
 
         var dob = new Date(dobirth);
         //calculate month difference from current date in time  
@@ -34,7 +34,10 @@ $(document).ready(function () {
         //now calculate the age of the user  
         var age = Math.abs(year - 1970);
 
-        $('#age').val(age); // set value to age.
+         // Determine which age field to update based on which element triggered the event
+        let ageval = (this.id === "dob") ? "#age" : "#relation_age";
+
+        $(ageval).val(age); // set value to age.
     })
 
     $("#state").change(function () {
@@ -185,18 +188,19 @@ $(document).ready(function () {
         var verify = $('input[name=verification_type]:checked').val();
 
         if (verify == 'cus_profile') {
-            $('#customer_profile').show(); $('#cus_document').hide(); $('#customer_loan_calc').hide(); $('#customer_old_div').hide();
+           $('#customer_profile').show(); 
+            $('#cus_document, #customer_loan_calc, #customer_old_div, .edit-document-card').hide();// hide edit document card when not in use
             // $('.documentation-card').hide();
-            $('.edit-document-card').hide();// hide edit document card when not in use
             $('.dropdown').children().css('border-color', '');// to set other dropdown buttons as normal
+            const curDate = moment().format('YYYY-MM-DD');
+            $('#relation_dob').attr('max', curDate);
         }
         if (verify == 'documentation') {
-            $('#customer_profile').hide(); $('#cus_document').show(); $('#customer_loan_calc').hide(); $('#customer_old_div').hide();
-            // $('.documentation-card').show();
-            $('.edit-document-card').hide();
+             $('#customer_profile, #customer_loan_calc, #customer_old_div, .edit-document-card').hide();
+            $('#cus_document').show(); 
         }
         if (verify == 'customer_old') {
-            $('#customer_profile').hide(); $('#cus_document').hide(); $('#customer_loan_calc').hide();
+            $('#customer_profile, #cus_document, #customer_loan_calc').hide();
             $('#customer_old_div').show();
             showCustomerOldData();
         }
@@ -654,9 +658,7 @@ $(document).ready(function () {
     });
 
     $("#loan_id").change(function () {
-        let gurantor_id = $(this).find(':selected').attr('gurantor_id');
-        let gu_pic = $(this).find(':selected').attr('gu_pic');
-        closeFamModal(gurantor_id, gu_pic)
+        closeFamModal();
 
     });
 
@@ -764,18 +766,10 @@ $(function () {
     });
     
     //  $('.icon-chevron-down1').parent().next('div').slideUp(); //To collapse all card on load
-    let selectedScreens = $('#selected_screens').val();
+    let cp_screen = $('#cp_screen').val();
+    let doc_screen = $('#doc_screen').val();
 
-    // Convert the string to an array
-    let selectedArray = selectedScreens.split(',');
-
-    if (selectedArray.length === 1 && selectedArray.includes('1')) {
-        callCustomerProfileFunctn();
-
-    } else if (selectedArray.length === 1 && selectedArray.includes('2')) {
-        getDocumentHistory();
-
-    } else if (selectedArray.includes('1') && selectedArray.includes('2')) {
+if (cp_screen == '0' && doc_screen == '0') {
 
         $('input[name="verification_type"]').on('change', function () {
 
@@ -788,7 +782,13 @@ $(function () {
 
         });
 
-    }
+        } else if (cp_screen == '0') {
+        callCustomerProfileFunctn();
+
+    } else if (doc_screen == '0') {
+        getDocumentHistory();
+
+    } 
      mantraInitDevice(); //to initialize the fingerprint scanner.
 }); //OnLoad function.
 
@@ -808,9 +808,9 @@ function callCustomerProfileFunctn() {
     var cus_id = $('#cus_id').val();
     var first_name = $("#first_name").val();
     var last_name = $("#last_name").val();
-    var cus_name = first_name + " " + last_name;
-    if (cus_name != '' && cus_id != '') {
-        getFingerPrintDetails(cus_id, cus_name);
+ if (cus_id != '') {
+        fingerprintTable();
+    }
     }
     var state_upd = $('#state_upd').val();
     if (state_upd != '') {
@@ -856,8 +856,10 @@ function callCustomerProfileFunctn() {
         $('.spouse').hide();
     }
 
-    let updateCPEditAccess = $('#update_cp_edit_access').val();
-    if(updateCPEditAccess !='2'){ //1-Customer feedback, 2-Overall Customer profile
+     // Convert the string to an array
+    let selectedArray = $('#update_cp_edit_access').val().split(',');
+
+    if(selectedArray.includes('1') || selectedArray.includes('3')){ //1-Customer feedback, 2-Overall Customer profile, 3-Fingerprint info
         let form = $('form#cus_Profiles');
 
         // inputs except inside customer_summary_card
@@ -866,14 +868,15 @@ function callCustomerProfileFunctn() {
             .prop('readonly', true);
 
         // button except inside customer_summary_card
+         let cndtn = (selectedArray.includes('1')) ? '#customer_summary_card button, #reminder_call,' : '';
         form.find('select, button')
-            .not('#customer_summary_card button, #back_btn, #reminder_call')
+            .not(`${cndtn} #back_btn`)
             .prop('disabled', true);
 
         form.find('#pic, #guarentorpic')
             .prop('disabled', true);
 
-    } else if(updateCPEditAccess =='2'){
+        } else if(selectedArray.includes('2')){
         $('#reminder_submit_div').hide();
     }
 }
@@ -886,12 +889,14 @@ function callDocFunctn() {
 function getImage() { // Cus img show onload.
     let imgName = $('#cus_image').val();
     if (imgName != '') {
-        $('#imgshow').attr('src', "uploads/request/customer/" + imgName + " ");
-    } else { $('#imgshow').attr('src', 'img/avatar.png'); }
+       $('#imgshow').attr('src', `uploads/request/customer/${imgName}`);
+    } else { 
+        $('#imgshow').attr('src', 'img/avatar.png'); 
+    }
 
     var guarentorimg = $('#guarentor_image').val();
     if (guarentorimg != '') {
-        $('#imgshows').attr('src', "uploads/verification/guarentor/" + guarentorimg + " ");
+        $('#imgshows').attr('src', `uploads/verification/guarentor/${guarentorimg}`);
     } else {
         $('#imgshows').attr('src', 'img/avatar.png');
     }
@@ -919,26 +924,30 @@ function getCustomerLoanCounts() {
 // Modal Box for Agent Group
 
 $(document).on("click", "#submitFamInfoBtn", function () {
-    let cus_id = $('#cus_id').val();
-    let fam_first_name = $("#fam_first_name").val();
-    let fam_last_name = $("#fam_last_name").val();
-    let relationship = $("#relationship").val();
-    let other_remark = $("#other_remark").val();
-    let other_address = $("#other_address").val();
-    let relation_age = $("#relation_age").val();
-    let relation_aadhar = $("#relation_aadhar").val();
-    let relation_Mobile = $("#relation_Mobile").val();
-    let relation_Occupation = $("#relation_Occupation").val();
-    let relation_Income = $("#relation_Income").val();
-    let relation_Blood = $("#relation_Blood").val();
-    let famTableId = $("#famID").val();
-    let authorize = $("#authorize").val();
+        let famData = {
+        cus_id : $('#cus_id').val(),
+        fam_first_name : $("#fam_first_name").val(),
+        fam_last_name : $("#fam_last_name").val(),
+        relationship : $("#relationship").val(),
+        other_remark : $("#other_remark").val(),
+        other_address : $("#other_address").val(),
+        relation_dob : $("#relation_dob").val(),
+        relation_age : $("#relation_age").val(),
+        relation_live_deceased : $("#relation_live_deceased").val(),
+        relation_aadhar : $("#relation_aadhar").val(),
+        relation_Mobile : $("#relation_Mobile").val(),
+        relation_Occupation : $("#relation_Occupation").val(),
+        relation_Income : $("#relation_Income").val(),
+        relation_Blood : $("#relation_Blood").val(),
+        famTableId : $("#famID").val(),
+        authorize : $("#authorize").val()
+    }
 
-    if (fam_first_name != "" && fam_last_name != "" && relationship != "" && relation_aadhar != "" && relation_Mobile != "" && relation_Mobile.length === 10) {
+    if (famData.fam_last_name != "" &&famData.fam_first_name != "" && famData.relationship != "" && famData.relation_aadhar != "" && famData.relation_Mobile != "" && famData.relation_Mobile.length === 10 && famData.relation_dob != "" && famData.relation_live_deceased != "") {
         $.ajax({
             url: 'updateFile/update_family_submit.php',
             type: 'POST',
-            data: { "fam_first_name": fam_first_name, "fam_last_name": fam_last_name, "realtionship": relationship, "other_remark": other_remark, "other_address": other_address, "relation_age": relation_age, "relation_aadhar": relation_aadhar, "relation_Mobile": relation_Mobile, "relation_Occupation": relation_Occupation, "relation_Income": relation_Income, "relation_Blood": relation_Blood, "famTableId": famTableId, "cus_id": cus_id ,"authorize":authorize },
+            data: famData,
             cache: false,
             success: function (response) {
 
@@ -968,46 +977,57 @@ $(document).on("click", "#submitFamInfoBtn", function () {
         });
     }
     else {
-        if (fam_first_name == "") {
+        if (famData.fam_first_name == "") {
             $("#famFirstnameCheck").show();
         } else {
             $("#famFirstnameCheck").hide();
         }
 
-        if (fam_last_name == "") {
+        if (famData.fam_last_name == "") {
             $("#famLastnameCheck").show();
         } else {
             $("#famLastnameCheck").hide();
         }
 
-        if (relationship == "") {
+        if (famData.relationship == "") {
             $('#famrelationCheck').show();
         } else {
             $('#famrelationCheck').hide();
         }
 
-        if (relationship == "Other" && other_remark == "") {
+        if (famData.relationship == "Other" && famData.other_remark == "") {   
             $('#famremarkCheck').show();
         } else {
             $('#famremarkCheck').hide();
         }
 
-        if (relationship == "Other" && other_address == "") {
+        if (famData.relationship == "Other" && famData.other_address == "") {
             $('#famaddressCheck').show();
         } else {
             $('#famaddressCheck').hide();
         }
 
-        if (relation_aadhar == "") {
+        if (famData.relation_aadhar == "") {
             $('#famaadharCheck').show();
         } else {
             $('#famaadharCheck').hide();
         }
 
-        if (relation_Mobile == "" || relation_Mobile.length < 10) {
+        if (famData.relation_Mobile == "" || famData.relation_Mobile.length < 10) {
             $('#fammobileCheck').show();
         } else {
             $('#fammobileCheck').hide();
+        }
+         if (famData.relation_dob == "") {
+            $("#famdobCheck").show();
+        } else {
+            $("#famdobCheck").hide();
+        }
+
+        if (famData.relation_live_deceased == "") {
+            $("#famLiveDeceasedCheck").show();
+        } else {
+            $("#famLiveDeceasedCheck").hide();
         }
     }
 
@@ -1022,41 +1042,25 @@ function resetFamInfo() {
         data: { "cus_id": cus_id },
         cache: false,
         success: function (html) {
-            $("#updatedFamTable").empty();
             $("#updatedFamTable").html(html);
 
-            $("#fam_first_name").val('');
-            $("#fam_last_name").val('');
-            $("#relationship").val('');
-            $("#authorize").val('');
-            $("#other_remark").val('');
-            $("#other_address").val('');
-            $("#relation_age").val('');
-            $("#relation_aadhar").val('');
-            $("#relation_Mobile").val('');
-            $("#relation_Occupation").val('');
-            $("#relation_Income").val('');
-            $("#relation_Blood").val('');
-            $("#famID").val('');
+            $("#fam_first_name,#fam_last_name,#relationship,#authorize,#other_remark,#other_address,#relation_age,#relation_aadhar,#relation_Mobile,#relation_Occupation,#relation_Income,#relation_Blood,#famID").val('');
+
+            $("#fam_first_name,#fam_last_name,#relationship,#authorize,#other_remark,#other_address,#relation_age,#relation_aadhar,#relation_Mobile,#relation_Occupation,#relation_Income,#relation_Blood,#famID").hide();
         }
     });
 }
 
 function resetFamDetails() {
     let cus_id = $('#cus_id').val();
-    var first_name = $("#first_name").val();
-    var last_name = $("#last_name").val();
-    var cus_name = first_name + " " + last_name;
-
     $.ajax({
         url: 'verificationFile/verification_fam_list.php',
         type: 'POST',
         data: { "cus_id": cus_id },
         cache: false,
         success: function (html) {
-            $("#famList").empty();
             $("#famList").html(html);
-            getFingerPrintDetails(cus_id, cus_name);
+            fingerprintTable();
         }
     });
 }
@@ -1079,8 +1083,10 @@ $("body").on("click", "#verification_fam_edit", function () {
             $("#authorize").val(result['authorize']);
             $("#other_remark").val(result['remark']);
             $("#other_address").val(result['address']);
+            $("#relation_dob").val(result["dob"]);
             $("#relation_age").val(result['age']);
             $("#relation_aadhar").val(result['aadhar']);
+            $("#relation_live_deceased").val(result["live_deceased"]);
             $("#relation_Mobile").val(result['mobileno']);
             $("#relation_Occupation").val(result['occ']);
             $("#relation_Income").val(result['income']);
@@ -1093,7 +1099,7 @@ $("body").on("click", "#verification_fam_edit", function () {
                 $('#remark').hide();
                 $('#address').hide();
             }
-            $('#famnameCheck').hide(); $('#famrelationCheck').hide(); $('#famremarkCheck').hide(); $('#famaddressCheck').hide(); $('#famageCheck').hide(); $('#famaadharCheck').hide(); $('#fammobileCheck').hide(); $('#famoccCheck').hide(); $('#famincomeCheck').hide();
+            $('#famnameCheck,#famrelationCheck,#famremarkCheck,#famaddressCheck,#famageCheck,#famaadharCheck,#fammobileCheck,#famoccCheck,#famincomeCheck').hide();
         }
     });
 
@@ -1148,31 +1154,27 @@ function getLoanID() {
     $.post('updateFile/get_loan_id.php', { "cus_id": $('#cus_id').val() }, function (data) {
 
         $("#loan_id").empty().append("<option value=''>" + 'Select Loan ID' + "</option>");
-        let lastGuarantorID = "";
-        let guarentor_photos = "";
+        let isLast ='';
         if (data.length > 0) {
             for (var i = 0; i < data.length; i++) {
                 let loanId = data[i]['loan_id'];
                 let guarentorID = data[i]['guarentor_name'];
                 let guarentor_photo = data[i]['guarentor_photo'] ? data[i]['guarentor_photo'] : "";
-                let isLast = i === data.length - 1;
+                isLast = i === data.length - 1;
                 let selected = isLast ? "selected" : "";
-                if (isLast) {
-                    lastGuarantorID = guarentorID;
-                    guarentor_photos = guarentor_photo;
-                }
+
                 $("#loan_id").append("<option value='" + loanId + "' " + selected + " gurantor_id='" + guarentorID + "' gu_pic='" + guarentor_photo + "'>" + loanId + "</option>");
                 loanidResponse = "true";
             }
-            if (lastGuarantorID != '') {
-                closeFamModal(lastGuarantorID, guarentor_photos);
+            if (isLast) {
+                closeFamModal();
             }
 
         }
         else {
             $("#guarentor_name").empty().append("<option value=''>" + 'Select Guarantor' + "</option>");
             $("#guarentor_relationship").val('');
-            $("#guarentor_image").val(guarentor_photos);
+            $("#guarentor_image").val('');
             getImage();
             resetFamDetails();
             loanidResponse = "false";
@@ -1182,7 +1184,9 @@ function getLoanID() {
 
 }
 
-function closeFamModal(lastGuarantorID, guarentor_photos) {
+function closeFamModal() {
+    let lastGuarantorID = $('#loan_id').find(':selected').attr('gurantor_id');
+    let guarentor_photos = $('#loan_id').find(':selected').attr('gu_pic');
 
     $.post('verificationFile/verificationFam.php', { "cus_id": $('#cus_id').val() }, function (data) {
 
@@ -2384,6 +2388,11 @@ $('#guarentor_name').change(function () { //Select Guarantor Name relationship w
 
     let famId = $("#guarentor_name").val();
     $('#guarentor_image').val('');//empty guarentor pic when changing guarentor name, to upload new pic for new guarentor.
+     let matchedLoan = $('#loan_id option[gurantor_id="' + famId + '"]');
+
+    if (matchedLoan.length) {
+        $('#guarentor_image').val(matchedLoan.attr('gu_pic'));
+    }
 
     $.ajax({
         url: 'verificationFile/verification_guarantor.php',
@@ -2404,7 +2413,7 @@ $('#guarentor_name').change(function () { //Select Guarantor Name relationship w
 ///Customer profile submit///
 $('#submit_update_cus_profile').click(function () {
     if (validation()) {
-        let confirmAction = confirm("Are you sure you want to submit Loan Issue ?");
+        let confirmAction = confirm("Are you sure you want to update ?");
         if (!confirmAction) {
             event.preventDefault(); // Stop form submission if canceled
             return false;
@@ -3751,37 +3760,19 @@ function MEValidation(id) {
 }
 
 // to get family details of customer to get fingerprint
-function getFingerPrintDetails(cus_id, cus_name) {
+function fingerprintTable() {
+    let cus_id = $('#cus_id').val(); //Calling after submit fingerprint so need it here.
     $.ajax({
         url: 'verificationFile/getNamesForFingerprint.php',
-        data: { 'cus_name': cus_name, 'cus_id': cus_id },
+        data: { cus_id },
         type: 'post',
         cache: false,
         success: function (html) {
             $('.fingerprintTable').html(html);
-            let updateCPEditAccess = $('#update_cp_edit_access').val();
-            if(updateCPEditAccess !='2'){ //Overall
+            let updateCPEditAccess = $('#update_cp_edit_access').val().split(',');
+            if(updateCPEditAccess.includes('1') && !updateCPEditAccess.includes('2') && !updateCPEditAccess.includes('3') ){ //1-Customer summary, 2-Overall, 3-Fingerprint info
                 $('.hand_selection, .scanBtn').attr('disabled', true);
             }
-
-            $('.scanBtn').click(function () {
-                var hand = $(this).prev().val();
-                var name = $(this).parent().prev().find('input[id="name_print"]').val(); 
-                var adhar = $(this).parent().prev().prev().find('input[id="adhar_print"]').val();
-                if (hand == '') { //prevent if hand is not selected
-                    $(this).prev().css('border-color', 'red');
-                } else {
-                     $(this).prev().css('border-color', '#0C70AB');
-                    var btn = $(this);
-                    btn.attr('disabled', true);
-                    commonCaptureFinger((fdata) => {
-                        btn.next().val(fdata);
-                        commonStoreFingerprint(fdata, hand, adhar, name);
-                    }, () => {
-                        btn.removeAttr('disabled');
-                    });
-                }
-            })
         }
     });
 }

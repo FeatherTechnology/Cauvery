@@ -1822,26 +1822,28 @@
                 isNegative = true;
                 num = Math.abs(num);
             }
+                        // Round to 2 decimals to avoid float precision issues
+            num = Math.round(Number(num) * 100) / 100;
+
+            var hasDecimal = num % 1 !== 0;
 
             // 🔹 Split decimal part (minimal addition)
-            num = num.toString();
-            var parts = num.split('.');
+            var parts = num.toString().split('.');
             var intPart = parts[0];
-            var decPart = parts.length > 1 ? '.' + parts[1] : '';
+            var decPart = hasDecimal ? '.' + (parts[1] || '').padEnd(2, '0').substring(0, 2) : '';
 
             var explrestunits = "";
+
             if (intPart.length > 3) {
                 var lastthree = intPart.substr(intPart.length - 3);
                 var restunits = intPart.substr(0, intPart.length - 3);
                 restunits = (restunits.length % 2 == 1) ? "0" + restunits : restunits;
                 var expunit = restunits.match(/.{1,2}/g);
+
                 for (var i = 0; i < expunit.length; i++) {
-                    if (i == 0) {
-                        explrestunits += parseInt(expunit[i]) + ",";
-                    } else {
-                        explrestunits += expunit[i] + ",";
-                    }
+                   explrestunits += (i === 0 ? parseInt(expunit[i], 10) : expunit[i]) + ',';
                 }
+                
                 var thecash = explrestunits + lastthree + decPart;
             } else {
                 var thecash = intPart + decPart;
@@ -2557,11 +2559,14 @@
                     console.log("Device Name:", device);
                     const init = InitDevice(device, "");
                     console.log("Init result:", init);
+                     alert(`Device Name: ${device}, ${init.data.ErrorDescription}.`);
                 } else {
+                    alert("Fingerprint Device not found in description");
                     console.error("Device not found in description");
                 }
 
             } else {
+                alert("Fingerprint Device not connected");
                 console.error("Device not connected");
             }
         }
@@ -2582,6 +2587,25 @@
 
                 },'json');
             }
+        }
+
+        function getUserLoanCategories() {
+            $.ajax({
+                url: 'reportFile/customer_status_report/ajaxGetUserLoanCategory.php',
+                type: 'POST',
+                dataType: 'json',
+                success: function (response) {
+                    loanCategory.clearStore();
+                    let items = [];
+                    for (let i = 0; i < response.length; i++) {
+                        items.push({
+                            value: response[i]['loan_category_creation_id'],
+                            label: response[i]['loan_category_creation_name']
+                        });
+                    }
+                    loanCategory.setChoices(items);
+                }
+            });
         }
     </script>
 
@@ -2996,6 +3020,10 @@
 
     if ($current_page == 'location_track_report') { ?>
         <script src="js/location_track_report.js"></script>
+    <?php }
+
+     if ($current_page == 'outstanding_report') { ?>
+        <script src="js/outstanding_report.js"></script>
     <?php }
 
     if ($current_page == 'intrest_ledger_report') { ?>

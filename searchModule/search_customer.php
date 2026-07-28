@@ -1,3 +1,4 @@
+
 <?php
 include '../ajaxconfig.php';
 
@@ -28,21 +29,17 @@ if ($cus_id != '') {
     $sql = "SELECT cus_id from customer_register WHERE last_name LIKE '%$last_name%' ";
     $fam_sql = "SELECT id from verification_family_info WHERE last_name LIKE '%$last_name%' ";
 } else if ($mobile != '') {
-    $sql = "SELECT COALESCE(cr.cus_id, rc.cus_id) AS cus_id FROM request_creation rc LEFT JOIN customer_register cr 
-    ON cr.req_ref_id = rc.req_id WHERE cr.mobile1 LIKE '%$mobile%' OR cr.mobile2 LIKE '%$mobile%' OR rc.mobile1 LIKE '%$mobile%' OR rc.mobile2 LIKE '%$mobile%' LIMIT 1";
+    $sql = "SELECT DISTINCT COALESCE(cr.cus_id, rc.cus_id) AS cus_id FROM request_creation rc LEFT JOIN customer_register cr ON cr.req_ref_id = rc.req_id WHERE cr.mobile1 LIKE '%$mobile%' OR cr.mobile2 LIKE '%$mobile%' OR rc.mobile1 LIKE '%$mobile%' OR rc.mobile2 LIKE '%$mobile%'";
     $fam_sql = "SELECT id from verification_family_info WHERE relation_Mobile LIKE '%$mobile%' ";
 } else if ($area != '') {
     $sql = "SELECT DISTINCT cr.cus_id
 FROM customer_register cr
-LEFT JOIN request_creation rc ON rc.cus_id = cr.cus_id
 JOIN area_list_creation ac
     ON (
         -- customer register confirmed or fallback
         (cr.area_confirm_area IS NOT NULL AND cr.area_confirm_area != '' AND ac.area_id = cr.area_confirm_area)
         OR
         ((cr.area_confirm_area IS NULL OR cr.area_confirm_area = '') AND ac.area_id = cr.area)
-        -- OR request creation area
-        OR (ac.area_id = rc.area)
     )
 WHERE ac.area_name LIKE '%$area%';
 ";
