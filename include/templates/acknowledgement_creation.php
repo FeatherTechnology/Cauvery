@@ -1226,6 +1226,23 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 					</div>
 					<!-- KYC info END -->
 
+					 <!-- Fingerprint Info start-->
+					<div class="card">
+						<div class="card-header"> Fingerprint Info </div>
+						<input type="hidden" id="fingerValidation" name="fingerValidation"> <!-- set val as 1 when finger Print Matching becuz to use for finger print validation if submit click.-->
+						<div class="card-body">
+							<div class="row">
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+									<div class="form-group fingerprintTable">
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Fingerprint Info End-->
+
+
 					<!-- ///////////////////////////////////////////////// Customer Summary START ///////////////////////////////////////////////////////////// -->
 					<div class="card">
 						<div class="card-header"> Customer Summary <span style="font-weight:bold" class=""></span></div>
@@ -2044,25 +2061,14 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-					<!-- Document Status End -->
 
-					<!-- Fingerprint Info start-->
-					<div class="card">
-						<div class="card-header"> Fingerprint Info </div><span class="text-danger fingerSpan" style="margin-left:25px;display: none;">Please Scan Customer Fingerprint</span>
-						<input type="hidden" id="fingerValidation" name="fingerValidation"> <!-- set val as 1 when finger Print Matching becuz to use for finger print validation if submit click.-->
-						<div class="card-body">
-							<div class="row">
-								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-									<div class="form-group fingerprintTable">
-
-									</div>
+							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="text-align: right;">
+									<span class="text-danger fingerSpan" style="display: none;">*Please Scan Customer Fingerprint in Customer Profile before submit.</span>
 								</div>
 							</div>
 						</div>
 					</div>
-					<!-- Fingerprint Info End-->
+					<!-- Document Status End -->
 
 					<div class="col-md-12 ">
 						<div class="text-right">
@@ -2357,11 +2363,18 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 										<input type="hidden" id="verification_audio_upd" name="verification_audio_upd" value="<?php if (isset($com_audio)) {
 																																	echo $com_audio;
 																																} ?>">
-										<input type="file" onchange="compressImage(this,200)" class="form-control" name="verification_audio" id="verification_audio" accept=".mp3,audio/*" tabindex="113">
+										<input type="file" onchange="compressImage(this,200)" class="form-control" name="verification_audio" id="verification_audio" accept=".mp3,audio/*" tabindex="113" disabled>
 										<?php if (isset($communication)) {
-											if ($communication == '0') { ?>
-												<a href="<?php echo "uploads/verification/verifyInfo_audio/" . $com_audio; ?>" target="_blank" download>Click Here To Download Your <?php if (isset($com_audio)) echo $com_audio; ?> Audio </a>
-										<?php }
+											if ($communication == '0') { 
+												$upload = explode(',', $com_audio) ?? '';
+												$upd_name = '';
+												foreach ($upload as $upd) {
+													if ($upd != null) {
+														$upd_name .= "<a href=uploads/verification/verifyInfo_audio/".$upd ." target='_blank' style='color: #4ba39b;'>" . $upd . "</a>, ";
+													}
+												} 
+												echo rtrim($upd_name,', ');// to trim the comma at end;
+											}
 										} ?>
 									</div>
 								</div>

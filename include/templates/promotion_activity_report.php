@@ -63,6 +63,7 @@
                                     <th>Branch</th>
                                     <th>Promotion Type</th>
                                     <th>Status</th>
+                                    <th>Chart</th>
                                     <th>Remark</th>
                                     <th>Follow Date</th>
                                     <th>Follow up Type</th>
@@ -81,4 +82,31 @@
         </div>
 
     </form>
+    </div>
+
+<!-- Modal for promotion Chart just view table   -->
+<div class="modal fade" id="promoChartModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg " role="document">
+		<div class="modal-content" style="background-color: white">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">Promotion Chart</h5>
+				<button type="button" class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+
+					<div class="col-12">
+						<div class="row">
+							<div class="col-12 table-responsive" id='promoChartDiv'></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" data-dismiss="modal" tabindex="7">Close</button>
+			</div>
+		</div>
+	</div>
 </div>

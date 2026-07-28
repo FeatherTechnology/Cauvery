@@ -70,11 +70,12 @@ const dueFollowupLines = new Choices('#due_follup_lines', {
     allowHTML: true
 });
 
-const updateScreen = new Choices('#update_screen', {
+const cpEditAccess = new Choices('#update_cp_edit_access', {
     removeItemButton: true,
-    noChoicesText: 'Select Update Screen',
+    noChoicesText: 'Select Customer Profile Access',
     allowHTML: true
 });
+cpEditAccess.disable();
 const cash_tally_access_select = new Choices('#cash_tally_access1', {
     removeItemButton: true,
     noChoicesText: 'Select Cash Tally Access',
@@ -164,8 +165,8 @@ $(document).ready(function () {
             branch_id += branch_id1[i].value;
         }
 
-        getGroupDropdown('group1','group_id_upd',branch_id);
-        getGroupDropdown('ver_group_id','ver_group_id_upd',branch_id);
+        getGroupDropdown('group1', 'group_id_upd', branch_id);
+        getGroupDropdown('ver_group_id', 'ver_group_id_upd', branch_id);
         getLineDropdown(branch_id);
         getdueFollupLineDropdown(branch_id);
     });
@@ -202,22 +203,64 @@ $(document).ready(function () {
         $('#bank_details').val(sortedStr);
     });
 
-    $('#update_screen').change(function () {
-        // Get values from multiselect and sort
-        const screenList = updateScreen.getValue();
-        const values = screenList.map(item => item.value);
+ $('#noc_replace, #doctrackmodule').on('change', function () {
+        if ($(this).is(':checked')) {
+            $('#doc_replace_remove_access').prop('disabled', false);
+        } else {
+            $('#doc_replace_remove_access').prop('disabled', true);
+            $('#doc_replace_remove_access').val(''); // Optional: clear selected values
+        }
+    });
+    $('#updatemodule').on('change', function () {
+        cpEditAccess.removeActiveItems(); // Optional: clear selected values
+        cpEditAccess.disable();
+        $('#update_doc_edit_access').val(''); // Optional: clear selected values
+        $('#update_doc_edit_access').prop('disabled', true);
+    });
 
-        const screenSortedStr = values
-            .sort((a, b) => a - b)
-            .join(',');
+    $('#update').on('change', function () {
+        cpEditAccess.removeActiveItems(); // Optional: clear selected values
+        if ($(this).is(':checked')) {
+            cpEditAccess.enable();
+        } else {
+            cpEditAccess.disable();
+        }
+    });
     
-        $('#update_screen_id').val(screenSortedStr);
+        $('#update_cp_edit_access').change(function () {
 
-        if(values.includes('1')){
-            $('.update_cp_edit_access_div').show();
-        }else{
-            $('#update_cp_edit_access').val('0');
-            $('.update_cp_edit_access_div').hide();
+ let values = cpEditAccess.getValue(true); // ["1","2"]
+
+        // If Overall (2) is selected with other options
+        if (values.includes('2') && values.length > 1) {
+
+            // Check whether 2 was the last selected option
+            const lastValue = values[values.length - 1];
+
+            cpEditAccess.removeActiveItems();
+
+            if (lastValue === '2') {
+                // User selected Overall last → keep only Overall
+                cpEditAccess.setChoiceByValue('2');
+            } else {
+                // User selected another option after Overall → remove Overall
+                values
+                    .filter(v => v !== '2')
+                    .forEach(v => cpEditAccess.setChoiceByValue(v));
+            }
+
+            values = cpEditAccess.getValue(true);
+        }
+                $('#update_cp_edit_access_id').val(
+            values.sort((a, b) => a - b).join(',')
+        );
+    });
+    $('#update_documentation').on('change', function () {
+        if ($(this).is(':checked')) {
+            $('#update_doc_edit_access').prop('disabled', false);
+        } else {
+            $('#update_doc_edit_access').prop('disabled', true);
+            $('#update_doc_edit_access').val(''); // Optional: clear selected values
         }
     });
 
@@ -235,7 +278,8 @@ $(document).ready(function () {
     });
 
     $("#requestmodule").on("change", function () {
-        const checkboxesToEnable = document.querySelectorAll("input.request-checkbox");
+        $('#req_mapping_access').val('');
+        const checkboxesToEnable = document.querySelectorAll("input.request-checkbox,select.request-checkbox");
         var requestmodule = document.querySelector('#requestmodule');
         checkbox(checkboxesToEnable, requestmodule);
         if (!requestmodule.checked) {
@@ -439,22 +483,6 @@ $(document).ready(function () {
         }
     });
 
-    $('#updatemodule').click(function () {
-        var update_screen = document.querySelector('#updatemodule');
-        if (!update_screen.checked) {
-            $('.update_screen_div').hide();
-        }
-    });
-
-    $('#update').click(function () {
-        var update_screen = document.querySelector('#update');
-        if (update_screen.checked) {
-            $('.update_screen_div').show();
-        } else {
-            $('.update_screen_div').hide();
-        }
-    });
-
     $('#request').click(function () {
         var request_screen = document.querySelector('#request');
         if (request_screen.checked) {
@@ -558,6 +586,19 @@ $(function () {
 
     var user_id_upd = $('#user_id_upd').val();
     getBankName();
+     if ($('#noc_replace').is(':checked')) {
+        $('#doc_replace_remove_access').prop('disabled', false);
+    } else {
+        $('#doc_replace_remove_access').prop('disabled', true);
+        $('#doc_replace_remove_access').val(''); // Optional: clear selected values
+    }
+
+    if ($('#update_documentation').is(':checked')) {
+        $('#update_doc_edit_access').prop('disabled', false);
+    } else {
+        $('#update_doc_edit_access').prop('disabled', true);
+        $('#update_doc_edit_access').val(''); // Optional: clear selected values
+    }
     if (user_id_upd > 0) {
         var role_upd = $('#role_upd').val();
         var role_type_upd = $('#role_type_upd').val();
@@ -584,7 +625,7 @@ $(function () {
 
         }
 
-        getGroupDropdown('group1','group_id_upd',branch_id_upd);
+        getGroupDropdown('group1', 'group_id_upd', branch_id_upd);
        
         getLineDropdown(branch_id_upd);
         getdueFollupLineDropdown(branch_id_upd);
@@ -593,22 +634,20 @@ $(function () {
 
         var update_screen = document.querySelector('#update');
         if (update_screen.checked) {
-            let editVal = $('#update_screen_id').val();
+            let editVal = $('#update_cp_edit_access_id').val();
             if (editVal) {
+                cpEditAccess.enable();
                 let selectedValues = editVal.split(',');
                 selectedValues.forEach(value => {
-                    updateScreen.setChoiceByValue(value.trim());
+                    cpEditAccess.setChoiceByValue(value.trim());
                 });
 
-                if(selectedValues.includes('1')){ //Customer Profile.
-                    $('.update_cp_edit_access_div').show();
-                }else{
-                    $('#update_cp_edit_access').val('0');
-                    $('.update_cp_edit_access_div').hide();
-                }
+                } else {
+                cpEditAccess.disable();
             }
 
-            $('.update_screen_div').show()
+            } else {
+            cpEditAccess.disable();
         }
 
         var request_screen = document.querySelector('#request');
@@ -622,7 +661,7 @@ $(function () {
         var verification_screen = document.querySelector('#verification');
         if (verification_screen.checked) {
             getLoanCatDropdown('#ver_loan_cat_upd', verificationloanCatMultiselect);
-             getGroupDropdown('ver_group_id','ver_group_id_upd',branch_id_upd);
+             getGroupDropdown('ver_group_id', 'ver_group_id_upd', branch_id_upd);
             $('.ver_loancat_div').show()
         }else{
             verificationloanCatMultiselect.clearStore();
@@ -709,8 +748,7 @@ $(function () {
         if (approvalmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.approval-checkbox"); checkbox(checkboxesToEnable, approvalmodule); }
         if (acknowledgementmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.acknowledgement-checkbox"); checkbox(checkboxesToEnable, acknowledgementmodule); }
         if (loanissuemodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.loan_issue-checkbox"); checkbox(checkboxesToEnable, loanissuemodule); }
-        if(doctrackmodule.checked){const checkboxesToEnable = document.querySelectorAll("input.doctrack-checkbox");var doctrackmodule = document.querySelector('#doctrackmodule');checkbox(checkboxesToEnable,doctrackmodule);}
-        if (collectionmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.collection-checkbox"); checkbox(checkboxesToEnable, collectionmodule); }
+ if (doctrackmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.doctrack-checkbox"); var doctrackmodule = document.querySelector('#doctrackmodule'); checkbox(checkboxesToEnable, doctrackmodule); }        if (collectionmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.collection-checkbox"); checkbox(checkboxesToEnable, collectionmodule); }
         if (closedmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.closed-checkbox"); checkbox(checkboxesToEnable, closedmodule); }
         if (nocmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.noc-checkbox"); checkbox(checkboxesToEnable, nocmodule); }
         if (updatemodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.update-checkbox"); checkbox(checkboxesToEnable, updatemodule); }
@@ -1248,12 +1286,12 @@ function validation() {
     let requireGroup = false;
     let requireLine = false;
     let requireFollowup = false;
+    let requireCusSummaryAccess = false;
 
     const screenCategoryMap = {
 
         /* ---------------- LINE ONLY ---------------- */
         collection: { line: true },
-        closed: { line: true },
         finance_insight: { line: true },
 
         closed_report: { line: true },
@@ -1274,22 +1312,22 @@ function validation() {
         intrest_collection_report: { line: true },
 
         /* ---------------- GROUP ONLY ---------------- */
-        verification: { group: true },
-        approval: { group: true },
-        acknowledgement: { group: true },
-        loan_issue: { group: true },
-        accounts_loan_issue: { group: true },
-
         request: { group: true },
         request_list_access: { group: true },
-        update: { group: true },
 
         cancel_revoke_report: { group: true },
         request_report: { group: true },
         verification_report: { group: true },
         approval_report: { group: true },
-
+        
         /* ---------------- BOTH REQUIRED ---------------- */
+        verification: { group: true, cusSummary: true },
+        approval: { group: true, cusSummary: true },
+        acknowledgement: { group: true, cusSummary: true },
+        loan_issue: { group: true, cusSummary: true },
+        accounts_loan_issue: { group: true },
+        closed: { line: true, cusSummary: true },
+        update: { group: true, cusSummary: true },
         cash_tally: { line: true, group: true }
     };
 
@@ -1300,6 +1338,7 @@ function validation() {
         if (screenCategoryMap[id]) {
             if (screenCategoryMap[id].line) requireLine = true;
             if (screenCategoryMap[id].group) requireGroup = true;
+            if (screenCategoryMap[id].cusSummary) requireCusSummaryAccess = true;
         }
     });
 
@@ -1311,7 +1350,29 @@ function validation() {
         if (nocMapping === '1') requireGroup = true;
         if (nocMapping === '2') requireLine = true;
         if (nocMapping === '3') requireFollowup = true;
-    } 
+ }
+    let reqCheck = $('#request').is(':checked');
+    let reqScreensChecked = $('#request_list_access').is(':checked');
+    let reqMapping = $('#req_mapping_access').val();
+
+    if (reqCheck || reqScreensChecked) {
+        if (reqMapping == '1') requireGroup = true;
+        if (reqMapping == '2') requireLine = true;
+        if (reqMapping == '3') requireFollowup = true;
+    }
+
+    var reqmodule = document.querySelector('#requestmodule');
+
+    if (reqmodule.checked && reqMapping == '') {
+        $('#reqCheck').show();
+        validation = false;
+    } else if (!reqCheck && reqMapping != '') {
+        $('#requestCheck').show();
+        validation = false;
+    } else {
+        $('#requestCheck').hide();
+        $('#reqCheck').hide();
+    }
 
     let promotionChecked = $('#promotion_activity').is(':checked');
     let promotionMapping = $('#promotion_activity_mapping_access').val();
@@ -1357,6 +1418,14 @@ function validation() {
         validation = false;
     } else {
         $('.duefollowupCheck').hide();
+    }
+    
+    let cusSummary = $('#cus_summary_access').val();
+    if (requireCusSummaryAccess && cusSummary == '') {
+        $('#cusSummaryAccessCheck').show();
+        validation = false;
+    } else {
+        $('#cusSummaryAccessCheck').hide();
     }
 
     let varLoanCatchecked = $('#verification').is(':checked');
@@ -1537,26 +1606,42 @@ function validation() {
         $('#bnk_clr_upl_acc').val('')
     }
 
-    var update = document.querySelector('#update');
-    var update_screen = updateScreen.getValue();
+    var update = document.querySelector('#update'); //Customer Profile.
     if (!update.checked) {
-        $('#update_screen_id').val('')
+    $('#update_cp_edit_access_id').val('');
     } else{
-         if(update_screen.length == 0){
-            $('.update_screen_div').show();
+        let cp_edit_screen = cpEditAccess.getValue();
+         if(cp_edit_screen.length == 0){
+            $('.cpEditScreenCheck').show();
+            validation = false;
+        }else{
+            $('.cpEditScreenCheck').hide();
+        }
+    }
+
+    var updateDoc = document.querySelector('#update_documentation'); //Documentation.
+    if (!updateDoc.checked) {
+        $('#update_doc_edit_access').val('');
+    } else{
+          let docEditAccess = $('#update_doc_edit_access').val();
+         if(docEditAccess == '0'){
             $('.updateScreenCheck').show();
             validation = false;
         }else{
             $('.updateScreenCheck').hide();
         }
+    }
 
-        const values = update_screen.map(item => item.value);
-        let editAccess = $('#update_cp_edit_access').val();
-        if(values.includes('1') && editAccess =='0'){
-            $('.cpEditScreenCheck').show();
+var docReplace = document.querySelector('#noc_replace'); //Documentation.
+    if (!docReplace.checked) {
+        $('#doc_replace_remove_access').val('');
+    } else{
+        let docReplaceAccess = $('#doc_replace_remove_access').val();
+         if(docReplaceAccess == '0'){
+            $('.removeAccessCheck').show();
             validation = false;
         }else{
-            $('.cpEditScreenCheck').hide();
+            $('.removeAccessCheck').hide();
         }
     }
 
@@ -1609,11 +1694,11 @@ function validation() {
 
     // Array of main reports with their sub-checkbox classes and error spans
     var sections = [
-        {main: '#work_report_module', subClass: '.work-checkbox', errorSpan: $('.workreport')},
-        {main: '#monitor_report_module', subClass: '.monitor-checkbox', errorSpan: $('.monitorreport')},
-        {main: '#count_report_module', subClass: '.count-checkbox', errorSpan: $('.countreport')},
-        {main: '#analysis_report_module', subClass: '.analysis-checkbox', errorSpan: $('.analysisreport')},
-        {main: '#accounts_report_module', subClass: '.acounts-checkbox', errorSpan: $('.accountsreport')}
+         { main: '#work_report_module', subClass: '.work-checkbox', errorSpan: $('.workreport') },
+        { main: '#monitor_report_module', subClass: '.monitor-checkbox', errorSpan: $('.monitorreport') },
+        { main: '#count_report_module', subClass: '.count-checkbox', errorSpan: $('.countreport') },
+        { main: '#analysis_report_module', subClass: '.analysis-checkbox', errorSpan: $('.analysisreport') },
+        { main: '#accounts_report_module', subClass: '.acounts-checkbox', errorSpan: $('.accountsreport') }
     ];
 
     sections.forEach(function(section) {

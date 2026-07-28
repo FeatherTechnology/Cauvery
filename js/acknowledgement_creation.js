@@ -58,6 +58,10 @@ $(document).ready(function () {
       $("#customer_profile").hide();
       $("#cus_document").hide();
       $("#customer_loan_calc").show();
+
+      const curDate = moment().add(2, 'months').format('YYYY-MM-DD');
+      $('#due_start_from').attr('max', curDate);
+
       onLoadEditFunction();
       getUserBasedLoanCategory()
         .then(function () {
@@ -81,6 +85,7 @@ $(document).ready(function () {
     resetkycinfoList(); //KYC Info List.
     feedbackList(); // Feedback List.
     getCustomerLoanCounts(); // to get customer loan details
+    fingerprintTable(); // Fingerprint Info List
 
     var state_upd = $("#state_upd").val();
     if (state_upd != "") {
@@ -1377,47 +1382,18 @@ function getCustomerLoanCounts() {
 function fingerprintTable() {
   //To Get family member's name are required for scanning fingerprint
   var req_id = $("#req_id").val();
-  var first_name = $("#first_name").val();
-  var last_name = $("#last_name").val();
-  var cus_name = first_name + " " + last_name;
-  var cus_id = $("#cus_id_doc").val();
+  let cus_id = $('#cus_id').val();
   $.ajax({
     url: "verificationFile/getNamesForFingerprint.php",
-    data: { cus_name: cus_name, cus_id: cus_id },
+     data: { cus_id },
     type: "post",
     cache: false,
     success: function (html) {
       $(".fingerprintTable").html(html);
 
-      $(".scanBtn").click(function () {
-        var hand = $(this).prev().val();
-        var name = $(this).parent().prev().find('input[id="name_print"]').val();
-        var adhar = $(this)
-          .parent()
-          .prev()
-          .prev()
-          .find('input[id="adhar_print"]')
-          .val();
-        if (hand == "") {
-          //prevent if hand is not selected
-          $(this).prev().css("border-color", "red");
-        } else {
-          $(this).prev().css("border-color", "#0C70AB");
-          var btn = $(this);
-          btn.attr("disabled", true);
-          commonCaptureFinger(
-            (fdata) => {
-              btn.next().val(fdata);
-              commonStoreFingerprint(fdata, hand, adhar, name, () => {
-                $("#fingerValidation").val("1");
-              });
-            },
-            () => {
-              btn.removeAttr("disabled");
-            },
-          );
-        }
-      });
+ $('#fingerValidation').val(
+                $('.fingerprintTable .badge-success').length ? '1' : ''
+            );
     },
   });
 }
@@ -3262,7 +3238,6 @@ function resetdocInfo() {
     data: { req_id: req_id, pages: 2 },
     cache: false,
     success: function (html) {
-      $("#docModalDiv").empty();
       $("#docModalDiv").html(html);
 
       $(
@@ -3284,18 +3259,7 @@ function docinfoList() {
     data: { req_id: req_id },
     cache: false,
     success: function (html) {
-      $("#DocResetTableDiv").empty();
       $("#DocResetTableDiv").html(html);
-
-      $("#document_name").val("");
-      $("#document_details").val("");
-      $("#document_type").val("");
-      $("#document_holder").val("");
-      $("#doc_info_id").val("");
-      $("#docholder_name").val("");
-      $("#docholder_relationship_name").val("");
-      $("#doc_relation").val("");
-      $("#document_info_upd").val("");
 
       let hasRecords = $("#document_table").DataTable().rows().count() > 0;
       if (hasRecords) {
@@ -3308,23 +3272,77 @@ function docinfoList() {
     },
   });
 }
+//Finger print Info stored data.
+function fingerprintinfo() {
+    let cus_id = $('#cus_id').val();
+    $.ajax({
+        url: 'verificationFile/getFingerprintStoredData.php',
+        data: { cus_id },
+        type: 'post',
+        dataType: 'json',
+        success: function (result) {
+            let cnt = (result == '1') ? '1' : '';
+            $('#fingerValidation').val(cnt);
+        }
+    });
+}
 // ///////////////////////////  Document Info Modal END //////////////////////////////
 
 //Documentation Submit Validation
 $("#submit_documentation").click(function (event) {
-  if (doc_submit_validation(event)) {
-    let confirmAction = confirm(
-      "Are you sure you want to submit Documentation ?",
-    );
-    if (!confirmAction) {
-      event.preventDefault(); // Stop form submission if canceled
-      return false;
+ event.preventDefault(); // Stop immediate form submission
+    
+    let $btn = $(this);
+    let $form = $btn.closest('form');
+    
+    $btn.attr('disabled', true); // Temporarily disable button during AJAX call
+
+    // 1. FIRST: Check the replacement status via AJAX
+    $.ajax({
+        url: "approveFile/checkReplaceStatus.php",
+        type: "POST",
+        data: {
+            req_id: $('#req_id').val()
+        },
+        dataType: "json",
+        success: function (res) {
+            
+            // Check if backend throws a warning AND the user has NOT checked/enabled the switch
+            if (res.status === 'warning' && !$('#replace_status').is(':checked')) {
+                swalError('Warning', res.message);
+                $btn.removeAttr('disabled'); // Ensure button is re-enabled to let user fix it
+                return false;
+            }
+
+            // 2. SECOND: Check form inputs validation
+            // Note: If this function returns false, the confirmation below WILL NOT show.
+            if (!doc_submit_validation(event)) {
+                console.log("Validation failed inside doc_submit_validation");
+                scrollToFirstError('#cus_doc'); 
+                $btn.removeAttr('disabled');
+                return false;
+            }
+
+            // 3. THIRD: Ask for final submission confirmation
+            let confirmAction = confirm("Are you sure you want to submit Documentation ?");
+            if (confirmAction) {
+                // Fix for programmatic submit missing button POST value
+                if ($form.find('input[name="submit_documentation"]').length === 0) {
+                    $form.append('<input type="hidden" name="submit_documentation" value="submit">');
+                }
+                
+                // NATIVE SUBMIT: Using [0] bypasses jQuery event blocks and forces the page to POST
+                $form[0].submit();
+            } else {
+                // If canceled, re-enable button and stop
+                $btn.removeAttr('disabled');
+            }
+        },
+        error: function() {
+            alert("An error occurred while validating status. Please try again.");
+            $btn.removeAttr('disabled');
     }
-  } else {
-    event.preventDefault();
-    scrollToFirstError("#cus_doc");
-    return false;
-  }
+   });
 });
 
 function doc_submit_validation(event) {
@@ -3364,7 +3382,8 @@ function doc_submit_validation(event) {
   var doc_remark = $("#doc_remark").val().trim();
   let replaceStatusChecked = $("#replace_status").is(":checked");
 
-  // var fingerprint = $('#fingerValidation').val(); var submitted = $('#submitted').val();
+  var fingerprint = $('#fingerValidation').val();
+
 
   var validation = true;
 
@@ -3566,15 +3585,15 @@ function doc_submit_validation(event) {
       // }
       $("#enRCCheck").hide();
     }
-    if (owner_type == "2") {
-      if (ownername_relationship_name == "") {
-        event.preventDefault();
-        validation = false;
-        $("#ownerNameCheck").show();
-      } else {
-        $("#ownerNameCheck").hide();
-      }
-    }
+ if (owner_type == '2') {
+            if (ownername_relationship_name == "") {
+                event.preventDefault();
+                validation = false;
+                $("#ownerNameCheck").show();
+            } else {
+                $("#ownerNameCheck").hide();
+            }
+        }
   }
 
   //signed doc
@@ -3596,16 +3615,13 @@ function doc_submit_validation(event) {
       $(".rplce_doc_id").hide();
     }
   }
-
-  // if (submitted == undefined || submitted == '' || submitted == null) {
-  //     if (fingerprint == '') {
-  //         event.preventDefault();
-  //         validation = false;
-  //         $('.fingerSpan').show();
-  //     } else {
-  //         $('.fingerSpan').hide();
-  //     }
-  // }
+     if (fingerprint == '') {
+        event.preventDefault();
+        validation = false;
+        $('.fingerSpan').show();
+    } else {
+        $('.fingerSpan').hide();
+    }
   return validation;
 }
 
@@ -3619,9 +3635,10 @@ async function getDocumentFunc() {
 
   await goldinfoList(); // Gold Info List.
 
-  await docinfoList(); // Document Info List.
+  await docinfoList(); // Document Info List.   
+    
+  fingerprintinfo(); //to confirm fingerprint stored in db.
 
-  fingerprintTable(); // Fingerprint Info List
 
   // when Mortgage Doc is YES then Pending is UNCHECKED.
   var docupd = $("#mortgage_document").val();
@@ -3887,7 +3904,12 @@ $("#day_scheme").change(function () {
 });
 
 $("#due_start_from").change(function () {
-  var due_start_from = $("#due_start_from").val(); // get start date to calculate maturity date
+  let selectedDate = moment(this.value);
+    if (selectedDate.date() !== 1) {
+        // Reset to 1st of same month
+        selectedDate.date(1);
+        this.value = selectedDate.format('YYYY-MM-DD');
+    }
   var due_period = parseInt($("#due_period").val()); //get due period to calculate maturity date
   var profit_type = $("#profit_type").val();
   if (profit_type == "1") {
@@ -3896,7 +3918,7 @@ $("#due_start_from").change(function () {
   } else if (profit_type == "2") {
     var due_method = $("#due_method_scheme").val();
   }
-
+var due_start_from = $('#due_start_from').val(); // get start date to calculate maturity date
   if (due_method == "Monthly" || due_method == "1") {
     // if due method is monthly or 1(for scheme) then calculate maturity by month
 

@@ -652,7 +652,9 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 													<th>S.No</th>
 													<th>Name</th>
 													<th>Relationship</th>
+													<th>DOB</th>
 													<th>Age</th>
+													<th>Live Status</th>
 													<th>Aadhar No</th>
 													<th>Mobile No</th>
 													<th>Occupation</th>
@@ -1170,6 +1172,21 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 						</div>
 					</div>
 					<!-- KYC info END -->
+					 <!-- Fingerprint Info start-->
+					<div class="card">
+						<div class="card-header"> Fingerprint Info </div><span class="text-danger fingerSpan" style="margin-left:25px;display: none;">Please Scan Customer Fingerprint</span>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+									<div class="form-group fingerprintTable">
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Fingerprint Info End-->
+
 
 					<!-- ///////////////////////////////////////////////// Customer Summary START ///////////////////////////////////////////////////////////// -->
 					<div class="card">
@@ -1842,20 +1859,6 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 							</div>
 						</div>
 					</div>
-					<!-- Fingerprint Info start-->
-					<div class="card">
-						<div class="card-header"> Fingerprint Info </div><span class="text-danger fingerSpan" style="margin-left:25px;display: none;">Please Scan Customer Fingerprint</span>
-						<div class="card-body">
-							<div class="row">
-								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-									<div class="form-group fingerprintTable">
-
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- Fingerprint Info End-->
 
 					<div class="col-md-12 ">
 						<div class="text-right">
@@ -2179,11 +2182,18 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 										<input type="hidden" id="verification_audio_upd" name="verification_audio_upd" value="<?php if (isset($com_audio)) {
 																																	echo $com_audio;
 																																} ?>">
-										<input type="file" onchange="compressImage(this,800)" class="form-control" name="verification_audio" id="verification_audio" accept=".mp3,audio/*" tabindex="117">
+										<input type="file" class="form-control" name="verification_audio[]" id="verification_audio" accept=".mp3,audio/*" tabindex="117" multiple>
 										<?php if (isset($communication)) {
-											if ($communication == '0') { ?>
-												<a href="<?php echo "uploads/verification/verifyInfo_audio/" . $com_audio; ?>" target="_blank" download>Click Here To Download Your <?php if (isset($com_audio)) echo $com_audio; ?> Audio </a>
-										<?php }
+											if ($communication == '0') { 
+												$upload = explode(',', $com_audio) ?? '';
+												$upd_name = '';
+												foreach ($upload as $upd) {
+													if ($upd != null) {
+														$upd_name .= "<a href=uploads/verification/verifyInfo_audio/".$upd ." target='_blank' style='color: #4ba39b;'>" . $upd . "</a>, ";
+													}
+												} 
+												echo rtrim($upd_name,', ');// to trim the comma at end;
+											}
 										} ?>
 									</div>
 								</div>
@@ -2676,19 +2686,37 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 							<span class="text-danger" id="fammobileCheck">Enter Mobile Number</span>
 						</div>
 					</div>
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+						<div class="form-group">
+							<label for="relation_dob">Date of Birth</label><span class="required">&nbsp;*</span>
+							<input type="date" class="form-control" id="relation_dob" name="relation_dob" tabindex='8'>
+							<span class="text-danger" id='famdobCheck'>Please Select DOB</span>
+						</div>
+					</div>
 
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label" for="relation_age"> Age </label>
-							<input type="text" class="form-control" name="relation_age" id="relation_age" tabindex='8' placeholder="Enter Age" oninput="validateInputNumber(this,'withOutDot')">
+							<input type="text" class="form-control" name="relation_age" id="relation_age" tabindex='9' placeholder="Enter Age" readonly>
 							<span class="text-danger" id="famageCheck">Enter Age</span>
+						</div>
+					</div>
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+						<div class="form-group">
+							<label class="label" for="relation_live_deceased"> Live Status </label><span class="required">&nbsp;*</span>
+							<select class="form-control" name="relation_live_deceased" id="relation_live_deceased" tabindex="10">
+								<option value=''>Select Live Status</option>
+								<option value='1'>Live</option>
+								<option value='2'>Deceased</option>
+							</select>
+							<span class="text-danger" id="famLiveDeceasedCheck">Select Live Status</span>
 						</div>
 					</div>
 
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label" for="relation_Occupation"> Occupation </label>
-							<input type="text" class="form-control" name="relation_Occupation" id="relation_Occupation" onkeydown="return /[a-z ]/i.test(event.key)" tabindex='9' placeholder="Enter Mobile Number">
+							<input type="text" class="form-control" name="relation_Occupation" id="relation_Occupation" onkeydown="return /[a-z ]/i.test(event.key)" tabindex='11' placeholder="Enter Mobile Number">
 							<span class="text-danger" id="famoccCheck">Enter Occupation</span>
 						</div>
 					</div>
@@ -2696,7 +2724,7 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label" for="relation_Income"> Income </label>
-							<input type="text" class="form-control" name="relation_Income" id="relation_Income" tabindex='10' placeholder="Enter Income" oninput="validateInputNumber(this,'withOutDot')">
+							<input type="text" class="form-control" name="relation_Income" id="relation_Income" tabindex='12' placeholder="Enter Income" oninput="validateInputNumber(this,'withOutDot')">
 							<span class="text-danger" id="famincomeCheck">Enter Income</span>
 						</div>
 					</div>
@@ -2704,14 +2732,14 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label" for="relation_Blood"> Blood Group </label>&nbsp;
-							<input type="text" class="form-control" name="relation_Blood" id="relation_Blood" tabindex='11' placeholder="Enter Blood Group">
+							<input type="text" class="form-control" name="relation_Blood" id="relation_Blood" tabindex='13' placeholder="Enter Blood Group">
 						</div>
 					</div>
 
 
 					<div class="col-xl-2 col-lg-2 col-md-6 col-sm-4 col-12">
 						<input type="hidden" name="famID" id="famID">
-						<button type="button" name="submitFamInfoBtn" id="submitFamInfoBtn" class="btn btn-primary" style="margin-top: 19px;" tabindex='12'>Submit</button>
+						<button type="button" name="submitFamInfoBtn" id="submitFamInfoBtn" class="btn btn-primary" style="margin-top: 19px;" tabindex='14'>Submit</button>
 					</div>
 
 				</div>
@@ -2734,7 +2762,7 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeFamModal()" tabindex='13'>Close</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeFamModal()" tabindex='15'>Close</button>
 			</div>
 		</div>
 	</div>
@@ -3211,13 +3239,13 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 </div>
 <!-- END  Add KYC Info Modal -->
 <!-- Add Signed Doc info Modal  START -->
-<div class="modal fade addSignDoc" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade addSignDoc" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
 				<h5 class="modal-title" id="myLargeModalLabel">Add Signed Doc Info</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="resetsigninfoList()">
-					<span aria-hidden="true">&times;</span>
+				<button type="button" class="close" data-dismiss="modal" onclick="resetsigninfoList()">
+					<span>&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
@@ -3532,7 +3560,7 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label for="customer_summary_uploads">Uploads</label>
-							<input type="file" class="form-control" name="customer_summary_uploads[]" id="customer_summary_uploads" tabindex="5" multiple>
+							<input type="file" class="form-control" name="customer_summary_uploads[]" id="customer_summary_uploads" tabindex="5" onchange="compressImage(this,800)" multiple>
 							<input type="hidden" id="cus_summary_upload">
 						</div>
 					</div>

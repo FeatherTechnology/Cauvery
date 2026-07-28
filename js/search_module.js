@@ -94,7 +94,7 @@ $(document).ready(function () {
     })
 
     //Get All fingerprint from db then scan for each one to find match.
-    $('.scanBtn').click(async function () {
+    $('.search_by_scan').click(async function(){
 
         let response = await $.ajax({
             url: "searchModule/getAllFingerprints.php",
@@ -104,38 +104,41 @@ $(document).ready(function () {
 
         let fingerList = response.data || response;
 
-        let matched = false;
+        commonCaptureFinger(function(capturedAnsi){
 
-        for (let row of fingerList) {
+            let matched = false;
 
-            let matchRes = MatchFinger(60, 10000, row.ansi_template, "ANSI");
+            for (const row of fingerList) {
 
-            if (matchRes && matchRes.httpStaus && matchRes.data && matchRes.data.Status == true) {
+                const verifyRes = VerifyFinger(capturedAnsi, row.ansi_template, 2);
 
-                matched = true;
+                if (verifyRes.httpStaus && verifyRes.data.Status) {
 
-                $('#fingerprint_person_id').val(row.adhar_num);
+                    matched = true;
 
+                    $('#fingerprint_person_id').val(row.adhar_num);
+
+                    Swal.fire({
+                        title: `Fingerprint Matched: ${row.name}`,
+                        icon: 'success',
+                        confirmButtonColor: '#0C70AB'
+                    }).then(() => {
+                        $('#search').trigger('click');
+                    });
+
+                    break;
+                } //if END.
+            } //for loop END.
+
+            if(!matched){
                 Swal.fire({
-                    title: `Fingerprint Matched: ${row.name}`,
-                    icon: 'success',
-                    confirmButtonColor: '#0C70AB'
-                }).then(() => {
-                    $('#search').trigger('click');
+                    title:'No Match Found',
+                    icon:'error', 
+                    confirmButtonColor: '#009688'
                 });
-
-                break;
             }
-        }
 
-        if (!matched) {
-
-            Swal.fire({
-                title: 'No Match Found',
-                icon: 'error', 
-                confirmButtonColor: '#0C70AB'
-            });
-        }
+        }); //Capture END.
     }); //Scan button Onclick end
 
 });

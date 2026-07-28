@@ -1,6 +1,5 @@
 <?php
-include('../../ajaxconfig.php');
-include('../../moneyFormatIndia.php');
+include('../../ajaxconfig.php'); 
 
 $type = $_POST['type'];
 $where = ($_POST['user_id'] != '') ? " AND ii.insert_login_id = '" . $_POST['user_id'] . "' " : ''; //for user based
@@ -33,8 +32,6 @@ $row = $qry->fetch();
 $response['doc_charge'] = $row['doc_charge_cal'] ?? 0;
 $response['proc_charge'] = $row['proc_fee_cal'] ?? 0;
 
-$response['doc_charge'] = moneyFormatIndia($response['doc_charge']);
-$response['proc_charge'] = moneyFormatIndia($response['proc_charge']);
 
 echo json_encode($response);
 

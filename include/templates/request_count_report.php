@@ -37,8 +37,8 @@
 					<option value='0'>Select Type</option>
 					<option value='1'>User</option>
 					<option value='2'>Sector</option>
-					<!-- <option value='3'>Region</option>
-					<option value='4'>Zone</option> -->
+					<option value='3'>Region</option>
+					<option value='4'>Zone</option>
 				</select>
 
 				<select class="toggle-button hidefield" id='user_type' name='user_type'>
@@ -54,7 +54,12 @@
 				
                 <select class="form-control hidefield" id="map_name" name="map_name" multiple>
                     <option value="">Select Sector</option>
-                </select>
+                </select>&nbsp;&nbsp;
+				
+				<select class="form-control hidefield" id="loan_category" name="loan_category" multiple>
+					<option value="">Select Loan Category</option>
+				</select>
+
 	
 				<input type="button" id='reset_btn' name='reset_btn' class="toggle-button" style="background-color: #0c70ab;color:white" value='Search'>
 			</div>

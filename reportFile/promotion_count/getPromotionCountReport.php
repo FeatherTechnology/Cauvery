@@ -43,12 +43,12 @@ if (isset($_POST['from_date']) && isset($_POST['to_date']) && $_POST['from_date'
     $from_date = $_POST['from_date'] . " 00:00:00";
     $to_date   = date('Y-m-d', strtotime($_POST['to_date'] . ' +1 day')) . " 00:00:00";
 
-    $where .= " AND np.created_date >= '$from_date' AND np.created_date < '$to_date'";
+    $where .= " AND (np.created_date >= '$from_date' AND np.created_date < '$to_date')";
 }
 
 /* ---------- USER ID ---------- */
 $user_ids = $_POST['user_id'] ?? '';
-if($user_ids != '0' && !empty($user_id)){
+if($user_ids != '0' && !empty($user_ids)){
     $user_ids = preg_replace('/[^0-9,]/', '', $user_ids); // clean
     $id_list = implode(',', array_filter(explode(',', $user_ids), 'is_numeric'));
     if (!empty($id_list)) {
@@ -121,6 +121,7 @@ $statement->execute();
 $result = $statement->fetchAll();
 
 $finalData = [];
+$statusName = ['NOC Call' => 'noc_call', 'Interested' => 'interest', 'Not Interested' => 'not_interest', 'Unavailable' => 'unavailable'];
 
 foreach ($result as $row) {
 
@@ -131,6 +132,11 @@ foreach ($result as $row) {
             'name' => $row['fullname'],
 
             // initialize all columns = 0
+            'mobile_noc_call_new' => 0,
+            'mobile_noc_call_renewal' => 0,
+            'mobile_noc_call_reactive' => 0,
+            'mobile_noc_call_repromotion' => 0,
+
             'mobile_interest_new' => 0,
             'mobile_interest_renewal' => 0,
             'mobile_interest_reactive' => 0,
@@ -139,7 +145,17 @@ foreach ($result as $row) {
             'mobile_not_interest_new' => 0,
             'mobile_not_interest_renewal' => 0,
             'mobile_not_interest_reactive' => 0,
-            'mobile_not_interest_repromotion' => 0,
+            
+            'mobile_unavailable_new' => 0,
+            'mobile_unavailable_renewal' => 0,
+            'mobile_unavailable_reactive' => 0,
+            'mobile_unavailable_repromotion' => 0,
+
+            'direct_noc_call_new' => 0,
+            'direct_noc_call_renewal' => 0,
+            'direct_noc_call_reactive' => 0,
+            'direct_noc_call_repromotion' => 0,
+
 
             'direct_interest_new' => 0,
             'direct_interest_renewal' => 0,
@@ -149,7 +165,12 @@ foreach ($result as $row) {
             'direct_not_interest_new' => 0,
             'direct_not_interest_renewal' => 0,
             'direct_not_interest_reactive' => 0,
-            'direct_not_interest_repromotion' => 0
+            'direct_not_interest_repromotion' => 0,
+
+            'direct_unavailable_new' => 0,
+            'direct_unavailable_renewal' => 0,
+            'direct_unavailable_reactive' => 0,
+            'direct_unavailable_repromotion' => 0
         ];
     }
 
@@ -159,7 +180,7 @@ foreach ($result as $row) {
     $type = ($row['promo_type'] == 1) ? 'direct' : 'mobile';
 
     // status
-    $status = ($row['status'] == 'Interested') ? 'interest' : 'not_interest';
+    $status = $statusName[$row['status']];
 
     // origin
     switch ($row['orgin_table']) {
@@ -181,6 +202,17 @@ foreach ($finalData as $row) {
     $sub_array = [];
 
     $sub_array[] = $row['name'];
+      //Mobile NOC Call
+    $sub_array[] = $row['mobile_noc_call_new'];
+    $sub_array[] = $row['mobile_noc_call_renewal'];
+    $sub_array[] = $row['mobile_noc_call_reactive'];
+    $sub_array[] = $row['mobile_noc_call_repromotion'];
+    $sub_array[] = array_sum([
+        $row['mobile_noc_call_new'],
+        $row['mobile_noc_call_renewal'],
+        $row['mobile_noc_call_reactive'],
+        $row['mobile_noc_call_repromotion']
+    ]);
 
     //Mobile interest
     $sub_array[] = $row['mobile_interest_new'];
@@ -205,7 +237,29 @@ foreach ($finalData as $row) {
         $row['mobile_not_interest_reactive'],
         $row['mobile_not_interest_repromotion']
     ]);
+ //Mobile Unavailable
+    $sub_array[] = $row['mobile_unavailable_new'];
+    $sub_array[] = $row['mobile_unavailable_renewal'];
+    $sub_array[] = $row['mobile_unavailable_reactive'];
+    $sub_array[] = $row['mobile_unavailable_repromotion'];
+    $sub_array[] = array_sum([
+        $row['mobile_unavailable_new'],
+        $row['mobile_unavailable_renewal'],
+        $row['mobile_unavailable_reactive'],
+        $row['mobile_unavailable_repromotion']
+    ]);
 
+    //Direct NOC Call
+    $sub_array[] = $row['direct_noc_call_new'];
+    $sub_array[] = $row['direct_noc_call_renewal'];
+    $sub_array[] = $row['direct_noc_call_reactive'];
+    $sub_array[] = $row['direct_noc_call_repromotion'];
+    $sub_array[] = array_sum([
+        $row['direct_noc_call_new'],
+        $row['direct_noc_call_renewal'],
+        $row['direct_noc_call_reactive'],
+        $row['direct_noc_call_repromotion']
+    ]);
     //Direct interest
     $sub_array[] = $row['direct_interest_new'];
     $sub_array[] = $row['direct_interest_renewal'];
@@ -229,6 +283,18 @@ foreach ($finalData as $row) {
         $row['direct_not_interest_reactive'],
         $row['direct_not_interest_repromotion']
     ]);
+     //Direct Unavailable
+    $sub_array[] = $row['direct_unavailable_new'];
+    $sub_array[] = $row['direct_unavailable_renewal'];
+    $sub_array[] = $row['direct_unavailable_reactive'];
+    $sub_array[] = $row['direct_unavailable_repromotion'];
+    $sub_array[] = array_sum([
+        $row['direct_unavailable_new'],
+        $row['direct_unavailable_renewal'],
+        $row['direct_unavailable_reactive'],
+        $row['direct_unavailable_repromotion']
+    ]);
+
 
     $data[] = $sub_array;
 }

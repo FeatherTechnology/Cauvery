@@ -265,8 +265,8 @@ $(document).ready(function () {
     img.attr("src", URL.createObjectURL(pic.files[0]));
   });
 
-  $("#dob").change(function () {
-    let dobirth = $("#dob").val();
+  $("#dob, #relation_dob").change(function () {
+    let dobirth = $(this).val();
 
     var dob = new Date(dobirth);
     //calculate month difference from current date in time
@@ -281,7 +281,10 @@ $(document).ready(function () {
     //now calculate the age of the user
     var age = Math.abs(year - 1970);
 
-    $("#age").val(age); // set value to age.
+     // Determine which age field to update based on which element triggered the event
+    let ageval = (this.id === "dob") ? "#age" : "#relation_age";
+
+    $(ageval).val(age); // set value to age.
   });
 
   $("#state").change(function () {
@@ -396,14 +399,15 @@ $(document).ready(function () {
 
     if (verify == "cus_profile") {
       $("#customer_profile").show();
-      $("#cus_document").hide();
-      $("#customer_loan_calc").hide();
+       $("#cus_document, #customer_loan_calc").hide();
+      const curDate = moment().format('YYYY-MM-DD');
+      $('#relation_dob').attr('max', curDate);
+
       customerProfileFunc();
     }
     if (verify == "documentation") {
       if (profile_sts == 10 || doc_sts == 11) {
-        $("#customer_profile").hide();
-        $("#cus_document").show();
+        $("#customer_profile, #customer_loan_calc").hide();
         $("#customer_loan_calc").hide();
         // getDocumentHistory();
         getDocumentFunc();
@@ -416,9 +420,11 @@ $(document).ready(function () {
     }
     if (verify == "loan_calc") {
       if (doc_sts == 11) {
-        $("#customer_profile").hide();
-        $("#cus_document").hide();
+        $("#customer_profile, #cus_document").hide();
         $("#customer_loan_calc").show();
+        
+        const curDate = moment().add(2, 'months').format('YYYY-MM-DD');
+        $('#due_start_from').attr('max', curDate);
         initialize();
       } else {
         showErrorAlert("Please Complete Customer Documentation!");
@@ -438,6 +444,7 @@ $(document).ready(function () {
       resetbankinfoList(); //Bank Info List.
       feedbackList(); // Feedback Info List.
       getCustomerLoanCounts(); //to get closed customer details
+      fingerprintTable(); // Fingerprint Info List.
     
       var state_upd = $("#state_upd").val();
       if (state_upd != "") {
@@ -511,10 +518,27 @@ $(document).ready(function () {
     // Signed Type
     let type = $(this).val();
 
-    $("#cus_name_div").hide();
-    $("#guar_name_div").hide();
-    $("#relation_doc").hide();
-    $('#signTyperRelationshipCheck').hide();
+    if(type =='0' || type =='1'){ //Customer, Guarantor.
+      // Get all td elements at index 2 from all rows
+      let allSignTypes = $('#signedDoc_table_data').find('tr').map(function() {
+          return $(this).find("td:eq(2)").text();
+      }).get();
+  
+      let typeName = {'0':'Customer', '1':'Guarantor', '2':'Combined', '3':'Family Members'};
+      let checkType = typeName[type] ?? '';
+  
+      // Check if checkType exists in any of the rows
+      if (allSignTypes.some(function(tbSignType) {
+          return tbSignType.includes(checkType);
+      })){
+          alert(`${checkType} already added in Sign doc.`);
+          $(this).val('');
+          $("#cus_name_div, #guar_name_div, #relation_doc, #signTyperRelationshipCheck").hide();
+          return;
+      }
+    }
+
+    $("#cus_name_div, #guar_name_div, #relation_doc, #signTyperRelationshipCheck").hide();
 
     if (type == "0") {
       // if customer , then show Customer name
@@ -552,6 +576,44 @@ $(document).ready(function () {
     }
 
   });
+
+    $('#signType_relationship').change(function(){
+      let relationship = $(this).val();
+      // Signed Type
+      let type = $('#sign_type').val();
+      
+      // Get all td elements at index 2 from all rows
+      let allSignTypes = $('#signedDoc_table_data').find('tr:has(td)').map(function() {
+          return $(this).find("td:eq(2)").text();
+      }).get();
+
+      // Get all relation-id attributes from all rows
+      let allRelationIds = $('#signedDoc_table_data').find('tr:has(td)').map(function() {
+          return $(this).find("a").data('relationid');
+      }).get();
+
+      // Types that share the same relationship ID
+      let typeName = {'0':'Customer', '1':'Guarantor', '2':'Combined', '3':'Family Members'};
+      let checkType = typeName[type] ?? '';
+      
+      // Check if the relationship already exists with Combined OR Family Members in the same row
+      let alreadyExists = allRelationIds.some(function(tbRelationId, index) {
+          // Check if this row has the matching relationship
+          if (tbRelationId == relationship) {
+              // Check if this same row has either Combined OR Family Members
+              let rowType = allSignTypes[index];
+              return checkType.includes(rowType);
+          }
+          return false;
+      });
+
+      if (alreadyExists) {
+          alert(`This "${checkType}" already added in Sign doc.`);
+          $(this).val('');
+          return;
+      }
+  });
+
 
   $("body").on("click", "#signed_doc_edit", function () {
     let id = $(this).attr("value");
@@ -1357,51 +1419,42 @@ function getCustomerLoanCounts() {
 // Modal Box for Agent Group
 
 $(document).on("click", "#submitFamInfoBtn", function () {
-  let req_id = $("#req_id").val();
-  let cus_id = $("#cus_id").val();
-  let fam_first_name = $("#fam_first_name").val();
-  let fam_last_name = $("#fam_last_name").val();
-  let relationship = $("#relationship").val();
-  let other_remark = $("#other_remark").val();
-  let other_address = $("#other_address").val();
-  let relation_age = $("#relation_age").val();
-  let relation_aadhar = $("#relation_aadhar").val();
-  let relation_Mobile = $("#relation_Mobile").val();
-  let relation_Occupation = $("#relation_Occupation").val();
-  let relation_Income = $("#relation_Income").val();
-  let relation_Blood = $("#relation_Blood").val();
-  let famTableId = $("#famID").val();
-  let authorize = $("#authorize").val();
+
+  let famData = {
+    reqId  : $("#req_id").val(),
+    cus_id : $("#cus_id").val(),
+    fam_first_name : $("#fam_first_name").val(),
+    fam_last_name : $("#fam_last_name").val(),
+    relationship : $("#relationship").val(),
+    other_remark : $("#other_remark").val(),
+    other_address : $("#other_address").val(),
+    relation_dob : $("#relation_dob").val(),
+    relation_age : $("#relation_age").val(),
+    relation_live_deceased : $("#relation_live_deceased").val(),
+    relation_aadhar : $("#relation_aadhar").val(),
+    relation_Mobile : $("#relation_Mobile").val(),
+    relation_Occupation : $("#relation_Occupation").val(),
+    relation_Income : $("#relation_Income").val(),
+    relation_Blood : $("#relation_Blood").val(),
+    famTableId : $("#famID").val(),
+    authorize : $("#authorize").val()
+  }
 
   if (
-    fam_first_name != "" &&
-    fam_last_name != "" &&
-    relationship != "" &&
-    relation_aadhar != "" &&
-    relation_Mobile != "" &&
-    relation_Mobile.length === 10 &&
-    req_id != ""
+     famData.fam_first_name != "" &&
+     famData.fam_last_name != "" &&
+    famData.relationship != "" &&
+    famData.relation_aadhar != "" &&
+    famData.relation_Mobile != "" &&
+    famData.relation_Mobile.length === 10 &&
+    famData.relation_dob != "" &&
+    famData.relation_live_deceased != "" &&
+    famData.reqId  != "" 
   ) {
     $.ajax({
       url: "verificationFile/verification_family_submit.php",
       type: "POST",
-      data: {
-        fam_first_name: fam_first_name,
-        fam_last_name: fam_last_name,
-        realtionship: relationship,
-        other_remark: other_remark,
-        other_address: other_address,
-        relation_age: relation_age,
-        relation_aadhar: relation_aadhar,
-        relation_Mobile: relation_Mobile,
-        relation_Occupation: relation_Occupation,
-        relation_Income: relation_Income,
-        relation_Blood: relation_Blood,
-        famTableId: famTableId,
-        authorize: authorize,
-        reqId: req_id,
-        cus_id: cus_id,
-      },
+      data: famData,
       cache: false,
       success: function (response) {
         var insresult = response.includes("Inserted");
@@ -1427,46 +1480,57 @@ $(document).on("click", "#submitFamInfoBtn", function () {
       },
     });
   } else {
-    if (fam_first_name == "") {
+    if (famData.fam_first_name == "") {
       $("#famFirstnameCheck").show();
     } else {
       $("#famFirstnameCheck").hide();
     }
 
-    if (fam_last_name == "") {
+    if (famData.fam_last_name == "") {
       $("#famLastnameCheck").show();
     } else {
       $("#famLastnameCheck").hide();
     }
 
-    if (relationship == "") {
+    if (famData.relationship == "") {
       $("#famrelationCheck").show();
     } else {
       $("#famrelationCheck").hide();
     }
 
-    if (relationship == "Other" && other_remark == "") {
+    if (famData.relationship == "Other" && famData.other_remark == "") {
       $("#famremarkCheck").show();
     } else {
       $("#famremarkCheck").hide();
     }
 
-    if (relationship == "Other" && other_address == "") {
+    if (famData.relationship == "Other" && famData.other_address == "") {
       $("#famaddressCheck").show();
     } else {
       $("#famaddressCheck").hide();
     }
 
-    if (relation_aadhar == "") {
+    if (famData.relation_aadhar == "") {
       $("#famaadharCheck").show();
     } else {
       $("#famaadharCheck").hide();
     }
 
-    if (relation_Mobile == "" || relation_Mobile.length < 10) {
+    if (famData.relation_Mobile == "" || famData.relation_Mobile.length < 10) {
       $("#fammobileCheck").show();
     } else {
       $("#fammobileCheck").hide();
+    }
+     if (famData.relation_dob == "") {
+      $("#famdobCheck").show();
+    } else {
+      $("#famdobCheck").hide();
+    }
+
+    if (famData.relation_live_deceased == "") {
+      $("#famLiveDeceasedCheck").show();
+    } else {
+      $("#famLiveDeceasedCheck").hide();
     }
   }
 });
@@ -1483,8 +1547,8 @@ function resetFamInfo() {
       $("#updatedFamTable").empty();
       $("#updatedFamTable").html(html);
 
-      $("#fam_first_name, #fam_last_name, #relationship, #other_remark, #other_address, #relation_age, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID,#authorize").val("");
-      $("#famFirstnameCheck, #famLastnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famageCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
+      $("#fam_first_name, #fam_last_name, #relationship, #other_remark, #other_address, #relation_dob, #relation_age, #relation_live_deceased, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID, #authorize").val("");
+      $("#famFirstnameCheck, #famLastnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
     },
   });
 }
@@ -1498,8 +1562,9 @@ function resetFamDetails() {
     data: { cus_id: cus_id },
     cache: false,
     success: function (html) {
-      $("#famList").empty();
+      // $("#famList").empty();
       $("#famList").html(html);
+      fingerprintTable(cus_id);
     },
   });
 }
@@ -1520,8 +1585,10 @@ $("body").on("click", "#verification_fam_edit", function () {
       $("#relationship").val(result["relation"]);
       $("#other_remark").val(result["remark"]);
       $("#other_address").val(result["address"]);
+      $("#relation_dob").val(result["dob"]);
       $("#relation_age").val(result["age"]);
       $("#relation_aadhar").val(result["aadhar"]);
+      $("#relation_live_deceased").val(result["live_deceased"]);
       $("#relation_Mobile").val(result["mobileno"]);
       $("#relation_Occupation").val(result["occ"]);
       $("#relation_Income").val(result["income"]);
@@ -1534,16 +1601,7 @@ $("body").on("click", "#verification_fam_edit", function () {
         $("#remark").hide();
         $("#address").hide();
       }
-      $("#famFirstnameCheck").hide();
-      $("#famLastnameCheck").hide();
-      $("#famrelationCheck").hide();
-      $("#famremarkCheck").hide();
-      $("#famaddressCheck").hide();
-      $("#famageCheck").hide();
-      $("#famaadharCheck").hide();
-      $("#fammobileCheck").hide();
-      $("#famoccCheck").hide();
-      $("#famincomeCheck").hide();
+      $("#famFirstnameCheck,#famLastnameCheck,#famrelationCheck,#famremarkCheck,#famaddressCheck,#famageCheck,#famaadharCheck,#fammobileCheck,#famoccCheck,#famincomeCheck").hide();
     },
   });
 });
@@ -4080,7 +4138,6 @@ function resetsignInfo() {
     data: { reqId: req_id },
     cache: false,
     success: function (html) {
-      $("#signTable").empty();
       $("#signTable").html(html);
 
       $("#sign_type, #signType_cus_name, #guar_name, #signType_relationship, #doc_Count, #signedID").val("");
@@ -4149,15 +4206,9 @@ function resetsigninfoList() {
       $("#signDocResetTable").empty();
       $("#signDocResetTable").html(html);
 
-      $("#sign_type").val("");
-      $("#signType_cus_name").val('');
-      $("#cus_name_div").hide();
-      $("#guar_name").val("");
-      $("#guar_name_div").hide();
-      $("#signType_relationship").val("");
-      $("#relation_doc").hide();
-      $("#doc_Count").val("");
-      $("#signedID").val("");
+      $("#sign_type,#signType_cus_name,#guar_name,#signType_relationship,#doc_Count,#signedID").val("");
+      
+      $("#cus_name_div,#guar_name_div,#relation_doc").hide();
 
       let hasRecords = $("#signed_table").DataTable().rows().count() > 0;
       if (hasRecords) {
@@ -5002,7 +5053,6 @@ async function getDocumentFunc() {
   // await resetdocInfo(); // Document Info Reset.
   await docinfoList(); // Document Info List.
 
-  fingerprintTable(); // Fingerprint Info List.
 
   let mort = $("#mortgage_process").val() == "0" ? true : false;
   if (mort) {
@@ -5208,7 +5258,13 @@ $("#day_scheme").change(function () {
 });
 
 $("#due_start_from").change(function () {
-  var due_start_from = $("#due_start_from").val(); // get start date to calculate maturity date
+  let selectedDate = moment(this.value);
+  if (selectedDate.date() !== 1) {
+      // Reset to 1st of same month
+      selectedDate.date(1);
+      this.value = selectedDate.format('YYYY-MM-DD');
+  }
+
   var due_period = parseInt($("#due_period").val()); //get due period to calculate maturity date
   var profit_type = $("#profit_type").val();
   if (profit_type == "1") {
@@ -5217,7 +5273,7 @@ $("#due_start_from").change(function () {
   } else if (profit_type == "2") {
     var due_method = $("#due_method_scheme").val();
   }
-
+ var due_start_from = $("#due_start_from").val(); // get start date to calculate maturity date
   if (due_method == "Monthly" || due_method == "1") {
     // if due method is monthly or 1(for scheme) then calculate maturity by month
 
@@ -6861,36 +6917,14 @@ function loan_calc_validation() {
   return validation;
 }
 function fingerprintTable() {//To Get family member's name are required for scanning fingerprint
-    var first_name = $("#first_name").val();
-    var last_name = $("#last_name").val();
-    var cus_name = first_name + " " + last_name; //Customer name for display
-  var cus_id = $('#cus_id').val();
+     let cus_id = $('#cus_id').val();
   $.ajax({
     url: 'verificationFile/getNamesForFingerprint.php',
-    data: { 'cus_name': cus_name, 'cus_id': cus_id },
+    data: { cus_id },
     type: 'post',
     cache: false,
     success: function (html) {
       $('.fingerprintTable').html(html);
-
-      $('.scanBtn').click(function () {
-        var hand = $(this).prev().val();
-        var name = $(this).parent().prev().find('input[id="name_print"]').val();
-        var adhar = $(this).parent().prev().prev().find('input[id="adhar_print"]').val();
-        if (hand == '') { //prevent if hand is not selected
-          $(this).prev().css('border-color', 'red');
-        } else {
-          $(this).prev().css('border-color', '#0C70AB');
-          var btn = $(this);
-          btn.attr('disabled', true);
-          commonCaptureFinger((fdata) => {
-            btn.next().val(fdata);
-            commonStoreFingerprint(fdata, hand, adhar, name);
-          }, () => {
-            btn.removeAttr('disabled');
-          });
-        }
-      })
     }
   })
 }

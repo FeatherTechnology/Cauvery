@@ -4,7 +4,13 @@ const map_name = new Choices('#map_name', {
     allowHTML: true
 });
 
-$('#map_name').closest('.choices').hide();
+const loanCategory = new Choices('#loan_category', {
+    removeItemButton: true,
+    noChoicesText: 'Select Category',
+    allowHTML: true
+});
+
+$('#map_name, #loan_category').closest('.choices').hide();
 
 $(document).ready(function () {
 
@@ -22,7 +28,7 @@ $(document).ready(function () {
     $('#type').change(function (e) {
         let type = $(this).val();
         $('#user_type, #by_user').val('').hide();
-        $('#map_name').closest('.choices').hide();
+        $('#map_name, #loan_category').closest('.choices').hide();
         map_name.clearStore();
         if ($.fn.DataTable.isDataTable('#request_count_table')) {
             $('#request_count_table').DataTable().clear().destroy();
@@ -36,7 +42,7 @@ $(document).ready(function () {
             $('#by_user').empty().append("<option value=''>Select User</option>");
 
         } else if(type == '2' || type == '3' || type == '4') { //sector - group, Region - Line, Zone - Follow up
-            $('#map_name').closest('.choices').show();
+             $('#map_name, #loan_category').closest('.choices').show();
             getUserMappedDetails(type); //to Mapping details. 
         }
     });
@@ -59,20 +65,23 @@ $(document).ready(function () {
         let user_type = $('#user_type').val();
         let selected_user = $('#by_user').val();
         let selectedVal = '';
+        let loanCatVal = '';
 
         if(selectedType == '1'){ //user
             selectedVal = '1'; //dummy
+            loanCatVal = '1'; //dummy
             
         } else if(selectedType == '2' || selectedType == '3' || selectedType == '4'){ //sector - group //Region - Line //Zone - Followup
             selectedVal = $('#map_name').val();
+            loanCatVal = $('#loan_category').val();
         }
 
-        if(!from_date || !to_date || !selectedVal || (selectedType == '1' && (!user_type || !selected_user))){
+        if(!from_date || !to_date || !selectedVal ||!loanCatVal || (selectedType == '1' && (!user_type || !selected_user))){
             swalError('Warning', `All Fields are required.`);
             return;
         } 
 
-        requestToIssuedReportCount(from_date, to_date, selectedType, user_type, selected_user, selectedVal);
+        requestToIssuedReportCount(from_date, to_date, selectedType, user_type, selected_user, selectedVal, loanCatVal);
     });
 
 });
@@ -91,14 +100,23 @@ function getUserNames() {
     }, 'json');
 }
 
-function requestToIssuedReportCount(from_date, to_date, selectedType, user_type, user_id, selectedVal) {
+function requestToIssuedReportCount(from_date, to_date, selectedType, user_type, user_id, selectedVal, loanCatVal) {
 
     $.ajax({
         url: 'reportFile/request_count_report/requestCountReport.php',
         type: 'POST',
-        data: { from_date, to_date, selectedType, user_type, user_id, selectedVal },
+        data: { from_date, to_date, selectedType, user_type, user_id, selectedVal, loanCatVal },
         dataType: 'json',
         success: function (res) {
+            let title = 'User Name';
+
+            if (selectedType == '2') {
+                title = 'Sector Name';
+            } else if (selectedType == '3') {
+                title = 'Region Name';
+            } else if (selectedType == '4') {
+                title = 'Zone Name';
+            }
 
             // Handle empty response
             if (!res.data || res.data.length === 0) {
@@ -119,7 +137,10 @@ function requestToIssuedReportCount(from_date, to_date, selectedType, user_type,
             const columns = [
                 /* BASIC */
                 { data: 'sno' },
-                { data: 'fullname' },
+                {
+                    data: 'fullname',
+                    title: title
+                },
                 { data: 'loan_category' },
                 /* PREVIOUS IN PROCESS */
                 { data: 'previous.new' },
