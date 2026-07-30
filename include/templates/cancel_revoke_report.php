@@ -62,7 +62,7 @@
                                 <tbody></tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="13"></td>
+                                        <td colspan="10"></td>
                                         <td></td>
                                         <td colspan="11"></td>
                                     </tr>

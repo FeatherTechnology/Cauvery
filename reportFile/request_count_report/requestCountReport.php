@@ -40,7 +40,7 @@ if ($selectedType == '2') { //Sector
 }
 
 else if ($selectedType == '3') { //Region
-    $joinTable = "  JOIN area_line_mapping_sub_area almsa ON req.sub_area = almsa.sub_area_id";
+    $joinTable = "  JOIN area_line_mapping_area alma ON req.area = alma.area_id";
     $condition = "AND almsa.line_map_id IN ($selectedVal)";
     
 } else if ($selectedType == '4') { //Zone

@@ -48,6 +48,7 @@ if (isset($_POST['from_date']) && isset($_POST['to_date']) && $_POST['from_date'
 
 /* ---------- USER ID ---------- */
 $user_ids = $_POST['user_id'] ?? '';
+
 if($user_ids != '0' && !empty($user_ids)){
     $user_ids = preg_replace('/[^0-9,]/', '', $user_ids); // clean
     $id_list = implode(',', array_filter(explode(',', $user_ids), 'is_numeric'));
@@ -122,7 +123,6 @@ $result = $statement->fetchAll();
 
 $finalData = [];
 $statusName = ['NOC Call' => 'noc_call', 'Interested' => 'interest', 'Not Interested' => 'not_interest', 'Unavailable' => 'unavailable'];
-
 foreach ($result as $row) {
 
     $user = $row['insert_login_id'];
@@ -145,7 +145,8 @@ foreach ($result as $row) {
             'mobile_not_interest_new' => 0,
             'mobile_not_interest_renewal' => 0,
             'mobile_not_interest_reactive' => 0,
-            
+            'mobile_not_interest_repromotion' => 0,
+
             'mobile_unavailable_new' => 0,
             'mobile_unavailable_renewal' => 0,
             'mobile_unavailable_reactive' => 0,
@@ -155,7 +156,6 @@ foreach ($result as $row) {
             'direct_noc_call_renewal' => 0,
             'direct_noc_call_reactive' => 0,
             'direct_noc_call_repromotion' => 0,
-
 
             'direct_interest_new' => 0,
             'direct_interest_renewal' => 0,
@@ -202,7 +202,8 @@ foreach ($finalData as $row) {
     $sub_array = [];
 
     $sub_array[] = $row['name'];
-      //Mobile NOC Call
+
+    //Mobile NOC Call
     $sub_array[] = $row['mobile_noc_call_new'];
     $sub_array[] = $row['mobile_noc_call_renewal'];
     $sub_array[] = $row['mobile_noc_call_reactive'];
@@ -237,7 +238,8 @@ foreach ($finalData as $row) {
         $row['mobile_not_interest_reactive'],
         $row['mobile_not_interest_repromotion']
     ]);
- //Mobile Unavailable
+
+    //Mobile Unavailable
     $sub_array[] = $row['mobile_unavailable_new'];
     $sub_array[] = $row['mobile_unavailable_renewal'];
     $sub_array[] = $row['mobile_unavailable_reactive'];
@@ -260,6 +262,7 @@ foreach ($finalData as $row) {
         $row['direct_noc_call_reactive'],
         $row['direct_noc_call_repromotion']
     ]);
+
     //Direct interest
     $sub_array[] = $row['direct_interest_new'];
     $sub_array[] = $row['direct_interest_renewal'];
@@ -283,7 +286,8 @@ foreach ($finalData as $row) {
         $row['direct_not_interest_reactive'],
         $row['direct_not_interest_repromotion']
     ]);
-     //Direct Unavailable
+
+    //Direct Unavailable
     $sub_array[] = $row['direct_unavailable_new'];
     $sub_array[] = $row['direct_unavailable_renewal'];
     $sub_array[] = $row['direct_unavailable_reactive'];
@@ -294,7 +298,6 @@ foreach ($finalData as $row) {
         $row['direct_unavailable_reactive'],
         $row['direct_unavailable_repromotion']
     ]);
-
 
     $data[] = $sub_array;
 }

@@ -154,7 +154,7 @@ function processRecord($r, &$counters, $baseCounter, $from_date, $to_date) {
 }
 
 // Dynamic field mapping for group assignment
-$groupSelect = ($selectedType == '2') ? ", agmsa.group_map_id AS target_group_id" : ", ia.insert_login_id AS target_group_id";
+$groupSelect = ($selectedType == '2') ? ", agma.group_map_id AS target_group_id" : ", ia.insert_login_id AS target_group_id";
 // PREVIOUS RECORDS
 $prevQuery = "
     SELECT 

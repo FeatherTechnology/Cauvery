@@ -26,8 +26,8 @@ if ($userid != 1) {
     }
 
     $accessMap = [
-        1 => ['group_id', 'area_group_mapping_sub_area', 'group_map_id', 'sub_area_id', 'cr.sub_area'],
-        2 => ['line_id', 'area_line_mapping_sub_area', 'line_map_id', 'sub_area_id', 'cr.sub_area'],
+        1 => ['group_id', 'area_group_mapping_area', 'group_map_id', 'area_id', 'cr.area'],
+        2 => ['line_id', 'area_line_mapping_area', 'line_map_id', 'area_id', 'cr.area'],
         3 => ['due_followup_lines', 'area_duefollowup_mapping_area', 'duefollowup_map_id', 'area_id', 'cr.area']
     ];
 
@@ -40,7 +40,7 @@ if ($userid != 1) {
 
     [$source, $table, $mapCol, $selCol, $filterCol] = $accessMap[$accessType];
 
-    $ids = array_filter(array_map('intval', explode(',',$rowuser[$source] ?? '')));
+    $ids = array_filter(array_map('intval', explode(',', $rowuser[$source] ?? '')));
 
     if (!$ids) {
         echo json_encode([]);
@@ -129,13 +129,14 @@ $query = "SELECT DISTINCT
 
 /* User-level restriction */
 if (!($userid == 1 || $request_list_access == 0)) {
- $where[] = "rc.insert_login_id = ?";
+    $where[] = "rc.insert_login_id = ?";
     $params[] = $userid;
 }
 
 /* Mapping restriction */
 if (!empty($where)) {
-    $query .= " AND " . implode(" AND ", $where);}
+    $query .= " AND " . implode(" AND ", $where);
+}
 
 /* ---------------- SEARCH ---------------- */
 if (!empty($_POST['search'])) {

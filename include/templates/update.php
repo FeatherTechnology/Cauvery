@@ -7,10 +7,10 @@ if (isset($_GET['upd'])) {
 
 @session_start();
 
-
 if (isset($_SESSION['userid'])) {
 	$userid = $_SESSION['userid'];
 	$getUser = $userObj->getuser($mysqli, $userid);
+
 	$customer_profile = $getUser['update_screen'] ?? '1';
 	$update_documentation = $getUser['update_documentation']  ?? '1';
 	$approvalaccess = $getUser['approval'] ?? '1';
@@ -939,7 +939,8 @@ if (sizeof($getCustomerReg) > 0) {
 						</div>
 					</div>
 					<!-- KYC info END -->
-					 <!-- Fingerprint Info start-->
+
+					<!-- Fingerprint Info start-->
 					<div class="card">
 						<div class="card-header"> Fingerprint Info </div><span class="text-danger fingerSpan" style="margin-left:25px;display: none;">Please Scan Customer Fingerprint</span>
 						<div class="card-body">
@@ -953,7 +954,6 @@ if (sizeof($getCustomerReg) > 0) {
 						</div>
 					</div>
 					<!-- Fingerprint Info End-->
-
 
 					<!-- ///////////////////////////////////////////////// Customer Summary START ///////////////////////////////////////////////////////////// -->
 					<div class="card" id="customer_summary_card">
@@ -1114,13 +1114,13 @@ if (sizeof($getCustomerReg) > 0) {
 								</div>
 								<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-12">
 									<div class="form-group">
-										<label for="reminder_call"> Reminder call </label> <span class="required">*</span>
+										<label for="reminder_call"> Reminder and Follow up </label> 
 										<select class="form-control" name="reminder_call" id="reminder_call" tabindex="63">
-											<option value="">Select Reminder Call</option>
-											<option value="0" <?php if (isset($reminder_call) and $reminder_call == '0') echo 'selected'; ?>> Yes </option>
-											<option value="1" <?php if (isset($reminder_call) and $reminder_call == '1') echo 'selected'; ?>> No </option>
+											<option value="0">Select Reminder and Follow up</option>
+											<option value="1" <?php if (isset($reminder_call) and $reminder_call == '1') echo 'selected'; ?>> No Reminder </option>
+											<option value="2" <?php if (isset($reminder_call) and $reminder_call == '2') echo 'selected'; ?>> No Follow up </option>
 										</select>
-										<span class="text-danger" style='display:none' id='reminderCallCheck'>Please Select Reminder Call </span>
+										<span class="text-danger" style='display:none' id='reminderCallCheck'>Please Select Reminder and Follow up </span>
 									</div>
 								</div>
 								<div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-12" id="reminder_submit_div">
@@ -1320,7 +1320,7 @@ if (sizeof($getCustomerReg) > 0) {
 											<select type="text" class="form-control" id="Propertyholder_type" name="Propertyholder_type" tabindex="73">
 												<option value=""> Select Holder type </option>
 												<option value="0"> Customer </option>
-												<option value="1"> Guarantor </option>
+												<!-- <option value="1"> Guarantor </option> -->
 												<option value="2"> Family Members </option>
 											</select>
 											<span class="text-danger" id="propertyholdertypeCheck" style='display:none'> Select Property Holder type </span>
@@ -1497,7 +1497,7 @@ if (sizeof($getCustomerReg) > 0) {
 										<select type="text" class="form-control" id="owner_type" name="owner_type" tabindex="91">
 											<option value=""> Select Holder type </option>
 											<option value="0"> Customer </option>
-											<option value="1"> Guarantor </option>
+											<!-- <option value="1"> Guarantor </option> -->
 											<option value="2"> Family Members </option>
 										</select>
 										<span class="text-danger" id="ownertypeCheck" style='display:none'> Select Owner type </span>
@@ -1845,7 +1845,7 @@ if (sizeof($getCustomerReg) > 0) {
 
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
-							<label class="label"> Aadhar No </label>&nbsp;<span class="text-danger">*</span>
+							<label class="label"> Aadhar No </label>
 							<input type="text" class="form-control" name="relation_aadhar" id="relation_aadhar" data-type="adhaar-number" maxlength="14" placeholder="Enter Aadhar No" tabindex='6'>
 							<span class="text-danger" id="famaadharCheck" style='display:none'>Enter Aadhar Number</span>
 						</div>
@@ -2208,7 +2208,7 @@ if (sizeof($getCustomerReg) > 0) {
 								<select type="text" class="form-control" id="sign_type" name="sign_type" tabindex='2'>
 									<option value=""> Select Sign Type </option>
 									<option value="0"> Customer </option>
-									<option value="1"> Guarantor </option>
+									<!-- <option value="1"> Guarantor </option> -->
 									<option value="2"> Combined </option>
 									<option value="3"> Family Members </option>
 								</select>
@@ -2332,7 +2332,7 @@ if (sizeof($getCustomerReg) > 0) {
 								<select type="text" class="form-control" id="holder_type" name="holder_type" tabindex='1'>
 									<option value=""> Select Holder type </option>
 									<option value="0"> Customer </option>
-									<option value="1"> Guarantor </option>
+									<!-- <option value="1"> Guarantor </option> -->
 									<option value="2"> Family Members </option>
 								</select>
 								<span class="text-danger" id="holdertypeCheck" style='display:none'> Select Holder type </span>
@@ -2754,7 +2754,7 @@ if (sizeof($getCustomerReg) > 0) {
 								<select type="text" class="form-control" id="document_holder" name="document_holder" tabindex="4">
 									<option value=""> Select Holder type </option>
 									<option value="0"> Customer </option>
-									<option value="1"> Guarantor </option>
+									<!-- <option value="1"> Guarantor </option> -->
 									<option value="2"> Family Members </option>
 								</select>
 								<span class="text-danger" id="docholderCheck" style='display:none'> Select Document Holder </span>

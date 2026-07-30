@@ -231,13 +231,14 @@ $(document).ready(function () {
 
         let famAdhaarNo = document.querySelector("#cash_guarentor_name").value;
         $('#cash_guarentor').hide();
-       $('#compare_finger, #ack_fingerprint, #fingerValidation').val('');
+        $('#compare_finger, #ack_fingerprint, #fingerValidation').val('');
         var cusId = $('#cus_id').val();
         if (famAdhaarNo == cusId) {
             var cus = '1';
         } else {
             var cus = '2';
         }
+
         if(famAdhaarNo !=''){
             $.ajax({
                 url: 'loanIssueFile/getFamRelationship.php',
@@ -250,14 +251,14 @@ $(document).ready(function () {
                     $("#relationship").val(result['relation']);
                     $("#compare_finger").val(result['fpTemplate']);
                     if (result['hand'] == '1') {
-                         $('.scan_btn').removeAttr('disabled');
+                        $('.scan_btn').removeAttr('disabled');
                         var hand = "Put Your Left Thumb"
                     } else if (result['hand'] == '2') {
                         $('.scan_btn').removeAttr('disabled');
                         var hand = "Put Your Right Thumb"
                     } else {
                         var hand = "Finger Print Not Registered";
-                       $('.scan_btn').attr('disabled', true);
+                        $('.scan_btn').attr('disabled', true);
                     }
                     $("#hand_type").text(hand).attr('class', 'text-danger');
                 }
@@ -1506,7 +1507,6 @@ function checkIssuedAmount(type) {
 
 //cash Acknowledgement Name 
 function cashAckName() {
-    let req_id = $('#req_id').val();
     let cus_id = $('#cus_id').val();
     var first_name = $("#first_name").val();
     var last_name = $("#last_name").val();
@@ -1515,18 +1515,17 @@ function cashAckName() {
     $.ajax({
         url: 'loanIssueFile/famnameForloanIssue.php',
         type: 'post',
-        data: { "reqId": req_id, "cus_id": cus_id },
+        data: { cus_id },
         dataType: 'json',
         success: function (response) {
 
             var len = response.length;
-            $("#cash_guarentor_name").empty();
-            $("#cash_guarentor_name").append("<option value=''>" + 'Select Guarantor' + "</option>");
-            $("#cash_guarentor_name").append("<option value='" + cus_id + "'>" + cus_name + "</option>");
+            $("#cash_guarentor_name").empty().append("<option value=''> Select Guarantor</option>");
+            $("#cash_guarentor_name").append(`<option value='${cus_id}'>${cus_name}</option>`);
             for (var i = 0; i < len; i++) {
-                var fam_name = response[i]['fam_name'];
-                var fam_aadharno = response[i]['aadharno'];
-                $("#cash_guarentor_name").append("<option value='" + fam_aadharno + "'>" + fam_name + "</option>");
+                var fam_name = response[i]['famname'];
+                var fam_aadharno = response[i]['relation_aadhar'];
+                $("#cash_guarentor_name").append(`<option value='${fam_aadharno}'>${fam_name}</option>`);
             }
         }
     });
@@ -1577,7 +1576,6 @@ function checkBalance() {
 //Submit Validation
 function loanIssueSumitValidation(event) {
     var issueMode = $('#issued_mode').val(); var paymenType = $('#payment_type').val(); var cash = $('#cash').val(); var guarentorName = $('#cash_guarentor_name').val();
-    // var fingerMatch = $('#fingerValidation').val();
     var fingerMatch = $('#fingerValidation').val();
     var ag_id = $('#agent_id').val(); 
     // var bank_id = $('#bank_id').val();

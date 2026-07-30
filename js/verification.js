@@ -181,31 +181,14 @@ $(document).ready(function () {
       dataType: "json",
       cache: false,
       success: function (response) {
-        $("#check_aadhar").empty();
-        $("#check_aadhar").append(
-          "<option value=''> Select Aadhar Number</option>"
-        );
-        $("#check_aadhar").append(
-          "<option value='" +
-          cus_id +
-          "'> " +
-          cus_name +
-          " - Customer </option>"
-        ); //Current Customer Aadhaar
+        $("#check_aadhar").empty().append("<option value=''> Select Aadhar Number</option>");
+        $("#check_aadhar").append(`<option value='${cus_id}'> ${cus_name} - Customer </option>`); //Current Customer Aadhaar
         let len = response.length;
         for (let i = 0; i < len; i++) {
           let aadhar = response[i]["aadhar"];
           let fam_name = response[i]["fam_name"];
           let relationship = response[i]["relationship"];
-          $("#check_aadhar").append(
-            "<option value='" +
-            aadhar +
-            "'> " +
-            fam_name +
-            " - " +
-            relationship +
-            " </option>"
-          );
+          (aadhar) ? $("#check_aadhar").append(`<option value='${aadhar}'> ${fam_name} - ${relationship} </option>`) : '';
         }
       },
     });
@@ -281,7 +264,7 @@ $(document).ready(function () {
     //now calculate the age of the user
     var age = Math.abs(year - 1970);
 
-     // Determine which age field to update based on which element triggered the event
+    // Determine which age field to update based on which element triggered the event
     let ageval = (this.id === "dob") ? "#age" : "#relation_age";
 
     $(ageval).val(age); // set value to age.
@@ -399,16 +382,16 @@ $(document).ready(function () {
 
     if (verify == "cus_profile") {
       $("#customer_profile").show();
-       $("#cus_document, #customer_loan_calc").hide();
+      $("#cus_document, #customer_loan_calc").hide();
+
       const curDate = moment().format('YYYY-MM-DD');
       $('#relation_dob').attr('max', curDate);
-
       customerProfileFunc();
     }
     if (verify == "documentation") {
       if (profile_sts == 10 || doc_sts == 11) {
         $("#customer_profile, #customer_loan_calc").hide();
-        $("#customer_loan_calc").hide();
+        $("#cus_document").show();
         // getDocumentHistory();
         getDocumentFunc();
       }
@@ -422,7 +405,7 @@ $(document).ready(function () {
       if (doc_sts == 11) {
         $("#customer_profile, #cus_document").hide();
         $("#customer_loan_calc").show();
-        
+
         const curDate = moment().add(2, 'months').format('YYYY-MM-DD');
         $('#due_start_from').attr('max', curDate);
         initialize();
@@ -471,14 +454,10 @@ $(document).ready(function () {
          getAllAgentDropdown(); //for directors
       }
   
-      let agent_id = $("#agent_id").val();
-      getresponsiblecolumn(agent_id);
-  
       var pge = $("#pge").val();
       if (pge == "1") {
         //verification.
-        $("#cus_agent_name").attr("disabled", true);
-        $("#cus_responsible").attr("disabled", true);
+        $("#cus_agent_name, #agent_name, #cus_responsible, #doc_responsible, #loan_responsible").attr("disabled", true);
       }
   }
 
@@ -520,8 +499,8 @@ $(document).ready(function () {
 
     if(type =='0' || type =='1'){ //Customer, Guarantor.
       // Get all td elements at index 2 from all rows
-      let allSignTypes = $('#signedDoc_table_data').find('tr').map(function() {
-          return $(this).find("td:eq(2)").text();
+      let allSignTypes = $('#signedDoc_table_data tbody tr').map(function() {
+          return $(this).find("td:eq(2)").text().trim();
       }).get();
   
       let typeName = {'0':'Customer', '1':'Guarantor', '2':'Combined', '3':'Family Members'};
@@ -555,9 +534,7 @@ $(document).ready(function () {
           $("#signType_cus_name").val(result["name"]);
         },
       });
-
     }
-
 
     if (type == "1") {
       // if guarentor , then show guarentor name
@@ -572,24 +549,23 @@ $(document).ready(function () {
 
     } else {
       $("#signType_relationship").val('');
-
     }
 
   });
 
-    $('#signType_relationship').change(function(){
+  $('#signType_relationship').change(function(){
       let relationship = $(this).val();
       // Signed Type
       let type = $('#sign_type').val();
       
       // Get all td elements at index 2 from all rows
-      let allSignTypes = $('#signedDoc_table_data').find('tr:has(td)').map(function() {
-          return $(this).find("td:eq(2)").text();
+      let allSignTypes = $('#signedDoc_table_data tbody tr').map(function() {
+        return $(this).find("td:eq(2)").text().trim();
       }).get();
 
       // Get all relation-id attributes from all rows
-      let allRelationIds = $('#signedDoc_table_data').find('tr:has(td)').map(function() {
-          return $(this).find("a").data('relationid');
+      let allRelationIds = $('#signedDoc_table_data tbody tr').map(function() {
+        return $(this).find('#signed_doc_edit').data('relationid');
       }).get();
 
       // Types that share the same relationship ID
@@ -613,7 +589,6 @@ $(document).ready(function () {
           return;
       }
   });
-
 
   $("body").on("click", "#signed_doc_edit", function () {
     let id = $(this).attr("value");
@@ -880,14 +855,7 @@ $(document).ready(function () {
     } else {
       $("#Mortgageprocess").hide();
 
-      $("#Propertyholder_type").val("");
-      $("#Propertyholder_name").val("");
-      $("#Propertyholder_relationship_name").val("");
-      $("#doc_property_relation").val("");
-      $("#doc_property_pype").val("");
-      $("#doc_property_measurement").val("");
-      $("#doc_property_location").val("");
-      $("#doc_property_value").val("");
+      $("#Propertyholder_type, #Propertyholder_name, #Propertyholder_relationship_name, #doc_property_relation, #doc_property_pype, #doc_property_measurement, #doc_property_location, #doc_property_value").val(""); 
       $("#propertyholderNameCheck").hide();
     }
 
@@ -971,14 +939,7 @@ $(document).ready(function () {
     } else {
       $("#endorsementprocess").hide();
 
-      $("#owner_type").val("");
-      $("#owner_name").val("");
-      $("#ownername_relationship_name").val("");
-      $("#en_relation").val("");
-      $("#vehicle_type").val("");
-      $("#vehicle_process").val("");
-      $("#en_Company").val("");
-      $("#en_Model").val("");
+      $("#owner_type, #owner_name, #ownername_relationship_name, #en_relation, #vehicle_type, #vehicle_process, #en_Company, #en_Model").val(""); 
       $("#ownerNameCheck").hide();
       // $('#vehicle_reg_no').val('');
       // $('#endorsement_name').val('');
@@ -1310,6 +1271,7 @@ $(document).ready(function () {
   });
   
   ///Hide AND Show doc Card END
+  
 }); ////////Document Ready End
 
 function showErrorAlert(message) {
@@ -1324,6 +1286,10 @@ function showErrorAlert(message) {
 
 $(function () {
   $(".icon-chevron-down1").parent().next("div").slideUp(); //To collapse all card on load
+
+
+  let agent_id = $("#agent_id").val();
+  getresponsiblecolumn(agent_id);
 
   $(".modalTable").DataTable({
     processing: true,
@@ -1419,7 +1385,6 @@ function getCustomerLoanCounts() {
 // Modal Box for Agent Group
 
 $(document).on("click", "#submitFamInfoBtn", function () {
-
   let famData = {
     reqId  : $("#req_id").val(),
     cus_id : $("#cus_id").val(),
@@ -1444,7 +1409,6 @@ $(document).on("click", "#submitFamInfoBtn", function () {
      famData.fam_first_name != "" &&
      famData.fam_last_name != "" &&
     famData.relationship != "" &&
-    famData.relation_aadhar != "" &&
     famData.relation_Mobile != "" &&
     famData.relation_Mobile.length === 10 &&
     famData.relation_dob != "" &&
@@ -1510,18 +1474,19 @@ $(document).on("click", "#submitFamInfoBtn", function () {
       $("#famaddressCheck").hide();
     }
 
-    if (famData.relation_aadhar == "") {
-      $("#famaadharCheck").show();
-    } else {
-      $("#famaadharCheck").hide();
-    }
+    // if (famData.relation_aadhar == "") {
+    //   $("#famaadharCheck").show();
+    // } else {
+    //   $("#famaadharCheck").hide();
+    // }
 
     if (famData.relation_Mobile == "" || famData.relation_Mobile.length < 10) {
       $("#fammobileCheck").show();
     } else {
       $("#fammobileCheck").hide();
     }
-     if (famData.relation_dob == "") {
+
+    if (famData.relation_dob == "") {
       $("#famdobCheck").show();
     } else {
       $("#famdobCheck").hide();
@@ -1544,7 +1509,6 @@ function resetFamInfo() {
     data: { cus_id: cus_id },
     cache: false,
     success: function (html) {
-      $("#updatedFamTable").empty();
       $("#updatedFamTable").html(html);
 
       $("#fam_first_name, #fam_last_name, #relationship, #other_remark, #other_address, #relation_dob, #relation_age, #relation_live_deceased, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID, #authorize").val("");
@@ -1562,7 +1526,6 @@ function resetFamDetails() {
     data: { cus_id: cus_id },
     cache: false,
     success: function (html) {
-      // $("#famList").empty();
       $("#famList").html(html);
       fingerprintTable(cus_id);
     },
@@ -1587,21 +1550,19 @@ $("body").on("click", "#verification_fam_edit", function () {
       $("#other_address").val(result["address"]);
       $("#relation_dob").val(result["dob"]);
       $("#relation_age").val(result["age"]);
-      $("#relation_aadhar").val(result["aadhar"]);
       $("#relation_live_deceased").val(result["live_deceased"]);
+      $("#relation_aadhar").val(result["aadhar"]);
       $("#relation_Mobile").val(result["mobileno"]);
       $("#relation_Occupation").val(result["occ"]);
       $("#relation_Income").val(result["income"]);
       $("#relation_Blood").val(result["bg"]);
       $("#authorize").val(result["authorize"]);
       if (result["relation"] == "Other") {
-        $("#remark").show();
-        $("#address").show();
+        $("#remark, #address").show();
       } else {
-        $("#remark").hide();
-        $("#address").hide();
+        $("#remark, #address").hide();
       }
-      $("#famFirstnameCheck,#famLastnameCheck,#famrelationCheck,#famremarkCheck,#famaddressCheck,#famageCheck,#famaadharCheck,#fammobileCheck,#famoccCheck,#famincomeCheck").hide();
+      $("#famFirstnameCheck,#famLastnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
     },
   });
 });
@@ -1781,7 +1742,6 @@ function verificationPerson() {
 
 $("#guarentor_name").change(function () {
   //Select Guarantor Name relationship will show in input.
-
   let famId = document.querySelector("#guarentor_name").value;
 
   $.ajax({
@@ -3522,38 +3482,25 @@ function feedbackList() {
 
 ////////////////////////// Agent dropdown START ////////////////////////////////////
 //Fetch Agent dropdown based on staffs from manage user
-function getStaffBasedAgent(user_id_load) {
+function getStaffBasedAgent(user_id) {
   var ag_id_upd = $("#agent_id").val();
   $.ajax({
     url: "requestFile/getStaffBasedAgent.php",
-    data: { user_id: user_id_load },
+    data: { user_id },
     dataType: "json",
     type: "post",
     cache: false,
     success: function (response) {
-      $("#cus_agent_name").empty();
-      $("#cus_agent_name").append(
-        "<option value='' >Select Agent Name</option>"
-      );
+      $("#cus_agent_name").empty().append("<option value='' >Select Agent Name</option>");
+
       for (var i = 0; i < response.length; i++) {
         var selected = "";
-        if (
-          ag_id_upd != "undefined" &&
-          ag_id_upd != "" &&
-          ag_id_upd == response[i]["ag_id"]
-        ) {
+        if (ag_id_upd != "undefined" && ag_id_upd != "" && ag_id_upd == response[i]["ag_id"]) {
           selected = "selected";
         }
-        $("#cus_agent_name").append(
-          "<option value='" +
-          response[i]["ag_id"] +
-          "' " +
-          selected +
-          ">" +
-          response[i]["ag_name"] +
-          " </option>"
-        );
+        $("#cus_agent_name").append(`<option value='${response[i]["ag_id"]}' ${selected}> ${response[i]["ag_name"]} </option>`);
       }
+
       // Sort cus_agent_name dropdown
       sortDropdownAlphabetically("#cus_agent_name");
     },
@@ -3604,6 +3551,7 @@ $("#cus_agent_name").change(function () {
   $("#agent_id_hidden").val(agentId);
   getresponsiblecolumn(agentId); //To Hide/show responsible.
 });
+
 $('#cus_responsible').change(function () {
   let res_id = $(this).val();
   $('#responsible_hidden').val(res_id)
@@ -4062,7 +4010,7 @@ $(document).on("click", "#signInfoBtn", function () {
   let cus_id = $("#cus_id").val();
   let cus_profile_id = $("#cus_profile_id").val();
   let doc_name = $("#doc_name").val();
-  let sign_type = $("#sign_type").val();
+  let sign_type = $("#sign_type").val() ?? '';
   let signType_relationship = $("#signType_relationship").val();
   let doc_Count = $("#doc_Count").val();
   let signedID = $("#signedID").val();
@@ -4206,9 +4154,8 @@ function resetsigninfoList() {
       $("#signDocResetTable").empty();
       $("#signDocResetTable").html(html);
 
-      $("#sign_type,#signType_cus_name,#guar_name,#signType_relationship,#doc_Count,#signedID").val("");
-      
-      $("#cus_name_div,#guar_name_div,#relation_doc").hide();
+      $("#sign_type, #signType_cus_name, #guar_name, #signType_relationship, #doc_Count, #signedID").val("");
+      $("#cus_name_div, #guar_name_div, #relation_doc").hide();
 
       let hasRecords = $("#signed_table").DataTable().rows().count() > 0;
       if (hasRecords) {
@@ -4227,7 +4174,7 @@ $(document).on("click", "#chequeInfoBtn", function () {
   let req_id = $("#req_id").val();
   let cus_id = $("#cus_id").val();
   let cus_profile_id = $("#cus_profile_id").val();
-  let holder_type = $("#holder_type").val();
+  let holder_type = $("#holder_type").val() ?? '';
   let holder_name = $("#holder_name").val();
   let holder_relationship_name = $("#holder_relationship_name").val();
   let cheque_relation = $("#cheque_relation").val();
@@ -4555,7 +4502,7 @@ $("#docInfoBtn").click(function () {
   let doc_name = $("#document_name").val();
   let doc_details = $("#document_details").val();
   let doc_type = $("#document_type").val();
-  let doc_holder = $("#document_holder").val();
+  let doc_holder = $("#document_holder").val() ?? '';
   let holder_name = $("#docholder_name").val();
   let relation_name = $("#docholder_relationship_name").val();
   let relation = $("#doc_relation").val();
@@ -5053,7 +5000,6 @@ async function getDocumentFunc() {
   // await resetdocInfo(); // Document Info Reset.
   await docinfoList(); // Document Info List.
 
-
   let mort = $("#mortgage_process").val() == "0" ? true : false;
   if (mort) {
     $("#mortgage_info_card").show();
@@ -5161,8 +5107,15 @@ function runRefreshCalculation() {
   var doc_charge = $("#doc_charge").val();
   var proc_fee = $("#proc_fee").val();
   var due_period = $("#due_period").val();
-  var profit_method = $("#profit_method").val();
-  var scheme_profit_method = $("#scheme_profit_method").val();
+  var profit_type = $("#profit_type").val();
+
+    if (profit_type == "1") {
+        // Calculation
+        profit_method = $("#profit_method").val();
+    } else if (profit_type == "2") {
+        // Scheme
+        profit_method = $("#scheme_profit_method").val();
+    }
 
   if (loan_amt <= 0) {
     Swal.fire({
@@ -5179,18 +5132,18 @@ function runRefreshCalculation() {
     Swal.fire({
       title: 'Warning!',
       text: 'Customer limit exceeded..!',
-      icon: 'error',
+      icon: 'warning',
       showConfirmButton: true,
       confirmButtonColor: '#0C70AB'
     });
     return false;
   }
 
-  if (intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || (profit_method == "" && scheme_profit_method == "")) {
+  if (intrest_rate == "" || doc_charge == "" || proc_fee == "" || due_period == "" || profit_method == "") {
     Swal.fire({
       title: 'Warning!',
       text: 'Please Fill out Loan Info!',
-      icon: 'error',
+      icon: 'warning',
       showConfirmButton: true,
       confirmButtonColor: '#0C70AB'
     });
@@ -5273,7 +5226,8 @@ $("#due_start_from").change(function () {
   } else if (profit_type == "2") {
     var due_method = $("#due_method_scheme").val();
   }
- var due_start_from = $("#due_start_from").val(); // get start date to calculate maturity date
+
+  var due_start_from = $("#due_start_from").val(); // get start date to calculate maturity date
   if (due_method == "Monthly" || due_method == "1") {
     // if due method is monthly or 1(for scheme) then calculate maturity by month
 
@@ -6916,8 +6870,9 @@ function loan_calc_validation() {
   }
   return validation;
 }
+
 function fingerprintTable() {//To Get family member's name are required for scanning fingerprint
-     let cus_id = $('#cus_id').val();
+  let cus_id = $('#cus_id').val();
   $.ajax({
     url: 'verificationFile/getNamesForFingerprint.php',
     data: { cus_id },

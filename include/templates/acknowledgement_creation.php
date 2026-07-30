@@ -176,7 +176,7 @@ if (sizeof($getcusInfoForDoc) > 0) {
 
 ////   Documentation ////////////
 $documentationInfo = $userObj->getAcknowlegementDocument($mysqli, $req_id);
-	 $checkedStatus = 'checked';
+$checkedStatus = 'checked';
 if (sizeof($documentationInfo) > 0) {
 	$document_table_id = $documentationInfo['doc_Tableid'];
 	$document_sts = $documentationInfo['cus_status'];
@@ -226,7 +226,6 @@ if (sizeof($documentationInfo) > 0) {
 	$noc_replace_doc_id = $documentationInfo['noc_replace_doc_id'];
 	$submitted = $documentationInfo['submitted'];
 	$checkedStatus = ($doc_sts == 'YES' || $doc_sts == '' || $doc_sts === null) ? 'checked' : '';
-	
 } { //to find the documentation has been submitted in acknowledgement screen or not
 	$cus_doc = $mysqli->query("SELECT submitted FROM `acknowlegement_documentation` WHERE `req_id` ='$idupd'");
 	$cus_doc_row =  $cus_doc->fetch_assoc();
@@ -236,9 +235,7 @@ if (sizeof($documentationInfo) > 0) {
 	} else {
 		$document_sts = '';
 	}
-	
-	
-}//////   Documentation End ////////////
+} //////   Documentation End ////////////
 
 ///////// Loan Calculation ///////////////
 $getCusInfoForLoanCal = $userObj->getAcknowlegeCusInfoForLoanCal($mysqli, $idupd);
@@ -311,7 +308,7 @@ if (sizeof($getLoanCalculation) > 0) {
 		$getLoanCalCategory = $userObj->getAckVerificationLoanCalCategory($mysqli, $loan_cal_id);
 	}
 
-	$emicheck = strpos($due_type_lc, 'Interest') === false; 
+	$emicheck = strpos($due_type_lc, 'Interest') === false;
 }
 
 ///////// Loan Calculation End ///////////////
@@ -493,8 +490,8 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 		left: 22px;
 		/* text moves to left side when active */
 	}
-	/* Replace status design END */
 
+	/* Replace status design END */
 </style>
 
 <!-- Page header start -->
@@ -506,7 +503,9 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 </div><br>
 <div class="page-header sticky-top" id="navbar" style="display: none;" data-toggle="toggle">
 	<div style="background-color:#0C70AB; width:100%; padding:12px; color: #ffff; font-size: 20px; border-radius:5px; margin-top:50px;">
-		Customer Name - <?php if (isset($first_name) && isset($last_name)) { echo $first_name . ' ' . $last_name; } ?>
+		Customer Name - <?php if (isset($first_name) && isset($last_name)) {
+							echo $first_name . ' ' . $last_name;
+						} ?>
 		,&nbsp;&nbsp;Area - <?php echo $area_topbar; ?>
 	</div>
 </div><br>
@@ -670,14 +669,18 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 											<div class="form-group">
 												<label for="first_name">First Name</label><span class="required">&nbsp;*</span>
-												<input type="text" class="form-control" id="first_name" name="first_name" tabindex='9' oninput="formatFirstName(this)" placeholder="Enter First Name" value='<?php if (isset($first_name)) { echo $first_name; } ?>'>
+												<input type="text" class="form-control" id="first_name" name="first_name" tabindex='9' oninput="formatFirstName(this)" placeholder="Enter First Name" value='<?php if (isset($first_name)) {
+																																																					echo $first_name;
+																																																				} ?>'>
 											</div>
 										</div>
 
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-8">
 											<div class="form-group">
 												<label for="last_name">Last Name</label><span class="required">&nbsp;*</span>
-												<input type="text" class="form-control" id="last_name" name="last_name" tabindex='10' oninput="formatFirstName(this)"placeholder="Enter Last Name" value='<?php if (isset($last_name)) { echo $last_name; } ?>'>
+												<input type="text" class="form-control" id="last_name" name="last_name" tabindex='10' oninput="formatFirstName(this)" placeholder="Enter Last Name" value='<?php if (isset($last_name)) {
+																																																				echo $last_name;
+																																																			} ?>'>
 											</div>
 										</div>
 
@@ -1226,7 +1229,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 					</div>
 					<!-- KYC info END -->
 
-					 <!-- Fingerprint Info start-->
+					<!-- Fingerprint Info start-->
 					<div class="card">
 						<div class="card-header"> Fingerprint Info </div>
 						<input type="hidden" id="fingerValidation" name="fingerValidation"> <!-- set val as 1 when finger Print Matching becuz to use for finger print validation if submit click.-->
@@ -1241,7 +1244,6 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 						</div>
 					</div>
 					<!-- Fingerprint Info End-->
-
 
 					<!-- ///////////////////////////////////////////////// Customer Summary START ///////////////////////////////////////////////////////////// -->
 					<div class="card">
@@ -1435,7 +1437,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 			<input type="hidden" name="replace_doc_id_upd" id="replace_doc_id_upd" value="<?php if (isset($noc_replace_doc_id)) {
 																								echo $noc_replace_doc_id;
 																							} ?>">
-																							<input type="hidden" name="pending_sts" id="pending_sts" value="" />
+			<input type="hidden" name="pending_sts" id="pending_sts" value="" />
 			<input type="hidden" name="od_sts" id="od_sts" value="" />
 			<input type="hidden" name="due_nil_sts" id="due_nil_sts" value="" />
 			<input type="hidden" name="closed_sts" id="closed_sts" value="" />
@@ -1480,6 +1482,13 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 									<div class="form-group">
 										<label for="doc_last_name"> Last Name </label> <span class="required"> * </span>
 										<input type="text" class="form-control" id="doc_last_name" name="doc_last_name" value='<?php if (isset($doc_last_name)) echo $doc_last_name; ?>' readonly tabindex="4">
+									</div>
+								</div>
+								
+								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+									<div class="form-group">
+										<label for="user">Agent Name</label><span class="required">&nbsp;*</span>
+										<input type="text" class="form-control" id="agent_name" name="agent_name" readonly value='<?php if (isset($agent_name)) echo $agent_name; ?>' tabindex='101'>
 									</div>
 								</div>
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 responsible" style="display: none">
@@ -1528,11 +1537,11 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 						</div>
 					</div>
 					<!-- Documentations Info  End-->
-                    <!-- Document History START -->
+					<!-- Document History START -->
 					<div class="card">
 						<div class="card-header"> Documents History
 							<button type="button" class="btn btn-primary" name="show_document_history" id="show_document_history" style="padding: 5px 35px;  float: right; " tabindex="9" onclick="getDocumentHistory()">Show Document History</button>
-							<button type="button" class="btn btn-primary" name="hide_document_history" id="hide_document_history" style="padding: 5px 35px;  float: right; display: none;" tabindex="10" >Hide Document History</button>
+							<button type="button" class="btn btn-primary" name="hide_document_history" id="hide_document_history" style="padding: 5px 35px;  float: right; display: none;" tabindex="10">Hide Document History</button>
 						</div>
 						<div class="card-body">
 							<div class="row">
@@ -1656,7 +1665,6 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 											<select type="text" class="form-control" id="Propertyholder_type" name="Propertyholder_type" tabindex="64">
 												<option value=""> Select Holder type </option>
 												<option value="0" <?php if (isset($Propertyholder_type) and $Propertyholder_type == '0') echo 'selected'; ?>> Customer </option>
-												<option value="1" <?php if (isset($Propertyholder_type) and $Propertyholder_type == '1') echo 'selected'; ?>> Guarantor </option>
 												<option value="2" <?php if (isset($Propertyholder_type) and $Propertyholder_type == '2') echo 'selected'; ?>> Family Members </option>
 											</select>
 											<span class="text-danger" id="propertyholdertypeCheck"> Select Property Holder type </span>
@@ -1769,7 +1777,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 										</div>
 									</div>
 
-									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12" id="docUpd" >
+									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12" id="docUpd">
 										<div class="form-group">
 											<label for="MortgageDocumentUpd"> Mortgage Document Uploads </label>
 											<input type="file" onchange="compressImage(this,200)" class="form-control" id="mortgage_document_upd" name="mortgage_document_upd" tabindex="78">
@@ -1778,7 +1786,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 											<span class="text-danger" id="mortgagedocUpdCheck"> Upload Mortgage Document </span>
 										</div>
 									</div>
-<!-- 
+									<!-- 
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="pendingDocument"> Pending </label> <span class="required">&nbsp;*</span>
@@ -1824,7 +1832,6 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 										<select type="text" class="form-control" id="owner_type" name="owner_type" tabindex="81">
 											<option value=""> Select Holder type </option>
 											<option value="0" <?php if (isset($owner_type) and $owner_type == '0') echo 'selected'; ?>> Customer </option>
-											<option value="1" <?php if (isset($owner_type) and $owner_type == '1') echo 'selected'; ?>> Guarantor </option>
 											<option value="2" <?php if (isset($owner_type) and $owner_type == '2') echo 'selected'; ?>> Family Members </option>
 										</select>
 										<span class="text-danger" id="ownertypeCheck"> Select Owner type </span>
@@ -2061,8 +2068,8 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 									</div>
 								</div>
 							</div>
-
-							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="text-align: right;">
+							<div class="row">
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="text-align: right;">
 									<span class="text-danger fingerSpan" style="display: none;">*Please Scan Customer Fingerprint in Customer Profile before submit.</span>
 								</div>
 							</div>
@@ -2274,10 +2281,10 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 											<div class="form-group">
 												<label for="">Customer Name</label><span class="required">&nbsp;*</span> -->
 					<input type="hidden" class="form-control" id="first_name_loan" name="first_name_loan" readonly value='<?php if (isset($first_name_loan)) {
-																															echo $first_name_loan;
-																														} elseif (isset($first_name_lc)) {
-																															echo $first_name_lc;
-																														} ?>' >
+																																echo $first_name_loan;
+																															} elseif (isset($first_name_lc)) {
+																																echo $first_name_lc;
+																															} ?>'>
 					<input type="hidden" class="form-control" id="last_name_loan" name="last_name_loan" readonly value='<?php if (isset($last_name_loan)) {
 																															echo $last_name_loan;
 																														} elseif (isset($last_name_lc)) {
@@ -2365,15 +2372,15 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 																																} ?>">
 										<input type="file" onchange="compressImage(this,200)" class="form-control" name="verification_audio" id="verification_audio" accept=".mp3,audio/*" tabindex="113" disabled>
 										<?php if (isset($communication)) {
-											if ($communication == '0') { 
+											if ($communication == '0') {
 												$upload = explode(',', $com_audio) ?? '';
 												$upd_name = '';
 												foreach ($upload as $upd) {
 													if ($upd != null) {
-														$upd_name .= "<a href=uploads/verification/verifyInfo_audio/".$upd ." target='_blank' style='color: #4ba39b;'>" . $upd . "</a>, ";
+														$upd_name .= "<a href=uploads/verification/verifyInfo_audio/" . $upd . " target='_blank' style='color: #4ba39b;'>" . $upd . "</a>, ";
 													}
-												} 
-												echo rtrim($upd_name,', ');// to trim the comma at end;
+												}
+												echo rtrim($upd_name, ', '); // to trim the comma at end;
 											}
 										} ?>
 									</div>
@@ -2418,11 +2425,11 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 						</div>
 					</div>
 					<!-- ///////////////////////////////////////////////  Verification Info  END /////////////////////////////////////////////////////////// -->
-					 <!-- Loan History START -->
+					<!-- Loan History START -->
 					<div class="card">
 						<div class="card-header"> Loan History
 							<button type="button" class="btn btn-primary" name="show_loan_history" id="show_loan_history" style="padding: 5px 35px;  float: right;" tabindex="9" onclick="getLoanHistory()">Show Loan History</button>
-							<button type="button" class="btn btn-primary" name="hide_loan_history" id="hide_loan_history" style="padding: 5px 35px;  float: right; display: none;" tabindex="10" >Hide Loan History</button>
+							<button type="button" class="btn btn-primary" name="hide_loan_history" id="hide_loan_history" style="padding: 5px 35px;  float: right; display: none;" tabindex="10">Hide Loan History</button>
 
 						</div>
 						<div class="card-body">
@@ -2813,7 +2820,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 								<select type="text" class="form-control" id="sign_type" name="sign_type" tabindex='2'>
 									<option value=""> Select Sign Type </option>
 									<option value="0"> Customer </option>
-									<option value="1"> Guarantor </option>
+									<!-- <option value="1"> Guarantor </option> -->
 									<option value="2"> Combined </option>
 									<option value="3"> Family Members </option>
 								</select>
@@ -2944,7 +2951,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 								<select type="text" class="form-control" id="holder_type" name="holder_type" tabindex='1'>
 									<option value=""> Select Holder type </option>
 									<option value="0"> Customer </option>
-									<option value="1"> Guarantor </option>
+									<!-- <option value="1"> Guarantor </option> -->
 									<option value="2"> Family Members </option>
 								</select>
 								<span class="text-danger" id="holdertypeCheck"> Select Holder type </span>
@@ -3235,7 +3242,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 								<select type="text" class="form-control" id="document_holder" name="document_holder" tabindex="4">
 									<option value=""> Select Holder type </option>
 									<option value="0"> Customer </option>
-									<option value="1"> Guarantor </option>
+									<!-- <option value="1"> Guarantor </option> -->
 									<option value="2"> Family Members </option>
 								</select>
 								<span class="text-danger" id="docholderCheck"> Select Document Holder </span>
@@ -3347,7 +3354,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 								<span class="text-danger" id="feedbacklabelCheck" style='display:none'> Select Feedback Label</span>
 							</div>
 							<div style="padding: 20px 0px 0px 10px;  ">
-							    <button type="button" class="btn btn-primary" id="add_cus_feedback" name="add_cus_feedback" data-toggle="modal" data-target="#add_feedback_lable" style="display: <?= ($approvalaccess == 0 ? 'inline-block' : 'none'); ?>;" tabindex="2"><span class="icon-add"></span></button>
+								<button type="button" class="btn btn-primary" id="add_cus_feedback" name="add_cus_feedback" data-toggle="modal" data-target="#add_feedback_lable" style="display: <?= ($approvalaccess == 0 ? 'inline-block' : 'none'); ?>;" tabindex="2"><span class="icon-add"></span></button>
 							</div>
 						</div>
 					</div>
@@ -3434,18 +3441,18 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 </div>
 <!-- END  Add Customer Label Info Modal -->
 <!--  Add Customer Label Info Modal -->
- <div class="modal fade" id="add_feedback_lable" tabindex="-1" role="dialog">
+<div class="modal fade" id="add_feedback_lable" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg " role="document">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add Feedback Label  </h5>
+				<h5 class="modal-title" id="exampleModalLongTitle">Add Feedback Label </h5>
 				<button type="button" class="close" data-dismiss="modal" tabindex="7" aria-label="Close" onclick="getFeedbackLable()">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
 				<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-					
+
 					<div class="card-body" style="height: 400px;">
 						<div class="row ">
 							<!--Fields -->
@@ -3468,33 +3475,33 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 								</div>
 								<br>
 							</div>
-							<div  class="col-md-12" id="cus_feedbackListTable_div">
-									<table class="table custom-table" id="cus_feedbackListTable">
-										<thead>
-											<tr>
-												<th width="50"> S.No </th>
-												<th> Feedback Label </th>
-												<th> ACTION </th>
-											</tr>
-										</thead>
-										<tbody>
+							<div class="col-md-12" id="cus_feedbackListTable_div">
+								<table class="table custom-table" id="cus_feedbackListTable">
+									<thead>
+										<tr>
+											<th width="50"> S.No </th>
+											<th> Feedback Label </th>
+											<th> ACTION </th>
+										</tr>
+									</thead>
+									<tbody>
 
-										</tbody>
-									</table>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
-					
+
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-secondary" data-dismiss="modal" tabindex="6"  onclick="getFeedbackLable()">Close</button>
+				<button class="btn btn-secondary" data-dismiss="modal" tabindex="6" onclick="getFeedbackLable()">Close</button>
 			</div>
 		</div>
 	</div>
 </div>
 <!-- END  Add Customer Label Info Modal -->
- <!-- /////////////////////////////////////////////////////////////////// NOC Summary Modal START ////////////////////////////////////////////////////////////// -->
+<!-- /////////////////////////////////////////////////////////////////// NOC Summary Modal START ////////////////////////////////////////////////////////////// -->
 <div class="modal fade noc-summary-modal " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
@@ -3516,7 +3523,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 	</div>
 </div>
 <!-- /////////////////////////////////////////////////////////////////// NOC Summary Modal END ////////////////////////////////////////////////////////////////////// -->
- <!-- /////////////////////////////////////////////////////////////////// Penalty Char Modal START ////////////////////////////////////////////////////////////////////// -->
+<!-- /////////////////////////////////////////////////////////////////// Penalty Char Modal START ////////////////////////////////////////////////////////////////////// -->
 <div class="modal fade PenaltyChart" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content" style="background-color: white">
@@ -3605,7 +3612,7 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 	</div>
 </div>
 <!-- /////////////////////////////////////////////////////////////////// Loan Summary Modal END ////////////////////////////////////////////////////////////////////// -->
- <!-- /////////////////////////////////////////////////////////////////// Commitment chart Modal Start ////////////////////////////////////////////////////////////////////// -->
+<!-- /////////////////////////////////////////////////////////////////// Commitment chart Modal Start ////////////////////////////////////////////////////////////////////// -->
 
 <!-- Modal for Commitment Chart just view table   -->
 <div class="modal fade" id="commitmentChart" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -3633,5 +3640,5 @@ $area_topbar = isset($doc_area_name) && $doc_area_name != '' ? $doc_area_name : 
 		</div>
 	</div>
 </div>
- <!-- /////////////////////////////////////////////////////////////////// Commitment chart Modal End ////////////////////////////////////////////////////////////////////// -->
+<!-- /////////////////////////////////////////////////////////////////// Commitment chart Modal End ////////////////////////////////////////////////////////////////////// -->
 <?php require_once __DIR__ . "/../common/fingerprintlibrary.php"; ?>

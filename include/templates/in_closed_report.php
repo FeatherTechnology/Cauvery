@@ -39,7 +39,7 @@
 									<th>Agent Name</th>
 									<th>Loan Amount</th>
 									<th>Maturity Date</th>
-									<th>>Closed Entry Date</th>
+									<th>Closed Entry Date</th>
 									<th>Collection Format</th>
 								</thead>
 								<tbody></tbody>

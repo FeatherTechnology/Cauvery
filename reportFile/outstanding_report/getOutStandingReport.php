@@ -51,8 +51,8 @@ function getOutstanding($connect, $branch_id, $to_date, $target_cat, $is_filtere
         SELECT DISTINCT li.req_id
         FROM loan_issue li
         LEFT JOIN acknowlegement_customer_profile ack ON li.req_id = ack.req_id
-        JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-        JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+        JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         LEFT JOIN closing_customer cc ON li.req_id = cc.req_id
         LEFT JOIN acknowlegement_loan_calculation alc ON li.req_id = alc.req_id
         WHERE agm.branch_id = '$branch_id'
@@ -143,8 +143,8 @@ foreach ($loopCategories as $cat) {
     FROM collection c
     LEFT JOIN acknowlegement_customer_profile ack ON c.req_id = ack.req_id
     LEFT JOIN acknowlegement_loan_calculation alc ON c.req_id = alc.req_id
-    JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-    JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+    JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+    JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
     WHERE agm.branch_id = '$branch_id'
     AND DATE(c.coll_date) BETWEEN '$monthStart' AND '$monthEnd'
     $singleFilter
@@ -165,8 +165,8 @@ $pre_close_waiver = $collection['pre_close_waiver'] ?? 0;
         FROM loan_issue li
         LEFT JOIN acknowlegement_customer_profile ack ON li.req_id = ack.req_id
         LEFT JOIN acknowlegement_loan_calculation alc ON li.req_id = alc.req_id
-        JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-        JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+        JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         WHERE agm.branch_id = '$branch_id'
         AND DATE(li.created_date) BETWEEN '$monthStart' AND '$monthEnd'
         $singleFilter
@@ -186,10 +186,10 @@ $pre_close_waiver = $collection['pre_close_waiver'] ?? 0;
     LEFT JOIN acknowlegement_customer_profile ack
         ON c1.req_id = ack.req_id
      LEFT JOIN acknowlegement_loan_calculation alc ON c1.req_id = alc.req_id
-    JOIN area_group_mapping_sub_area agmsa
-        ON agmsa.sub_area_id = ack.area_confirm_subarea
+    JOIN area_group_mapping_area agma
+        ON agma.area_id = ack.area_confirm_area
     JOIN area_group_mapping agm
-        ON agm.map_id = agmsa.group_map_id
+        ON agm.map_id = agma.group_map_id
     WHERE agm.branch_id = '$branch_id'
     AND DATE(c1.coll_date) BETWEEN '$monthStart' AND '$monthEnd'
      AND ((c1.bal_amt = c1.due_amt_track) OR (c1.bal_amt = c1.pre_close_waiver))
