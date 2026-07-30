@@ -47,7 +47,7 @@ if ($selectedType == '2') { //Sector
     $colname = ", alm.line_name AS mapname";
     $groupby = "alm.line_name, iv.loan_category";
     $orderby = "alm.line_name";
-    $joinTable = "  JOIN area_line_mapping_area alma ON iv.area = alma.sub_area_id
+    $joinTable = "  JOIN area_line_mapping_area alma ON iv.area = alma.area_id
     JOIN area_line_mapping alm ON alma.line_map_id = alm.map_id";
     $mapidcondition = "AND alma.line_map_id IN ($selectedVal)";
     

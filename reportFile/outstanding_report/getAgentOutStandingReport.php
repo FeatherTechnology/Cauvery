@@ -25,8 +25,8 @@ $loopBranchesQry = $connect->query("
     SELECT DISTINCT agm.branch_id
     FROM loan_issue li
     LEFT JOIN acknowlegement_customer_profile ack ON li.req_id = ack.req_id
-    JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-    JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+    JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+    JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
     WHERE li.agent_id = '$agent_id'
 ")->fetchAll(PDO::FETCH_COLUMN);
 
@@ -43,8 +43,8 @@ function getAgentOutstanding($connect, $branch_id, $agent_id, $to_date)
         SELECT DISTINCT li.req_id
         FROM loan_issue li
         LEFT JOIN acknowlegement_customer_profile ack ON li.req_id = ack.req_id
-        JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-        JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+        JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         LEFT JOIN closing_customer cc ON li.req_id = cc.req_id
         WHERE agm.branch_id = '$branch_id'
         AND li.agent_id = '$agent_id'
@@ -125,8 +125,8 @@ foreach ($loopBranches as $b_id) {
         FROM collection c
         JOIN loan_issue li ON c.req_id = li.req_id
         LEFT JOIN acknowlegement_customer_profile ack ON c.req_id = ack.req_id
-        JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-        JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+        JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         WHERE agm.branch_id = '$b_id'
         AND li.agent_id = '$agent_id'
         AND DATE(c.coll_date) BETWEEN '$monthStart' AND '$monthEnd'
@@ -146,8 +146,8 @@ foreach ($loopBranches as $b_id) {
         FROM loan_issue li
         LEFT JOIN acknowlegement_customer_profile ack ON li.req_id = ack.req_id
         LEFT JOIN acknowlegement_loan_calculation alc ON li.req_id = alc.req_id
-        JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-        JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+        JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         WHERE agm.branch_id = '$b_id'
         AND li.agent_id = '$agent_id'
         AND DATE(li.created_date) BETWEEN '$monthStart' AND '$monthEnd'
@@ -166,8 +166,8 @@ foreach ($loopBranches as $b_id) {
         FROM collection c1
         JOIN loan_issue li ON c1.req_id = li.req_id
         LEFT JOIN acknowlegement_customer_profile ack ON c1.req_id = ack.req_id
-        JOIN area_group_mapping_sub_area agmsa ON agmsa.sub_area_id = ack.area_confirm_subarea
-        JOIN area_group_mapping agm ON agm.map_id = agmsa.group_map_id
+        JOIN area_group_mapping_area agma ON agma.area_id = ack.area_confirm_area
+        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
         WHERE agm.branch_id = '$b_id'
         AND li.agent_id = '$agent_id'
         AND DATE(c1.coll_date) BETWEEN '$monthStart' AND '$monthEnd'

@@ -1822,7 +1822,8 @@
                 isNegative = true;
                 num = Math.abs(num);
             }
-                        // Round to 2 decimals to avoid float precision issues
+
+            // Round to 2 decimals to avoid float precision issues
             num = Math.round(Number(num) * 100) / 100;
 
             var hasDecimal = num % 1 !== 0;
@@ -1841,9 +1842,9 @@
                 var expunit = restunits.match(/.{1,2}/g);
 
                 for (var i = 0; i < expunit.length; i++) {
-                   explrestunits += (i === 0 ? parseInt(expunit[i], 10) : expunit[i]) + ',';
+                    explrestunits += (i === 0 ? parseInt(expunit[i], 10) : expunit[i]) + ',';
                 }
-                
+
                 var thecash = explrestunits + lastthree + decPart;
             } else {
                 var thecash = intPart + decPart;
@@ -2559,7 +2560,7 @@
                     console.log("Device Name:", device);
                     const init = InitDevice(device, "");
                     console.log("Init result:", init);
-                     alert(`Device Name: ${device}, ${init.data.ErrorDescription}.`);
+                    (init.data.ErrorCode !='0') ? alert(`Device Name: ${device}, ${init.data.ErrorDescription}.`) : ''; //Alert show only if device not connected or gets error. 
                 } else {
                     alert("Fingerprint Device not found in description");
                     console.error("Device not found in description");
@@ -2588,7 +2589,7 @@
                 },'json');
             }
         }
-
+        
         function getUserLoanCategories() {
             $.ajax({
                 url: 'reportFile/customer_status_report/ajaxGetUserLoanCategory.php',
@@ -3022,7 +3023,7 @@
         <script src="js/location_track_report.js"></script>
     <?php }
 
-     if ($current_page == 'outstanding_report') { ?>
+    if ($current_page == 'outstanding_report') { ?>
         <script src="js/outstanding_report.js"></script>
     <?php }
 

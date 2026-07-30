@@ -28,7 +28,7 @@ $sql = $connect->query("SELECT a.*,b.fullname, CASE b.role WHEN 1 then 'Director
         <?php while($row =  $sql->fetch()){?>
             <tr>
                 <td><?php echo date('d-m-Y',strtotime($row['created_date'])) ; ?></td>
-                <td><?php echo $promo_arr[$row['promo_type']] ; ?></td>
+                <td><?php echo $promo_arr[$row['promo_type']] ?? ''; ?></td>
                 <td><?php echo $row['status'] ; ?></td>
                 <td><?php echo $row['label']; ?></td>
                 <td><?php echo $row['remark']; ?></td>

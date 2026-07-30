@@ -42,8 +42,8 @@ if ($selectedType == '2') { //Sector
 } else if ($selectedType == '3') { //Region
     $colname = ", alm.line_name AS mapname";
     $group_order = "alm.line_name";
-    $joinTable = "  JOIN area_line_mapping_area alma ON iv.area = alma.area_id";
-    $mapidcondition = "AND alma.line_map_id IN ($selectedVal)";
+    $joinTable = "  JOIN area_line_mapping_area almar ON iv.area = almar.area_id";
+    $mapidcondition = "AND almar.line_map_id IN ($selectedVal)";
     
 } else if ($selectedType == '4') { //Zone
     $colname = ", adm.duefollowup_name AS mapname";

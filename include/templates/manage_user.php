@@ -153,6 +153,7 @@ if(isset($_POST['submit_manage_user']) && $_POST['submit_manage_user'] != '')
     if(isset($_POST['id']) && $_POST['id'] >0 && is_numeric($_POST['id'])){		
         $id = $_POST['id']; 	
 		$userObj->updateUser($mysqli,$id, $userid);  
+		// echo die;
     ?>
 	<script>location.href='<?php echo $HOSTPATH;  ?>edit_manage_user&msc=2&sts=<?= $sts ?>';</script>
     <?php	}

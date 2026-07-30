@@ -43,24 +43,21 @@ $(document).ready(function () {
 
     if (verify == "cus_profile") {
       $("#customer_profile").show();
-      $("#cus_document").hide();
-      $("#customer_loan_calc").hide();
+      $("#cus_document, #customer_loan_calc").hide();
       customerProfileFunc();
     }
     if (verify == "documentation") {
-      $("#customer_profile").hide();
+      $("#customer_profile, #customer_loan_calc").hide();
       $("#cus_document").show();
-      $("#customer_loan_calc").hide();
       onLoadDocEditFunction();
       getDocumentFunc();
     }
     if (verify == "loan_calc") {
-      $("#customer_profile").hide();
-      $("#cus_document").hide();
+      $("#customer_profile, #cus_document").hide();
       $("#customer_loan_calc").show();
 
-      const curDate = moment().add(2, 'months').format('YYYY-MM-DD');
-      $('#due_start_from').attr('max', curDate);
+      const curDate = moment().add(2, "months").format("YYYY-MM-DD");
+      $("#due_start_from").attr("max", curDate);
 
       onLoadEditFunction();
       getUserBasedLoanCategory()
@@ -99,10 +96,8 @@ $(document).ready(function () {
     if (taluk_upd != "") {
       getTalukBasedArea(taluk_upd);
     }
-
-    let agent_id = $("#agent_id").val();
-    getresponsiblecolumn(agent_id);
   }
+
   $("body").on("click", "#feedback_edit", function () {
     let id = $(this).attr("value");
 
@@ -246,10 +241,42 @@ $(document).ready(function () {
     // Signed Type
     let type = $(this).val();
 
-    $("#cus_name_div").hide();
-    $("#guar_name_div").hide();
-    $("#relation_doc").hide();
-    $("#signTyperRelationshipCheck").hide();
+    if (type == "0" || type == "1") {
+      //Customer, Guarantor.
+      // Get all td elements at index 2 from all rows
+      let allSignTypes = $("#signedDoc_upd_table_data tbody tr")
+        .map(function () {
+          return $(this).find("td:eq(2)").text().trim();
+        })
+        .get();
+
+      let typeName = {
+        0: "Customer",
+        1: "Guarantor",
+        2: "Combined",
+        3: "Family Members",
+      };
+      let checkType = typeName[type] ?? "";
+
+      // Check if checkType exists in any of the rows
+      if (
+        allSignTypes.some(function (tbSignType) {
+          return tbSignType.includes(checkType);
+        })
+      ) {
+        alert(`${checkType} already added in Sign doc.`);
+        $(this).val("");
+        $(
+          "#cus_name_div, #guar_name_div, #relation_doc, #signTyperRelationshipCheck",
+        ).hide();
+        return;
+      }
+    }
+
+    $(
+      "#cus_name_div, #guar_name_div, #relation_doc, #signTyperRelationshipCheck",
+    ).hide();
+
     if (type == "0") {
       // if customer , then show Customer name
       let req_id = $("#req_id").val();
@@ -279,6 +306,52 @@ $(document).ready(function () {
       signTypeRelation();
     } else {
       $("#signType_relationship").val("");
+    }
+  });
+
+  $("#signType_relationship").change(function () {
+    let relationship = $(this).val();
+    // Signed Type
+    let type = $("#sign_type").val();
+
+    // Get all td elements at index 2 from all rows
+    let allSignTypes = $("#signedDoc_upd_table_data tbody tr")
+      .map(function () {
+        return $(this).find("td:eq(2)").text().trim();
+      })
+      .get();
+
+    // Get all relation-id attributes from all rows
+    let allRelationIds = $("#signedDoc_upd_table_data tbody tr")
+      .map(function () {
+        return $(this).find("#signed_doc_edit").data("relationid");
+      })
+      .get();
+
+    // Types that share the same relationship ID
+    let typeName = {
+      0: "Customer",
+      1: "Guarantor",
+      2: "Combined",
+      3: "Family Members",
+    };
+    let checkType = typeName[type] ?? "";
+
+    // Check if the relationship already exists with Combined OR Family Members in the same row
+    let alreadyExists = allRelationIds.some(function (tbRelationId, index) {
+      // Check if this row has the matching relationship
+      if (tbRelationId == relationship) {
+        // Check if this same row has either Combined OR Family Members
+        let rowType = allSignTypes[index];
+        return checkType.includes(rowType);
+      }
+      return false;
+    });
+
+    if (alreadyExists) {
+      alert(`This "${checkType}" already added in Sign doc.`);
+      $(this).val("");
+      return;
     }
   });
 
@@ -365,7 +438,7 @@ $(document).ready(function () {
     e.preventDefault();
 
     let doc_name = $("#doc_name").val();
-    let sign_type = $("#sign_type").val();
+    let sign_type = $("#sign_type").val() ?? "";
     let doc_Count = $("#doc_Count").val();
     let req_id = $("#doc_req_id").val();
     let signType_relationship = $("#signType_relationship").val();
@@ -516,7 +589,7 @@ $(document).ready(function () {
 
     let req_id = $("#cheque_req_id").val();
     let cus_id = $("#cus_id").val();
-    let holder_type = $("#holder_type").val();
+    let holder_type = $("#holder_type").val() ?? "";
     var holder_name = $("#holder_name").val();
     var holder_relationship_name = $("#holder_relationship_name").val();
     let cheque_relation = $("#cheque_relation").val();
@@ -695,21 +768,10 @@ $(document).ready(function () {
   });
 
   ////Mortgage Info
-  $("#mortgageprocessCheck").hide();
-  $("#propertyholdertypeCheck").hide();
-  $("#docpropertytypeCheck").hide();
-  $("#docpropertymeasureCheck").hide();
-  $("#docpropertylocCheck").hide();
-  $("#docpropertyvalueCheck").hide();
-  $("#mortgagenameCheck").hide();
-  $("#mortgagedsgnCheck").hide();
-  $("#mortgagenumCheck").hide();
-  $("#regofficeCheck").hide();
-  $("#mortgagevalueCheck").hide();
-  $("#mortgagedocCheck").hide();
-  $("#mortgagedocUpdCheck").hide();
-  $("#propertyholderNameCheck").hide();
-  $("#doc_remarkcheck").hide();
+  $(
+    "#mortgageprocessCheck, #propertyholdertypeCheck, #docpropertytypeCheck,#docpropertymeasureCheck, #docpropertylocCheck, #docpropertyvalueCheck, #mortgagenameCheck, #mortgagedsgnCheck, #mortgagenumCheck, #regofficeCheck, #mortgagevalueCheck, #mortgagedocCheck, #mortgagedocUpdCheck, #propertyholderNameCheck, #doc_remarkcheck",
+  ).hide();
+
   $("#mortgage_process").change(function () {
     let process = $(this).val();
     $("#propertyholderNameCheck").hide();
@@ -719,22 +781,13 @@ $(document).ready(function () {
     } else {
       $("#Mortgageprocess").hide();
 
-      $("#Propertyholder_type").val("");
-      $("#Propertyholder_name").val("");
-      $("#Propertyholder_relationship_name").val("");
-      $("#doc_property_relation").val("");
-      $("#doc_property_pype").val("");
-      $("#doc_property_measurement").val("");
-      $("#doc_property_location").val("");
-      $("#doc_property_value").val("");
-      $("#mortgage_name").val("");
-      $("#mortgage_dsgn").val("");
-      $("#mortgage_nuumber").val("");
-      $("#reg_office").val("");
-      $("#mortgage_value").val("");
-      $("#mortgage_document").val("");
-      $("#mortgage_document_upd").val("");
+      $(
+        "#Propertyholder_type, #Propertyholder_name, #Propertyholder_relationship_name, #doc_property_relation, #doc_property_pype, #doc_property_measurement, #doc_property_location, #doc_property_value, #mortgage_name, #mortgage_dsgn, #mortgage_nuumber, #reg_office, #mortgage_value, #mortgage_document, #mortgage_document_upd",
+      ).val("");
     }
+
+    let mort = process == "0" ? true : false;
+    storeDocInfo.mortgageInfo = mort;
   });
 
   $("#Propertyholder_type").change(function () {
@@ -840,18 +893,9 @@ $(document).ready(function () {
   // })
 
   //Endorsement Info
-  $("#endorsementprocessCheck").hide();
-  $("#ownertypeCheck").hide();
-  $("#vehicletypeCheck").hide();
-  $("#vehicleprocessCheck").hide();
-  $("#enCompanyCheck").hide();
-  $("#enModelCheck").hide();
-  $("#vehicle_reg_noCheck").hide();
-  $("#endorsementnameCheck").hide();
-  $("#enRCCheck").hide();
-  $("#enKeyCheck").hide();
-  $("#rcdocUpdCheck").hide();
-  $("#ownerNameCheck").hide();
+  $(
+    "#endorsementprocessCheck, #ownertypeCheck, #vehicletypeCheck, #vehicleprocessCheck, #enCompanyCheck, #enModelCheck, #vehicle_reg_noCheck, #endorsementnameCheck, #enRCCheck, #enKeyCheck, #rcdocUpdCheck, #ownerNameCheck",
+  ).hide();
 
   $("#endorsement_process").change(function () {
     let process = $(this).val();
@@ -862,20 +906,13 @@ $(document).ready(function () {
     } else {
       $("#endorsementprocess").hide();
 
-      $("#owner_type").val("");
-      $("#owner_name").val("");
-      $("#ownername_relationship_name").val("");
-      $("#en_relation").val("");
-      $("#vehicle_type").val("");
-      $("#vehicle_process").val("");
-      $("#en_Company").val("");
-      $("#en_Model").val("");
-      $("#vehicle_reg_no").val("");
-      $("#endorsement_name").val("");
-      $("#en_RC").val("");
-      $("#en_Key").val("");
-      $("#RC_document_upd").val("");
+      $(
+        "#owner_type, #owner_name, #ownername_relationship_name, #en_relation, #vehicle_type, #vehicle_process, #en_Company, #en_Model, #vehicle_reg_no, #endorsement_name, #en_RC, #en_Key, #RC_document_upd",
+      ).val("");
     }
+
+    let endorse = process == "0" ? true : false;
+    storeDocInfo.endorseInfo = endorse;
   });
 
   $("#owner_type").change(function () {
@@ -1335,7 +1372,7 @@ function getresponsiblecolumn(ag_id) {
     cache: false,
     success: function (response) {
       if (response == "0") {
-        $(".responsible").show();
+        $(".collection").show();
       } else {
         $(".responsible").hide();
       }
@@ -1381,19 +1418,17 @@ function getCustomerLoanCounts() {
 
 function fingerprintTable() {
   //To Get family member's name are required for scanning fingerprint
-  var req_id = $("#req_id").val();
-  let cus_id = $('#cus_id').val();
+  let cus_id = $("#cus_id").val();
   $.ajax({
     url: "verificationFile/getNamesForFingerprint.php",
-     data: { cus_id },
+    data: { cus_id },
     type: "post",
     cache: false,
     success: function (html) {
       $(".fingerprintTable").html(html);
-
- $('#fingerValidation').val(
-                $('.fingerprintTable .badge-success').length ? '1' : ''
-            );
+      $("#fingerValidation").val(
+        $(".fingerprintTable .badge-success").length ? "1" : "",
+      );
     },
   });
 }
@@ -3064,7 +3099,7 @@ $("#docInfoBtn").click(function () {
   let doc_name = $("#document_name").val();
   let doc_details = $("#document_details").val();
   let doc_type = $("#document_type").val();
-  let doc_holder = $("#document_holder").val();
+  let doc_holder = $("#document_holder").val() ?? "";
   let holder_name = $("#docholder_name").val();
   let relation_name = $("#docholder_relationship_name").val();
   let relation = $("#doc_relation").val();
@@ -3272,77 +3307,81 @@ function docinfoList() {
     },
   });
 }
+
 //Finger print Info stored data.
 function fingerprintinfo() {
-    let cus_id = $('#cus_id').val();
-    $.ajax({
-        url: 'verificationFile/getFingerprintStoredData.php',
-        data: { cus_id },
-        type: 'post',
-        dataType: 'json',
-        success: function (result) {
-            let cnt = (result == '1') ? '1' : '';
-            $('#fingerValidation').val(cnt);
-        }
-    });
+  let cus_id = $("#cus_id").val();
+  $.ajax({
+    url: "verificationFile/getFingerprintStoredData.php",
+    data: { cus_id },
+    type: "post",
+    dataType: "json",
+    success: function (result) {
+      let cnt = result > "0" ? "1" : "";
+      $("#fingerValidation").val(cnt);
+    },
+  });
 }
 // ///////////////////////////  Document Info Modal END //////////////////////////////
 
 //Documentation Submit Validation
 $("#submit_documentation").click(function (event) {
- event.preventDefault(); // Stop immediate form submission
-    
-    let $btn = $(this);
-    let $form = $btn.closest('form');
-    
-    $btn.attr('disabled', true); // Temporarily disable button during AJAX call
+  event.preventDefault(); // Stop immediate form submission
 
-    // 1. FIRST: Check the replacement status via AJAX
-    $.ajax({
-        url: "approveFile/checkReplaceStatus.php",
-        type: "POST",
-        data: {
-            req_id: $('#req_id').val()
-        },
-        dataType: "json",
-        success: function (res) {
-            
-            // Check if backend throws a warning AND the user has NOT checked/enabled the switch
-            if (res.status === 'warning' && !$('#replace_status').is(':checked')) {
-                swalError('Warning', res.message);
-                $btn.removeAttr('disabled'); // Ensure button is re-enabled to let user fix it
-                return false;
-            }
+  let $btn = $(this);
+  let $form = $btn.closest("form");
 
-            // 2. SECOND: Check form inputs validation
-            // Note: If this function returns false, the confirmation below WILL NOT show.
-            if (!doc_submit_validation(event)) {
-                console.log("Validation failed inside doc_submit_validation");
-                scrollToFirstError('#cus_doc'); 
-                $btn.removeAttr('disabled');
-                return false;
-            }
+  $btn.attr("disabled", true); // Temporarily disable button during AJAX call
 
-            // 3. THIRD: Ask for final submission confirmation
-            let confirmAction = confirm("Are you sure you want to submit Documentation ?");
-            if (confirmAction) {
-                // Fix for programmatic submit missing button POST value
-                if ($form.find('input[name="submit_documentation"]').length === 0) {
-                    $form.append('<input type="hidden" name="submit_documentation" value="submit">');
-                }
-                
-                // NATIVE SUBMIT: Using [0] bypasses jQuery event blocks and forces the page to POST
-                $form[0].submit();
-            } else {
-                // If canceled, re-enable button and stop
-                $btn.removeAttr('disabled');
-            }
-        },
-        error: function() {
-            alert("An error occurred while validating status. Please try again.");
-            $btn.removeAttr('disabled');
-    }
-   });
+  // 1. FIRST: Check the replacement status via AJAX
+  $.ajax({
+    url: "approveFile/checkReplaceStatus.php",
+    type: "POST",
+    data: {
+      req_id: $("#req_id").val(),
+    },
+    dataType: "json",
+    success: function (res) {
+      // Check if backend throws a warning AND the user has NOT checked/enabled the switch
+      if (res.status === "warning" && !$("#replace_status").is(":checked")) {
+        swalError("Warning", res.message);
+        $btn.removeAttr("disabled"); // Ensure button is re-enabled to let user fix it
+        return false;
+      }
+
+      // 2. SECOND: Check form inputs validation
+      // Note: If this function returns false, the confirmation below WILL NOT show.
+      if (!doc_submit_validation(event)) {
+        console.log("Validation failed inside doc_submit_validation");
+        scrollToFirstError("#cus_doc");
+        $btn.removeAttr("disabled");
+        return false;
+      }
+
+      // 3. THIRD: Ask for final submission confirmation
+      let confirmAction = confirm(
+        "Are you sure you want to submit Documentation ?",
+      );
+      if (confirmAction) {
+        // Fix for programmatic submit missing button POST value
+        if ($form.find('input[name="submit_documentation"]').length === 0) {
+          $form.append(
+            '<input type="hidden" name="submit_documentation" value="submit">',
+          );
+        }
+
+        // NATIVE SUBMIT: Using [0] bypasses jQuery event blocks and forces the page to POST
+        $form[0].submit();
+      } else {
+        // If canceled, re-enable button and stop
+        $btn.removeAttr("disabled");
+      }
+    },
+    error: function () {
+      alert("An error occurred while validating status. Please try again.");
+      $btn.removeAttr("disabled");
+    },
+  });
 });
 
 function doc_submit_validation(event) {
@@ -3382,8 +3421,7 @@ function doc_submit_validation(event) {
   var doc_remark = $("#doc_remark").val().trim();
   let replaceStatusChecked = $("#replace_status").is(":checked");
 
-  var fingerprint = $('#fingerValidation').val();
-
+  // var fingerprint = $('#fingerValidation').val();
 
   var validation = true;
 
@@ -3585,15 +3623,15 @@ function doc_submit_validation(event) {
       // }
       $("#enRCCheck").hide();
     }
- if (owner_type == '2') {
-            if (ownername_relationship_name == "") {
-                event.preventDefault();
-                validation = false;
-                $("#ownerNameCheck").show();
-            } else {
-                $("#ownerNameCheck").hide();
-            }
-        }
+    if (owner_type == "2") {
+      if (ownername_relationship_name == "") {
+        event.preventDefault();
+        validation = false;
+        $("#ownerNameCheck").show();
+      } else {
+        $("#ownerNameCheck").hide();
+      }
+    }
   }
 
   //signed doc
@@ -3615,13 +3653,15 @@ function doc_submit_validation(event) {
       $(".rplce_doc_id").hide();
     }
   }
-     if (fingerprint == '') {
-        event.preventDefault();
-        validation = false;
-        $('.fingerSpan').show();
-    } else {
-        $('.fingerSpan').hide();
-    }
+
+  // if (fingerprint == '') {
+  //     event.preventDefault();
+  //     validation = false;
+  //     $('.fingerSpan').show();
+  // } else {
+  //     $('.fingerSpan').hide();
+  // }
+
   return validation;
 }
 
@@ -3635,10 +3675,9 @@ async function getDocumentFunc() {
 
   await goldinfoList(); // Gold Info List.
 
-  await docinfoList(); // Document Info List.   
-    
-  fingerprintinfo(); //to confirm fingerprint stored in db.
+  await docinfoList(); // Document Info List.
 
+  fingerprintinfo(); //to confirm fingerprint stored in db.
 
   // when Mortgage Doc is YES then Pending is UNCHECKED.
   var docupd = $("#mortgage_document").val();
@@ -3905,11 +3944,12 @@ $("#day_scheme").change(function () {
 
 $("#due_start_from").change(function () {
   let selectedDate = moment(this.value);
-    if (selectedDate.date() !== 1) {
-        // Reset to 1st of same month
-        selectedDate.date(1);
-        this.value = selectedDate.format('YYYY-MM-DD');
-    }
+  if (selectedDate.date() !== 1) {
+    // Reset to 1st of same month
+    selectedDate.date(1);
+    this.value = selectedDate.format("YYYY-MM-DD");
+  }
+
   var due_period = parseInt($("#due_period").val()); //get due period to calculate maturity date
   var profit_type = $("#profit_type").val();
   if (profit_type == "1") {
@@ -3918,7 +3958,8 @@ $("#due_start_from").change(function () {
   } else if (profit_type == "2") {
     var due_method = $("#due_method_scheme").val();
   }
-var due_start_from = $('#due_start_from').val(); // get start date to calculate maturity date
+
+  var due_start_from = $("#due_start_from").val(); // get start date to calculate maturity date
   if (due_method == "Monthly" || due_method == "1") {
     // if due method is monthly or 1(for scheme) then calculate maturity by month
 
@@ -5399,15 +5440,22 @@ function performLoanCalculation(callback) {
   var doc_charge = $("#doc_charge").val();
   var proc_fee = $("#proc_fee").val();
   var due_period = $("#due_period").val();
-  var profit_method = $("#profit_method").val();
-  var scheme_profit_method = $("#scheme_profit_method").val();
+  var profit_type = $("#profit_type").val();
+
+  if (profit_type == "1") {
+    // Calculation
+    profit_method = $("#profit_method").val();
+  } else if (profit_type == "2") {
+    // Scheme
+    profit_method = $("#scheme_profit_method").val();
+  }
 
   if (
     intrest_rate == "" ||
     doc_charge == "" ||
     proc_fee == "" ||
     due_period == "" ||
-    (profit_method == "" && scheme_profit_method == "")
+    profit_method == ""
   ) {
     Swal.fire({
       timerProgressBar: true,

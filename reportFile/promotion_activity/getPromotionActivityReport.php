@@ -156,7 +156,7 @@ foreach ($result as $row) {
         $followup_type = 'Telecalling';  
     }
 
-$action = "<button type='button' class='btn btn-success promo-chart' style='background-color:#009688;' data-id='" . $row['cus_id'] . "' data-toggle='modal' data-target='#promoChartModal'>View</button>";
+$action = "<button type='button' class='btn btn-success promo-chart' style='background-color:#0C70AB;' data-id='" . $row['cus_id'] . "' data-toggle='modal' data-target='#promoChartModal'>View</button>";
 $data[] = [
     $sno++,
     $row['cus_id'],
@@ -166,7 +166,6 @@ $data[] = [
     date('h:i:s A', strtotime($row['created_date'])),
     $row['mobile1'],
     $row['area_name'],
-    $row['sub_area_name'],
     $row['line_name'],
     $row['group_name'],
     $row['duefollowup_name'],

@@ -33,7 +33,7 @@ $condtn = '';
 
 if ($selectedType == '2') { //Sector
     $joinTable  = "  JOIN area_group_mapping_area agma ON req.area = agma.area_id";
-    $condition  = " AND agmsa.group_map_id IN ($selectedVal)";
+    $condition  = " AND agma.group_map_id IN ($selectedVal)";
     $condtn  = "WHERE loan_category_creation_id IN ($loanCatVal)";
 } 
 // else if ($selectedType == '3') { //Region
@@ -164,7 +164,7 @@ function processRecord($r, &$counters, $baseCounter, $from_date, $to_date) {
     }
 }
 // Select either the Sector Map ID or User ID dynamically so records group correctly
-$groupSelect = ($selectedType == '2') ? ", agmsa.group_map_id AS target_group_id" : ", ia.insert_login_id AS target_group_id";
+$groupSelect = ($selectedType == '2') ? ", agma.group_map_id AS target_group_id" : ", ia.insert_login_id AS target_group_id";
 
 
 /* =====================

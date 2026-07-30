@@ -10,7 +10,7 @@ $(document).on('click','.scanBtn', function () {
     if (hand == '') { //prevent if hand is not selected
         $(this).prev().css('border-color', 'red');
     } else {
-        $(this).prev().css('border-color', '#009688');
+        $(this).prev().css('border-color', '#0C70AB');
         let btn = $(this);
         commonCaptureFinger((ansi) => {
             btn.next().val(ansi);
@@ -113,7 +113,7 @@ function commonStoreFingerprint(ansi, hand, aadhaar, name) {
             Swal.fire({ 
                 title: response, 
                 icon: 'success', 
-                confirmButtonColor: '#009688' 
+                confirmButtonColor: '#0C70AB' 
             }).then((result) => {
                 if(result.isConfirmed){
                     fingerprintTable(); //Call fingerprint data after stored to get updated data.

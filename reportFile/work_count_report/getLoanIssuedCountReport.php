@@ -138,7 +138,7 @@ function emptyStatusCounter() {
 }
 
 // Select either the Sector Map ID or User ID dynamically so records group correctly (Fixed Table Alias to dt)
-$groupSelect = ($selectedType == '2') ? ", agmsa.group_map_id AS target_group_id" : ", dt.insert_login_id AS target_group_id";
+$groupSelect = ($selectedType == '2') ? ", agma.group_map_id AS target_group_id" : ", dt.insert_login_id AS target_group_id";
 
 
 $currentQuery = "

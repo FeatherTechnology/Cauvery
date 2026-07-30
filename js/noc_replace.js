@@ -177,7 +177,7 @@ function swarlSuccessAlert(response, callback) {
     title: response,
     icon: "success",
     confirmButtonText: "Ok",
-    confirmButtonColor: "#009688",
+    confirmButtonColor: "#0C70AB",
     timerProgressBar: true,
     timer: 2000,
     showConfirmButton: false,
