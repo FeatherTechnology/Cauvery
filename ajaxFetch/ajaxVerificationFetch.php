@@ -6,7 +6,13 @@ include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
 $login_user_type = $_SESSION['role'] ?? 0;
+
 $area_list = getUserAreaList($connect, 'Sector');
+$where = [];
+$params = [];
+$branch   = $_POST['branch'] ?? [];
+$sector   = $_POST['sector'] ?? [];
+$loan_cat = $_POST['loan_cat'] ?? [];
 
 if ($userid != 1) {
     $stmt = $connect->prepare("SELECT ver_loan_cat FROM user WHERE user_id = ?");
@@ -54,7 +60,7 @@ $column = [
 /* ---------------- BASE QUERY ---------------- */
 $query = "SELECT DISTINCT
     v.dor, 
-   CONCAT(v.first_name,' ', v.last_name) AS customer_name,
+    CONCAT(v.first_name,' ', v.last_name) AS customer_name,
     v.mobile1, 
     v.loan_amt, 
     v.user_type, 
@@ -92,6 +98,34 @@ if (!($userid == 1)) {
     $query .= " AND v.area IN ($area_list) AND v.loan_category IN ($ver_loan_cat)"; //show only moved to verification list and cancelled at verification
 }
 
+/* Branch Filter */
+if (!empty($branch)) {
+    $branch = array_map('intval', $branch);
+
+    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
+    $params = array_merge($params, $branch);
+}
+
+/* Sector Filter */
+if (!empty($sector)) {
+    $sector = array_map('intval', $sector);
+
+    $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+    $params = array_merge($params, $sector);
+}
+
+/* Loan Category Filter */
+if (!empty($loan_cat)) {
+    $loan_cat = array_map('intval', $loan_cat);
+
+    $where[] = "v.loan_category IN (" . implode(',', array_fill(0, count($loan_cat), '?')) . ")";
+    $params = array_merge($params, $loan_cat);
+}
+
+/* Mapping restriction */
+if (!empty($where)) {
+    $query .= " AND " . implode(" AND ", $where);
+}
 /* ---------------- SEARCH ---------------- */
 if (!empty($_POST['search'])) {
     $search = $_POST['search'];
@@ -129,13 +163,13 @@ if ($_POST['length'] != -1) {
 
 /* ---------------- EXECUTE MAIN QUERY ---------------- */
 $stmt = $connect->prepare($query . $limit);
-$stmt->execute();
+$stmt->execute($params);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt->closeCursor();
 
 /* ---------------- COUNT FILTERED ---------------- */
 $stmt = $connect->prepare($query);
-$stmt->execute();
+$stmt->execute($params);
 $recordsFiltered = $stmt->rowCount();
 $stmt->closeCursor();
 
@@ -153,16 +187,28 @@ if (!empty($cusIds)) {
 
     $cusIdList = implode(',', array_map('intval', $cusIds));
 
-    $issueSql = "SELECT ii.cus_id, ii.cus_status, COALESCE(cs.created_date, cc.closing_date) AS last_created_date
-        FROM in_issue ii
-        LEFT JOIN closed_status cs ON cs.req_id = ii.req_id 
-        LEFT JOIN (
-                SELECT req_id, MAX(closing_date) AS closing_date
-                FROM closing_customer
-                GROUP BY req_id
-            ) cc ON cc.req_id = ii.req_id
-        WHERE ii.cus_id IN ($cusIdList) AND ii.cus_status >= 14 ORDER BY ii.cus_status ASC";
-
+    $issueSql = "SELECT ii.cus_id,ii.req_id,ii.cus_status,cs.created_date AS closing_date,cc.closing_date AS closed_date,cs1.sub_status,dn.due_nil_date
+    FROM in_issue ii
+    LEFT JOIN closed_status cs ON cs.req_id = ii.req_id
+    LEFT JOIN closing_customer cc ON cc.req_id = ii.req_id
+    LEFT JOIN (
+        SELECT c1.req_id, c1.sub_status
+        FROM customer_status c1
+        INNER JOIN (
+            SELECT req_id, MAX(created_date) created_date
+            FROM customer_status
+            GROUP BY req_id
+        ) x
+            ON x.req_id = c1.req_id AND x.created_date = c1.created_date
+    ) cs1 ON cs1.req_id = ii.req_id
+    LEFT JOIN (
+        SELECT req_id, MAX(coll_date) AS due_nil_date
+        FROM collection
+        WHERE coll_sub_status='Due Nil'
+        GROUP BY req_id
+    ) dn ON dn.req_id = ii.req_id
+    WHERE ii.cus_id IN ($cusIdList) AND ii.cus_status >= 14
+    ORDER BY CAST(ii.req_id AS UNSIGNED) DESC;";
     $stmt = $connect->query($issueSql);
 
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -201,39 +247,39 @@ foreach ($result as $row) {
 
     $existing_type = '';
     if (!empty($issueRows)) {
+        $today = date('Y-m-d', strtotime($row['dor']));
+        $existing_type = '';
         foreach ($issueRows as $res) {
-
-            // 1️⃣ Additional has highest priority
+            $closingDate = !empty($res['closing_date']) ? date('Y-m-d', strtotime($res['closing_date'])): '';
+            $closedDate = !empty($res['closed_date'])  ? date('Y-m-d', strtotime($res['closed_date'])): '';
+            $dueNilDate = !empty($res['due_nil_date']) ? date('Y-m-d', strtotime($res['due_nil_date'])): '';
+            $today = date('Y-m-d', strtotime($row['dor']));
+            // Highest Priority : Additional
             if ($res['cus_status'] >= 14 && $res['cus_status'] < 20) {
                 $existing_type = 'Additional';
-                break; // stop checking further rows
+                break;
             }
-
-            // 2️⃣ Renewal / Re-Active logic (only if not Additional)
-            if ($res['cus_status'] >= 20 && $existing_type != 'Additional') {
-
-                $lastDate = $res['last_created_date'];
-
-                if (!empty($lastDate)) {
-                    // End of the month of last created_date
-                    $monthEnd = date('Y-m-t', strtotime($lastDate));
-
-                    // First day of next month
-                    $nextMonthStart = date('Y-m-d', strtotime($monthEnd . ' +1 day'));
-
-                    // Add 6 months to calculate reactive date
-                    $reactiveDate = date('Y-m-d', strtotime($nextMonthStart . ' +6 months'));
-
-                    $today = date('Y-m-d');
-
-                    // Decide Renewal or Re-Active
-                    if ($today < $reactiveDate) {
-                        $existing_type = 'Renewal';
-                    } else {
-                        $existing_type = 'Re-active';
-                    }
-                    break;
-                }
+            // Reloan - Due Nil and Reloan - Current Request <= Due Nil Date
+            if ($res['sub_status'] == 'Due Nil' || (!empty($dueNilDate) && $today <= $dueNilDate)) {
+                $existing_type = 'Reloan';
+                break;
+            }
+            // Reloan - Between Closed Status and Closing Date
+            if ((!empty($closedDate) && !empty($closingDate) && $today >= $closedDate && $today <= $closingDate) || $res['cus_status'] == 20) {
+                $existing_type = 'Reloan';
+                break;
+            }
+            if (!empty($closedDate) && $today < $closedDate) {
+                $existing_type = 'Additional';
+                break;
+            }
+            // Renewal / Re-active
+            if (!empty($closingDate)) {
+                $monthEnd = date('Y-m-t', strtotime($closingDate));
+                $nextMonth = date('Y-m-d', strtotime($monthEnd . ' +1 day'));
+                $reactiveDate = date('Y-m-d', strtotime($nextMonth . ' +6 months'));
+                $existing_type = ($today < $reactiveDate) ? 'Renewal': 'Re-active';
+                break;
             }
         }
     } else {
@@ -244,6 +290,7 @@ foreach ($result as $row) {
 
     $sub[] = $existing_type;
     $sub[] = !empty($row['follow_date']) ? date('d-m-Y', strtotime($row['follow_date'])) : '';
+
     $id = $row['req_id'];
 
     $cus_status = $row['cus_status'];

@@ -64,6 +64,7 @@
                                     <tr>
                                         <td colspan="10"></td>
                                         <td></td>
+                                        <td></td>
                                         <td colspan="11"></td>
                                     </tr>
                                 </tfoot>

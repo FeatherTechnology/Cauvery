@@ -36,7 +36,9 @@ class admin
 			$detailrecords['home_access']              = strip_tags($row->home_access);
 			$detailrecords['cus_summary_access']              = strip_tags($row->cus_summary_access);
 			$detailrecords['promotion_activity_mapping_access']   = strip_tags($row->promotion_activity_mapping_access);
+			$detailrecords['promotion_activity_action_access']   = strip_tags($row->promotion_activity_action_access);
 			$detailrecords['promotion_access']              = strip_tags($row->pro_aty_access);
+			$detailrecords['repromotion_access']              = strip_tags($row->repro_aty_access);
 			$detailrecords['mastermodule']              = strip_tags($row->mastermodule);
 			$detailrecords['company_creation']              = strip_tags($row->company_creation);
 			$detailrecords['branch_creation']              = strip_tags($row->branch_creation);
@@ -85,7 +87,7 @@ class admin
 			$detailrecords['doctrack']              = strip_tags($row->doctrack);
 			$detailrecords['doc_rec_access']              = strip_tags($row->doc_rec_access);
 			$detailrecords['updatemodule']              = strip_tags($row->updatemodule);
-			$detailrecords['update_screen']              = strip_tags($row->update_screen); 
+			$detailrecords['update_screen']              = strip_tags($row->update_screen);
 			$detailrecords['update_cp_edit_access']              = strip_tags($row->update_cp_edit_access);
 			$detailrecords['update_documentation']              = strip_tags($row->update_documentation);
 			$detailrecords['update_doc_edit_access']              = strip_tags($row->update_doc_edit_access);
@@ -105,6 +107,7 @@ class admin
 			$detailrecords['accounts_loan_issue']              = strip_tags($row->accounts_loan_issue);
 			$detailrecords['followupmodule']              = strip_tags($row->followupmodule);
 			$detailrecords['promotion_activity']              = strip_tags($row->promotion_activity);
+			$detailrecords['repromotion_activity']              = strip_tags($row->repromotion_activity);
 			$detailrecords['loan_followup']              = strip_tags($row->loan_followup);
 			$detailrecords['confirmation_followup']              = strip_tags($row->confirmation_followup);
 			$detailrecords['due_followup']              = strip_tags($row->due_followup);
@@ -642,7 +645,6 @@ class admin
 		}
 	}
 
-
 	//  Delete Loan Category
 	public function deleteLoanCategoryDetails($mysqli, $id, $userid)
 	{
@@ -1152,7 +1154,6 @@ class admin
 		}
 		return $detailrecords;
 	}
-
 
 	//  Delete Area Creation
 	// public function deleteAreaCreation($mysqli, $id, $userid)
@@ -1774,6 +1775,7 @@ class admin
 
 			// Commit if everything is fine
 			$mysqli->commit();
+
 		} catch (Exception $e) {
 			// Rollback on any error
 			$mysqli->rollback();
@@ -1834,6 +1836,7 @@ class admin
 
 			// Commit if everything is fine
 			$mysqli->commit();
+
 		} catch (Exception $e) {
 			// Rollback on any error
 			$mysqli->rollback();
@@ -1893,6 +1896,7 @@ class admin
 			}
 			// Commit if everything is fine
 			$mysqli->commit();
+
 		} catch (Exception $e) {
 			// Rollback on any error
 			$mysqli->rollback();
@@ -1951,6 +1955,7 @@ class admin
 			}
 
 			$mysqli->commit();
+
 		} catch (Exception $e) {
 			$mysqli->rollback();
 			throw $e;
@@ -2008,6 +2013,7 @@ class admin
 			}
 
 			$mysqli->commit();
+
 		} catch (Exception $e) {
 			$mysqli->rollback();
 			throw $e;
@@ -2911,10 +2917,15 @@ class admin
 		if (isset($_POST['pro_aty_access_id'])) {
 			$pro_aty_access = $_POST['pro_aty_access_id'];
 		}
+		$repro_aty_access = '';
+		if (isset($_POST['repro_aty_access_id'])) {
+			$repro_aty_access = $_POST['repro_aty_access_id'];
+		}
 		$promotion_activity_mapping_access = '';
 		if (isset($_POST['promotion_activity_mapping_access'])) {
 			$promotion_activity_mapping_access = $_POST['promotion_activity_mapping_access'];
 		}
+		$promotion_activity_action_access = ($_POST['promotion_activity_action_access'] !='') ? $_POST['promotion_activity_action_access'] : '2';
 		$download_access = '1';
 		if (isset($_POST['download_access'])) {
 			$download_access = $_POST['download_access'];
@@ -3152,18 +3163,20 @@ class admin
 		} else {
 			$noc_replace = 1;
 		}
-		$doc_replace_remove_access = $_POST['doc_replace_remove_access'] ?? '2';
+		
+		$doc_replace_remove_access = (isset($_POST['doc_replace_remove_access']) && $_POST['doc_replace_remove_access'] !='') ? $_POST['doc_replace_remove_access'] : '2';
+		
 		if (isset($_POST['updatemodule']) &&    $_POST['updatemodule'] == 'Yes') {
 			$updatemodule = 0;
 		} else {
 			$updatemodule = 1;
 		}
-		if (isset($_POST['update']) &&    $_POST['update'] == 'Yes') {
+		if (isset($_POST['update']) && $_POST['update'] == 'Yes') { //Customer Profile.
 			$update_screen = 0;
 		} else {
 			$update_screen = 1;
 		}
-		
+
 		$update_cp_edit_access = ($_POST['update_cp_edit_access_id']) ? $_POST['update_cp_edit_access_id'] : '0';
 
 		if (isset($_POST['update_documentation']) && $_POST['update_documentation'] == 'Yes') { //Documentation.
@@ -3255,6 +3268,11 @@ class admin
 			$promotion_activity = 0;
 		} else {
 			$promotion_activity = 1;
+		}
+		if (isset($_POST['repromotion_activity']) &&    $_POST['repromotion_activity'] == 'Yes') {
+			$repromotion_activity = 0;
+		} else {
+			$repromotion_activity = 1;
 		}
 		if (isset($_POST['loan_followup']) &&    $_POST['loan_followup'] == 'Yes') {
 			$loan_followup = 0;
@@ -3461,7 +3479,7 @@ class admin
 		} else {
 			$partners_report = 1;
 		}
-
+		
 		$request_count_report = (isset($_POST['request_count_report']) && $_POST['request_count_report'] == 'Yes') ? 0 : 1;
 		$verification_count_report = (isset($_POST['verification_count_report']) && $_POST['verification_count_report'] == 'Yes') ? 0 : 1;
 		$approval_count_report = (isset($_POST['approval_count_report']) && $_POST['approval_count_report'] == 'Yes') ? 0 : 1;
@@ -3471,6 +3489,7 @@ class admin
 		$back_office_count_report = (isset($_POST['back_office_count_report']) && $_POST['back_office_count_report'] == 'Yes') ? 0 : 1;
 		$branch_request_count_report = (isset($_POST['branch_request_count_report']) && $_POST['branch_request_count_report'] == 'Yes') ? 0 : 1;
 		$location_track_report = (isset($_POST['location_track_report']) && $_POST['location_track_report'] == 'Yes') ? 0 : 1;
+		$outstanding_report = (isset($_POST['outstanding_report']) && $_POST['outstanding_report'] == 'Yes') ? 0 : 1;
 
 		if (isset($_POST['reportmodule_intrest']) &&    $_POST['reportmodule_intrest'] == 'Yes') {
 			$reportmodule_intrest = 0;
@@ -3544,7 +3563,7 @@ class admin
 			$sms_generation = 1;
 		}
 
-		$insertQry = "INSERT INTO user(`fullname`, `emailid`, `user_name`, `user_password`, `role`, `role_type`, `dir_id`, `ag_id`, `staff_id`, `company_id`, `branch_id`, `bank_access`, `agentforstaff`, `line_id`, `group_id`, `download_access`, `report_access`, `home_access`, `cus_summary_access`, `pro_aty_access`, `promotion_activity_mapping_access`, `mastermodule`, `company_creation`, `branch_creation`, `loan_category`, `area_creation`, `area_mapping`, `area_approval`, `adminmodule`, `director_creation`, `agent_creation`, `staff_creation`, `manage_user`, `bank_creation`, `requestmodule`, `request`, `request_list_access`,`req_mapping_access`,`verificationmodule`, `verification`, `ver_loan_cat`, `ver_group_id`, `approvalmodule`, `approval`, `app_loan_cat`, `acknowledgementmodule`, `acknowledgement`, `acknowledgement_access`, `ack_loan_cat`, `loanissuemodule`, `loan_issue`, `collectionmodule`, `collection`, `collection_access`, `closedmodule`, `closed`, `nocmodule`, `noc`, `noc_handover`, `noc_replace_access`, `noc_mapping_access`, `doctrackmodule`, `doctrack`, `doc_rec_access`, `noc_replace`, `doc_replace_remove_access`, `updatemodule`, `update_screen`, `update_cp_edit_access`, `update_documentation`, `update_doc_edit_access`, `concernmodule`, `concern_creation`, `concern_solution`, `accountsmodule`, `cash_tally`, `cash_tally_admin`, `bank_details`, `bank_clearance`, `bnk_clr_upl_acc`, `finance_insight`, `hand_cash_balance_sheet`, `accounts_loan_issue`, `followupmodule`, `promotion_activity`, `loan_followup`, `confirmation_followup`, `due_followup`, `ecs_followup`, `due_followup_lines`, `reportmodule`, `work_report_module`, `monitor_report_module`, `count_report_module`, `analysis_report_module`, `accounts_report_module`, `request_report`, `verification_report`, `approval_report`, `cancel_revoke_report`, `loan_issue_report`, `collection_report`, `principal_interest_report`, `balance_report`, `due_list_report`, `in_closed_report`, `closed_report`, `confirmation_followup_report`, `agent_report`, `no_due_pay_report`, `other_trans_report`, `day_end_report`, `cash_tally_activity_report`, `due_followup_customer_count_report`, `commitment_report`, `customer_status_report`, `promotion_activity_report`, `cleared_report`, `events_report`, `area_loan_count_report`, `noc_handover_report`, `confirmation_count_report`, `concern_report`, `partners_report`, `request_count_report`, `verification_count_report`, `approval_count_report`, `loan_issue_count_report`, `promotion_count_report`, `due_followup_count_report`,`back_office_count_report`, `branch_request_count_report`, `location_track_report`,`outstanding_report`, `reportmodule_intrest`, `intrest_ledger_report`, `intrest_loan_issue_report`, `intrest_collection_report`, `intrest_balance_report`, `intrest_closed_report`, `search_module`, `search`, `bulk_upload_module`, `bulk_upload`, `loan_track`, `sms_module`, `sms_generation`, `insert_login_id`, `created_date`) VALUES('$full_name', '$email', '$user_name', '$user_password', '$role', '$role_type', '$dir_name', '$ag_name', '$staff_name', '$company_id', '$branch_id', '$bank_access', '$agentforstaff', '$line', '$group', '$download_access', '$report_access', '$home_access', '$cus_summary_access', '$pro_aty_access', '$promotion_activity_mapping_access', '$mastermodule', '$company_creation', '$branch_creation', '$loan_category', '$area_creation', '$area_mapping', '$area_approval', '$adminmodule', '$director_creation', '$agent_creation', '$staff_creation', '$manage_user', '$bank_creation', '$requestmodule', '$request', '$request_list_access', '$req_mapping_access','$verificationmodule', '$verification', '$ver_loan_cat', '$ver_group_id', '$approvalmodule', '$approval', '$app_loan_cat', '$acknowledgementmodule', '$acknowledgement', '$acknowledgement_access', '$ack_loan_cat', '$loanissuemodule', '$loan_issue', '$collectionmodule', '$collection', '$collection_access', '$closedmodule', '$closed', '$nocmodule', '$noc', '$noc_handover', '$noc_replace_access', '$noc_mapping_access', '$doctrackmodule', '$doctrack', '$doc_rec_access', '$noc_replace', '$doc_replace_remove_access', '$updatemodule', '$update_screen', '$update_cp_edit_access', '$update_documentation', '$update_doc_edit_access', '$concernmodule', '$concernCreation', '$concernSolution', '$accountsmodule', '$cash_tally', '$cash_tally_admin', '$bank_details', '$bank_clearance', '$bnk_clr_upl_acc', '$finance_insight', '$hand_cash_balance_sheet', '$accounts_loan_issue', '$followupmodule', '$promotion_activity', '$loan_followup', '$conf_followup', '$due_followup', '$ecs_followup', '$due_follup_line', '$reportmodule', '$work_report_module', '$monitor_report_module', '$count_report_module', '$analysis_report_module', '$accounts_report_module', '$request_report', '$verification_report', '$approval_report', '$cancel_revoke_report', '$loan_issue_report', '$collection_report', '$principal_interest_report', '$balance_report', '$due_list_report', '$in_closed_report', '$closed_report', '$confirmation_followup_report', '$agent_report', '$no_due_pay_report', '$other_trans_report', '$day_end_report', '$cash_tally_activity_report', '$due_followup_customer_count_report', '$commitment_report', '$customer_status_report', '$promotion_activity_report', '$cleared_report', '$events_report', '$area_loan_count_report', '$noc_handover_report', '$confirmation_count_report', '$concern_report', '$partners_report', '$request_count_report', '$verification_count_report', '$approval_count_report', '$loan_issue_count_report', '$promotion_count_report', '$due_followup_count_report', '$back_office_count_report', '$branch_request_count_report', '$location_track_report', '$outstanding_report', '$reportmodule_intrest', '$intrest_ledger_report', '$intrest_loan_issue_report', '$intrest_collection_report', '$intrest_balance_report', '$intrest_closed_report', '$searchmodule', '$search_screen', '$bulk_upload_module', '$bulk_upload', '$loan_track', '$sms_module', '$sms_generation', '$userid', now() )";
+		$insertQry = "INSERT INTO user(`fullname`, `emailid`, `user_name`, `user_password`, `role`, `role_type`, `dir_id`, `ag_id`, `staff_id`, `company_id`, `branch_id`, `bank_access`, `agentforstaff`, `line_id`, `group_id`, `download_access`, `report_access`, `home_access`, `cus_summary_access`, `pro_aty_access`, `repro_aty_access`,`promotion_activity_mapping_access`, `promotion_activity_action_access`, `mastermodule`, `company_creation`, `branch_creation`, `loan_category`, `area_creation`, `area_mapping`, `area_approval`, `adminmodule`, `director_creation`, `agent_creation`, `staff_creation`, `manage_user`, `bank_creation`, `requestmodule`, `request`, `request_list_access`,`req_mapping_access`,`verificationmodule`, `verification`, `ver_loan_cat`, `ver_group_id`, `approvalmodule`, `approval`, `app_loan_cat`, `acknowledgementmodule`, `acknowledgement`, `acknowledgement_access`, `ack_loan_cat`, `loanissuemodule`, `loan_issue`, `collectionmodule`, `collection`, `collection_access`, `closedmodule`, `closed`, `nocmodule`, `noc`, `noc_handover`, `noc_replace_access`, `noc_mapping_access`, `doctrackmodule`, `doctrack`, `doc_rec_access`, `noc_replace`, `doc_replace_remove_access`, `updatemodule`, `update_screen`, `update_cp_edit_access`, `update_documentation`, `update_doc_edit_access`, `concernmodule`, `concern_creation`, `concern_solution`, `accountsmodule`, `cash_tally`, `cash_tally_admin`, `bank_details`, `bank_clearance`, `bnk_clr_upl_acc`, `finance_insight`, `hand_cash_balance_sheet`, `accounts_loan_issue`, `followupmodule`, `promotion_activity`, `repromotion_activity`, `loan_followup`, `confirmation_followup`, `due_followup`, `ecs_followup`, `due_followup_lines`, `reportmodule`, `work_report_module`, `monitor_report_module`, `count_report_module`, `analysis_report_module`, `accounts_report_module`, `request_report`, `verification_report`, `approval_report`, `cancel_revoke_report`, `loan_issue_report`, `collection_report`, `principal_interest_report`, `balance_report`, `due_list_report`, `in_closed_report`, `closed_report`, `confirmation_followup_report`, `agent_report`, `no_due_pay_report`, `other_trans_report`, `day_end_report`, `cash_tally_activity_report`, `due_followup_customer_count_report`, `commitment_report`, `customer_status_report`, `promotion_activity_report`, `cleared_report`, `events_report`, `area_loan_count_report`, `noc_handover_report`, `confirmation_count_report`, `concern_report`, `partners_report`, `request_count_report`, `verification_count_report`, `approval_count_report`, `loan_issue_count_report`, `promotion_count_report`, `due_followup_count_report`,`back_office_count_report`, `branch_request_count_report`, `location_track_report`,`outstanding_report`, `reportmodule_intrest`, `intrest_ledger_report`, `intrest_loan_issue_report`, `intrest_collection_report`, `intrest_balance_report`, `intrest_closed_report`, `search_module`, `search`, `bulk_upload_module`, `bulk_upload`, `loan_track`, `sms_module`, `sms_generation`, `insert_login_id`, `created_date`) VALUES('$full_name', '$email', '$user_name', '$user_password', '$role', '$role_type', '$dir_name', '$ag_name', '$staff_name', '$company_id', '$branch_id', '$bank_access', '$agentforstaff', '$line', '$group', '$download_access', '$report_access', '$home_access', '$cus_summary_access', '$pro_aty_access','$repro_aty_access', '$promotion_activity_mapping_access', '$promotion_activity_action_access', '$mastermodule', '$company_creation', '$branch_creation', '$loan_category', '$area_creation', '$area_mapping', '$area_approval', '$adminmodule', '$director_creation', '$agent_creation', '$staff_creation', '$manage_user', '$bank_creation', '$requestmodule', '$request', '$request_list_access', '$req_mapping_access','$verificationmodule', '$verification', '$ver_loan_cat', '$ver_group_id', '$approvalmodule', '$approval', '$app_loan_cat', '$acknowledgementmodule', '$acknowledgement', '$acknowledgement_access', '$ack_loan_cat', '$loanissuemodule', '$loan_issue', '$collectionmodule', '$collection', '$collection_access', '$closedmodule', '$closed', '$nocmodule', '$noc', '$noc_handover', '$noc_replace_access', '$noc_mapping_access', '$doctrackmodule', '$doctrack', '$doc_rec_access', '$noc_replace', '$doc_replace_remove_access', '$updatemodule', '$update_screen', '$update_cp_edit_access', '$update_documentation', '$update_doc_edit_access', '$concernmodule', '$concernCreation', '$concernSolution', '$accountsmodule', '$cash_tally', '$cash_tally_admin', '$bank_details', '$bank_clearance', '$bnk_clr_upl_acc', '$finance_insight', '$hand_cash_balance_sheet', '$accounts_loan_issue', '$followupmodule', '$promotion_activity','$repromotion_activity','$loan_followup', '$conf_followup', '$due_followup', '$ecs_followup', '$due_follup_line', '$reportmodule', '$work_report_module', '$monitor_report_module', '$count_report_module', '$analysis_report_module', '$accounts_report_module', '$request_report', '$verification_report', '$approval_report', '$cancel_revoke_report', '$loan_issue_report', '$collection_report', '$principal_interest_report', '$balance_report', '$due_list_report', '$in_closed_report', '$closed_report', '$confirmation_followup_report', '$agent_report', '$no_due_pay_report', '$other_trans_report', '$day_end_report', '$cash_tally_activity_report', '$due_followup_customer_count_report', '$commitment_report', '$customer_status_report', '$promotion_activity_report', '$cleared_report', '$events_report', '$area_loan_count_report', '$noc_handover_report', '$confirmation_count_report', '$concern_report', '$partners_report', '$request_count_report', '$verification_count_report', '$approval_count_report', '$loan_issue_count_report', '$promotion_count_report', '$due_followup_count_report', '$back_office_count_report', '$branch_request_count_report', '$location_track_report', '$outstanding_report', '$reportmodule_intrest', '$intrest_ledger_report', '$intrest_loan_issue_report', '$intrest_collection_report', '$intrest_balance_report', '$intrest_closed_report', '$searchmodule', '$search_screen', '$bulk_upload_module', '$bulk_upload', '$loan_track', '$sms_module', '$sms_generation', '$userid', now() )";
 
 
 		$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
@@ -3604,10 +3623,15 @@ class admin
 		if (isset($_POST['pro_aty_access_id'])) {
 			$pro_aty_access = $_POST['pro_aty_access_id'];
 		}
+		$repro_aty_access = '';
+		if (isset($_POST['repro_aty_access_id'])) {
+			$repro_aty_access = $_POST['repro_aty_access_id'];
+		}
 		$promotion_activity_mapping_access = '';
 		if (isset($_POST['promotion_activity_mapping_access'])) {
 			$promotion_activity_mapping_access = $_POST['promotion_activity_mapping_access'];
 		}
+		$promotion_activity_action_access = ($_POST['promotion_activity_action_access'] !='') ? $_POST['promotion_activity_action_access'] : '2';
 		$download_access = '1';
 		if (isset($_POST['download_access'])) {
 			$download_access = $_POST['download_access'];
@@ -3844,7 +3868,9 @@ class admin
 		} else {
 			$noc_replace = 1;
 		}
-		$doc_replace_remove_access = ($_POST['doc_replace_remove_access']) ? $_POST['doc_replace_remove_access'] : '2';
+
+		$doc_replace_remove_access = (isset($_POST['doc_replace_remove_access']) && $_POST['doc_replace_remove_access'] !='') ? $_POST['doc_replace_remove_access'] : '2';
+
 		if (isset($_POST['updatemodule']) &&    $_POST['updatemodule'] == 'Yes') {
 			$updatemodule = 0;
 		} else {
@@ -3855,14 +3881,17 @@ class admin
 		} else {
 			$update_screen = 1;
 		}
-		$update_cp_edit_access = ($_POST['update_cp_edit_access_id']) ? $_POST['update_cp_edit_access_id'] : '0';
+
+		$update_cp_edit_access = isset($_POST['update_cp_edit_access_id']) ? $_POST['update_cp_edit_access_id'] : '0';
 
 		if (isset($_POST['update_documentation']) && $_POST['update_documentation'] == 'Yes') { //Documentation.
 			$update_documentation = 0;
 		} else {
 			$update_documentation = 1;
 		}
-		$update_doc_edit_access = ($_POST['update_doc_edit_access']) ? $_POST['update_doc_edit_access'] : '2';
+		
+		$update_doc_edit_access = (isset($_POST['update_doc_edit_access']) && $_POST['update_doc_edit_access']) ? $_POST['update_doc_edit_access'] : '2';
+		
 		if (isset($_POST['concernmodule']) &&    $_POST['concernmodule'] == 'Yes') {
 			$concernmodule = 0;
 		} else {
@@ -3944,6 +3973,11 @@ class admin
 			$promotion_activity = 0;
 		} else {
 			$promotion_activity = 1;
+		}
+		if (isset($_POST['repromotion_activity']) &&    $_POST['repromotion_activity'] == 'Yes') {
+			$repromotion_activity = 0;
+		} else {
+			$repromotion_activity = 1;
 		}
 		if (isset($_POST['loan_followup']) &&    $_POST['loan_followup'] == 'Yes') {
 			$loan_followup = 0;
@@ -4150,7 +4184,7 @@ class admin
 		} else {
 			$partners_report = 1;
 		}
-
+				
 		$request_count_report = (isset($_POST['request_count_report']) && $_POST['request_count_report'] == 'Yes') ? 0 : 1;
 		$verification_count_report = (isset($_POST['verification_count_report']) && $_POST['verification_count_report'] == 'Yes') ? 0 : 1;
 		$approval_count_report = (isset($_POST['approval_count_report']) && $_POST['approval_count_report'] == 'Yes') ? 0 : 1;
@@ -4235,7 +4269,7 @@ class admin
 			$sms_generation = 1;
 		}
 
-		$updateQry = "UPDATE `user` SET `fullname` = '$full_name', `emailid` = '$email', `user_name` = '$user_name', `user_password` = '$user_password', `role` = '$role', `role_type` = '$role_type', `dir_id` = '$dir_name', `ag_id` = '$ag_name', `staff_id` = '$staff_name', `company_id` = '$company_id', `branch_id` = '$branch_id', `bank_access` = '$bank_access', `agentforstaff` ='$agentforstaff', `line_id` = '$line', `group_id` = '$group', `download_access` = '$download_access', `report_access` = '$report_access', `home_access` = '$home_access', `cus_summary_access` = '$cus_summary_access', `pro_aty_access` = '$pro_aty_access', `promotion_activity_mapping_access`='$promotion_activity_mapping_access', `mastermodule` = '$mastermodule', `company_creation` = '$company_creation', `branch_creation` = '$branch_creation', `loan_category` = '$loan_category', `area_creation` = '$area_creation', `area_mapping` = '$area_mapping', `area_approval` = '$area_approval', `adminmodule` = '$adminmodule', `director_creation` = '$director_creation', `agent_creation` = '$agent_creation', `staff_creation` = '$staff_creation', `manage_user` = '$manage_user', `bank_creation`='$bank_creation', `requestmodule`='$requestmodule', `request`='$request', `request_list_access`='$request_list_access',  `req_mapping_access`='$req_mapping_access',`verificationmodule`='$verificationmodule', `verification`='$verification', `ver_loan_cat`='$ver_loan_cat', `ver_group_id`='$ver_group_id', `approvalmodule`='$approvalmodule', `approval`='$approval', `app_loan_cat`='$app_loan_cat', `acknowledgementmodule`='$acknowledgementmodule', `acknowledgement`='$acknowledgement', `acknowledgement_access` = '$acknowledgement_access', `ack_loan_cat`='$ack_loan_cat', `loanissuemodule`='$loanissuemodule', `loan_issue`='$loan_issue', `collectionmodule` = '$collectionmodule', `collection` = '$collection', `collection_access` = '$collection_access', `closedmodule` = '$closedmodule', `closed` = '$closed', `nocmodule` = '$nocmodule', `noc` = '$noc', `noc_handover` = '$noc_handover', `noc_replace_access` = '$noc_replace_access', `noc_mapping_access`='$noc_mapping_access', `doctrackmodule` = '$doctrackmodule', `doctrack` = '$doctrack', `doc_rec_access` = '$doc_rec_access', `noc_replace` = '$noc_replace', `doc_replace_remove_access`= '$doc_replace_remove_access', `updatemodule` = '$updatemodule', `update_screen` = '$update_screen', `update_cp_edit_access` = '$update_cp_edit_access', `update_documentation` = '$update_documentation', `update_doc_edit_access` = '$update_doc_edit_access', `concernmodule`='$concernmodule', `concern_creation`='$concernCreation', `concern_solution`='$concernSolution', `accountsmodule`='$accountsmodule', `cash_tally`='$cash_tally', `cash_tally_admin`='$cash_tally_admin', `bank_details`='$bank_details', `bank_clearance`='$bank_clearance', `bnk_clr_upl_acc`='$bnk_clr_upl_acc', `finance_insight`='$finance_insight', `hand_cash_balance_sheet` ='". strip_tags($hand_cash_balance_sheet) ."' , `accounts_loan_issue`='$accounts_loan_issue', `followupmodule`='$followupmodule', `promotion_activity`='$promotion_activity', `loan_followup`='$loan_followup', `confirmation_followup`='$conf_followup', `due_followup`='$due_followup', `ecs_followup`='$ecs_followup', `due_followup_lines`='$due_follup_line', `reportmodule` = '$reportmodule', `work_report_module` = '$work_report_module', `monitor_report_module` = '$monitor_report_module', `count_report_module` = '$count_report_module', `analysis_report_module` = '$analysis_report_module', `accounts_report_module` = '$accounts_report_module', `request_report` = '$request_report', `verification_report` = '$verification_report', `approval_report` = '$approval_report', `cancel_revoke_report` = '$cancel_revoke_report', `loan_issue_report` = '$loan_issue_report', `collection_report` = '$collection_report', `principal_interest_report` = '$principal_interest_report', `balance_report` = '$balance_report', `due_list_report` = '$due_list_report', `in_closed_report` = '$in_closed_report', `closed_report` = '$closed_report', `confirmation_followup_report` = '$confirmation_followup_report', `agent_report` = '$agent_report', `no_due_pay_report` = '$no_due_pay_report', `other_trans_report` = '$other_trans_report', `day_end_report` = '$day_end_report', `cash_tally_activity_report` = '$cash_tally_activity_report', `due_followup_customer_count_report` = '$due_followup_customer_count_report', `commitment_report` = '$commitment_report', `customer_status_report` = '$customer_status_report', `promotion_activity_report` = '$promotion_activity_report', `cleared_report` = '$cleared_report', `events_report` = '$events_report', `area_loan_count_report` = '$area_loan_count_report', `noc_handover_report` = '$noc_handover_report', `confirmation_count_report` = '$confirmation_count_report', `concern_report` = '$concern_report', `partners_report` = '$partners_report', `request_count_report` = '$request_count_report', `verification_count_report` = '$verification_count_report', `approval_count_report` = '$approval_count_report', `loan_issue_count_report` = '$loan_issue_count_report', `promotion_count_report` = '$promotion_count_report', `due_followup_count_report` = '$due_followup_count_report',  `back_office_count_report` = '$back_office_count_report', `branch_request_count_report` = '$branch_request_count_report', `location_track_report` = '$location_track_report',`outstanding_report` = '$outstanding_report', `reportmodule_intrest` = '$reportmodule_intrest', `intrest_ledger_report` = '$intrest_ledger_report', `intrest_loan_issue_report` = '$intrest_loan_issue_report', `intrest_collection_report` = '$intrest_collection_report', `intrest_balance_report` = '$intrest_balance_report', `intrest_closed_report` = '$intrest_closed_report', `search_module` = '$searchmodule', `search` = '$search_screen', `bulk_upload_module` = '$bulk_upload_module', `bulk_upload` = '$bulk_upload', `loan_track` = '$loan_track', `sms_module` = '$sms_module', `sms_generation` = '$sms_generation', `status` = 0, `update_login_id` = '$user_id', `updated_date` = current_timestamp() WHERE user_id = '$id' ";
+		$updateQry = "UPDATE `user` SET `fullname` = '$full_name', `emailid` = '$email', `user_name` = '$user_name', `user_password` = '$user_password', `role` = '$role', `role_type` = '$role_type', `dir_id` = '$dir_name', `ag_id` = '$ag_name', `staff_id` = '$staff_name', `company_id` = '$company_id', `branch_id` = '$branch_id', `bank_access` = '$bank_access', `agentforstaff` ='$agentforstaff', `line_id` = '$line', `group_id` = '$group', `download_access` = '$download_access', `report_access` = '$report_access', `home_access` = '$home_access', `cus_summary_access` = '$cus_summary_access', `pro_aty_access` = '$pro_aty_access', `repro_aty_access` = '$repro_aty_access',`promotion_activity_mapping_access` = '$promotion_activity_mapping_access', `promotion_activity_action_access` = '$promotion_activity_action_access', `mastermodule` = '$mastermodule', `company_creation` = '$company_creation', `branch_creation` = '$branch_creation', `loan_category` = '$loan_category', `area_creation` = '$area_creation', `area_mapping` = '$area_mapping', `area_approval` = '$area_approval', `adminmodule` = '$adminmodule', `director_creation` = '$director_creation', `agent_creation` = '$agent_creation', `staff_creation` = '$staff_creation', `manage_user` = '$manage_user', `bank_creation`='$bank_creation', `requestmodule`='$requestmodule', `request`='$request', `request_list_access`='$request_list_access',  `req_mapping_access`='$req_mapping_access',`verificationmodule`='$verificationmodule', `verification`='$verification', `ver_loan_cat`='$ver_loan_cat', `ver_group_id`='$ver_group_id', `approvalmodule`='$approvalmodule', `approval`='$approval', `app_loan_cat`='$app_loan_cat', `acknowledgementmodule`='$acknowledgementmodule', `acknowledgement`='$acknowledgement', `acknowledgement_access` = '$acknowledgement_access', `ack_loan_cat`='$ack_loan_cat', `loanissuemodule`='$loanissuemodule', `loan_issue`='$loan_issue', `collectionmodule` = '$collectionmodule', `collection` = '$collection', `collection_access` = '$collection_access', `closedmodule` = '$closedmodule', `closed` = '$closed', `nocmodule` = '$nocmodule', `noc` = '$noc', `noc_handover` = '$noc_handover', `noc_replace_access` = '$noc_replace_access', `noc_mapping_access`='$noc_mapping_access', `doctrackmodule` = '$doctrackmodule', `doctrack` = '$doctrack', `doc_rec_access` = '$doc_rec_access', `noc_replace` = '$noc_replace', `doc_replace_remove_access`= '$doc_replace_remove_access', `updatemodule` = '$updatemodule', `update_screen` = '$update_screen', `update_cp_edit_access` = '$update_cp_edit_access', `update_documentation` = '$update_documentation', `update_doc_edit_access` = '$update_doc_edit_access', `concernmodule`='$concernmodule', `concern_creation`='$concernCreation', `concern_solution`='$concernSolution', `accountsmodule`='$accountsmodule', `cash_tally`='$cash_tally', `cash_tally_admin`='$cash_tally_admin', `bank_details`='$bank_details', `bank_clearance`='$bank_clearance', `bnk_clr_upl_acc`='$bnk_clr_upl_acc', `finance_insight`='$finance_insight', `hand_cash_balance_sheet` ='". strip_tags($hand_cash_balance_sheet) ."' , `accounts_loan_issue`='$accounts_loan_issue', `followupmodule`='$followupmodule', `promotion_activity`='$promotion_activity', `repromotion_activity`='$repromotion_activity', `loan_followup`='$loan_followup', `confirmation_followup`='$conf_followup', `due_followup`='$due_followup', `ecs_followup`='$ecs_followup', `due_followup_lines`='$due_follup_line', `reportmodule` = '$reportmodule', `work_report_module` = '$work_report_module', `monitor_report_module` = '$monitor_report_module', `count_report_module` = '$count_report_module', `analysis_report_module` = '$analysis_report_module', `accounts_report_module` = '$accounts_report_module', `request_report` = '$request_report', `verification_report` = '$verification_report', `approval_report` = '$approval_report', `cancel_revoke_report` = '$cancel_revoke_report', `loan_issue_report` = '$loan_issue_report', `collection_report` = '$collection_report', `principal_interest_report` = '$principal_interest_report', `balance_report` = '$balance_report', `due_list_report` = '$due_list_report', `in_closed_report` = '$in_closed_report', `closed_report` = '$closed_report', `confirmation_followup_report` = '$confirmation_followup_report', `agent_report` = '$agent_report', `no_due_pay_report` = '$no_due_pay_report', `other_trans_report` = '$other_trans_report', `day_end_report` = '$day_end_report', `cash_tally_activity_report` = '$cash_tally_activity_report', `due_followup_customer_count_report` = '$due_followup_customer_count_report', `commitment_report` = '$commitment_report', `customer_status_report` = '$customer_status_report', `promotion_activity_report` = '$promotion_activity_report', `cleared_report` = '$cleared_report', `events_report` = '$events_report', `area_loan_count_report` = '$area_loan_count_report', `noc_handover_report` = '$noc_handover_report', `confirmation_count_report` = '$confirmation_count_report', `concern_report` = '$concern_report', `partners_report` = '$partners_report', `request_count_report` = '$request_count_report', `verification_count_report` = '$verification_count_report', `approval_count_report` = '$approval_count_report', `loan_issue_count_report` = '$loan_issue_count_report', `promotion_count_report` = '$promotion_count_report', `due_followup_count_report` = '$due_followup_count_report',  `back_office_count_report` = '$back_office_count_report', `branch_request_count_report` = '$branch_request_count_report', `location_track_report` = '$location_track_report',`outstanding_report` = '$outstanding_report', `reportmodule_intrest` = '$reportmodule_intrest', `intrest_ledger_report` = '$intrest_ledger_report', `intrest_loan_issue_report` = '$intrest_loan_issue_report', `intrest_collection_report` = '$intrest_collection_report', `intrest_balance_report` = '$intrest_balance_report', `intrest_closed_report` = '$intrest_closed_report', `search_module` = '$searchmodule', `search` = '$search_screen', `bulk_upload_module` = '$bulk_upload_module', `bulk_upload` = '$bulk_upload', `loan_track` = '$loan_track', `sms_module` = '$sms_module', `sms_generation` = '$sms_generation', `status` = 0, `update_login_id` = '$user_id', `updated_date` = current_timestamp() WHERE user_id = '$id' ";
 
 
 
@@ -4515,44 +4549,40 @@ class admin
 				$autogen_cus_id = !empty($row['max_number']) ? ((int)$row['max_number'] + 1) : 10001;
 			}
 
+			$mysqli->query("DELETE FROM enquiry WHERE cus_id = '$cus_id'") or die("Error " . $mysqli->error);
+			$mysqli->query("DELETE FROM enquiry_promotion WHERE cus_id = '$cus_id'") or die("Error " . $mysqli->error);
 
-			$insertQry = "INSERT INTO request_creation(`user_type`, `user_name`, `agent_id`, `responsible`, `remarks`, `declaration`, `req_code`, `dor`, `cus_id`,
-		`cus_data`, `first_name`, `last_name`, `dob`, `age`, `gender`, `state`, `district`, `taluk`, `area`, `address`, `mobile1`, `mobile2`,`mobile_whatsapp`,`whatsapp_no`,`father_name`, 
-		`mother_name`, `marital`, `spouse_name`, `occupation_type`, `occupation`, `pic`, `loan_category`,  `tot_value`, `ad_amt`, `ad_perc`, 
-		`loan_amt`, `poss_type`, `due_amt`, `due_period`, `insert_login_id`,`created_date`) 
-		VALUES('" . strip_tags($user_type) . "','" . strip_tags($user) . "','" . strip_tags($agent) . "','" . strip_tags($responsible) . "','" . strip_tags($remarks) . "',
-		'" . strip_tags($declaration) . "','" . strip_tags($req_code) . "','" . strip_tags($dor) . "', '" . strip_tags($cus_id) . "',
-		'" . strip_tags($cus_data) . "','" . strip_tags($first_name) . "', '" . strip_tags($last_name) . "', '" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "',
-		'" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "', '" . strip_tags($address) . "', '" . strip_tags($mobile1) . "',
-		'" . strip_tags($mobile2) . "','" . strip_tags($mobile_whatsapp) . "','" . strip_tags($whatsapp_no) . "','" . strip_tags($father_name) . "','" . strip_tags($mother_name) . "', '" . strip_tags($marital) . "', '" . strip_tags($spouse_name) . "', '" . strip_tags($occupation_type) . "',
-		'" . strip_tags($occupation) . "','" . strip_tags($pic) . "','" . strip_tags($loan_category) . "', '" . strip_tags($tot_value) . "', '" . strip_tags($ad_amt) . "',
-		'" . strip_tags($ad_perc) . "', '" . strip_tags($loan_amt) . "','" . strip_tags($poss_type) . "','" . strip_tags($due_amt) . "','" . strip_tags($due_period) . "',
-		'" . strip_tags($userid) . "',current_timestamp )";
 
-			$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
+			$insertQry = "INSERT INTO request_creation(`user_type`, `user_name`, `agent_id`, `responsible`, `remarks`, `declaration`, `req_code`, `dor`, `cus_id`, `cus_data`, `first_name`, `last_name`, `dob`, `age`, `gender`, `state`, `district`, `taluk`, `area`, `address`, `mobile1`, `mobile2`,`mobile_whatsapp`,`whatsapp_no`,`father_name`, `mother_name`, `marital`, `spouse_name`, `occupation_type`, `occupation`, `pic`, `loan_category`,  `tot_value`, `ad_amt`, `ad_perc`, `loan_amt`, `poss_type`, `due_amt`, `due_period`, `insert_login_id`,`created_date`) 
+		VALUES('$user_type', '$user', '$agent', '$responsible', '$remarks',
+		'$declaration', '$req_code', '$dor', '$cus_id', '$cus_data', '$first_name', '$last_name', '$dob', '$age', '$gender', '$state', '$district', '$taluk', '$area', '$address', '$mobile1', '$mobile2','$mobile_whatsapp','$whatsapp_no','$father_name', '$mother_name', '$marital', '$spouse_name', '$occupation_type','$occupation', '$pic', '$loan_category', '$tot_value', '$ad_amt', '$ad_perc','$loan_amt', '$poss_type', '$due_amt', '$due_period', '$userid', CURRENT_TIMESTAMP )";
+
+			$mysqli->query($insertQry) or die("Error " . $mysqli->error);
 			$req_ref_id = $mysqli->insert_id;
 
 			if ($cus_data == 'New') {
-				$CustomerInsert = "INSERT INTO customer_register (`autogen_cus_id`, `cus_id`,`req_ref_id`, `first_name`, `last_name`, `dob`, `age`, `gender`, `state`, `district`,
-				`taluk`, `area`,  `address`, `mobile1`, `mobile2`,`mobile_whatsapp`,`whatsapp_no`, `father_name`, `mother_name`, `marital`, `spouse`, `occupation_type`, `occupation`,`pic`)
-				VALUES( '" . strip_tags($autogen_cus_id) . "', '" . strip_tags($cus_id) . "','" . strip_tags($req_ref_id) . "','" . strip_tags($first_name) . "','" . strip_tags($last_name) . "','" . strip_tags($dob) . "', '" . strip_tags($age) . "', '" . strip_tags($gender) . "', '" . strip_tags($state) . "',
-				'" . strip_tags($district) . "','" . strip_tags($taluk) . "','" . strip_tags($area) . "',  '" . strip_tags($address) . "', '" . strip_tags($mobile1) . "',
-				'" . strip_tags($mobile2) . "','" 	. strip_tags($mobile_whatsapp) . "','" 	. strip_tags($whatsapp_no) . "','" 	. strip_tags($father_name) . "','" 	. strip_tags($mother_name) . "', '" . strip_tags($marital) . "', '" . strip_tags($spouse_name) . "',
-				'" . strip_tags($occupation_type) . "','" . strip_tags($occupation) . "','" 	. strip_tags($pic) . "' )";
-				$insresult = $mysqli->query($CustomerInsert) or die("Error " . $mysqli->error);
+				$CustomerInsert = "INSERT INTO customer_register (`autogen_cus_id`, `cus_id`,`req_ref_id`, `first_name`, `last_name`, `dob`, `age`, `gender`, `state`, `district`,`taluk`, `area`,  `address`, `mobile1`, `mobile2`,`mobile_whatsapp`,`whatsapp_no`, `father_name`, `mother_name`, `marital`, `spouse`, `occupation_type`, `occupation`,`pic`)
+				VALUES( '$autogen_cus_id', '$cus_id','$req_ref_id','$first_name','$last_name','$dob', '$age', '$gender', '$state',
+				'$district','$taluk','$area',  '$address', '$mobile1',
+				'$mobile2','$mobile_whatsapp','$whatsapp_no','$father_name','$mother_name', '$marital', '$spouse_name',
+				'$occupation_type','$occupation','$pic' )";
+				$mysqli->query($CustomerInsert) or die("Error " . $mysqli->error); 
+				
 			} elseif ($cus_data == 'Existing') {
-				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "',`req_ref_id` = '" . strip_tags($req_ref_id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "',`address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) . "', `pic` = '" . strip_tags($pic) . "', `cus_status` = 0 WHERE `cus_id`= '" . strip_tags($cus_id) . "' ");
+				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '$autogen_cus_id', `cus_id` = '$cus_id',`req_ref_id` = '$req_ref_id', `first_name` = '$first_name', `last_name` = '$last_name', `dob` = '$dob', `age` = '$age', `gender` = '$gender', `state` = '$state', `district` = '$district', `taluk` = '$taluk', `area` = '$area',`address` = '$address', `mobile1` = '$mobile1', `mobile2` = '$mobile2', `mobile_whatsapp` = '$mobile_whatsapp', `whatsapp_no` = '$whatsapp_no', `father_name` = '$father_name', `mother_name` = '$mother_name', `marital` = '$marital', `spouse` = '$spouse_name', `occupation_type` = '$occupation_type', `occupation` = '$occupation', `pic` = '$pic', `cus_status` = 0 WHERE `cus_id`= '$cus_id' ");
 			}
 
 			for ($i = 0; $i < sizeof($category_info); $i++) {
-				$insertQry = "INSERT INTO `request_category_info`(`req_ref_id`, `category_info`) VALUES ('" . strip_tags($req_ref_id) . "','" . strip_tags($category_info[$i]) . "') ";
-				$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
+				$insertQry = "INSERT INTO `request_category_info`(`req_ref_id`, `category_info`) VALUES ('$req_ref_id', '$category_info[$i]') ";
+				$mysqli->query($insertQry) or die("Error " . $mysqli->error);
 			}
+
 			// Commit the transaction
 			$mysqli->commit();
 
 			// Enable autocommit again
 			$mysqli->autocommit(TRUE);
+			
 		} catch (Exception $e) {
 			// Rollback the transaction in case of error
 			$mysqli->rollback();
@@ -4569,9 +4599,9 @@ class admin
 	// 	$revokeQry = $mysqli->query("Update request_creation set cus_status = 8,updated_date=now(), update_login_id= $userid where req_id = $rev ") or die($mysqli->error());
 	// 	$revokeQry = $mysqli->query("Update customer_register set cus_status = 8,updated_date=now() where req_ref_id = $rev ") or die($mysqli->error());
 	// }
-	public function deleteRequest($mysqli, $del)
+	public function deleteRequest($mysqli, $del, $userid)
 	{
-		$deleteQry = $mysqli->query("Update request_creation set status = 1,updated_date=now() where req_id = $del ") or die($mysqli->error());
+		$deleteQry = $mysqli->query("Update request_creation set status = 1,updated_date=now(), delete_login_id= $userid where req_id = $del ") or die($mysqli->error());
 	}
 
 	public function getRequest($mysqli, $id)
@@ -4870,13 +4900,13 @@ class admin
 						$insresult = $mysqli->query($CustomerInsert) or die("Error " . $mysqli->error);
 					} else { //Existing
 						//...update by new cus id.
-						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) 	. "', `pic` = '" 	. 	strip_tags($pic) 	. "' WHERE cus_id= '$cus_id' ");
+						$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "', `address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "', `mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) 	. "', `pic` = '" 	. 	strip_tags($pic) 	. "', `cus_status` = 0 WHERE cus_id= '$cus_id' ");
 					}
 
 					$mysqli->query(" UPDATE customer_register SET req_ref_id = ( SELECT req_id FROM request_creation WHERE cus_id = $cus_id_upd ORDER BY req_id DESC LIMIT 1)  WHERE cus_id = $cus_id_upd ");
 				}
 			} else { //if cus id not edit just update by cus id.
-				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "',`address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "',`mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) 	. "', `pic` = '" 	. 	strip_tags($pic) 	. "' WHERE cus_id= '$cus_id' ");
+				$mysqli->query("UPDATE customer_register SET `autogen_cus_id` = '" . strip_tags($autogen_cus_id) . "', `cus_id` = '" . strip_tags($cus_id) . "', `req_ref_id` = '" . strip_tags($id) . "', `first_name` = '" . strip_tags($first_name) . "', `last_name` = '" . strip_tags($last_name) . "', `dob` = '" . strip_tags($dob) . "', `age` = '" . strip_tags($age) . "', `gender` = '" . strip_tags($gender) . "', `state` = '" . strip_tags($state) . "', `district` = '" . strip_tags($district) . "', `taluk` = '" . strip_tags($taluk) . "', `area` = '" . strip_tags($area) . "',`address` = '" . strip_tags($address) . "', `mobile1` = '" . strip_tags($mobile1) . "', `mobile2` = '" . strip_tags($mobile2) . "',`mobile_whatsapp` = '" . strip_tags($mobile_whatsapp) . "', `whatsapp_no` = '" . strip_tags($whatsapp_no) . "', `father_name` = '" . strip_tags($father_name) . "', `mother_name` = '" . strip_tags($mother_name) . "', `marital` = '" . strip_tags($marital) . "', `spouse` = '" . strip_tags($spouse_name) . "', `occupation_type` = '" . strip_tags($occupation_type) . "', `occupation` = '" . strip_tags($occupation) 	. "', `pic` = '" 	. 	strip_tags($pic) 	. "', `cus_status` = 0 WHERE cus_id= '$cus_id' ");
 			}
 
 
@@ -4904,10 +4934,10 @@ class admin
 	// 	$revokeQry = $mysqli->query("Update in_verification set cus_status = 9,updated_date=now(), update_login_id= $userid where req_id = $rev ") or die($mysqli->error());
 	// }
 	//Delete verification 
-	function deleteVerification($mysqli, $id)
+	function deleteVerification($mysqli, $id, $userid)
 	{
-		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Verification');
-		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Verification');
+		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Verification');
+		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Verification');
 	}
 
 	//Cancel Approval
@@ -5569,6 +5599,7 @@ class admin
 		return $detailrecords;
 	}
 
+
 	// Get Loan caltegory list for Documentation
 	public function getloanCategoryForDoc($mysqli, $loan_category)
 	{
@@ -5767,13 +5798,13 @@ class admin
 					$verify_audio .= $uniqueFileName . ',';
 				}
 			}
-		
 		}
-		
+
 		$verify_audio = implode(',', array_filter([
 			rtrim($verify_audio, ','),
 			trim($_POST['verification_audio_upd'] ?? '', ',')
 		]));
+
 		if (isset($_POST['verifyPerson'])) {
 			$verifyPerson = $_POST['verifyPerson'];
 		}
@@ -6175,18 +6206,18 @@ class admin
 			$en_Key = $_POST['en_Key'];
 		}
 
-		if (isset($_POST['adhar_print'])) {
-			$adhar_print = $_POST['adhar_print'];
-		}
-		if (isset($_POST['name_print'])) {
-			$name_print = $_POST['name_print'];
-		}
-		if (isset($_POST['fingerprint'])) {
-			$fingerprint = $_POST['fingerprint'];
-		}
-		if (isset($_POST['hand_selection'])) {
-			$hand = $_POST['hand_selection'];
-		}
+		// if (isset($_POST['adhar_print'])) {
+		// 	$adhar_print = $_POST['adhar_print'];
+		// }
+		// if (isset($_POST['name_print'])) {
+		// 	$name_print = $_POST['name_print'];
+		// }
+		// if (isset($_POST['fingerprint'])) {
+		// 	$fingerprint = $_POST['fingerprint'];
+		// }
+		// if (isset($_POST['hand_selection'])) {
+		// 	$hand = $_POST['hand_selection'];
+		// }
 
 		if (isset($_POST['doc_table_id'])) {
 			$doc_table_id = $_POST['doc_table_id'];
@@ -6606,9 +6637,8 @@ class admin
 
 				$uniqueFileName = uniqid() . '.' . $fileType;
 
-			
 				//this loop will continue until it generates a unique file name
-			while (file_exists($uploadDir . $uniqueFileName)) {
+				while (file_exists($uploadDir . $uniqueFileName)) {
 					$uniqueFileName = uniqid() . '.' . $fileType;
 				}
 
@@ -6622,7 +6652,9 @@ class admin
 				}
 			}
 		}
+
 		$verify_audio .= ','. $_POST['verification_audio_upd'] ?? '';
+
 		if (isset($_POST['verifyPerson'])) {
 			$verifyPerson = $_POST['verifyPerson'];
 		}
@@ -6764,10 +6796,10 @@ class admin
 	//Delete Acknowledgement
 	function removeAcknowledgement($mysqli, $id, $userid)
 	{
-		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Acknowledgement');
-		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Acknowledgement');
-		$qry = $mysqli->query("UPDATE in_approval set status = 1,updated_date=now() where req_id = $id ") or die('Error While Removing Acknowledgement');
-		$qry = $mysqli->query("UPDATE in_acknowledgement set status = 1,updated_date=now() where req_id = $id  ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE request_creation set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE in_verification set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE in_approval set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id ") or die('Error While Removing Acknowledgement');
+		$qry = $mysqli->query("UPDATE in_acknowledgement set status = 1,updated_date=now(), delete_login_id = $userid where req_id = $id  ") or die('Error While Removing Acknowledgement');
 	}
 
 	///  Acknowlegement END
@@ -7307,7 +7339,7 @@ class admin
 		if (isset($_POST['staff_assign_to'])) {
 			$staff_assign_to = $_POST['staff_assign_to'];
 		}
-		$pass_to = $_POST['pass_to'] ?? '';
+		 $pass_to = $_POST['pass_to'] ?? '';
 
 
 		if (isset($_POST['location'])) {
@@ -7326,11 +7358,11 @@ class admin
 			if (isset($_POST['solution_date'])) {
 				$solution_date = $_POST['solution_date'];
 			}
-			if (empty($pass_to)) {
-				// pass_to is empty → reset these
-				$role_type = '';
-				$staff_assign_to = '';
-			}
+		if (empty($pass_to)) {
+			// pass_to is empty → reset these
+			$role_type = '';
+			$staff_assign_to = '';
+		}
 		}
 		$concern_upload = '';
 		// if(isset($_FILES['concern_upload']) && $_POST['Com_for_solution'] == '1'){
@@ -8278,7 +8310,7 @@ class admin
 		WHERE `cus_id` = '$cus_id' ";
 		$insresult = $mysqli->query($insertQry) or die("Error " . $mysqli->error);
 
-		$grantorupdate = "UPDATE customer_profile cp JOIN in_issue ii ON cp.req_id = ii.req_id JOIN acknowlegement_customer_profile ackp ON ackp.req_id = ii.req_id SET cp.`guarentor_name` = '$guarentor_name', cp.`guarentor_relation` = '$guarentor_relation', cp.`guarentor_photo` = '$guarentor_pic', ackp.`guarentor_name` ='$guarentor_name', ackp.`guarentor_relation` = '$guarentor_relation', ackp.`guarentor_photo` = '$guarentor_pic' WHERE ii.loan_id = '$loan_id'; ";
+		$grantorupdate = "UPDATE customer_profile cp JOIN in_issue ii ON cp.req_id = ii.req_id JOIN acknowlegement_customer_profile ackp ON ackp.req_id = ii.req_id SET cp.`guarentor_name` = '$guarentor_name', cp.`guarentor_relation` = '$guarentor_relation', cp.`guarentor_photo` = '$guarentor_pic', ackp.`guarentor_name` = '$guarentor_name', ackp.`guarentor_relation` = '$guarentor_relation', ackp.`guarentor_photo` = '$guarentor_pic' WHERE ii.loan_id = '$loan_id'; ";
 		$insresult = $mysqli->query($grantorupdate) or die("Error " . $mysqli->error);
 
 		$updateCus = "UPDATE `customer_register` SET  `cus_id` = '$cus_id', `first_name` = '$first_name', `last_name` = '$last_name', `gender` = '$gender', `dob` = '$dob', `age` = '$age', `state` = '$state', `district` = '$district', `taluk` = '$taluk', `area` = '$area', `address` = '$cus_address', `mobile1` = '$mobile1',  `mobile2` = '$mobile2',  `whatsapp`  =  '$whatsapp_no',  `father_name` = '$father_name', `mother_name` = '$mother_name', `marital` = '$marital', `spouse` = '$spouse_name', `occupation_type` = '$occupation_type', `occupation` = '$occupation', `pic`  =  '$cus_pic',  `how_to_know` = '$cus_how_know', `loan_count` = '$cus_loan_count', `first_loan_date` = '$cus_frst_loanDate', `travel_with_company` = '$cus_travel_cmpy', `monthly_income` = '$cus_monthly_income', `other_income` = '$cus_other_income', `support_income` = '$cus_support_income', `commitment` = '$cus_Commitment', `monthly_due_capacity` = '$cus_monDue_capacity', `loan_limit` = '$cus_loan_limit', `about_customer` = '$about_cus', `residential_type` = '$cus_res_type', `residential_details` = '$cus_res_details', `residential_address` = '$cus_res_address', `residential_native_address` = '$cus_res_native', `occupation_info_occ_type` = '$cus_occ_type', `occupation_details` = '$cus_occ_detail', `occupation_income` = '$cus_occ_income', `occupation_address` = '$cus_occ_address', `dow` = '$cus_occ_dow', `abt_occ` = '$cus_occ_abt', `reminder_call` = '$reminder_call', `area_confirm_type` = '$area_cnfrm', `area_confirm_state` = '$area_state', `area_confirm_district` = '$area_district', `area_confirm_taluk` = '$area_taluk', `area_confirm_area` = '$area_confirm', `latlong` = '$latlong', `area_group` = '$area_group', `area_line` = '$area_line' WHERE `cus_id` = '$cus_id' ";
@@ -8304,8 +8336,7 @@ class admin
 	}
 
 	//Due followup reminder call. if customer said i will pay regularly on time so no need to call means mark as reminder call as "No", if not or customer not paid due properly then mark as yes. if no means customer not show in due followup list.
-	public function updateReminderCall($mysqli)
-	{
+	public function updateReminderCall($mysqli){
 		$cus_id =  preg_replace('/\s+/', '', $_POST['cus_id']) ?? '';
 		$reminder_call = $_POST['reminder_call'] ?? '0';
 

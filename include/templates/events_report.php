@@ -23,13 +23,12 @@
 						<div style="overflow-x: auto;">
 							<table id="event_list_report_table" class="table custom-table">
 								<thead>
-                                <th>S.No</th>
-                                <th>Event Name</th>
-                                <th>Customer Name</th>
-                                <th>Mobile</th>
-                                <th>Area</th>
-                                <th>User</th>
-                                <th>Created Date</th>
+									<th>S.No</th>
+									<th>Event Name</th>
+									<th>Customer Name</th>
+									<th>Mobile</th>
+									<th>User</th>
+									<th>Created Date</th>
 								</thead>
 								<tbody></tbody>
 							</table>

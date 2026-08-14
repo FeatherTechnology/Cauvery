@@ -7,73 +7,143 @@ $verif_check  = $_GET['pge'] ?? null;
 // Module mapping
 $modules = [
 
-    'master' => [
-        'edit_company_creation','company_creation','edit_branch_creation','branch_creation',
-        'edit_loan_category','loan_category','edit_loan_calculation','loan_calculation',
-        'edit_loan_scheme','loan_scheme','edit_area_creation','area_creation',
-        'edit_area_mapping','area_mapping','area_status'
-    ],
+	'master' => [
+		'edit_company_creation',
+		'company_creation',
+		'edit_branch_creation',
+		'branch_creation',
+		'edit_loan_category',
+		'loan_category',
+		'edit_loan_calculation',
+		'loan_calculation',
+		'edit_loan_scheme',
+		'loan_scheme',
+		'edit_area_creation',
+		'area_creation',
+		'edit_area_mapping',
+		'area_mapping',
+		'area_status'
+	],
 
-    'admin' => [
-        'edit_director_creation','director_creation','edit_agent_creation','agent_creation',
-        'edit_staff_creation','staff_creation','edit_manage_user','manage_user',
-        'edit_doc_mapping','doc_mapping','edit_bank_creation','bank_creation'
-    ],
+	'admin' => [
+		'edit_director_creation',
+		'director_creation',
+		'edit_agent_creation',
+		'agent_creation',
+		'edit_staff_creation',
+		'staff_creation',
+		'edit_manage_user',
+		'manage_user',
+		'edit_doc_mapping',
+		'doc_mapping',
+		'edit_bank_creation',
+		'bank_creation'
+	],
 
-    'request' => ['edit_request','request'],
+	'request' => ['edit_request', 'request'],
 
-    'approval' => ['approval_list','approval'],
+	'approval' => ['approval_list', 'approval'],
 
-    'acknowledgement' => ['edit_acknowledgement_list','acknowledgement_creation'],
+	'acknowledgement' => ['edit_acknowledgement_list', 'acknowledgement_creation'],
 
-    'loanissue' => ['edit_loan_issue','loan_issue'],
+	'loanissue' => ['edit_loan_issue', 'loan_issue'],
 
-    'collection' => ['edit_collection','collection'],
+	'collection' => ['edit_collection', 'collection'],
 
-    'closed' => ['edit_closed','closed'],
+	'closed' => ['edit_closed', 'closed'],
 
-    'noc' => ['edit_noc','noc','edit_noc_handover','noc_handover'],
+	'noc' => ['edit_noc', 'noc', 'edit_noc_handover', 'noc_handover'],
 
-    'update' => ['edit_update','update','update_customer_status'],
+	'update' => ['edit_update', 'update', 'update_customer_status'],
 
-    'doctrack' => ['document_track'],
+	'doctrack' => ['document_track'],
 
-    'concerncreation' => [
-        'edit_concern_creation','edit_concern_solution','concern_creation',
-        'concern_solution','concern_solution_view','edit_concern_feedback','concern_feedback'
-    ],
+	'concerncreation' => [
+		'edit_concern_creation',
+		'edit_concern_solution',
+		'concern_creation',
+		'concern_solution',
+		'concern_solution_view',
+		'edit_concern_feedback',
+		'concern_feedback'
+	],
 
-    'accounts' => [
-        'cash_tally','bank_clearance','edit_bank_clearance','finance_insight',
-        'hand_cash_balance_sheet','edit_accounts_loan_issue','accounts_loan_issue'
-    ],
+	'accounts' => [
+		'cash_tally',
+		'bank_clearance',
+		'edit_bank_clearance',
+		'finance_insight',
+		'hand_cash_balance_sheet',
+		'edit_accounts_loan_issue',
+		'accounts_loan_issue'
+	],
 
-    'followup' => [
-        'promotion_activity','loan_followup','confirmation_followup','due_followup',
-        'edit_due_followup','ecs_followup','ecs_edit_followup'
-    ],
+	'followup' => [
+		'promotion_activity',
+		'repromotion_activity',
+		'loan_followup',
+		'confirmation_followup',
+		'due_followup',
+		'edit_due_followup',
+		'ecs_followup',
+		'ecs_edit_followup'
+	],
 
-    'report' => [
-        'ledger_report','request_report','verification_report','approval_report','cancel_revoke_report','cus_profile_report','loan_issue_report',
-        'collection_report','principal_interest_report','balance_report','due_list_report',
-        'noc_handover_report','in_closed_report','closed_report','confirmation_followup_report',
-        'agent_report','no_due_pay_report','other_transaction_report','due_followup_customer_count_report',
-        'day_end_report','cash_tally_activity_report','commitment_report','customer_status_report',
-        'promotion_activity_report','cleared_report','events_report','area_loan_count_report',
-        'confirmation_count_report','concern_report','partners_report','request_count_report',
-        'verification_count_report','approval_count_report','loan_issue_count_report',
-        'promotion_count_report','duefollowup_count_report','back_office_count_report','branch_request_count_report','location_track_report','outstanding_report'
-    ],
+	'report' => [
+		'ledger_report',
+		'request_report',
+		'verification_report',
+		'approval_report',
+		'cancel_revoke_report',
+		'cus_profile_report',
+		'loan_issue_report',
+		'collection_report',
+		'principal_interest_report',
+		'balance_report',
+		'due_list_report',
+		'noc_handover_report',
+		'in_closed_report',
+		'closed_report',
+		'confirmation_followup_report',
+		'agent_report',
+		'no_due_pay_report',
+		'other_transaction_report',
+		'due_followup_customer_count_report',
+		'day_end_report',
+		'cash_tally_activity_report',
+		'commitment_report',
+		'customer_status_report',
+		'promotion_activity_report',
+		'cleared_report',
+		'events_report',
+		'area_loan_count_report',
+		'confirmation_count_report',
+		'concern_report',
+		'partners_report',
+		'request_count_report',
+		'verification_count_report',
+		'approval_count_report',
+		'loan_issue_count_report',
+		'promotion_count_report',
+		'duefollowup_count_report',
+		'back_office_count_report',
+		'branch_request_count_report',
+		'location_track_report',
+		'outstanding_report'
+	],
 
-    'interest_report' => [
-        'intrest_ledger_report','intrest_loan_issue_report','intrest_balance_report',
-        'intrest_collection_report','intrest_closed_report'
-    ],
+	'interest_report' => [
+		'intrest_ledger_report',
+		'intrest_loan_issue_report',
+		'intrest_balance_report',
+		'intrest_collection_report',
+		'intrest_closed_report'
+	],
 
-    'search_module' => ['search_module'],
-    'bulk_upload'   => ['bulk_upload'],
-    'loan_track'    => ['loan_track'],
-    'sms_generation'=> ['sms_generation'],
+	'search_module' => ['search_module'],
+	'bulk_upload'   => ['bulk_upload'],
+	'loan_track'    => ['loan_track'],
+	'sms_generation' => ['sms_generation'],
 ];
 
 $current_module = '';
@@ -81,19 +151,20 @@ $current_module = '';
 // Special case (verification / approval split)
 //Due to same page for two screens, first check pge number to verify it is for approval or verification
 if ($current_page == 'verification_list' || $current_page == 'verification') {
-    $current_module = ($verif_check == '2') ? 'approval' : 'verification';
+	$current_module = ($verif_check == '2') ? 'approval' : 'verification';
 } else {
-    foreach ($modules as $module => $pages) {
-        if (in_array($current_page, $pages)) {
-            $current_module = $module;
-            break;
-        }
-    }
+	foreach ($modules as $module => $pages) {
+		if (in_array($current_page, $pages)) {
+			$current_module = $module;
+			break;
+		}
+	}
 }
 
 $getUser = $userObj->getUser($mysqli, $userid);
+
 if (!empty($getUser) && is_array($getUser)) {
-    extract($getUser, EXTR_PREFIX_ALL, 'leftbar'); //it is linked to common page set prefix in variable so it avoid the conflict with other page.
+	extract($getUser, EXTR_PREFIX_ALL, 'leftbar'); //it is linked to common page set prefix in variable so it avoid the conflict with other page.
 }
 ?>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
@@ -107,7 +178,7 @@ if (!empty($getUser) && is_array($getUser)) {
 
 		sidebarLinks.forEach(function(link) {
 			var href = link.getAttribute('href');
-			if (href === currentPage) { 
+			if (href === currentPage) {
 				link.style.backgroundColor = '#646969d9';
 
 				// Open 2nd-level menu if inside sidebar-dropdown-2
@@ -448,32 +519,32 @@ if (!empty($getUser) && is_array($getUser)) {
 						</div>
 					</li>
 
-				<?php  } 
-				 if (($leftbar_doctrackmodule ?? 1) == 0) { ?>
-				 
-					<li class="sidebar-dropdown ">
-                        <a href="javascript:void(0)">
-							<i class='icon-credit-card'></i>
-                            <span class="menu-text">Document Track</span>
-                        </a>
-                        <div class="sidebar-submenu" <?php if ($current_module == 'doctrack') echo 'style="display:block" '; ?>>
-                            <ul>
-                                <?php if (($leftbar_doctrack ?? 1) == 0) { ?>
-                                    <li>
-                                        <a href="document_track"><i class='icon-credit-card'></i>Document Track</a>
-                                    </li>
-								 <?php  } 
-								  if (($leftbar_noc_replace ?? 1) == 0) { ?>
-                                    <li>
-                                        <a href="noc_replace"><i class='icon-unlock'></i>DOC Replace</a>
-                                    </li>
-                                <?php  } ?>
-                            </ul>
-                        </div>
-                    </li>
+				<?php  }
+				if (($leftbar_doctrackmodule ?? 1) == 0) { ?>
 
-				<?php  } 
-				  if (($leftbar_collectionmodule ?? 1) == 0) { ?>
+					<li class="sidebar-dropdown ">
+						<a href="javascript:void(0)">
+							<i class='icon-credit-card'></i>
+							<span class="menu-text">Document Track</span>
+						</a>
+						<div class="sidebar-submenu" <?php if ($current_module == 'doctrack') echo 'style="display:block" '; ?>>
+							<ul>
+								<?php if (($leftbar_doctrack ?? 1) == 0) { ?>
+									<li>
+										<a href="document_track"><i class='icon-credit-card'></i>Document Track</a>
+									</li>
+								<?php  }
+								if (($leftbar_noc_replace ?? 1) == 0) { ?>
+									<li>
+										<a href="noc_replace"><i class='icon-unlock'></i>DOC Replace</a>
+									</li>
+								<?php  } ?>
+							</ul>
+						</div>
+					</li>
+
+				<?php  }
+				if (($leftbar_collectionmodule ?? 1) == 0) { ?>
 					<li class="sidebar-dropdown acknowledge">
 						<a href="javascript:void(0)">
 							<i class='icon-credit'></i>
@@ -542,6 +613,11 @@ if (!empty($getUser) && is_array($getUser)) {
 										<a href="promotion_activity"><i class='icon-change_history'></i>Promotion Activity</a>
 									</li>
 								<?php  } ?>
+								<?php if (($leftbar_repromotion_activity ?? 1) == 0) { ?>
+									<li>
+										<a href="repromotion_activity"><i class='icon-circle1'></i>Repromotion Activity</a>
+									</li>
+								<?php  } ?>
 								<?php if (($leftbar_loan_followup ?? 1) == 0) { ?>
 									<!-- <li>
 										<a href="loan_followup"><i class='icon-chat_bubble_outline'></i>Loan Follow Up</a>
@@ -566,7 +642,7 @@ if (!empty($getUser) && is_array($getUser)) {
 						</div>
 					</li>
 				<?php  } ?>
-				
+
 				<?php if (($leftbar_updatemodule ?? 1) == 0) { ?>
 					<li class="sidebar-dropdown ">
 						<a href="javascript:void(0)">
@@ -581,7 +657,7 @@ if (!empty($getUser) && is_array($getUser)) {
 									</li>
 								<?php  } ?>
 
-									<!-- <li>
+								<!-- <li>
 										<a href="update_customer_status"><i class='icon-broken_image'></i>Update Customer Status</a>
 									</li> -->
 
@@ -645,7 +721,7 @@ if (!empty($getUser) && is_array($getUser)) {
 										<a href="hand_cash_balance_sheet"><i class='icon-dollar-sign'></i>Hand Cash Balance Sheet</a>
 									</li>
 								<?php  } ?>
-								<?php if (($leftbar_accounts_loan_issue ?? 1) == 0) { ?> 
+								<?php if (($leftbar_accounts_loan_issue ?? 1) == 0) { ?>
 									<li>
 										<a href="edit_accounts_loan_issue"><i class='icon-wallet'></i>Loan Issue</a>
 									</li>
@@ -654,23 +730,28 @@ if (!empty($getUser) && is_array($getUser)) {
 						</div>
 					</li>
 				<?php  } ?>
-				<!-- <?php #if ($loan_track_module == 0) { ?>
+				<!-- <?php #if ($loan_track_module == 0) { 
+						?>
 					<li class="sidebar-dropdown">
 						<a href="javascript:void(0)">
 							<i class='icon-target'></i>
 							<span class="menu-text">Loan Track</span>
 						</a>
-						<div class="sidebar-submenu" <?php # if ($current_module == 'loan_track') echo 'style="display:block" '; ?>>
+						<div class="sidebar-submenu" <?php # if ($current_module == 'loan_track') echo 'style="display:block" '; 
+														?>>
 							<ul>
-								<?php #if ($loan_track == 0) { ?>
+								<?php #if ($loan_track == 0) { 
+								?>
 									<li>
 										<a href="loan_track"><i class='icon-target'></i>Loan Track</a>
 									</li>
-								<?php # } ?>
+								<?php # } 
+								?>
 							</ul>
 						</div>
 					</li>
-				<?php # } ?> -->
+				<?php # } 
+				?> -->
 				<?php if (($leftbar_reportmodule ?? 1) == 0) { ?>
 					<li class="sidebar-dropdown ">
 						<a href="javascript:void(0)">
@@ -680,262 +761,264 @@ if (!empty($getUser) && is_array($getUser)) {
 						<div class="sidebar-submenu">
 							<ul>
 								<?php if (($leftbar_work_report_module ?? 1) == 0) { ?>
-								<li class="sidebar-dropdown-2">
-									<a href="javascript:void(0)"><i class="icon-briefcase"></i><span class="menu-text">Work Reports</span></a>
+									<li class="sidebar-dropdown-2">
+										<a href="javascript:void(0)"><i class="icon-briefcase"></i><span class="menu-text">Work Reports</span></a>
 
-									<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
-										<ul>
-											<?php if (($leftbar_request_report ?? 1) == 0) { ?>
-												<li>
-													<a href="request_report"><i class='icon-area-graph'></i>Request</a>
-												</li>
-											<?php  } ?>
+										<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
+											<ul>
+												<?php if (($leftbar_request_report ?? 1) == 0) { ?>
+													<li>
+														<a href="request_report"><i class='icon-area-graph'></i>Request</a>
+													</li>
+												<?php  } ?>
 
-											<?php if (($leftbar_verification_report ?? 1) == 0) { ?>
-												<li>
-													<a href="verification_report"><i class='icon-area-graph'></i>Verification</a>
-												</li>
-											<?php  } ?>
+												<?php if (($leftbar_verification_report ?? 1) == 0) { ?>
+													<li>
+														<a href="verification_report"><i class='icon-area-graph'></i>Verification</a>
+													</li>
+												<?php  } ?>
 
-											<?php if (($leftbar_approval_report ?? 1) == 0) { ?>
-												<li>
-													<a href="approval_report"><i class='icon-area-graph'></i>Approval</a>
-												</li>
-											<?php  } ?>
+												<?php if (($leftbar_approval_report ?? 1) == 0) { ?>
+													<li>
+														<a href="approval_report"><i class='icon-area-graph'></i>Approval</a>
+													</li>
+												<?php  } ?>
 
-											<?php if (($leftbar_cancel_revoke_report ?? 1) == 0) { ?>
-												<li>
-													<a href="cancel_revoke_report"><i class='icon-area-graph'></i>Cancel / Revoke</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_loan_issue_report ?? 1) == 0) { ?>
-												<li>
-													<a href="loan_issue_report"><i class='icon-area-graph'></i>Loan Issue</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_collection_report ?? 1) == 0) { ?>
-												<li>
-													<a href="collection_report"><i class='icon-area-graph'></i>Collection</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_in_closed_report ?? 1) == 0) { ?>
-												<li>
-													<a href="in_closed_report"><i class='icon-area-graph'></i>In Closed</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_closed_report ?? 1) == 0) { ?>
-												<li>
-													<a href="closed_report"><i class='icon-area-graph'></i>Closed</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_due_list_report ?? 1) == 0) { ?>
-												<li>
-													<a href="due_list_report"><i class='icon-area-graph'></i>Due List</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_noc_handover_report ?? 1) == 0) { ?>
-												<li>
-													<a href="noc_handover_report"><i class='icon-area-graph'></i>NOC Handover</a>
-												</li>
-											<?php  } ?>
-										</ul>
-									</div>
-								</li>
+												<?php if (($leftbar_cancel_revoke_report ?? 1) == 0) { ?>
+													<li>
+														<a href="cancel_revoke_report"><i class='icon-area-graph'></i>Cancel / Revoke</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_loan_issue_report ?? 1) == 0) { ?>
+													<li>
+														<a href="loan_issue_report"><i class='icon-area-graph'></i>Loan Issue</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_collection_report ?? 1) == 0) { ?>
+													<li>
+														<a href="collection_report"><i class='icon-area-graph'></i>Collection</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_in_closed_report ?? 1) == 0) { ?>
+													<li>
+														<a href="in_closed_report"><i class='icon-area-graph'></i>In Closed</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_closed_report ?? 1) == 0) { ?>
+													<li>
+														<a href="closed_report"><i class='icon-area-graph'></i>Closed</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_due_list_report ?? 1) == 0) { ?>
+													<li>
+														<a href="due_list_report"><i class='icon-area-graph'></i>Due List</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_noc_handover_report ?? 1) == 0) { ?>
+													<li>
+														<a href="noc_handover_report"><i class='icon-area-graph'></i>NOC Handover</a>
+													</li>
+												<?php  } ?>
+											</ul>
+										</div>
+									</li>
 								<?php  } ?>
 								<?php if (($leftbar_monitor_report_module ?? 1) == 0) { ?>
-								<li class="sidebar-dropdown-2">
-									<a href="javascript:void(0)"><i class="icon-monitor"></i><span class="menu-text">Monitor Reports</span></a>
+									<li class="sidebar-dropdown-2">
+										<a href="javascript:void(0)"><i class="icon-monitor"></i><span class="menu-text">Monitor Reports</span></a>
 
-									<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
-										<ul>
-											<?php if (($leftbar_promotion_activity_report ?? 1) == 0) { ?>
-												<li>
-													<a href="promotion_activity_report"><i class='icon-area-graph'></i>Promotion Activity </a>
-												</li>
-											<?php  } ?> 
+										<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
+											<ul>
+												<?php if (($leftbar_promotion_activity_report ?? 1) == 0) { ?>
+													<li>
+														<a href="promotion_activity_report"><i class='icon-area-graph'></i>Promotion Activity </a>
+													</li>
+												<?php  } ?>
 
-											<?php if (($leftbar_events_report ?? 1) == 0) { ?>
-												<li>
-													<a href="events_report"><i class='icon-area-graph'></i>Events Activity</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_confirmation_followup_report ?? 1) == 0) { ?>
-												<li>
-													<a href="confirmation_followup_report"><i class='icon-area-graph'></i>Confirmation Follow Up</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_commitment_report ?? 1) == 0) { ?>
-												<li>
-													<!-- name changes commitment_report to Due Followup Activity -->
-													<a href="commitment_report"><i class='icon-area-graph'></i>Due Followup Activity</a>  
-												</li>
-											<?php  } ?> 
-											<!-- <?php #if (($work_count_report ?? 1) == 0) { ?>
+												<?php if (($leftbar_events_report ?? 1) == 0) { ?>
+													<li>
+														<a href="events_report"><i class='icon-area-graph'></i>Events Activity</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_confirmation_followup_report ?? 1) == 0) { ?>
+													<li>
+														<a href="confirmation_followup_report"><i class='icon-area-graph'></i>Confirmation Follow Up</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_commitment_report ?? 1) == 0) { ?>
+													<li>
+														<!-- name changes commitment_report to Due Followup Activity -->
+														<a href="commitment_report"><i class='icon-area-graph'></i>Due Followup Activity</a>
+													</li>
+												<?php  } ?>
+												<!-- <?php #if (($work_count_report ?? 1) == 0) { 
+														?>
 												<li>
 													<a href="work_count_report"><i class='icon-area-graph'></i>Work Count</a>
 												</li>
-											<?php  #} ?>  -->
-											<?php if (($leftbar_concern_report ?? 1)  == 0) { ?>
-												<li>
-													<a href="concern_report"><i class='icon-area-graph'></i>Concern</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_loan_track ?? 1) == 0) { ?>
-												<li>
-													<a href="loan_track"><i class='icon-target'></i>Loan Track</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_customer_status_report ?? 1) == 0) { ?>
-												<li>
-												<!-- name changes customer_status_report to Collection Status -->
-													<a href="customer_status_report"><i class='icon-area-graph'></i>Collection Status</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_due_followup_customer_count_report ?? 1) == 0) { ?>
-												<li>
-													<!-- name changes due_followup_customer_count_report to Followup Summary to Due Summary to Back Office Summary-->
-													<a href="due_followup_customer_count_report"><i class='icon-area-graph'></i>Back Office Summary</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_location_track_report ?? 1) == 0) { ?>
-												<li>
-													<a href="location_track_report"><i class='icon-area-graph'></i>Location Track</a>
-												</li>
-											<?php  } ?>
-										</ul>
-									</div>
-								</li>
+											<?php  #} 
+											?>  -->
+												<?php if (($leftbar_concern_report ?? 1)  == 0) { ?>
+													<li>
+														<a href="concern_report"><i class='icon-area-graph'></i>Concern</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_loan_track ?? 1) == 0) { ?>
+													<li>
+														<a href="loan_track"><i class='icon-target'></i>Loan Track</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_customer_status_report ?? 1) == 0) { ?>
+													<li>
+														<!-- name changes customer_status_report to Collection Status -->
+														<a href="customer_status_report"><i class='icon-area-graph'></i>Collection Status</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_due_followup_customer_count_report ?? 1) == 0) { ?>
+													<li>
+														<!-- name changes due_followup_customer_count_report to Followup Summary to Due Summary to Back Office Summary-->
+														<a href="due_followup_customer_count_report"><i class='icon-area-graph'></i>Back Office Summary</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_location_track_report ?? 1) == 0) { ?>
+													<li>
+														<a href="location_track_report"><i class='icon-area-graph'></i>Location Track</a>
+													</li>
+												<?php  } ?>
+											</ul>
+										</div>
+									</li>
 								<?php } ?>
 								<?php if (($leftbar_count_report_module ?? 1) == 0) { ?>
-								<li class="sidebar-dropdown-2">
-									<a href="javascript:void(0)"><i class="icon-layers"></i><span class="menu-text">Count Reports</span></a>
+									<li class="sidebar-dropdown-2">
+										<a href="javascript:void(0)"><i class="icon-layers"></i><span class="menu-text">Count Reports</span></a>
 
-									<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
-										<ul>
-											<?php if (($leftbar_request_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="request_count_report"><i class='icon-area-graph'></i>Request Count</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_verification_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="verification_count_report"><i class='icon-area-graph'></i>Verification Count</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_approval_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="approval_count_report"><i class='icon-area-graph'></i>Approval Count</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_loan_issue_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="loan_issued_count_report"><i class='icon-area-graph'></i>Loan Issued Count</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_promotion_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="promotion_count_report"><i class='icon-area-graph'></i>Promotion Count</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_confirmation_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="confirmation_count_report"><i class='icon-area-graph'></i>Confirmation Count</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_due_followup_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="duefollowup_count_report"><i class='icon-area-graph'></i>Due Followup Count</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_back_office_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="back_office_count_report"><i class='icon-area-graph'></i>Back Office Count</a>
-												</li>
-											<?php  } ?>
-										</ul>
-									</div>
-								</li>
+										<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
+											<ul>
+												<?php if (($leftbar_request_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="request_count_report"><i class='icon-area-graph'></i>Request Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_verification_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="verification_count_report"><i class='icon-area-graph'></i>Verification Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_approval_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="approval_count_report"><i class='icon-area-graph'></i>Approval Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_loan_issue_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="loan_issued_count_report"><i class='icon-area-graph'></i>Loan Issued Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_promotion_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="promotion_count_report"><i class='icon-area-graph'></i>Promotion Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_confirmation_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="confirmation_count_report"><i class='icon-area-graph'></i>Confirmation Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_due_followup_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="duefollowup_count_report"><i class='icon-area-graph'></i>Due Followup Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_back_office_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="back_office_count_report"><i class='icon-area-graph'></i>Back Office Count</a>
+													</li>
+												<?php  } ?>
+											</ul>
+										</div>
+									</li>
 								<?php } ?>
 								<?php if (($leftbar_analysis_report_module ?? 1) == 0) { ?>
-								<li class="sidebar-dropdown-2">
-									<a href="javascript:void(0)"><i class="icon-layers"></i><span class="menu-text">Analysis Reports</span></a>
+									<li class="sidebar-dropdown-2">
+										<a href="javascript:void(0)"><i class="icon-layers"></i><span class="menu-text">Analysis Reports</span></a>
 
-									<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
-										<ul>
-											<?php if (($leftbar_principal_interest_report ?? 1) == 0) { ?>
-												<li>
-													<a href="principal_interest_report"><i class='icon-area-graph'></i>Principal / Interest</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_balance_report ?? 1) == 0) { ?>
-												<li>
-													<a href="balance_report"><i class='icon-area-graph'></i>Balance</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_area_loan_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="area_loan_count_report"><i class='icon-area-graph'></i>Area Loan Count</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_no_due_pay_report ?? 1) == 0) { ?>
-												<li>
-													<a href="no_due_pay_report"><i class='icon-area-graph'></i>No Due Pay</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_branch_request_count_report ?? 1) == 0) { ?>
-												<li>
-													<a href="branch_request_count_report"><i class='icon-area-graph'></i>Branch Request Count</a>
-												</li>
-											<?php  } ?>
-										</ul>
-									</div>
-								</li>
+										<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
+											<ul>
+												<?php if (($leftbar_principal_interest_report ?? 1) == 0) { ?>
+													<li>
+														<a href="principal_interest_report"><i class='icon-area-graph'></i>Principal / Interest</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_balance_report ?? 1) == 0) { ?>
+													<li>
+														<a href="balance_report"><i class='icon-area-graph'></i>Balance</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_area_loan_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="area_loan_count_report"><i class='icon-area-graph'></i>Area Loan Count</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_no_due_pay_report ?? 1) == 0) { ?>
+													<li>
+														<a href="no_due_pay_report"><i class='icon-area-graph'></i>No Due Pay</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_branch_request_count_report ?? 1) == 0) { ?>
+													<li>
+														<a href="branch_request_count_report"><i class='icon-area-graph'></i>Branch Request Count</a>
+													</li>
+												<?php  } ?>
+											</ul>
+										</div>
+									</li>
 								<?php } ?>
 								<?php if (($leftbar_accounts_report_module ?? 1) == 0) { ?>
-								<li class="sidebar-dropdown-2">
-									<a href="javascript:void(0)"><i class="icon-domain"></i><span class="menu-text">Accounts Reports</span></a>
+									<li class="sidebar-dropdown-2">
+										<a href="javascript:void(0)"><i class="icon-domain"></i><span class="menu-text">Accounts Reports</span></a>
 
-									<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
-										<ul>
-											<?php if (($leftbar_agent_report ?? 1) == 0) { ?>
-												<li>
-													<a href="agent_report"><i class='icon-area-graph'></i>Agent</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_other_trans_report ?? 1) == 0) { ?>
-												<li>
-													<a href="other_transaction_report"><i class='icon-area-graph'></i>Other Transaction</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_day_end_report ?? 1) == 0) { ?>
-												<li>
-													<a href="day_end_report"><i class='icon-area-graph'></i>Day End</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_cash_tally_activity_report ?? 1) == 0) { ?>
-												<li>
-													<a href="cash_tally_activity_report"><i class='icon-area-graph'></i>Cash Tally Activity</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_partners_report ?? 1) == 0) { ?>
-												<li>
-													<a href="partners_report"><i class='icon-area-graph'></i>Partners</a>
-												</li>
-											<?php  } ?>
-											<?php if (($leftbar_cleared_report ?? 1) == 0) { ?>
-												<li>
-													<a href="cleared_report"><i class='icon-area-graph'></i>Cleared</a>
-												</li>
-											<?php  } ?> 
-											<?php if (($leftbar_outstanding_report ?? 1) == 0) { ?>
-												<li>
-													<a href="outstanding_report"><i class='icon-area-graph'></i>Outstanding</a>
-												</li>
-											<?php  } ?> 										
-										</ul>
-									</div>
-								</li>
-								<?php } ?>                
+										<div class="sidebar-submenu-2" style="display:none; margin-left: 25px;">
+											<ul>
+												<?php if (($leftbar_agent_report ?? 1) == 0) { ?>
+													<li>
+														<a href="agent_report"><i class='icon-area-graph'></i>Agent</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_other_trans_report ?? 1) == 0) { ?>
+													<li>
+														<a href="other_transaction_report"><i class='icon-area-graph'></i>Other Transaction</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_day_end_report ?? 1) == 0) { ?>
+													<li>
+														<a href="day_end_report"><i class='icon-area-graph'></i>Day End</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_cash_tally_activity_report ?? 1) == 0) { ?>
+													<li>
+														<a href="cash_tally_activity_report"><i class='icon-area-graph'></i>Cash Tally Activity</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_partners_report ?? 1) == 0) { ?>
+													<li>
+														<a href="partners_report"><i class='icon-area-graph'></i>Partners</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_cleared_report ?? 1) == 0) { ?>
+													<li>
+														<a href="cleared_report"><i class='icon-area-graph'></i>Cleared</a>
+													</li>
+												<?php  } ?>
+												<?php if (($leftbar_outstanding_report ?? 1) == 0) { ?>
+													<li>
+														<a href="outstanding_report"><i class='icon-area-graph'></i>Outstanding</a>
+													</li>
+												<?php  } ?>
+											</ul>
+										</div>
+									</li>
+								<?php } ?>
 							</ul>
 						</div>
 					</li>
@@ -972,7 +1055,7 @@ if (!empty($getUser) && is_array($getUser)) {
 									<li>
 										<a href="intrest_closed_report"><i class='icon-area-graph'></i>Closed</a>
 									</li>
-								<?php  } ?>                
+								<?php  } ?>
 							</ul>
 						</div>
 					</li>
@@ -994,40 +1077,45 @@ if (!empty($getUser) && is_array($getUser)) {
 						</div>
 					</li>
 				<?php  } ?>
-				<!-- <?php if (($bulk_upload_module ?? 1) == 0) { ?>
+				<!-- <?php #if (($leftbar_bulk_upload_module ?? 1) == 0) { 
+						?>
 					<li class="sidebar-dropdown">
 						<a href="javascript:void(0)">
 							<i class='icon-upload-cloud'></i>
 							<span class="menu-text">Bulk Upload</span>
 						</a>
-						<div class="sidebar-submenu" <?php # if ($current_module == 'bulk_upload') echo 'style="display:block" '; ?>>
+						<div class="sidebar-submenu" <?php #if ($current_module == 'bulk_upload') echo 'style="display:block" '; 
+														?>>
 							<ul>
-								<?php  #if (($leftbar_bulk_upload ?? 1) == 0) { ?>
+								<?php #if (($leftbar_bulk_upload ?? 1) == 0) { 
+								?>
 									<li>
 										<a href="bulk_upload"><i class='icon-upload-cloud'></i>Bulk Upload</a>
+									</li>
+								<?php  #} 
+								?>
+							</ul>
+						</div>
+					</li>
+				<?php  #} 
+				?> -->
+
+				<?php if (($leftbar_sms_module ?? 1) == 0) { ?>
+					<li class="sidebar-dropdown">
+						<a href="javascript:void(0)">
+							<i class='icon-mail'></i>
+							<span class="menu-text">SMS</span>
+						</a>
+						<div class="sidebar-submenu" <?php if ($current_module == 'sms_generation') echo 'style="display:block" '; ?>>
+							<ul>
+								<?php if (($leftbar_sms_generation ?? 1) == 0) { ?>
+									<li>
+										<a href="sms_generation"><i class="icon-message"></i>SMS Generation</a>
 									</li>
 								<?php  } ?>
 							</ul>
 						</div>
 					</li>
-				<?php  #} ?> 
-				-->
-				<?php  if (($leftbar_sms_module ?? 1) == 0) { ?>
-				<li class="sidebar-dropdown">
-					<a href="javascript:void(0)">
-						<i class='icon-mail'></i>
-						<span class="menu-text">SMS</span>
-					</a>
-					<div class="sidebar-submenu" <?php if ($current_module == 'sms_generation') echo 'style="display:block" '; ?>>
-						<ul>
-						<?php if (($leftbar_sms_generation ?? 1) == 0) { ?>
-							<li>
-								<a href="sms_generation"><i class="icon-message"></i>SMS Generation</a>
-							</li>
-						<?php  } ?>
-						</ul>
-					</div>
-				</li>
 				<?php } ?>
 
 			</ul>

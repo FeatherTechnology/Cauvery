@@ -15,9 +15,7 @@ else{
     $other_address           = null;
 }
 
-$insert_qry = '';
-
-$relation_dob            = $_POST['relation_dob'];
+$relation_dob            = ($_POST['relation_dob'] !='') ? $_POST['relation_dob'] : '0000-00-00';
 $relation_age            = $_POST['relation_age'];
 $relation_live_deceased  = $_POST['relation_live_deceased'];
 $relation_aadhar         = preg_replace('/\s+/', '', $_POST['relation_aadhar']);
@@ -46,7 +44,7 @@ elseif($update){
 }
 
 echo json_encode($result);
+
 // Close the database connection
 $connect = null;
-
 ?>

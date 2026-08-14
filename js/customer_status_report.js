@@ -401,8 +401,6 @@ function odReportCount(search_date, type, selected_user, map_name, loan_category
             try {
                 const parsed = JSON.parse(res);
 
-                console.log(parsed);
-
                 if (!parsed.data || parsed.data.length === 0) {
                     $('#od_table thead').html("<tr><th colspan='10'>No data found for the selected filters</th></tr>");
                     $('#od_table').DataTable().clear().draw();

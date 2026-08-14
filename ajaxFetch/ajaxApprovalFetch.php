@@ -6,7 +6,13 @@ include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
 $login_user_type = $_SESSION['role'] ?? 0;
+
 $area_list = getUserAreaList($connect, 'Sector');
+$where = [];
+$params = [];
+$branch   = $_POST['branch'] ?? [];
+$sector   = $_POST['sector'] ?? [];
+$loan_cat = $_POST['loan_cat'] ?? [];
 
 
 if ($userid != 1) {
@@ -84,6 +90,35 @@ if (!($userid == 1)) {
     $query .= " AND v.area IN ($area_list) and v.loan_category IN ($app_loan_cat)"; //show only moved to Approval list and Approve the verification.
 }
 
+/* Branch Filter */
+if (!empty($branch)) {
+    $branch = array_map('intval', $branch);
+
+    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
+    $params = array_merge($params, $branch);
+}
+
+/* Sector Filter */
+if (!empty($sector)) {
+    $sector = array_map('intval', $sector);
+
+    $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+    $params = array_merge($params, $sector);
+}
+
+/* Loan Category Filter */
+if (!empty($loan_cat)) {
+    $loan_cat = array_map('intval', $loan_cat);
+
+    $where[] = "v.loan_category IN (" . implode(',', array_fill(0, count($loan_cat), '?')) . ")";
+    $params = array_merge($params, $loan_cat);
+}
+
+/* Mapping restriction */
+if (!empty($where)) {
+    $query .= " AND " . implode(" AND ", $where);
+}
+
 /* ---------------- SEARCH ---------------- */
 if (!empty($_POST['search'])) {
     $search = $_POST['search'];
@@ -120,13 +155,13 @@ if ($_POST['length'] != -1) {
 
 /* ---------------- EXECUTE MAIN QUERY ---------------- */
 $stmt = $connect->prepare($query . $limit);
-$stmt->execute();
+$stmt->execute($params);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt->closeCursor();
 
 /* ---------------- COUNT FILTERED ---------------- */
 $stmt = $connect->prepare($query);
-$stmt->execute();
+$stmt->execute($params);
 $recordsFiltered = $stmt->rowCount();
 $stmt->closeCursor();
 

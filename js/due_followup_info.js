@@ -38,6 +38,8 @@ $(document).ready(function () {
         initLoanSection();
     }
 
+    ///Documentation 
+
 });   ////////Document Ready End
 
 $(function () {
@@ -71,7 +73,6 @@ $(function () {
         }
         ],
     });
-
 });
 
 function customerProfileFunc() {
@@ -161,10 +162,10 @@ function getCustomerLoanCounts() {
             $('#cus_loan_count').val(response['loan_count'])
             $('#cus_frst_loanDate').val(response['first_loan'])
             $('#cus_travel_cmpy').val(response['travel'])
-            $('#cus_exist_type').val(response['existing_type'])
+            // $('#cus_exist_type').val(response['existing_type'])
         },
         error: function () {
-            $('#cus_exist_type').val('Renewal');
+            // $('#cus_exist_type').val('Renewal');
         }
     })
 }
@@ -570,7 +571,7 @@ function feedbackList() {
 
 //////////////////////////////////////////////////// Documentation  Start////////////////////////////////////////
 
-//Signed Doc List Reset
+//Sign Info List
 function resetsigninfoList() {
     let req_id = $('#req_id').val();
     $.ajax({
@@ -760,7 +761,6 @@ function getLoaninfo(loan_category) {
                     var loan_amt = parseInt(amt) - parseInt(advance);
 
                     if (amt <= parseInt(response['loan_limit'])) {
-                        print_r(loan_limit, response['loan_limit']);
                         if (loan_amt != NaN) {
                             $('#loan_amt').val(loan_amt.toFixed(0));
                         }
@@ -1095,5 +1095,3 @@ function schemeCalAjax(scheme_id) {
         $('#maturity_month').val('');
     }
 }
-
-/////////////////////////////////////////////////////////// Loan Calculation Functions End ////////////////////////////////////////////////////////////////////////////

@@ -385,6 +385,10 @@ if (isset($getuserdetails['download_access'])) {
 				<?php include "include/templates/promotion_activity.php" ?>
 			<?php } else ?>
 
+			<?php if ($current_page == 'repromotion_activity') { ?>
+				<?php include "include/templates/repromotion_activity.php" ?>
+			<?php } else ?>
+
 			<!-- Due Follow up -->
 			<?php if ($current_page == 'edit_due_followup') { ?>
 				<?php include "include/templates/edit_due_followup.php" ?>
@@ -601,7 +605,7 @@ if (isset($getuserdetails['download_access'])) {
 			<?php if ($current_page == 'duefollowup_count_report') { ?>
 				<?php include "include/templates/duefollowup_count_report.php" ?>
 			<?php } else ?>
-			
+
 			<!-- Back Office Count report -->
 			<?php if ($current_page == 'back_office_count_report') { ?>
 				<?php include "include/templates/back_office_count_report.php" ?>

@@ -6,6 +6,8 @@ $userid = $_SESSION["userid"] ?? '';
 
 $where = [];
 $params = [];
+$branch   = $_POST['branch'] ?? [];
+$sector   = $_POST['sector'] ?? [];
 
 /* =========================================================
    USER ACCESS
@@ -43,6 +45,15 @@ if ($userid != 1) {
     if (!isset($accessMap[$accessType])) {
         echo json_encode([]);
         exit;
+    }
+    if ($accessType == 3 && !empty($sector)) {
+        $condition =  "STRAIGHT_JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = ac.area_id
+                       STRAIGHT_JOIN area_duefollowup_mapping adfm ON adfm.map_id = adfma.duefollowup_map_id";
+    } else if ($accessType == 1  && !empty($sector)) {
+        $condition =  "JOIN area_group_mapping_area agma ON agma.area_id = ac.area_id
+                       JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id";
+    } else {
+        $condition = "";
     }
 
     [$source, $table, $mapCol, $selCol, $filterCol] = $accessMap[$accessType];
@@ -97,7 +108,39 @@ if (!empty($search)) {
         $params[] = "%$search%";
     }
 }
+/* Branch Filter */
+if (!empty($branch)) {
+    $branch = array_map('intval', $branch);
 
+    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
+    $params = array_merge($params, $branch);
+}
+
+/* Sector / Region / Zone Filter */
+if (!empty($sector)) {
+
+    $sector = array_map('intval', $sector);
+    switch ($accessType) {
+        // Sector
+        case 1:
+            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        // Region
+        case 2:
+            $where[] = "alm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        // Zone
+        case 3:
+            $where[] = "adfm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        default:
+            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+    }
+
+
+    $params = array_merge($params, $sector);
+}
 /* =========================================================
    WHERE
 ========================================================= */
@@ -193,7 +236,7 @@ JOIN area_line_mapping alm
 
 JOIN branch_creation bc
     ON alm.branch_id = bc.branch_id
-
+$condition
 LEFT JOIN noc n
     ON ii.req_id = n.req_id
 
@@ -232,6 +275,7 @@ FROM (
     JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
     JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
     JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+    $condition
     JOIN branch_creation bc ON alm.branch_id = bc.branch_id
 
     WHERE
@@ -276,11 +320,9 @@ foreach ($result as $row) {
     if (in_array(21, $statuses) || in_array(22, $statuses)) {
 
         $noc_status = 'NOC';
-
     } elseif (in_array(23, $statuses)) {
 
-        $noc_status = $row['pending_receive'] ? 'Pending' : 'Completed';
-
+        $noc_status = $row['pending_receive'] ? 'In-Receive' : 'Received';
     } else {
         $noc_status = '';
     }
@@ -305,7 +347,7 @@ foreach ($result as $row) {
     }
 
     // For status 22 or 23 → show Summary + Letter
-    if (in_array(22, $statuses) || (in_array(23, $statuses) && $noc_status == 'Pending')) {
+    if (in_array(22, $statuses) || (in_array(23, $statuses) && $noc_status == 'In-Receive')) {
 
         $action .= "
             <a href='noc&cusidupd={$row['cus_id']}'>
@@ -347,4 +389,3 @@ echo json_encode([
 
 // Close the database connection
 $connect = null;
-?>

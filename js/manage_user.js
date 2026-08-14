@@ -48,7 +48,7 @@ const groupMultiselect = new Choices('#group1', {
 
 const vergroupMultiselect = new Choices('#ver_group_id', {
     removeItemButton: true,
-    noChoicesText: 'Select Group Name',
+    noChoicesText: 'Select Sector Name',
     allowHTML: true
 });
 
@@ -64,9 +64,15 @@ const promotionAccess = new Choices('#pro_aty_access', {
     allowHTML: true
 });
 
+const repromotionAccess = new Choices('#repro_aty_access', {
+    removeItemButton: true,
+    noChoicesText: 'Select Repromotion Activity',
+    allowHTML: true
+});
+
 const dueFollowupLines = new Choices('#due_follup_lines', {
     removeItemButton: true,
-    noChoicesText: 'Select Due Followup Lines',
+    noChoicesText: 'Select Zone Lines',
     allowHTML: true
 });
 
@@ -122,7 +128,7 @@ $(document).ready(function () {
         groupMultiselect.clearStore();
 
         $('#branch_id_upd, #line_id_upd, #group_id_upd').val('');
-        
+
         var role = $('#role').val();
         var role_type = $('#role_type').val();
         getRoleTypeBasedDetails(role, role_type)
@@ -170,6 +176,7 @@ $(document).ready(function () {
         getLineDropdown(branch_id);
         getdueFollupLineDropdown(branch_id);
     });
+
     $('#bank_access').change(function () {
         var bank_access = bankAccessMultiselect.getValue();
         var bank_details = '';
@@ -203,7 +210,7 @@ $(document).ready(function () {
         $('#bank_details').val(sortedStr);
     });
 
- $('#noc_replace, #doctrackmodule').on('change', function () {
+    $('#noc_replace, #doctrackmodule').on('change', function () {
         if ($(this).is(':checked')) {
             $('#doc_replace_remove_access').prop('disabled', false);
         } else {
@@ -211,6 +218,7 @@ $(document).ready(function () {
             $('#doc_replace_remove_access').val(''); // Optional: clear selected values
         }
     });
+
     $('#updatemodule').on('change', function () {
         cpEditAccess.removeActiveItems(); // Optional: clear selected values
         cpEditAccess.disable();
@@ -226,10 +234,10 @@ $(document).ready(function () {
             cpEditAccess.disable();
         }
     });
-    
-        $('#update_cp_edit_access').change(function () {
 
- let values = cpEditAccess.getValue(true); // ["1","2"]
+    $('#update_cp_edit_access').change(function () {
+
+        let values = cpEditAccess.getValue(true); // ["1","2"]
 
         // If Overall (2) is selected with other options
         if (values.includes('2') && values.length > 1) {
@@ -251,10 +259,12 @@ $(document).ready(function () {
 
             values = cpEditAccess.getValue(true);
         }
-                $('#update_cp_edit_access_id').val(
+
+        $('#update_cp_edit_access_id').val(
             values.sort((a, b) => a - b).join(',')
         );
     });
+
     $('#update_documentation').on('change', function () {
         if ($(this).is(':checked')) {
             $('#update_doc_edit_access').prop('disabled', false);
@@ -527,38 +537,84 @@ $(document).ready(function () {
     });
 
     $('#promotion_activity').click(function () {
-        var promotion_activity_screen = document.querySelector('#promotion_activity');
-        if (promotion_activity_screen.checked) {
+        if ($(this).is(':checked')) {
+
             $('.promotion_activity_div').show();
+
         } else {
+
             $('.promotion_activity_div').hide();
+
+            // Clear Promotion Activity
+            promotionAccess.removeActiveItems();
+            $('#pro_aty_access_id').val('');
+
+            // Hide Promotion validation
+            $('#proCheck').hide();
+        }
+
+        // Clear Action Access ONLY if both are unchecked
+        if (
+            !$('#promotion_activity').is(':checked') &&
+            !$('#repromotion_activity').is(':checked')
+        ) {
+            $('#promotion_activity_action_access').val('');
+            $('.actionAccessCheck').hide();
         }
     });
-   
-	$('#submit_manage_user').click(function (event) {
-		event.preventDefault(); // Stop default submit; we'll submit programmatically after validation
 
-		if (validation()) {
-			let confirmAction = confirm("Are you sure you want to submit Manage user ?");
-			if (confirmAction) {
-				// Ensure the submit button name/value is posted so PHP sees $_POST['submit_manage_user']
-				if (!document.querySelector('input[name="submit_manage_user"]')) {
-					const hiddenSubmit = document.createElement('input');
-					hiddenSubmit.type = 'hidden';
-					hiddenSubmit.name = 'submit_manage_user';
-					hiddenSubmit.value = 'Submit';
-					document.getElementById('manage_user_form').appendChild(hiddenSubmit);
-				}
 
-				const formEl = document.getElementById('manage_user_form');
-				const submitBtn = document.getElementById('submit_manage_user');
-				if (formEl.requestSubmit) {
-					formEl.requestSubmit(submitBtn);
-				} else {
-					formEl.submit();
-				}
-			}
-		}else { 
+    $('#repromotion_activity').click(function () {
+        if ($(this).is(':checked')) {
+
+            $('.repromotion_activity_div').show();
+
+        } else {
+
+            $('.repromotion_activity_div').hide();
+
+            // Clear Re-Promotion Activity
+            repromotionAccess.removeActiveItems();
+            $('#repro_aty_access_id').val('');
+
+            // Hide Re-Promotion validation
+            $('#reproCheck').hide();
+        }
+
+        // Clear Action Access ONLY if both are unchecked
+        if (
+            !$('#promotion_activity').is(':checked') &&
+            !$('#repromotion_activity').is(':checked')
+        ) {
+            $('#promotion_activity_action_access').val('');
+            $('.actionAccessCheck').hide();
+        }
+    });
+
+    $('#submit_manage_user').click(function (event) {
+        event.preventDefault(); // Stop default submit; we'll submit programmatically after validation
+
+        if (validation()) {
+            let confirmAction = confirm("Are you sure you want to submit Manage user ?");
+            if (confirmAction) {
+                // Ensure the submit button name/value is posted so PHP sees $_POST['submit_manage_user']
+                if (!document.querySelector('input[name="submit_manage_user"]')) {
+                    const hiddenSubmit = document.createElement('input');
+                    hiddenSubmit.type = 'hidden';
+                    hiddenSubmit.name = 'submit_manage_user';
+                    hiddenSubmit.value = 'Submit';
+                    document.getElementById('manage_user_form').appendChild(hiddenSubmit);
+                }
+
+                const formEl = document.getElementById('manage_user_form');
+                const submitBtn = document.getElementById('submit_manage_user');
+                if (formEl.requestSubmit) {
+                    formEl.requestSubmit(submitBtn);
+                } else {
+                    formEl.submit();
+                }
+            }
+        } else {
             scrollToFirstError('#manage_user_form');
         }
 	});
@@ -586,7 +642,8 @@ $(function () {
 
     var user_id_upd = $('#user_id_upd').val();
     getBankName();
-     if ($('#noc_replace').is(':checked')) {
+
+    if ($('#noc_replace').is(':checked')) {
         $('#doc_replace_remove_access').prop('disabled', false);
     } else {
         $('#doc_replace_remove_access').prop('disabled', true);
@@ -599,6 +656,7 @@ $(function () {
         $('#update_doc_edit_access').prop('disabled', true);
         $('#update_doc_edit_access').val(''); // Optional: clear selected values
     }
+
     if (user_id_upd > 0) {
         var role_upd = $('#role_upd').val();
         var role_type_upd = $('#role_type_upd').val();
@@ -626,11 +684,12 @@ $(function () {
         }
 
         getGroupDropdown('group1', 'group_id_upd', branch_id_upd);
-       
+
         getLineDropdown(branch_id_upd);
         getdueFollupLineDropdown(branch_id_upd);
         getBankDetails();
         getProAccess();
+        getReProAccess();
 
         var update_screen = document.querySelector('#update');
         if (update_screen.checked) {
@@ -641,12 +700,10 @@ $(function () {
                 selectedValues.forEach(value => {
                     cpEditAccess.setChoiceByValue(value.trim());
                 });
-
-                } else {
+            } else {
                 cpEditAccess.disable();
             }
-
-            } else {
+        } else {
             cpEditAccess.disable();
         }
 
@@ -654,16 +711,16 @@ $(function () {
         if (request_screen.checked) {
             getAgentDropdown(company_id_upd);
             $('.agent_div').show()
-        }else{
+        } else {
             $('.agent_div').hide()
         }
 
         var verification_screen = document.querySelector('#verification');
         if (verification_screen.checked) {
             getLoanCatDropdown('#ver_loan_cat_upd', verificationloanCatMultiselect);
-             getGroupDropdown('ver_group_id', 'ver_group_id_upd', branch_id_upd);
+            getGroupDropdown('ver_group_id', 'ver_group_id_upd', branch_id_upd);
             $('.ver_loancat_div').show()
-        }else{
+        } else {
             verificationloanCatMultiselect.clearStore();
             vergroupMultiselect.clearStore();
             $('.ver_loancat_div').hide()
@@ -673,7 +730,7 @@ $(function () {
         if (approval_screen.checked) {
             getLoanCatDropdown('#app_loan_cat_upd', approvalloanCatMultiselect);
             $('.app_loancat_div').show()
-        }else{
+        } else {
             approvalloanCatMultiselect.clearStore();
             $('.app_loancat_div').hide()
         }
@@ -682,7 +739,7 @@ $(function () {
         if (acknowledgement_screen.checked) {
             getLoanCatDropdown('#ack_loan_cat_upd', acknowledgementloanCatMultiselect);
             $('.ack_loancat_div').show()
-        }else{
+        } else {
             acknowledgementloanCatMultiselect.clearStore();
             $('.ack_loancat_div').hide()
         }
@@ -690,13 +747,19 @@ $(function () {
         var promotionActivity_screen = document.querySelector('#promotion_activity');
         if (promotionActivity_screen.checked) {
             $('.promotion_activity_div').show()
-        }else{
+        } else {
             $('.promotion_activity_div').hide()
+        }
+        var repromotionActivity_screen = document.querySelector('#repromotion_activity');
+        if (repromotionActivity_screen.checked) {
+            $('.repromotion_activity_div').show()
+        } else {
+            $('.repromotion_activity_div').hide()
         }
         var promotionActivity_screen = document.querySelector('#bank_clearance');
         if (promotionActivity_screen.checked) {
             $('.bnk_clr_upl_acc_div').show()
-        }else{
+        } else {
             $('.bnk_clr_upl_acc_div').hide()
         }
 
@@ -748,7 +811,8 @@ $(function () {
         if (approvalmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.approval-checkbox"); checkbox(checkboxesToEnable, approvalmodule); }
         if (acknowledgementmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.acknowledgement-checkbox"); checkbox(checkboxesToEnable, acknowledgementmodule); }
         if (loanissuemodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.loan_issue-checkbox"); checkbox(checkboxesToEnable, loanissuemodule); }
- if (doctrackmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.doctrack-checkbox"); var doctrackmodule = document.querySelector('#doctrackmodule'); checkbox(checkboxesToEnable, doctrackmodule); }        if (collectionmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.collection-checkbox"); checkbox(checkboxesToEnable, collectionmodule); }
+        if (doctrackmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.doctrack-checkbox"); var doctrackmodule = document.querySelector('#doctrackmodule'); checkbox(checkboxesToEnable, doctrackmodule); }
+        if (collectionmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.collection-checkbox"); checkbox(checkboxesToEnable, collectionmodule); }
         if (closedmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.closed-checkbox"); checkbox(checkboxesToEnable, closedmodule); }
         if (nocmodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.noc-checkbox"); checkbox(checkboxesToEnable, nocmodule); }
         if (updatemodule.checked) { const checkboxesToEnable = document.querySelectorAll("input.update-checkbox"); checkbox(checkboxesToEnable, updatemodule); }
@@ -780,7 +844,7 @@ function getStaffTypeDropdown() {
         dataType: 'json',
         success: function (response) {
 
-            var len = response.length;  
+            var len = response.length;
             $("#role_type").empty();
             $("#role_type").append("<option value=''>Select Role Type</option>");
             for (var i = 0; i < len; i++) {
@@ -1039,7 +1103,7 @@ function getLoanCatDropdown(updId, multipleSelectID) {
     })
 }
 
-//get Region Dropdown
+//get Line Dropdown
 function getLineDropdown(branch_id) {
     var line_id_upd = $('#line_id_upd').val().split(',');
     $.ajax({
@@ -1076,7 +1140,7 @@ function getLineDropdown(branch_id) {
 // linedropdown in duefollowup
 function getdueFollupLineDropdown(branch_id) {
     var dueFollowUp_upd = $('#due_followup_lines_upd').val().split(',');
-    
+
     $.ajax({
         url: 'manageUser/getDueFollowUpLineName.php',
         data: { branch_id },
@@ -1222,15 +1286,15 @@ function getProAccess() {
     const valueToLabelMap = {
         '1': 'Renewal',
         '2': 'New ',
-        '3': 'Repromotion', 
-        '4': 'Events', 
-        '5': 'Re-active' 
+        '4': 'Events',
+        '5': 'Re-active',
+        '6': 'Enquiry'
     };
     promotionAccess.clearStore();
 
     let items = [];
 
-    $.each(valueToLabelMap, function(val, label) {
+    $.each(valueToLabelMap, function (val, label) {
         let selected = '';
 
         if (promotion_access_upd.includes(val)) {
@@ -1238,15 +1302,44 @@ function getProAccess() {
         }
 
         items.push({
-            value: val,  
+            value: val,
             label: label,
-            selected: selected 
+            selected: selected
         });
     });
     promotionAccess.setChoices(items);
     promotionAccess.init();
 }
 
+//Get Repromotion Access List
+function getReProAccess() {
+    var repromotion_access_upd = $('#repromotion_access_upd').val().split(',');
+
+    const valueToLabelMap = {
+        '1': 'Repromotion',
+        '2': 'Waiting List ',
+        '3': 'Block List',
+    };
+    repromotionAccess.clearStore();
+
+    let items = [];
+
+    $.each(valueToLabelMap, function (val, label) {
+        let selected = '';
+
+        if (repromotion_access_upd.includes(val)) {
+            selected = 'selected';
+        }
+
+        items.push({
+            value: val,
+            label: label,
+            selected: selected
+        });
+    });
+    repromotionAccess.setChoices(items);
+    repromotionAccess.init();
+}
 //Screen Mapping
 //modules checkbox events
 function checkbox(checkboxesToEnable, module) {
@@ -1263,15 +1356,15 @@ function checkbox(checkboxesToEnable, module) {
 }
 
 // for taking selected values from multiselect to hidden input field. so that it can be passed as comma imploded string
-function multipleSelectSort(instanceId, storeId){
+function multipleSelectSort(instanceId, storeId) {
     const screenList = instanceId.getValue();
     const screenSortedStr = screenList
         .map(item => (item && item.value !== undefined ? String(item.value) : ''))
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
         .join(',');
 
-    $(storeId).val(screenSortedStr); 
-    
+    $(storeId).val(screenSortedStr);
+
     return screenSortedStr ? screenSortedStr.split(',').length : 0;
 }
 
@@ -1312,14 +1405,12 @@ function validation() {
         intrest_collection_report: { line: true },
 
         /* ---------------- GROUP ONLY ---------------- */
-        request: { group: true },
-        request_list_access: { group: true },
 
         cancel_revoke_report: { group: true },
         request_report: { group: true },
         verification_report: { group: true },
         approval_report: { group: true },
-        
+
         /* ---------------- BOTH REQUIRED ---------------- */
         verification: { group: true, cusSummary: true },
         approval: { group: true, cusSummary: true },
@@ -1332,7 +1423,7 @@ function validation() {
     };
 
 
-   $('.screen-validations:checked').each(function () {
+    $('.screen-validations:checked').each(function () {
         let id = this.id;
 
         if (screenCategoryMap[id]) {
@@ -1350,7 +1441,7 @@ function validation() {
         if (nocMapping === '1') requireGroup = true;
         if (nocMapping === '2') requireLine = true;
         if (nocMapping === '3') requireFollowup = true;
- }
+    }
     let reqCheck = $('#request').is(':checked');
     let reqScreensChecked = $('#request_list_access').is(':checked');
     let reqMapping = $('#req_mapping_access').val();
@@ -1373,16 +1464,16 @@ function validation() {
         $('#requestCheck').hide();
         $('#reqCheck').hide();
     }
-
     let promotionChecked = $('#promotion_activity').is(':checked');
+    let repromotionChecked = $('#repromotion_activity').is(':checked');
     let promotionMapping = $('#promotion_activity_mapping_access').val();
 
-    if (promotionChecked) {
+    if (promotionChecked || repromotionChecked) {
         if (promotionMapping === '1') requireGroup = true;
         if (promotionMapping === '2') requireLine = true;
         if (promotionMapping === '3') requireFollowup = true;
 
-    } 
+    }
 
     let groupSort = multipleSelectSort(groupMultiselect, '#group');
     if (requireGroup && groupSort == 0) {
@@ -1407,7 +1498,7 @@ function validation() {
     if (
         // Followup required by screen / mapping
         (requireFollowup && followupSort == 0)
-        
+
         // Checkbox checked but no lines selected
         || (confFollowupChecked && followupSort == 0)
 
@@ -1419,7 +1510,7 @@ function validation() {
     } else {
         $('.duefollowupCheck').hide();
     }
-    
+
     let cusSummary = $('#cus_summary_access').val();
     if (requireCusSummaryAccess && cusSummary == '') {
         $('#cusSummaryAccessCheck').show();
@@ -1429,59 +1520,103 @@ function validation() {
     }
 
     let varLoanCatchecked = $('#verification').is(':checked');
-    if(varLoanCatchecked){
+    if (varLoanCatchecked) {
         let varLoanCat = multipleSelectSort(verificationloanCatMultiselect, '#ver_loan_cat');
-        if (varLoanCat == 0) {  
-            $('#ver_loan_catCheck').show(); 
+        if (varLoanCat == 0) {
+            $('#ver_loan_catCheck').show();
             validation = false;
-        } else { 
-            $('#ver_loan_catCheck').hide(); 
+        } else {
+            $('#ver_loan_catCheck').hide();
         }
     }
 
     let appLoanCatchecked = $('#approval').is(':checked');
-    if(appLoanCatchecked){
+    if (appLoanCatchecked) {
         let appLoanCat = multipleSelectSort(approvalloanCatMultiselect, '#app_loan_cat');
-        if (appLoanCat == 0) {  
-            $('#app_loan_catCheck').show(); 
+        if (appLoanCat == 0) {
+            $('#app_loan_catCheck').show();
             validation = false;
-        } else { 
-            $('#app_loan_catCheck').hide(); 
+        } else {
+            $('#app_loan_catCheck').hide();
         }
     }
 
     let ackLoanCatchecked = $('#acknowledgement').is(':checked');
-    if(ackLoanCatchecked){
+    if (ackLoanCatchecked) {
         let ackLoanCat = multipleSelectSort(acknowledgementloanCatMultiselect, '#ack_loan_cat');
-        if (ackLoanCat == 0) {  
-            $('#ack_loan_catCheck').show(); 
+        if (ackLoanCat == 0) {
+            $('#ack_loan_catCheck').show();
             validation = false;
-        } else { 
-            $('#ack_loan_catCheck').hide(); 
+        } else {
+            $('#ack_loan_catCheck').hide();
         }
     }
 
-    var isPromotionChecked = $('#promotion_activity').is(':checked');
-    if(isPromotionChecked){
-        let proAtyAccessIdSort = multipleSelectSort(promotionAccess, '#pro_aty_access_id');
-        if (proAtyAccessIdSort == 0) {  
-            $('#proCheck').show();
-            validation = false; 
-        } else { 
-            $('#proCheck').hide(); 
-        }  
+    var isPromotionChecked = $("#promotion_activity").is(":checked");
+    var isRePromotionChecked = $("#repromotion_activity").is(":checked");
+
+    // Promotion Activity Validation
+    if (isPromotionChecked) {
+        let proAtyAccessIdSort = multipleSelectSort(
+            promotionAccess,
+            "#pro_aty_access_id"
+        );
+
+        if (proAtyAccessIdSort == 0) {
+            $("#proCheck").show();
+            validation = false;
+        } else {
+            $("#proCheck").hide();
+        }
     }
+
+    // Re-Promotion Activity Validation
+    if (isRePromotionChecked) {
+        let reproAtyAccessIdSort = multipleSelectSort(
+            repromotionAccess,
+            "#repro_aty_access_id"
+        );
+
+        if (reproAtyAccessIdSort == 0) {
+            $("#reproCheck").show();
+            validation = false;
+        } else {
+            $("#reproCheck").hide();
+        }
+    }
+
+    // Common Action Access Validation
+    if (isPromotionChecked || isRePromotionChecked) {
+
+        if ($("#promotion_activity_action_access").val() == "") {
+            $(".actionAccessCheck").show();
+            validation = false;
+        } else {
+            $(".actionAccessCheck").hide();
+        }
+
+    } else {
+        // Neither Promotion nor Re-Promotion is selected
+        $(".actionAccessCheck").hide();
+    }
+
+    $("#promotion_activity_action_access").on("change", function () {
+        if ($(this).val() != "") {
+            $(".actionAccessCheck").hide();
+        }
+    });
+
     var isbankClearanceChecked = $('#bank_clearance').is(':checked');
-    if(isbankClearanceChecked){
-    var bnk_clr_upl_acc = $('#bnk_clr_upl_acc').val();
-        if (bnk_clr_upl_acc == '') {  
+    if (isbankClearanceChecked) {
+        var bnk_clr_upl_acc = $('#bnk_clr_upl_acc').val();
+        if (bnk_clr_upl_acc == '') {
             $('.bankclearanceuploadCheck').show();
-            validation = false; 
-        } else { 
-            $('.bankclearanceuploadCheck').hide(); 
-        }  
+            validation = false;
+        } else {
+            $('.bankclearanceuploadCheck').hide();
+        }
     }
-  
+
     var nocmodule = document.querySelector('#nocmodule');
     let nocChecked = $('#noc, #noc_handover').is(':checked');
     var noc_mapping_access = $('#noc_mapping_access').val();
@@ -1494,7 +1629,7 @@ function validation() {
         $('#handoverCheck').show();
         validation = false;
 
-    } else if(!nocChecked && noc_mapping_access !=''){
+    } else if (!nocChecked && noc_mapping_access != '') {
         $('#nocCheck').show();
         validation = false;
     }
@@ -1572,8 +1707,8 @@ function validation() {
     if (pass != cnf_pass) {
         $('#passworkCheck').show();
         validation = false;
-    } else { 
-        $('#passworkCheck').hide(); 
+    } else {
+        $('#passworkCheck').hide();
     }
 
     var branch_id = $('#branch_id').val();
@@ -1608,13 +1743,13 @@ function validation() {
 
     var update = document.querySelector('#update'); //Customer Profile.
     if (!update.checked) {
-    $('#update_cp_edit_access_id').val('');
-    } else{
+        $('#update_cp_edit_access_id').val('');
+    } else {
         let cp_edit_screen = cpEditAccess.getValue();
-         if(cp_edit_screen.length == 0){
+        if (cp_edit_screen.length == 0) {
             $('.cpEditScreenCheck').show();
             validation = false;
-        }else{
+        } else {
             $('.cpEditScreenCheck').hide();
         }
     }
@@ -1622,25 +1757,25 @@ function validation() {
     var updateDoc = document.querySelector('#update_documentation'); //Documentation.
     if (!updateDoc.checked) {
         $('#update_doc_edit_access').val('');
-    } else{
-          let docEditAccess = $('#update_doc_edit_access').val();
-         if(docEditAccess == '0'){
+    } else {
+        let docEditAccess = $('#update_doc_edit_access').val();
+        if (docEditAccess == '0') {
             $('.updateScreenCheck').show();
             validation = false;
-        }else{
+        } else {
             $('.updateScreenCheck').hide();
         }
     }
 
-var docReplace = document.querySelector('#noc_replace'); //Documentation.
+    var docReplace = document.querySelector('#noc_replace'); //Documentation.
     if (!docReplace.checked) {
         $('#doc_replace_remove_access').val('');
-    } else{
+    } else {
         let docReplaceAccess = $('#doc_replace_remove_access').val();
-         if(docReplaceAccess == '0'){
+        if (docReplaceAccess == '0') {
             $('.removeAccessCheck').show();
             validation = false;
-        }else{
+        } else {
             $('.removeAccessCheck').hide();
         }
     }
@@ -1649,17 +1784,17 @@ var docReplace = document.querySelector('#noc_replace'); //Documentation.
     var reportmodule = document.querySelector('#reportmodule');
     var report_access = $('#report_access').val();
     var reportmoduleChecked = $('#reportmodule').is(':checked');
-    
+
     //Hand cash balance sheet validation
     let hcbs = $('#hand_cash_balance_sheet').is(':checked');
 
-    if(reportmoduleChecked) {
+    if (reportmoduleChecked) {
         // Count how many main reports are selected
         let mainReportsChecked = $('.report-checkbox:checked').length;
 
-        if(mainReportsChecked === 0) {
+        if (mainReportsChecked === 0) {
             // None selected, show error
-            $('.select_report_module').show(); 
+            $('.select_report_module').show();
             validation = false;
         } else {
             // At least one selected, hide error
@@ -1690,23 +1825,23 @@ var docReplace = document.querySelector('#noc_replace'); //Documentation.
         validation = false;
     } else {
         $('#reportAccessCheck').hide();
-    }    
+    }
 
     // Array of main reports with their sub-checkbox classes and error spans
     var sections = [
-         { main: '#work_report_module', subClass: '.work-checkbox', errorSpan: $('.workreport') },
+        { main: '#work_report_module', subClass: '.work-checkbox', errorSpan: $('.workreport') },
         { main: '#monitor_report_module', subClass: '.monitor-checkbox', errorSpan: $('.monitorreport') },
         { main: '#count_report_module', subClass: '.count-checkbox', errorSpan: $('.countreport') },
         { main: '#analysis_report_module', subClass: '.analysis-checkbox', errorSpan: $('.analysisreport') },
         { main: '#accounts_report_module', subClass: '.acounts-checkbox', errorSpan: $('.accountsreport') }
     ];
 
-    sections.forEach(function(section) {
-        if($(section.main).is(':checked')) {
+    sections.forEach(function (section) {
+        if ($(section.main).is(':checked')) {
             // Check if at least one sub-checkbox is checked
-            if($(section.subClass + ':checked').length === 0) {
+            if ($(section.subClass + ':checked').length === 0) {
                 section.errorSpan.show(); // Show error
-               validation = false;
+                validation = false;
             } else {
                 section.errorSpan.hide(); // Hide error if at least one is selected
             }
@@ -1718,18 +1853,19 @@ var docReplace = document.querySelector('#noc_replace'); //Documentation.
     // validation for Home Access
     var home_access = $('#home_access').val();
     if (home_access == '') {
-    $('#HomeAccessCheck').show();
-    validation = false;
+        $('#HomeAccessCheck').show();
+        validation = false;
     } else {
         $('#HomeAccessCheck').hide();
-    }        
+    }
 
     // validtaion for promotion activity
     var promotion_activity = document.querySelector('#promotion_activity');
+    var repromotion_activity = document.querySelector('#repromotion_activity');
     var promotion_activity_mapping_access = $('#promotion_activity_mapping_access').val();
-
+    var isMappingSelected = promotion_activity_mapping_access != '';
     // Case 1: Checkbox checked but dropdown empty
-    if (promotion_activity.checked && promotion_activity_mapping_access == '') {
+    if ((promotion_activity.checked || repromotion_activity.checked) && promotion_activity_mapping_access == '') {
         $('#proMapCheck').show();
         validation = false;
     } else {
@@ -1737,11 +1873,17 @@ var docReplace = document.querySelector('#noc_replace'); //Documentation.
     }
 
     // Case 2: Dropdown has value but checkbox not checked
-    if (!promotion_activity.checked && promotion_activity_mapping_access != '') {
+    if (isMappingSelected && !isPromotionChecked && !isRePromotionChecked) {
+
         $('.promotionActivityCheck').show();
+        $('.repromotionActivityCheck').show();
+
         validation = false;
+
     } else {
+
         $('.promotionActivityCheck').hide();
+        $('.repromotionActivityCheck').hide();
     }
 
     let checkedCount = $('.screen-validations:checked').length;

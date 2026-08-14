@@ -7,8 +7,13 @@ include('../moneyFormatIndia.php');
 $userid = $_SESSION['userid'] ?? 0;
 $request_list_access = $_SESSION['request_list_access'] ?? 0;
 $login_user_type = $_SESSION['role'] ?? 0;
+
 $where = [];
 $params = [];
+
+$branch   = $_POST['branch'] ?? [];
+$sector   = $_POST['sector'] ?? [];
+$loan_cat = $_POST['loan_cat'] ?? [];
 
 /* =========================================================
    USER ACCESS FILTER
@@ -32,6 +37,13 @@ if ($userid != 1) {
     ];
 
     $accessType = (int)$rowuser['req_mapping_access'];
+    // If access type is 3 (Due Followup Lines), we need to join with area_duefollowup_mapping tables
+    if ($accessType == 3 && !empty($sector)) {
+        $condition =  "STRAIGHT_JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = a.area_id
+                       STRAIGHT_JOIN area_duefollowup_mapping adfm ON adfm.map_id = adfma.duefollowup_map_id";
+    } else {
+        $condition = "";
+    }
 
     if (!isset($accessMap[$accessType])) {
         echo json_encode([]);
@@ -40,7 +52,7 @@ if ($userid != 1) {
 
     [$source, $table, $mapCol, $selCol, $filterCol] = $accessMap[$accessType];
 
-    $ids = array_filter(array_map('intval', explode(',', $rowuser[$source] ?? '')));
+    $ids = array_filter(array_map('intval', explode(',',$rowuser[$source] ?? '')));
 
     if (!$ids) {
         echo json_encode([]);
@@ -67,7 +79,6 @@ if ($userid != 1) {
     $where[] = "$filterCol IN (" . implode(',', array_fill(0, count($mappedIds), '?')) . ")";
     $params = array_merge($params, $mappedIds);
 }
-
 
 /* ---------------- DATATABLE COLUMN MAP ---------------- */
 $column = [
@@ -131,6 +142,48 @@ $query = "SELECT DISTINCT
 if (!($userid == 1 || $request_list_access == 0)) {
     $where[] = "rc.insert_login_id = ?";
     $params[] = $userid;
+}
+
+/* Branch Filter */
+if (!empty($branch)) {
+    $branch = array_map('intval', $branch);
+
+    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
+    $params = array_merge($params, $branch);
+}
+
+/* Sector / Region / Zone Filter */
+if (!empty($sector)) {
+
+    $sector = array_map('intval', $sector);
+    switch ($accessType) {
+        // Sector
+        case 1:
+            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        // Region
+        case 2:
+            $where[] = "alm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        // Zone
+        case 3:
+            $where[] = "adfm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        default:
+            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+    }
+
+
+    $params = array_merge($params, $sector);
+}
+
+/* Loan Category Filter */
+if (!empty($loan_cat)) {
+    $loan_cat = array_map('intval', $loan_cat);
+
+    $where[] = "rc.loan_category IN (" . implode(',', array_fill(0, count($loan_cat), '?')) . ")";
+    $params = array_merge($params, $loan_cat);
 }
 
 /* Mapping restriction */

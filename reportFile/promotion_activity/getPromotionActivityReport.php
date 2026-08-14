@@ -13,21 +13,24 @@ if ((isset($_POST['fromdate']) && $_POST['fromdate'] != '') && isset($_POST['tod
 
 $selectedType = $_POST['selectedType'] ?? '';
 $selectedVal = $_POST['selectedVal'] ?? '';
+$department = $_POST['department'] ?? '';
+$team = $_POST['team'] ?? '';
 
-if(is_array($selectedVal)) {
+if (is_array($selectedVal)) {
     $selectedVal = implode(',', $selectedVal);
 }
 
 if ($selectedType == '2') { //Sector
     $where .= " AND agm.map_id IN ($selectedVal)";
-
 } else if ($selectedType == '3') { //Region
     $where .= " AND alm.map_id IN ($selectedVal)";
-    
 } else if ($selectedType == '4') { //Zone
     $where .= " AND adm.map_id IN ($selectedVal)";
-
-} 
+} else if ($selectedType == '5') { //Department
+    $where .= " AND sc.department = '$department'";
+} else if ($selectedType == '6') { //Team
+    $where .= " AND sc.team = '$team'";
+}
 
 $user_ids = $_POST['user_id'] ?? '';
 $user_ids = preg_replace('/[^0-9,]/', '', $user_ids); // clean
@@ -84,17 +87,30 @@ $query = "SELECT
     cp.cus_status
 FROM 
     new_promotion np
-LEFT JOIN user u ON u.user_id = np.insert_login_id
-LEFT JOIN customer_register cp ON np.cus_id = cp.cus_id
-LEFT JOIN new_cus_promo ncp ON np.cus_id = ncp.cus_id
-LEFT JOIN area_list_creation al ON al.area_id = COALESCE(cp.area, ncp.area)
-LEFT JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
-LEFT JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id  
-LEFT JOIN area_line_mapping_area alma ON alma.area_id = al.area_id  
-LEFT JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-LEFT JOIN area_duefollowup_mapping_area adma ON al.area_id = adma.area_id
-LEFT JOIN area_duefollowup_mapping adm ON adma.duefollowup_map_id = adm.map_id
-LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id  
+LEFT JOIN 
+    user u ON u.user_id = np.insert_login_id
+LEFT JOIN 
+    customer_register cp ON np.cus_id = cp.cus_id
+LEFT JOIN 
+    new_cus_promo ncp ON np.cus_id = ncp.cus_id
+LEFT JOIN 
+    area_list_creation al ON al.area_id = COALESCE(cp.area, ncp.area)
+LEFT JOIN 
+    area_group_mapping_area agma ON agma.area_id = al.area_id
+LEFT JOIN 
+    area_group_mapping agm ON agm.map_id = agma.group_map_id  
+LEFT JOIN 
+    area_line_mapping_area alma ON alma.area_id = al.area_id  
+LEFT JOIN 
+    area_line_mapping alm ON alm.map_id = alma.line_map_id
+LEFT JOIN 
+    area_duefollowup_mapping_area adma ON al.area_id = adma.area_id
+LEFT JOIN 
+    area_duefollowup_mapping adm ON adma.duefollowup_map_id = adm.map_id
+LEFT JOIN 
+    branch_creation bc ON agm.branch_id = bc.branch_id
+JOIN 
+    staff_creation sc ON sc.staff_id = u.staff_id  
 
 WHERE 1 $where";
 
@@ -143,45 +159,44 @@ $result = $statement->fetchAll();
 $data = [];
 $sno = 1;
 $role_arr = [1 => 'Director', 2 => 'Agent', 3 => 'Staff'];
-$originName = [1 => 'Renewal', 2 => 'New Promotion', 3 => 'Repromotion', 4=> 'Re-active']; 
-$promo_type_arr = ['1'=>'Direct','2'=>'Mobile'];
-$statusObj = ['0' => 'Request','1' => 'Verification','2' => 'Approval','3' => 'Acknowledgement','4' => 'Promotion','5' => 'Promotion','6' => 'Promotion','7' => 'Promotion','8' => 'Promotion','9' => 'Promotion','10' => 'Verification','11' => 'Verification','12' => 'Verification','13' => 'Loan Issue','14' => 'Collection','15' => 'Collection','16' => 'Collection','17' => 'Collection','20' => 'Promotion','21' => 'Promotion', '22' => 'Promotion', '23' => 'Promotion', '24' => 'Promotion'];
+$originName = [1 => 'Renewal', 2 => 'New Promotion', 3 => 'Repromotion', 4 => 'Re-active', 5 => 'Waiting List', 6 => 'Block List'];
+$promo_type_arr = ['1' => 'Direct', '2' => 'Mobile'];
+$statusObj = ['0' => 'Request', '1' => 'Verification', '2' => 'Approval', '3' => 'Acknowledgement', '4' => 'Promotion', '5' => 'Promotion', '6' => 'Promotion', '7' => 'Promotion', '8' => 'Promotion', '9' => 'Promotion', '10' => 'Verification', '11' => 'Verification', '12' => 'Verification', '13' => 'Loan Issue', '14' => 'Collection', '15' => 'Collection', '16' => 'Collection', '17' => 'Collection', '20' => 'Promotion', '21' => 'Promotion', '22' => 'Promotion', '23' => 'Promotion', '24' => 'Promotion'];
 
 foreach ($result as $row) {
-        
-    $followup_type =''; 
-    if($row['followup_type'] =='1'){
-        $followup_type = 'Field';  
-    }else if($row['followup_type'] =='2'){
-        $followup_type = 'Telecalling';  
-    }
 
-$action = "<button type='button' class='btn btn-success promo-chart' style='background-color:#0C70AB;' data-id='" . $row['cus_id'] . "' data-toggle='modal' data-target='#promoChartModal'>View</button>";
-$data[] = [
-    $sno++,
-    $row['cus_id'],
-    $row['autogen_cus_id'],
-    $row['customer_name'],
-    date('d-m-Y', strtotime($row['created_date'])),
-    date('h:i:s A', strtotime($row['created_date'])),
-    $row['mobile1'],
-    $row['area_name'],
-    $row['line_name'],
-    $row['group_name'],
-    $row['duefollowup_name'],
-    $row['branch_name'],
-    $promo_type_arr[$row['promo_type']] ?? '',
-    $row['status'],
-    $row['remark'],
-    date('d-m-Y', strtotime($row['follow_date'])),
-    $followup_type,
-    $role_arr[$row['role']] ?? '',
-    $row['fullname'],
-    $originName[$row['orgin_table']] ?? '',
-    $statusObj[$row['cus_status']] ?? '',
-    $action
-];
-}    
+    $followup_type = '';
+    if ($row['followup_type'] == '1') {
+        $followup_type = 'Field';
+    } else if ($row['followup_type'] == '2') {
+        $followup_type = 'Telecalling';
+    }
+    $action = "<button type='button' class='btn btn-success promo-chart' style='background-color:#0C70AB;' data-id='" . $row['cus_id'] . "' data-toggle='modal' data-target='#promoChartModal'>View</button>";
+    $data[] = [
+        $sno++,
+        $row['cus_id'],
+        $row['autogen_cus_id'],
+        $row['customer_name'],
+        date('d-m-Y', strtotime($row['created_date'])),
+        date('h:i:s A', strtotime($row['created_date'])),
+        $row['mobile1'],
+        $row['area_name'],
+        $row['line_name'],
+        $row['group_name'],
+        $row['duefollowup_name'],
+        $row['branch_name'],
+        $promo_type_arr[$row['promo_type']] ?? '',
+        $row['status'],
+        $row['remark'],
+        date('d-m-Y', strtotime($row['follow_date'])),
+        $followup_type,
+        $role_arr[$row['role']] ?? '',
+        $row['fullname'],
+        $originName[$row['orgin_table']] ?? '',
+        $statusObj[$row['cus_status']] ?? '',
+        $action
+    ];
+}
 
 function count_all_data($connect)
 {
