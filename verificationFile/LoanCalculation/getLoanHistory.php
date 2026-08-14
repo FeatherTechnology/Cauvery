@@ -159,8 +159,7 @@ if (isset($_POST["bal_amt"])) {
 
 <script>
     // Declare table variable to store the DataTable instance
-    var loanListTable = $('#loanListTable').DataTable({
-        ...getStateSaveConfig('loanListTable'),
+    $('#loanListTable').DataTable({
         'processing': true,
         'iDisplayLength': 5,
         "lengthMenu": [
@@ -188,9 +187,6 @@ if (isset($_POST["bal_amt"])) {
             searchFunction('loanListTable');
         }
     });
-
-    // Pass the table variable to the initColVisFeatures function
-    initColVisFeatures(loanListTable, 'loanListTable');
 </script>
 
 <?php

@@ -6,6 +6,12 @@ include('..\user_based_area_Ids.php');
 
 $userid = $_SESSION['userid'] ?? 0;
 $login_user_type = $_SESSION['role'] ?? 0;
+$where = [];
+$params = [];
+$branch   = $_POST['branch'] ?? [];
+$sector   = $_POST['sector'] ?? [];
+$loan_cat = $_POST['loan_cat'] ?? [];
+
 $area_list = getUserAreaList($connect, 'Sector');
 
 /* ---------------- DATATABLE COLUMN MAP ---------------- */
@@ -69,6 +75,33 @@ if (!($userid == 1)) {
     $query .= " AND a.area IN ($area_list)"; //show only Approved Verification in Acknowledgement. // 13 Move to Issue. // 14 Move To Collection.
 }
 
+/* Branch Filter */
+if (!empty($branch)) {
+    $branch = array_map('intval', $branch);
+
+    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
+    $params = array_merge($params, $branch);
+}
+
+/* Sector Filter */
+if (!empty($sector)) {
+    $sector = array_map('intval', $sector);
+
+    $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+    $params = array_merge($params, $sector);
+}
+
+/* Loan Category Filter */
+if (!empty($loan_cat)) {
+    $loan_cat = array_map('intval', $loan_cat);
+
+    $where[] = "a.loan_category IN (" . implode(',', array_fill(0, count($loan_cat), '?')) . ")";
+    $params = array_merge($params, $loan_cat);
+}
+
+if (!empty($where)) {
+    $query .= " AND " . implode(" AND ", $where);
+}
 /* ---------------- SEARCH ---------------- */
 if (!empty($_POST['search'])) {
     $search = $_POST['search'];
@@ -105,13 +138,13 @@ if ($_POST['length'] != -1) {
 
 /* ---------------- EXECUTE MAIN QUERY ---------------- */
 $stmt = $connect->prepare($query . $limit);
-$stmt->execute();
+$stmt->execute($params);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt->closeCursor();
 
 /* ---------------- COUNT FILTERED ---------------- */
 $stmt = $connect->prepare($query);
-$stmt->execute();
+$stmt->execute($params);
 $recordsFiltered = $stmt->rowCount();
 $stmt->closeCursor();
 
@@ -192,7 +225,7 @@ foreach ($result as $row) {
         // Always show In Accounts if issue_by = 2
         $sub_array[] = 'In Accounts';
     } else {
-        if (empty($ag_id) || strtolower(trim($ag_id)) == 'null'){ // only check balance amount if request is not on agent
+        if (empty($ag_id)) { // only check balance amount if request is not on agent
             if ($cus_status == '13') {
                 if (isset($loan_issued_db['balance_amount']) && $loan_issued_db['balance_amount'] == '0') {
                     $sub_array[] = "<button class='btn btn-outline-secondary complete_issue' value='$id'><span class='icon-arrow_forward'></span></button>";
@@ -222,7 +255,7 @@ foreach ($result as $row) {
         <div class='dropdown-content'>";
 
         if ($issue_by == 1) { // Only add options if issue_by = 1
-            if ($cus_status == '13' and (empty($ag_id)  || strtolower(trim($ag_id)) == 'null')) {
+            if ($cus_status == '13' and empty($ag_id)) {
                 $action .= "<a href='loan_issue&upd=$id' class='customer_profile' value='$id' > Edit Loan Issue </a>";
             } else if ($cus_status == '14') {
                 $action .= "<a href=''class='iss-remove' data-value='$id' > Remove </a>";

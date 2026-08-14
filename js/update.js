@@ -204,7 +204,7 @@ $(document).ready(function () {
             authorize : $("#authorize").val()
         }
 
-        if (famData.fam_first_name != "" && famData.fam_last_name != "" && famData.relationship != "" && famData.relation_Mobile != "" && famData.relation_Mobile.length === 10 && famData.relation_dob != "" && famData.relation_live_deceased != "") {
+        if (famData.fam_first_name != "" && famData.fam_last_name != "" && famData.relationship != "" && famData.relation_Mobile != "" && famData.relation_Mobile.length === 10 && famData.relation_live_deceased != "") {
             $.ajax({
                 url: 'updateFile/update_family_submit.php',
                 type: 'POST',
@@ -239,15 +239,15 @@ $(document).ready(function () {
         }
         else {
             if (famData.fam_first_name == "") {
-                $('#famfirstNameCheck').show();
+                $('#famFirstnameCheck').show();
             } else {
-                $('#famfirstNameCheck').hide();
+                $('#famFirstnameCheck').hide();
             }
 
             if (famData.fam_last_name == "") {
-                $('#famlastNameCheck').show();
+                $('#famLastnameCheck').show();
             } else {
-                $('#famlastNameCheck').hide();
+                $('#famLastnameCheck').hide();
             }
 
             if (famData.relationship == "") {
@@ -280,11 +280,11 @@ $(document).ready(function () {
                 $('#fammobileCheck').hide();
             }
             
-            if (famData.relation_dob == "") {
-                $("#famdobCheck").show();
-            } else {
-                $("#famdobCheck").hide();
-            }
+            // if (famData.relation_dob == "") {
+            //     $("#famdobCheck").show();
+            // } else {
+            //     $("#famdobCheck").hide();
+            // }
 
             if (famData.relation_live_deceased == "") {
                 $("#famLiveDeceasedCheck").show();
@@ -326,7 +326,10 @@ $(document).ready(function () {
                 else {
                     $('#remark, #address').hide();
                 }
-                $("#famfirstNameCheck, #famlastNameCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
+
+                (result["aadhar"] !='') ? $("#relation_aadhar").prop('readonly', true) : $("#relation_aadhar").prop('readonly', false);
+                
+                $("#famFirstnameCheck, #famLastnameCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
             }
         });
     });
@@ -2197,8 +2200,9 @@ function resetFamInfo() {
         success: function (html) {
             $("#updatedFamTable").html(html);
 
+            $("#relation_aadhar").prop('readonly', false);
             $("#fam_first_name, #fam_last_name, #relationship, #authorize, #other_remark, #other_address, #relation_dob, #relation_age, #relation_live_deceased, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID").val('');
-            $("#famnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
+            $("#famFirstnameCheck, #famLastnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
         }
     });
 }

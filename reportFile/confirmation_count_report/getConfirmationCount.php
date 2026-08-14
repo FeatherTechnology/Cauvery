@@ -16,20 +16,20 @@ $userids = (!empty($user_id_str)) ? "AND insert_login_id IN ($user_id_str)" : ''
 $selectedType = $_POST['selectedType'] ?? '';
 $selectedVal = $_POST['selectedVal'] ?? '';
 
-if(is_array($selectedVal)) {
-    $selectedVal = implode(',', $selectedVal);
-}
+$selectedVal = is_array($selectedVal) ? implode(',', $selectedVal) : $selectedVal;
+
 $loanCatVal = $_POST['loanCatVal'] ?? '';
 
-if(is_array($loanCatVal)) {
+if (is_array($loanCatVal)) {
     $loanCatVal = implode(',', $loanCatVal);
 }
 
-$colname ='';
-$group_order ='alm.line_name';
-
-$joinTable ='';
+$colname = '';
+$group_order = 'alm.line_name';
+$joinTable = '';
+$joinTable1 = '';
 $mapidcondition = '';
+$mapidcondition1 = '';
 $condtn = '';
 
 if ($selectedType == '2') { //Sector
@@ -38,24 +38,27 @@ if ($selectedType == '2') { //Sector
     $joinTable  = "  JOIN area_group_mapping_area agma ON iv.area = agma.area_id 
     JOIN area_group_mapping agm ON agma.group_map_id = agm.map_id";
     $mapidcondition  = "AND agma.group_map_id IN ($selectedVal)";
-
 } else if ($selectedType == '3') { //Region
     $colname = ", alm.line_name AS mapname";
     $group_order = "alm.line_name";
     $joinTable = "  JOIN area_line_mapping_area almar ON iv.area = almar.area_id";
     $mapidcondition = "AND almar.line_map_id IN ($selectedVal)";
-    
 } else if ($selectedType == '4') { //Zone
     $colname = ", adm.duefollowup_name AS mapname";
     $group_order = "adm.duefollowup_name";
-    $joinTable = "  JOIN area_duefollowup_mapping_area adma ON iv.area = adma.area_id 
+    $joinTable = "  JOIN area_duefollowup_mapping_area adma ON iv.area = adma.area_id
     JOIN area_duefollowup_mapping adm ON adma.duefollowup_map_id = adm.map_id";
     $mapidcondition = "AND adma.duefollowup_map_id IN ($selectedVal)";
-} 
-if($selectedType =='2' || $selectedType =='3' || $selectedType =='4'){
-    $condtn  = "AND iv.loan_category IN ($loanCatVal)";
+} elseif ($selectedType == '5' || $selectedType == '6') { // Department / Team
+    $joinTable1 = "JOIN staff_creation sc ON sc.staff_id = u.staff_id";
+
+    $field = ($selectedType == '5') ? 'department' : 'team';
+    $mapidcondition1 = "AND sc.$field = '$selectedVal'";
 }
 
+if ($selectedType == '2' || $selectedType == '3' || $selectedType == '4' || $selectedType == '5' || $selectedType == '6') {
+    $condtn  = "AND iv.loan_category IN ($loanCatVal)";
+}
 
 $data = [];
 $sno = 1;
@@ -63,8 +66,8 @@ $sno = 1;
 $qry = $connect->query("
    SELECT 
         u.fullname,
+        lcc.loan_category_creation_name,
         alm.line_name,
-         lcc.loan_category_creation_name,
         COUNT(DISTINCT cf.req_id) AS total_count,
         SUM(CASE WHEN cf.status = 1 THEN 1 ELSE 0 END) AS completed_count,
         SUM(CASE WHEN cf.status = 2 THEN 1 ELSE 0 END) AS unavailable_count,
@@ -89,9 +92,11 @@ $qry = $connect->query("
     JOIN area_line_mapping_area alma ON al.area_id = alma.area_id
     JOIN area_line_mapping alm ON alma.line_map_id = alm.map_id
     $joinTable
+    $joinTable1
 
     WHERE (DATE(cf.created_date) BETWEEN '$from_date' AND '$to_date')
     $mapidcondition
+    $mapidcondition1
     $condtn
     GROUP BY iv.loan_category, $group_order
     ORDER BY $group_order ASC;
@@ -102,7 +107,7 @@ $results = $qry->fetchAll(PDO::FETCH_ASSOC);
 foreach ($results as $row) {
     $data[] = [
         "sno"                 => $sno++,
-        "fullname"            => ($selectedType =='1') ? $row['fullname'] : $row['mapname'],
+        "fullname"            => ($selectedType == '1' || $selectedType == '5' || $selectedType == '6') ? $row['fullname'] : $row['mapname'],
         "loan_category"       => $row['loan_category_creation_name'],
         "line"                => $row['line_name'],
         "total_count"         => (int)$row['total_count'],

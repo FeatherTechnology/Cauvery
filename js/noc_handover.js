@@ -9,9 +9,24 @@ $(document).ready(function () {
     })
 
     $('#noc_member').change(function () {
-       $('.noc_scan_btn').removeAttr('disabled');
+        $("#hand_type").text('');
+        $('.mem_name, .mem_relation_name').hide();
+        $('#mem_relation_name').empty();
         $('#compare_finger, #ack_fingerprint, #fingerValidation').val('');
+
         var noc_member = parseInt($(this).val());
+
+        if(noc_member == 4){ //Agent
+            $('.mem_name').show();
+            $('#mem_name').val($('#ag_name').val());
+            $('.scan_btn').hide();
+            $('#fingerValidation').val('1');
+        } else{
+            $('#mem_name').val('');
+            $('.scan_btn').show();
+        }
+
+        $('.noc_scan_btn').removeAttr('disabled');
         var cus_id = $('#cusidupd').val();
         var req_id = $('#req_id').val();
 
@@ -27,8 +42,6 @@ $(document).ready(function () {
                     if (noc_member == 2) {
                         //if guarentor show readonly input box
                         $('.mem_name').show();
-                        $('.mem_relation_name').hide();
-                        $('#mem_relation_name').empty();
 
                         $('#mem_id').val(response['guarentor_id'] ?? '');
                         $('#mem_name').val(response['guarentor_name'] ?? '');
@@ -38,11 +51,7 @@ $(document).ready(function () {
                     } else if (noc_member == 3) {
                         //if Family member then show dropdown
                         $('.mem_relation_name').show();
-                        $('.mem_name').hide();
-                        $('#mem_name').val('');
-                        $("#hand_type").text('');
 
-                        $('#mem_relation_name').empty();
                         $('#mem_relation_name').append("<option value=''>Select Member Name</option>")
                         for (var i = 0; i < response['fam_id'].length; i++) {
                             $('#mem_relation_name').append("<option value='" + response['fam_id'][i] + "'>" + response['fam_name'][i] + "</option>")
@@ -58,9 +67,6 @@ $(document).ready(function () {
         } else if (noc_member == 1) {
             //if member is customer then show customer name
             $('.mem_name').show();
-            $('#mem_name').val('');
-            $('.mem_relation_name').hide();
-            $('#mem_relation_name').empty();
 
             var first_name = $("#first_name").val();
             var last_name = $("#last_name").val();
@@ -79,26 +85,8 @@ $(document).ready(function () {
                     showHandText(response.hand ?? '');
                 }
             })
-        } else {
-            $("#hand_type").text('');
-            $('.mem_name').hide();
-            $('#mem_name').val('');
-            $('.mem_relation_name').hide();
-            $('#mem_relation_name').empty();
         }
     });
-
-    $(document).on('click','.noc_scan_btn', function () {
-        var mem_name = $('#mem_relation_name').val() != '' ? $('#mem_relation_name').val() : $('#mem_name').val();
-
-        if (mem_name != '') {
-            getMatchFingerDetails();
-        } else {//If End
-            $('#noc_memberCheck').show();
-        }
-
-    })//Scan button Onclick end
-
 
     $('#mem_relation_name').change(function () {
         var id = $(this).val();
@@ -116,7 +104,18 @@ $(document).ready(function () {
         }).error(function () {
             alert('Guarentor Fingerprint not Registered')
         })
-    })
+    });
+
+    $(document).on('click','.noc_scan_btn', function () {
+        var mem_name = $('#mem_relation_name').val() != '' ? $('#mem_relation_name').val() : $('#mem_name').val();
+
+        if (mem_name != '') {
+            getMatchFingerDetails();
+        } else {//If End
+            $('#noc_memberCheck').show();
+        }
+
+    })//Scan button Onclick end
 
     //Hide mortgage & Endorsement intially.
     $('.mort_proc').hide();
@@ -224,9 +223,20 @@ function OnLoadFunctions() {
             $('#req_id').val(req_id) //assigning to req_id input box for getching noc members
 
             //To get the Signed Document List on Checklist
+            //To get the Signed Document List on Checklist
             var first_name = $("#first_name").val();
             var last_name = $("#last_name").val();
             var cus_name = first_name + " " + last_name;
+
+            let agentName = $(this).closest('tr').find('td:eq(4)').text().trim();
+            $('#ag_name').val(agentName);
+
+            let responsible = $(this).closest('tr').find('td:eq(5)').text().trim();
+            if (responsible != 'Yes') {
+                $('#noc_member option[value="4"]').hide();
+            } else {
+                $('#noc_member option[value="4"]').show();
+            }
 
             // Wrap each AJAX in a promise
             function getSignedDocList() {
@@ -510,8 +520,8 @@ async function validations() {
         $('.noc_memberCheck').hide();
     }
 
-    // Case 2
-    if (noc_member == '3' && mem_relation_name == '') {
+    // Case 2 //4-Agent , 3-Family members
+    if (noc_member != '4' && noc_member == '3' && mem_relation_name == '') {
         $('.mem_relation_nameCheck').show();
         res = false;
     } else {
@@ -519,7 +529,7 @@ async function validations() {
     }
 
     //Case 3
-       if (fingerprint != '1') {
+    if (fingerprint != '1') {
         $('.scanBtnCheck').show();
         res = false;
     } else {
@@ -538,21 +548,27 @@ async function validations() {
 
 function updateNocTable() {
 
-    let formData = new FormData();
-    formData.append('req_id', $('#req_id').val());
-    formData.append('noc_member', $('#noc_member').val());
-
     let noc_member = $('#noc_member').val();
     let mem_name = ''; // Initialize mem_name variable
+
+    let formData = new FormData();
+    formData.append('req_id', $('#req_id').val());
+    formData.append('noc_member', noc_member);
 
     // Determine mem_name based on noc_member value
     if (noc_member === '3') {
         mem_name = $('#mem_relation_name').val();
-    } else if (noc_member === '1' || noc_member === '2') {
+    } else if (noc_member === '1' || noc_member === '2' || noc_member === '4') { //1-Customer, 2-Gurantor, 3-Family Members, 4-Agent.
         mem_name = $('#mem_name').val();
     }
 
+    let cus_sts = '24'; //NOC Handovered
+    if(noc_member ==='4'){
+        cus_sts = '25'; //Agent Handovered
+    }
+
     formData.append('mem_name', mem_name);
+    formData.append('cus_sts', cus_sts);
 
     return $.ajax({
         url: 'nocFile/updateNocHandover.php',

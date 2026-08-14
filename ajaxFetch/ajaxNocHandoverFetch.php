@@ -1,4 +1,6 @@
 <?php
+/* NOC Handover list based loan not customer because each document can receive and handover by different user. so don't use cus_id group by to show NOC Handovered list. */
+
 @session_start();
 
 include "../ajaxconfig.php";
@@ -7,6 +9,9 @@ $userid = $_SESSION["userid"] ?? 0;
 
 $where = [];
 $params = [];
+$branch   = $_POST['branch'] ?? [];
+$sector   = $_POST['sector'] ?? [];
+$loan_cat = $_POST['loan_cat'] ?? [];
 
 /* =========================================================
    USER ACCESS FILTER
@@ -36,9 +41,19 @@ if ($userid != 1) {
         exit;
     }
 
+    if ($accessType == 3 && !empty($sector)) {
+        $condition =  "STRAIGHT_JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = ac.area_id
+                       STRAIGHT_JOIN area_duefollowup_mapping adfm ON adfm.map_id = adfma.duefollowup_map_id";
+    } else if ($accessType == 1  && !empty($sector)) {
+        $condition =  "JOIN area_group_mapping_area agma ON agma.area_id = ac.area_id
+                       JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id";
+    } else {
+        $condition = "";
+    }
+
     [$source, $table, $mapCol, $selCol, $filterCol] = $accessMap[$accessType];
 
-    $ids = array_filter(array_map('intval', explode(',', $rowuser[$source] ?? '')));
+    $ids = array_filter(array_map('intval', explode(',',$rowuser[$source] ?? '')));
 
     if (!$ids) {
         echo json_encode([]);
@@ -91,6 +106,48 @@ if (!empty($search)) {
         $params[] = "%$search%";
     }
 }
+/* Branch Filter */
+if (!empty($branch)) {
+    $branch = array_map('intval', $branch);
+
+    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
+    $params = array_merge($params, $branch);
+}
+
+/* Sector / Region / Zone Filter */
+if (!empty($sector)) {
+
+    $sector = array_map('intval', $sector);
+    switch ($accessType) {
+        // Sector
+        case 1:
+            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        // Region
+        case 2:
+            $where[] = "alm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        // Zone
+        case 3:
+            $where[] = "adfm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+        default:
+            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
+            break;
+    }
+
+
+    $params = array_merge($params, $sector);
+}
+
+/* Loan Category Filter */
+if (!empty($loan_cat)) {
+    $loan_cat = array_map('intval', $loan_cat);
+
+    $where[] = "iv.loan_category IN (" . implode(',', array_fill(0, count($loan_cat), '?')) . ")";
+    $params = array_merge($params, $loan_cat);
+}
+
 
 /* =========================================================
    WHERE
@@ -158,7 +215,7 @@ if ($_POST['length'] != -1) {
 
 $query = "
 SELECT
-    MAX(cs.created_date) AS latest_date,
+    cs.created_date AS latest_date,
     cs.req_id,
     cr.cus_id,
     cr.autogen_cus_id,
@@ -201,13 +258,12 @@ JOIN area_line_mapping alm
 
 JOIN branch_creation bc
     ON alm.branch_id = bc.branch_id
-
+$condition
 JOIN loan_category_creation lcc
     ON lcc.loan_category_creation_id = iv.loan_category
 
 LEFT JOIN noc n
     ON n.req_id = cs.req_id
-    AND n.cus_status = 23
 
 LEFT JOIN user u
     ON u.user_id = n.receive_by
@@ -216,8 +272,6 @@ WHERE
     cs.cus_sts = 23
 
     $whereSql
-    
-GROUP BY ii.cus_id
 
 $orderBy
 
@@ -260,7 +314,7 @@ SELECT COUNT(*) FROM (
 
     JOIN area_line_mapping alm 
         ON alm.map_id = alma.line_map_id
-
+    $condition
     JOIN branch_creation bc
         ON alm.branch_id = bc.branch_id
 
@@ -307,8 +361,8 @@ foreach ($result as $row) {
     $receive_by = $row['receive_by'];
 
     $status = ($receive_status == 0)
-        ? 'Pending'
-        : 'Completed';
+        ? 'In-Receive'
+        : 'Received';
 
     $action = "
     <div class='dropdown'>

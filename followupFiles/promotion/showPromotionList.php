@@ -7,9 +7,10 @@ $follow_up_date = '';
 
 $Obj = new promotionListClass($connect);
 $area_list = $Obj->area_list;
+$actionAccess   = $Obj->actionAccess;
 
 $sub_status = [1 => 'Bronze', 2 => 'Silver', 3 => 'Gold', 4 => 'Platinum', 5 => 'Diamond'];
-$cusstatus = [21 => 'NOC Pending', 22 => 'NOC Completed', 23 => 'NOC Completed', 24 => 'NOC Handovered'];
+$cusstatus = [21 => 'NOC Pending', 22 => 'NOC Completed', 23 => 'NOC Completed', 24 => 'NOC Handovered', 25 => 'Agent Handovered'];
 
 $column = array(
     'cr.cus_reg_id',
@@ -34,9 +35,8 @@ $column = array(
 
 if (isset($_POST['re_active']) && $_POST['re_active'] != "") {
     $re_active = "HAVING CURDATE() >= DATE_ADD(DATE_ADD(LAST_DAY(MAX(created_date)), INTERVAL 1 DAY),INTERVAL 6 MONTH)";
-}
-else{
-    $re_active ="HAVING CURDATE() < DATE_ADD( DATE_ADD(LAST_DAY(MAX(created_date)), INTERVAL 1 DAY),INTERVAL 6 MONTH)";
+} else {
+    $re_active = "HAVING CURDATE() < DATE_ADD( DATE_ADD(LAST_DAY(MAX(created_date)), INTERVAL 1 DAY),INTERVAL 6 MONTH)";
 }
 
 //only closed customers who dont have any loans in current.
@@ -56,19 +56,21 @@ $baseqry = "FROM  customer_register cr
     LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
     LEFT JOIN new_promotion np ON np.cus_id = cs.cus_id AND np.created_date = (SELECT MAX(np1.created_date) FROM new_promotion np1 WHERE np1.cus_id = cs.cus_id)
     LEFT JOIN request_creation rc ON cr.cus_id = rc.cus_id
-    WHERE cr.area_confirm_area IN ($area_list) AND NOT EXISTS ( SELECT 1 FROM closed_status cs2 WHERE cs2.cus_id = cr.cus_id AND cs2.closed_sts IN (2,3)) AND NOT EXISTS ( SELECT 1 FROM request_creation r WHERE r.cus_id = cs.cus_id AND ((r.cus_status IN (4,5,6,7,8,9)) OR r.cus_status <= 20)) ";
+    WHERE cr.area_confirm_area IN ($area_list) AND NOT EXISTS (SELECT 1 FROM closed_status cs2
+    WHERE cs2.cus_id = cr.cus_id AND cs2.id = (SELECT MAX(cs3.id) FROM closed_status cs3 WHERE cs3.cus_id = cr.cus_id) AND cs2.closed_sts IN (2,3)
+) AND NOT EXISTS ( SELECT 1 FROM request_creation r WHERE r.cus_id = cs.cus_id AND r.return_sts != 1 AND ((r.cus_status IN (4,5,6,7,8,9)) OR r.cus_status <= 20)) ";
 
-if($_POST['followUpSts']){
+if ($_POST['followUpSts']) {
     $follow_up_sts = $_POST['followUpSts'];
-    $baseqry .= ($follow_up_sts =='tofollow') ? "AND np.status IS NULL " : "AND TRIM(REPLACE(np.status,' ','')) = '$follow_up_sts' ";
+    $baseqry .= ($follow_up_sts == 'tofollow') ? "AND np.status IS NULL " : "AND TRIM(REPLACE(np.status,' ','')) = '$follow_up_sts' ";
 }
 
-if($_POST['dateType']){
-    $date_type = $_POST['dateType'];//1=Closed date, 2=Followup date.
-    $baseqry .= ($date_type == '1') ? "AND DATE(cs.created_date) BETWEEN '".$_POST['followUpFromDate']."' AND '".$_POST['followUpToDate']."' " : "AND DATE(np.follow_date) BETWEEN '".$_POST['followUpFromDate']."' AND '".$_POST['followUpToDate']."' ";
-}    
+if ($_POST['dateType']) {
+    $date_type = $_POST['dateType']; //1=Closed date, 2=Followup date.
+    $baseqry .= ($date_type == '1') ? "AND DATE(cs.created_date) BETWEEN '" . $_POST['followUpFromDate'] . "' AND '" . $_POST['followUpToDate'] . "' " : "AND DATE(np.follow_date) BETWEEN '" . $_POST['followUpFromDate'] . "' AND '" . $_POST['followUpToDate'] . "' ";
+}
 
-    $baseqry .= ($_POST['followupType']) ? "AND np.followup_type = '". $_POST['followupType'] ."'" : "";   
+$baseqry .= ($_POST['followupType']) ? "AND np.followup_type = '" . $_POST['followupType'] . "'" : "";
 
 $search = '';
 if (isset($_POST['search']) && $_POST['search'] != "") {
@@ -111,16 +113,33 @@ while ($row = $sql->fetch()) {
     $charts = "<div class='dropdown'><button class='btn btn-outline-secondary'><i class='fa'>&#xf107;</i></button><div class='dropdown-content'> <a class='promo-chart' data-id='" . $row['cus_id'] . "' data-toggle='modal' data-target='#promoChartModal'><span>Promotion Chart</span></a><a class='personal-info' data-toggle='modal' data-target='#personalInfoModal' data-cusid='" . $row['cus_id'] . "'><span>Personal Info</span></a><a class='cust-profile' data-reqid='" . $row['req_id'] . "' data-cusid='" . $row['cus_id'] . "'><span>Customer Profile</span></a><a class='customer-sts' data-reqid='" . $row['req_id'] . "' data-cusid='" . $row['cus_id'] . "'><span>Customer Status</span></a><a class='loan-history' data-reqid='" . $row['req_id'] . "' data-cusid='" . $row['cus_id'] . "'><span>Loan History</span></a><a class='doc-history' data-reqid='" . $row['req_id'] . "' data-cusid='" . $row['cus_id'] . "'><span>Document History</span></a></div></div>";
 
     //for intrest or not intrest choice to make
-    $actions = "<div class='dropdown'><button class='btn btn-outline-secondary'><i class='fa'>&#xf107;</i></button><div class='dropdown-content'> <a class='noc-call' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>NOC Call</span></a><a class='intrest' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Interested</span></a><a class='not-intrest' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Not Interested</span></a><a class='un-available' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Unavailable</span></a></div></div>";
+
+
+    $actions =
+        "<div class='dropdown'>
+        <button class='btn btn-outline-secondary'>
+            <i class='fa'>&#xf107;</i>
+        </button>
+        <div class='dropdown-content'>
+            <a class='noc-call' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>NOC Call</span></a>
+            <a class='intrest' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Interested</span></a>
+            <a class='not-intrest' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Not Interested</span></a>
+            <a class='un-available' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Unavailable</span></a>";
+
+    if ($actionAccess == 1) {
+        $actions .= "<a class='add_close' data-toggle='modal' data-target='#addClosedModal' data-id='" . $row['cus_id'] . "'><span>Closed Status</span></a>";
+    }
+
+    $actions .= "</div></div>";
 
     $followupdate = (isset($row['follow_date'])) ? date('d-m-Y', strtotime($row['follow_date'])) : '';
 
-    $followup_type =''; 
-    if($row['followup_type'] =='1'){
-        $followup_type = 'Field';  
-    }else if($row['followup_type'] =='2'){
-        $followup_type = 'Telecalling';  
-    }  
+    $followup_type = '';
+    if ($row['followup_type'] == '1') {
+        $followup_type = 'Field';
+    } else if ($row['followup_type'] == '2') {
+        $followup_type = 'Telecalling';
+    }
 
     $data[] = [
         $sno++,

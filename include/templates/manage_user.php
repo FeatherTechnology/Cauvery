@@ -24,6 +24,7 @@ $report_access = '';
 $home_access = '';
 $cus_summary_access = '';
 $promotion_access = '';
+$repromotion_access = '';
 $promotion_activity_mapping_access = '';
 $mastermodule    = '';
 $company_creation      = '';
@@ -86,6 +87,8 @@ $hand_cash_balance_sheet = '';
 $accounts_loan_issue = '';
 $followupmodule = '';
 $promotion_activity = '';
+$repromotion_activity = '';
+$promotion_activity_action_access = '';
 $loan_followup  = '';
 $conf_followup  = '';
 $due_followup  = '';
@@ -131,9 +134,9 @@ $area_loan_count_report = '';
 // $work_count_report = '';
 $noc_handover_report = '';
 $confirmation_count_report = '';
-$back_office_count_report = '';
 $concern_report  = '';
 $partners_report  = '';
+$back_office_count_report='';
 $location_track_report = '';
 $outstanding_report = '';
 $search_module = '';
@@ -153,7 +156,6 @@ if(isset($_POST['submit_manage_user']) && $_POST['submit_manage_user'] != '')
     if(isset($_POST['id']) && $_POST['id'] >0 && is_numeric($_POST['id'])){		
         $id = $_POST['id']; 	
 		$userObj->updateUser($mysqli,$id, $userid);  
-		// echo die;
     ?>
 	<script>location.href='<?php echo $HOSTPATH;  ?>edit_manage_user&msc=2&sts=<?= $sts ?>';</script>
     <?php	}
@@ -213,6 +215,7 @@ if($idupd>0)
 			$home_access          		     = $getUser['home_access'];
 			$cus_summary_access          		     = $getUser['cus_summary_access'];
 			$promotion_access          		     = $getUser['promotion_access'];
+			$repromotion_access          		     = $getUser['repromotion_access'];
 			$promotion_activity_mapping_access = $getUser['promotion_activity_mapping_access'];
 			$mastermodule          		     = $getUser['mastermodule'];
 			$company_creation          		     = $getUser['company_creation'];
@@ -277,6 +280,8 @@ if($idupd>0)
 			$accounts_loan_issue          		     = $getUser['accounts_loan_issue'];
 			$followupmodule          		     = $getUser['followupmodule'];
 			$promotion_activity = $getUser['promotion_activity'];
+			$repromotion_activity = $getUser['repromotion_activity'];
+			$promotion_activity_action_access = $getUser['promotion_activity_action_access'];
 			$loan_followup = $getUser['loan_followup'];
 			$conf_followup = $getUser['confirmation_followup'];
 			$due_followup = $getUser['due_followup'];
@@ -387,8 +392,8 @@ if($idupd>0)
 		<input type="hidden" class="form-control" value="<?php if(isset($group_id)) echo $group_id; ?>"  id="group_id_upd" name="group_id_upd">
 		<input type="hidden" class="form-control" value="<?php if(isset($bank_details)) echo $bank_details; ?>"  id="bank_details_upd" name="bank_details_upd">
 		<input type="hidden" class="form-control" value="<?php if(isset($promotion_access)) echo $promotion_access; ?>"  id="promotion_access_upd" name="promotion_access_upd">
-		<input type="hidden" class="form-control" value="<?php if(isset($due_followup_lines)) echo $due_followup_lines; ?>"  id="due_followup_lines_upd" 
-		name="due_followup_lines_upd">
+		<input type="hidden" class="form-control" value="<?php if(isset($repromotion_access)) echo $repromotion_access; ?>"  id="repromotion_access_upd" name="repromotion_access_upd">
+		<input type="hidden" class="form-control" value="<?php if(isset($due_followup_lines)) echo $due_followup_lines; ?>"  id="due_followup_lines_upd" name="due_followup_lines_upd">
 		<input type="hidden" class="form-control" value="<?php if(isset($cash_tally_access)) echo $cash_tally_access; ?>"  id="cash_tally_access_upd" name="cash_tally_access_upd">
 
 		<!-- Row start -->
@@ -645,7 +650,7 @@ if($idupd>0)
 													<label for="download_access">No</label>
                                         </div>
                                     </div>	
-									  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
 										<div class="form-group">
 											<label for="home_access">Home Upload Access</label>&nbsp;<span class="text-danger">*</span>
 											<select class="form-control" name="home_access" id="home_access" tabindex="18">
@@ -668,7 +673,19 @@ if($idupd>0)
 											<br>
 											<span class="text-danger" style='display:none' id='cusSummaryAccessCheck'>Please select Customer Summary Access</span>
 										</div>
-									</div>									
+									</div>	
+									<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+										<div class="form-group">
+											<label for="promotion_activity_action_access">Promotion Activity Action Access</label>&nbsp;
+											<select class="form-control" name="promotion_activity_action_access" id="promotion_activity_action_access" tabindex="18">
+												<option value="">Select Action Access</option>
+												<option value="1" <?php if($promotion_activity_action_access == '1') echo 'selected';?> >Yes</option>
+												<option value="2" <?php if($promotion_activity_action_access == '2') echo 'selected';?> >No</option>
+											</select>
+											<br>
+											<span class="text-danger actionAccessCheck" style='display:none'>Please Select Action Access</span>
+										</div>
+									</div>								
 								</div>
 							</div>
 						</div>
@@ -776,6 +793,7 @@ if($idupd>0)
 							<h5>Request</h5>
 						</label>&nbsp;&nbsp; <span class="text-danger" style='display:none' id='requestCheck'>Please Check Request </span>
 					</div>
+					
 					<br>
 					<div class="row">
                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
@@ -800,7 +818,8 @@ if($idupd>0)
 								<label class="custom-control-label" for="request_list_access">All Request List Access</label>
 							</div>
 						</div>
-						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+
+					<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
 							  <div class="custom-control custom-checkbox">
 								<label for="req_mapping_access">Request Mapping Access</label>&nbsp;<span class="text-danger">*</span>
 								<select tabindex="64" type="text" class="form-control request-checkbox screen-validations" id="req_mapping_access" name="req_mapping_access" style="width: 250px;" <?php if($req_mapping_access =='') echo 'disabled'; ?> >
@@ -843,10 +862,10 @@ if($idupd>0)
                         </div>
 						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 ver_loancat_div" style='display:none;'>
                             <div class="form-group">
-								<label for="ver_group_id">Verification Group Name</label>
+								<label for="ver_group_id">Verification Sector Name</label>
 								<input type='hidden' class='form-control' id='ver_group' name='ver_group' >
 								<select tabindex="39" type="text" class="form-control" id="ver_group_id" name="ver_group_id" multiple>
-									<option value="">Select Group Name</option>
+									<option value="">Select Sector Name</option>
 								</select>
                             </div>
                         </div>
@@ -959,9 +978,10 @@ if($idupd>0)
                                 <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($noc_replace==0){ echo'checked'; }} ?> tabindex="52" class="doctrack-checkbox screen-validations" id="noc_replace" name="noc_replace" disabled>&nbsp;&nbsp;
                                 <label class="custom-control-label" for="noc_replace">DOC Replace</label>
                             </div>
-							</div>
+                        </div>
 						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" tabindex="55">
                             <div class="custom-control custom-checkbox">
+								<label for="doc_replace_remove_access">DOC Replace Remove Access</label>&nbsp;<span class="text-danger">*</span>
                                 <select class='form-control' id='doc_replace_remove_access' name='doc_replace_remove_access' style="width: 250px;" disabled>
 									<option value="">Select Remove Access</option>
 									<option value="1" <?php if(isset($doc_replace_remove_access) && $doc_replace_remove_access == '1') echo 'selected'; ?>>Yes</option>
@@ -1083,13 +1103,33 @@ if($idupd>0)
 								<input type='hidden' class='form-control' id='pro_aty_access_id' name='pro_aty_access_id' >
 								<select tabindex="65" type="text" class="form-control" id="pro_aty_access" name="pro_aty_access" multiple>
 									<option value="">Select Promotion Activity</option>
+									<option value="6">Enquiry</option>
 									<option value="1">Renewal</option>
 									<option value="5">Re-active</option>
 									<option value="2">New</option>
-									<option value="3">Repromotion</option>
 									<option value="4">Events</option>
 								</select>
 								<span class="text-danger" style='display:none' id='proCheck'>Please select Promotion Activity Access</span>
+							</div>
+						</div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" value="Yes" <?php if($idupd > 0){ if($repromotion_activity==0){ echo'checked'; }} ?> tabindex="66" class="followup-checkbox screen-validations" id="repromotion_activity" name="repromotion_activity" disabled>&nbsp;&nbsp;
+                                <label class="custom-control-label" for="repromotion_activity">Repromotion Activity</label>&nbsp;&nbsp;
+								<span class='text-danger repromotionActivityCheck' style="display:none">Please Select Repromotion Activity </span> 
+                            </div>
+                        </div>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 repromotion_activity_div" style="display: none;" >
+							<div class="form-group">
+								<label for="repro_aty_access">Repromotion Activity Access</label>&nbsp;<span class="text-danger">*</span>
+								<input type='hidden' class='form-control' id='repro_aty_access_id' name='repro_aty_access_id' >
+								<select tabindex="67" type="text" class="form-control" id="repro_aty_access" name="repro_aty_access" multiple>
+									<option value="">Select Repromotion Activity</option>
+									<option value="1">Repromotion</option>
+									<option value="2">Waiting List</option>
+									<option value="3">Block List</option>
+								</select>
+								<span class="text-danger" style='display:none' id='reproCheck'>Please select Repromotion Activity Access</span>
 							</div>
 						</div>
                         <!-- <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
@@ -1136,6 +1176,7 @@ if($idupd>0)
                                 <label class="custom-control-label" for="update">Customer Profile</label>
                             </div>
                         </div>
+
 						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" tabindex="71">
                             <div class="custom-control custom-checkbox">
 								<input type='hidden' id='update_cp_edit_access_id' name='update_cp_edit_access_id' value='<?php if(isset($update_cp_edit_access)) echo $update_cp_edit_access; ?>'>
@@ -1155,9 +1196,11 @@ if($idupd>0)
                                 <label class="custom-control-label" for="update_documentation">Documentation</label>
                             </div>
                         </div>
+
 						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" tabindex="73">
                             <div class="custom-control custom-checkbox">
-                                 <select class='form-control' name='update_doc_edit_access' id='update_doc_edit_access' style="width: 250px;" disabled>
+								<label for="update_doc_edit_access">DOC Edit Access</label>&nbsp;<span class="text-danger">*</span>
+                                <select class='form-control' name='update_doc_edit_access' id='update_doc_edit_access' style="width: 250px;" disabled>
 									<option value="">Select Documentation Edit Access</option>
 									<option value="1" <?php if(isset($update_doc_edit_access) && $update_doc_edit_access == '1') echo 'selected'; ?>>Yes</option>
 									<option value="2" <?php if(isset($update_doc_edit_access) && $update_doc_edit_access == '2') echo 'selected'; ?>>No</option>
@@ -1166,6 +1209,7 @@ if($idupd>0)
 								<span class='text-danger updateScreenCheck' style="display:none">Please Select Documentation Edit Access</span>
                             </div>
                         </div>
+						
 					</div>
 
 					<hr>
@@ -1253,10 +1297,10 @@ if($idupd>0)
                                 <label class="custom-control-label" for="bank_clearance">Bank Clearance</label>
                             </div>
                         </div>
-						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 bnk_clr_upl_acc_div"  style='display:none'>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 bnk_clr_upl_acc_div"  style='display:none;'>
                             <div class="custom-control custom-checkbox">
                                 <label class="custom-control-label" for="cash_tally">Bank Clearance Upload Access</label>
-                                <select class='form-control' id='bnk_clr_upl_acc' name='bnk_clr_upl_acc' tabindex="81">
+                                <select class='form-control' id='bnk_clr_upl_acc' name='bnk_clr_upl_acc' tabindex="81" style="width:250px;">
 									<option value="">Select Bank Clearance Upload Access</option>
 									<option value="0" <?php if($bnk_clr_upl_acc == '0') echo 'selected'; ?>>Yes</option>
 									<option value="1" <?php if($bnk_clr_upl_acc == '1') echo 'selected'; ?>>No</option>
@@ -1584,7 +1628,6 @@ if($idupd>0)
 									<label class="custom-control-label" for="outstanding_report">Outstanding</label>
 								</div>
 							</div>
-							
 						</div>
 					</div>
 					<hr>

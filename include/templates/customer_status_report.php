@@ -35,20 +35,20 @@
 					<option value='4'>Zone</option>
 				</select>
 
-                <select class="toggle-button hidefield" id='user_type' name='user_type'>
-                    <option value=''>Select User Type</option>
-                    <option value='1'>All</option>
-                    <option value='2'>Active</option>
-                    <option value='3'>In Active</option>
-                </select>
+				<select class="toggle-button hidefield" id='user_type' name='user_type'>
+					<option value=''>Select User Type</option>
+					<option value='1'>All</option>
+					<option value='2'>Active</option>
+					<option value='3'>In Active</option>
+				</select>
 
 				<select class="toggle-button hidefield" id='by_user' name='by_user'>
 					<option value=''>Select User</option>
 				</select>
-						     
-                <select class="form-control hidefield" id="map_name" name="map_name" multiple>
-                    <option value="">Select</option>
-                </select> &nbsp;&nbsp;
+
+				<select class="form-control hidefield" id="map_name" name="map_name" multiple>
+					<option value="">Select</option>
+				</select> &nbsp;&nbsp;
 
 				<select class="form-control" id="loan_category" name="loan_category" multiple>
 					<option value="">Select Loan Category</option>

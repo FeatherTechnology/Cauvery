@@ -1167,7 +1167,8 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 						</div>
 					</div>
 					<!-- KYC info END -->
-					 <!-- Fingerprint Info start-->
+
+					<!-- Fingerprint Info start-->
 					<div class="card">
 						<div class="card-header"> Fingerprint Info </div><span class="text-danger fingerSpan" style="margin-left:25px;display: none;">Please Scan Customer Fingerprint</span>
 						<div class="card-body">
@@ -1181,7 +1182,6 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 						</div>
 					</div>
 					<!-- Fingerprint Info End-->
-
 
 					<!-- ///////////////////////////////////////////////// Customer Summary START ///////////////////////////////////////////////////////////// -->
 					<div class="card">
@@ -2679,9 +2679,10 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 							<span class="text-danger" id="fammobileCheck">Enter Mobile Number</span>
 						</div>
 					</div>
+
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
-							<label for="relation_dob">Date of Birth</label><span class="required">&nbsp;*</span>
+							<label for="relation_dob">Date of Birth</label>
 							<input type="date" class="form-control" id="relation_dob" name="relation_dob" tabindex='8'>
 							<span class="text-danger" id='famdobCheck'>Please Select DOB</span>
 						</div>
@@ -2694,6 +2695,7 @@ $area_topbar = isset($area_name) && $area_name != '' ? $area_name : $area_namefo
 							<span class="text-danger" id="famageCheck">Enter Age</span>
 						</div>
 					</div>
+
 					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 						<div class="form-group">
 							<label class="label" for="relation_live_deceased"> Live Status </label><span class="required">&nbsp;*</span>

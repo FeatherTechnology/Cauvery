@@ -29,6 +29,24 @@ if (isset($_POST['from_date']) && isset($_POST['to_date']) && $_POST['from_date'
     $where = "AND cs.created_date BETWEEN '$from_date' AND '$to_date'";
 }
 
+$branch_name = is_array($_POST['branch'] ?? null)
+    ? implode(',', $_POST['branch'])
+    : '';
+$loan_cat_id = is_array($_POST['loan_category'] ?? null)
+    ? implode(',', $_POST['loan_category'])
+    : '';
+
+if($branch_name !='' && $loan_cat_id !=''){ //Branch & Loan category.
+    $where .= " AND bc.branch_id IN ($branch_name) && lcc.loan_category_creation_id IN ($loan_cat_id)";
+
+} else if($branch_name !='' && $loan_cat_id ==''){ //Branch
+    $where .= " AND bc.branch_id IN ($branch_name)";
+
+} else if($branch_name =='' && $loan_cat_id !=''){ //Loan Category
+    $where .= " AND lcc.loan_category_creation_id IN ($loan_cat_id)";
+
+}
+
 $where .= $user_based;
 
 $closed_sts_arr = [
@@ -112,8 +130,8 @@ $baseQuery = "FROM in_issue ii
 if (isset($_POST['search'])) {
     if ($_POST['search'] != "") {
         $search = $_POST['search'];
-        $baseQuery .= " and (alm.line_name LIKE '%" . $search . "%'OR 
-            agm.group_name LIKE '".$search."%' OR
+        $baseQuery .= " and (agm.group_name LIKE '%" . $search . "%'OR 
+            alm.line_name LIKE '".$search."%' OR
             bc.branch_name LIKE '%" . $search . "%' OR
             ii.loan_id LIKE '%" . $search . "%' OR
             ad.doc_id LIKE '%" . $search . "%' OR
@@ -158,8 +176,8 @@ $countStmt->execute();
 $recordsFiltered = (int) $countStmt->fetchColumn();
 
 $dataQuery = "SELECT 
-        alm.line_name AS line,
         agm.group_name,
+        alm.line_name AS line,
         bc.branch_name,
         ii.loan_id,
         ad.doc_id,

@@ -22,7 +22,7 @@ if (isset($_POST['req_id'])) {
             <th> Document Holder</th>
             <th> Holder Name</th>
             <th> Relationship</th>
-            <th> Document</th>
+            <th> Uploads </th>
             <th> ACTION </th>
         </tr>
     </thead>
@@ -81,7 +81,7 @@ if (isset($_POST['req_id'])) {
                     <?php } else if ($doc_edit_access == 1) { ?>
                         <a class="doc_info_edit" value="<?php echo $row['id']; ?>" data-access="1"> <span class="icon-border_color"></span> </a> &nbsp;
                         <a class="doc_info_delete" value="<?php echo $row['id']; ?>" data-reqid="<?php echo $req_id; ?>"> <span class='icon-trash-2'></span> </a>
-
+                        
                     <?php } ?>
                 </td>
             </tr>

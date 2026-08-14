@@ -10,7 +10,6 @@ function getfamName($connect,$rel_id){
     return $run['famname'];
 }
 ?>
-
 <table class="table custom-table" id='documentTable'>
     <thead>
         <tr>
@@ -18,7 +17,7 @@ function getfamName($connect,$rel_id){
             <th>Document Name</th> 
             <th>Document Type</th> 
             <th>Document Holder</th> 
-            <th>Document</th> 
+            <th>Uploads</th> 
         </tr>
     </thead>
     <tbody>
