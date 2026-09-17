@@ -12,8 +12,50 @@ $(document).ready(function () {
         let res_sts = $("#res_sts").val();
         let comm_sts = $("#comm_sts").val();
         let call_status = $("#call_status").val();
+        let branch_id = $("#branch").val();
+        let line_id = $("#region").val();
+        let followup_id = $("#zone").val();
 
-        OnLoadFunctions(cusSts, comm_date,res_sts, comm_sts, call_status);
+         OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status,branch_id,line_id,followup_id);
+    });
+
+    $(document).on('click', '.personal-info', function (e) {
+        e.preventDefault();
+        let cus_id = $(this).data('cusid');
+        $.post('followupFiles/promotion/getPersonalInfo.php',{cus_id: cus_id},function (html) {
+                $('#personalInfoDiv').html(html);
+            }
+        ).fail(function (xhr, status, error) {
+            console.log("AJAX Error:", error);
+            console.log(xhr.responseText);
+        });   
+     });
+     let branchLoaded = false;
+    let regionLoaded = false;
+    let zoneLoaded = false;
+
+    // Branch
+    $('#branch').on('focus', function () {
+        if (!branchLoaded) {
+            branchLoaded = true;
+            getBranchList();
+        }
+    });
+
+    // Region
+    $('#region').on('focus', function () {
+        if (!regionLoaded) {
+            regionLoaded = true;
+            getLineList();
+        }
+    });
+
+    // Zone
+    $('#zone').on('focus', function () {
+        if (!zoneLoaded) {
+            zoneLoaded = true;
+            getFollowupList();
+        }
     });
 });
 
@@ -27,12 +69,82 @@ $(function () {
     let res_sts = $("#res_sts").val();
     let comm_sts = $("#comm_sts").val();
     let call_status = $("#call_status").val();
+    let branch_id = $("#branch").val();
+    let line_id = $("#region").val();
+    let followup_id = $("#zone").val();
 
     if (cusSts != '') {
-        OnLoadFunctions(cusSts, cummDate ,res_sts ,comm_sts, call_status);
+        OnLoadFunctions(cusSts, cummDate, res_sts, comm_sts, call_status,branch_id,line_id,followup_id);
     }
 });
 
+function getBranchList() {
+    $.ajax({
+        url: 'followupFiles/promotion/getBranchList.php',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function (response) {
+
+        $('#branch').html('<option value="">Select Branch</option>');
+        $.each(response, function(index, value) {
+
+            $('#branch').append(
+                '<option value="' + value.branch_id + '">' +
+                value.branch_name +
+                '</option>'
+            );
+
+        });
+        }
+    });
+   
+}
+
+function getLineList() {
+    $.ajax({
+        url: 'followupFiles/promotion/getLineList.php',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function (response) {
+
+        $('#region').html('<option value="">Select Region</option>');
+        $.each(response, function(index, value) {
+
+            $('#region').append(
+                '<option value="' + value.line_id + '">' +
+                value.line_name +
+                '</option>'
+            );
+
+        });
+        }
+    });
+}
+function getFollowupList() {
+    $.ajax({
+        url: 'followupFiles/promotion/getFollowupList.php',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function (response) {
+
+        $('#zone').html('<option value="">Select Zone</option>');
+
+        $.each(response, function(index, value) {
+
+            $('#zone').append(
+                '<option value="' + value.due_followup_lines_id + '">' +
+                value.duefollowup_name +
+                '</option>'
+            );
+
+        });
+        }
+    });
+
+}
 function warningSwal(title, text) {
     Swal.fire({
         title: title,
@@ -44,19 +156,20 @@ function warningSwal(title, text) {
     });
 }
 
-function OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status) {
-    if (!cusSts) {
+function OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status,branch_id,line_id,followup_id) {
+     if (!cusSts) {
         warningSwal('Warning!', 'Select Customer Status.');
         return;
     }
 
     $('#due_followup_table').DataTable().destroy();
     var table = $('#due_followup_table').DataTable({
-        ...getStateSaveConfig('due_followup_table'),
+        // ...getStateSaveConfig('due_followup_table'),
         "order": [[0, "desc"]],
         "processing": true,
         "displayStart": getDisplayStart('due_followup_table'),
         "serverSide": true,
+        'infoCallback': customDataTableInfo,
         "serverMethod": 'post',
         "ajax": {
             "url": 'followupFiles/dueFollowup/getDueFollowCus.php',
@@ -68,6 +181,9 @@ function OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status) {
                 data.res_sts = res_sts;
                 data.comm_sts = comm_sts;
                 data.call_status = call_status;
+                data.branch_id = branch_id;
+                data.line_id = line_id;
+                data.followup_id = followup_id;
             }
         },
         dom: 'lBfrtip',
@@ -103,13 +219,13 @@ function OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status) {
             paginationFunction('due_followup_table');
         }
     });
-    initColVisFeatures(table, 'due_followup_table');
+    // initColVisFeatures(table, 'due_followup_table');
 }
 
 function enableDateColoring() {
     //for coloring
     $('#due_followup_table tbody tr').not('th').each(function () {
-        let tddate = $(this).find('td:eq(18)').text(); // Get the text content of the 12th td element (Follow date)
+        let tddate = $(this).find('td:eq(15)').text(); // Get the text content of the 12th td element (Follow date)
         let datecorrection = tddate.split("-").reverse().join("-").replaceAll(/\s/g, ''); // Correct the date format
         let values = new Date(datecorrection); // Create a Date object from the corrected date
         values.setHours(0, 0, 0, 0); // Set the time to midnight for accurate date comparison
@@ -122,11 +238,11 @@ function enableDateColoring() {
         if (tddate != '' && values != 'Invalid Date') { // Check if the extracted date and the created Date object are valid
 
             if (values < curDate) { // Compare the extracted date with the current date
-                $(this).find('td:eq(18)').css({ 'background-color': colors.past, 'color': 'white' }); // Apply styling for past dates
+                $(this).find('td:eq(15)').css({ 'background-color': colors.past, 'color': 'white' }); // Apply styling for past dates
             } else if (values > curDate) {
-                $(this).find('td:eq(18)').css({ 'background-color': colors.future, 'color': 'white' }); // Apply styling for future dates
+                $(this).find('td:eq(15)').css({ 'background-color': colors.future, 'color': 'white' }); // Apply styling for future dates
             } else {
-                $(this).find('td:eq(18)').css({ 'background-color': colors.current, 'color': 'white' }); // Apply styling for the current date
+                $(this).find('td:eq(15)').css({ 'background-color': colors.current, 'color': 'white' }); // Apply styling for the current date
             }
         }
     });

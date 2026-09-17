@@ -1491,25 +1491,38 @@ function validation() {
         $('#lineCheck').hide();
     }
 
-    let followupSort = multipleSelectSort(dueFollowupLines, '#due_follup_line_id');
-    let confFollowupChecked = $('#conf_followup').is(':checked');
-    let dueFollowupChecked = $('#due_followup').is(':checked');
+let followupSort = multipleSelectSort(dueFollowupLines, '#due_follup_line_id');
+let confFollowupChecked = $('#conf_followup').is(':checked');
+let dueFollowupChecked = $('#due_followup').is(':checked');
+let dueNilFollowupChecked = $('#due_nil_followup').is(':checked');
 
-    if (
-        // Followup required by screen / mapping
-        (requireFollowup && followupSort == 0)
+// Hide previous validation messages
+$('.duefollowuplineCheck').hide();
+$('.dueFollowupCheck').hide();
+$('.duenilFollowupCheck').hide();
+$('.ecsdueFollowupCheck').hide();
+// 1. Followup / Confirmation requires Zone Lines
+if ( (requireFollowup || confFollowupChecked) && followupSort == 0) {
+    $('.duefollowuplineCheck').show();
+    validation = false;
+}
+// 2. Due Followup checked → Zone Lines required
+else if (dueFollowupChecked && followupSort == 0) {
+    $('.duefollowuplineCheck').show();
+    validation = false;
+}
 
-        // Checkbox checked but no lines selected
-        || (confFollowupChecked && followupSort == 0)
-
-        // Checkbox checked but no lines selected
-        || (dueFollowupChecked && followupSort == 0)
-    ) {
-        $('.duefollowupCheck').show();
-        validation = false;
-    } else {
-        $('.duefollowupCheck').hide();
-    }
+// 3. Due Nil Followup checked → Zone Lines required
+else if (dueNilFollowupChecked && followupSort == 0) {
+    $('.duefollowuplineCheck').show();
+    validation = false;
+}
+// 4. Zone Lines selected → Due Followup OR Due Nil Followup required
+else if ( followupSort > 0 && !dueFollowupChecked && !dueNilFollowupChecked) {
+    $('.dueFollowupCheck').show();
+    $('.duenilFollowupCheck').show();
+    validation = false;
+}
 
     let cusSummary = $('#cus_summary_access').val();
     if (requireCusSummaryAccess && cusSummary == '') {
@@ -1711,13 +1724,13 @@ function validation() {
         $('#passworkCheck').hide();
     }
 
-    var branch_id = $('#branch_id').val();
-    if (branch_id == '') {
-        $('#BranchCheck').show();
-        validation = false;
-    } else {
-        $('#BranchCheck').hide();
-    }
+    // var branch_id = $('#branch_id').val();
+    // if (branch_id == '') {
+    //     $('#BranchCheck').show();
+    //     validation = false;
+    // } else {
+    //     $('#BranchCheck').hide();
+    // }
 
     var cash_tally = document.querySelector('#cash_tally');
     if (!cash_tally.checked) {

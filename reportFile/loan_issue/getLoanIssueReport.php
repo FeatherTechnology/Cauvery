@@ -293,12 +293,6 @@ foreach ($result as $row) {
     ];
 }
 
-function count_all_data($connect)
-{
-    $statement = $connect->prepare("SELECT COUNT(*) FROM in_issue ii JOIN acknowlegement_customer_profile cp ON ii.req_id = cp.req_id WHERE ii.cus_status >= 14 ");
-    $statement->execute();
-    return (int) $statement->fetchColumn();
-}
 
 function getBankName($bankid, $connect)
 {
@@ -310,7 +304,6 @@ function getBankName($bankid, $connect)
 
 $output = array(
     'draw' => isset($_POST['draw']) ? intval($_POST['draw']) : 0, // ✅ safe for both table & download,
-    'recordsTotal' => count_all_data($connect),
     'recordsFiltered' => $number_filter_row,
     'data' => $data
 );

@@ -22,20 +22,20 @@ $column = array(
     'rc.req_id',
     'rc.req_id',
 );
+$params = array();
 $con = '';
 
-if ($_POST["doc_sts"] != '') {
-    $doc_sts = $_POST["doc_sts"];
-
-    // Use different alias: latest_doc
+$doc_sts = isset($_POST["doc_sts"]) ? $_POST["doc_sts"] : '';
+if ($doc_sts !== '') {
     $con = " INNER JOIN (
                 SELECT cus_id_doc, MAX(req_id) AS last_req_id 
                 FROM acknowlegement_documentation 
-                WHERE doc_sts = '$doc_sts' 
+                WHERE doc_sts = :doc_sts 
                 GROUP BY cus_id_doc
             ) latest_doc 
             ON rc.cus_id = latest_doc.cus_id_doc 
             AND rc.req_id = latest_doc.last_req_id AND rc.cus_status >= 13";
+    $params[':doc_sts'] = $doc_sts;
 }
 if ($userid == 1) {
     $query = "SELECT rc.req_id, rc.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) AS cus_name, cr.mobile1, cr.area_confirm_area AS area, rc.cus_status, rc.cus_data, cr.area_group, cr.area_line 
@@ -58,30 +58,53 @@ if ($userid == 1) {
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
 
-    $query .= "
-        AND (rc.cus_id LIKE '%" . $_POST['search'] . "%'
-        OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%'
-        OR CONCAT(cr.first_name,' ', rc.last_name) LIKE '%" . $_POST['search'] . "%'
-        OR cr.mobile1 LIKE '%" . $_POST['search'] . "%' )  ";
+     $query .= " AND (rc.cus_id LIKE :search1
+        OR cr.autogen_cus_id LIKE :search2
+        OR CONCAT(cr.first_name,' ', rc.last_name) LIKE :search3
+        OR cr.mobile1 LIKE :search4 )  ";
+    $searchTerm = '%' . $_POST['search'] . '%';
+    $params[':search1'] = $searchTerm;
+    $params[':search2'] = $searchTerm;
+    $params[':search3'] = $searchTerm;
+    $params[':search4'] = $searchTerm;
 }
 
 if (isset($_POST['order'])) {
-    $query .= 'ORDER BY ' . $column[$_POST['order']['0']['column']] . ' ' . $_POST['order']['0']['dir'] . ' ';
+  $colIndex = (int) $_POST['order']['0']['column'];
+    $dirInput = strtoupper($_POST['order']['0']['dir']);
+    // Whitelist column index + direction to prevent injection via order params.
+    if (isset($column[$colIndex])) {
+        $orderCol = $column[$colIndex];
+        $orderDir = ($dirInput === 'DESC') ? 'DESC' : 'ASC';
+        $query .= ' ORDER BY ' . $orderCol . ' ' . $orderDir . ' ';
+    }
 } 
 
 $query1 = '';
 
-if ($_POST['length'] != -1) {
-    $query1 = ' LIMIT ' . $_POST['start'] . ', ' . $_POST['length'];
+$limitParams = array();
+if ((int) $_POST['length'] !== -1) {
+    $query1 = ' LIMIT :start, :length';
+    $limitParams[':start'] = (int) $_POST['start'];
+    $limitParams[':length'] = (int) $_POST['length'];
 }
 
 $statement = $connect->prepare($query);
+foreach ($params as $key => $val) {
+    $statement->bindValue($key, $val, PDO::PARAM_STR);
+}
 
 $statement->execute();
 
 $number_filter_row = $statement->rowCount();
 
 $statement = $connect->prepare($query . $query1);
+foreach ($params as $key => $val) {
+    $statement->bindValue($key, $val, PDO::PARAM_STR);
+}
+foreach ($limitParams as $key => $val) {
+    $statement->bindValue($key, $val, PDO::PARAM_INT);
+}
 
 $statement->execute();
 
@@ -89,6 +112,12 @@ $result = $statement->fetchAll();
 
 $data = array();
 $sno = 1;
+// Simple in-memory caches so repeated area_ids / cus_ids on the same page
+// don't hit the DB twice - same logic as before, just deduplicated.
+$areaCache = array();
+$branchCache = array();
+$docStatusCache = array();
+
 foreach ($result as $row) {
 
     $sub_array   = array();
@@ -100,29 +129,39 @@ foreach ($result as $row) {
     $sub_array[] = $row['cus_name'];
     $sub_array[] = $row['mobile1'];
 
-    $areaqry = $connect->query(" SELECT area_name FROM area_list_creation WHERE area_id = '" . $row['area'] . "'");
-    $sub_array[] = $areaqry->fetch()['area_name'] ?? '';
+    $areaId = $row['area'];
 
-    $branchqry = $connect->query("SELECT bc.branch_name FROM area_group_mapping_area agma 
-    JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
-    JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
-    WHERE agma.area_id = '" . $row['area'] . "'");
-    $sub_array[] = $branchqry->fetch()['branch_name'] ?? '';
+if (!array_key_exists($areaId, $areaCache)) {
+        $areaStmt = $connect->prepare("SELECT area_name FROM area_list_creation WHERE area_id = :area_id");
+        $areaStmt->bindValue(':area_id', $areaId, PDO::PARAM_STR);
+        $areaStmt->execute();
+        $areaCache[$areaId] = $areaStmt->fetch()['area_name'] ?? '';
+    }
+    $sub_array[] = $areaCache[$areaId];
+
+    if (!array_key_exists($areaId, $branchCache)) {
+        $branchStmt = $connect->prepare("SELECT bc.branch_name FROM area_group_mapping_area agma 
+        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
+        JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
+        WHERE agma.area_id = :area_id");
+        $branchStmt->bindValue(':area_id', $areaId, PDO::PARAM_STR);
+        $branchStmt->execute();
+        $branchCache[$areaId] = $branchStmt->fetch()['branch_name'] ?? '';
+    }
+    $sub_array[] = $branchCache[$areaId];
 
     $sub_array[] = $row['area_group'];
     $sub_array[] = $row['area_line'];
-    if (getDocumentStatus($connect, $cus_id) == false) {
-        $sub_array[] = 'Document Pending';
-    } else {
-        $sub_array[] = 'Document Completed';
-    }
 
-    $id          = $row['cus_id'];
-    $cus_id      = $row['cus_id'];
-    if ($_POST["doc_sts"] != '') {
-        $action = "<a href='update&upd=$id&docstatus=NO' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
+    if (!array_key_exists($cus_id, $docStatusCache)) {
+        $docStatusCache[$cus_id] = getDocumentStatus($connect, $cus_id);
+    }
+    $sub_array[] = $docStatusCache[$cus_id] ? 'Document Completed' : 'Document Pending';
+
+     if ($doc_sts !== '') {
+        $action = "<a href='update&upd=" . htmlspecialchars($cus_id) . "&docstatus=NO' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
     } else {
-        $action = "<a href='update&upd=$id' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
+        $action = "<a href='update&upd=" . htmlspecialchars($cus_id) . "' title='Update'> <span class='icon-border_color' style='font-size: 12px;position: relative;top: 2px;'></span> </a>";
     }
 
     $sub_array[] = $action;
@@ -130,16 +169,9 @@ foreach ($result as $row) {
     $sno = $sno + 1;
 }
 
-function count_all_data($connect)
-{
-    $statement = $connect->prepare("SELECT COUNT(*) FROM customer_register");
-    $statement->execute();
-    return (int) $statement->fetchColumn();
-}
 
 $output = array(
     'draw' => intval($_POST['draw']),
-    'recordsTotal' => count_all_data($connect),
     'recordsFiltered' => $number_filter_row,
     'data' => $data
 );
@@ -148,22 +180,21 @@ echo json_encode($output);
 
 function getDocumentStatus($connect, $cus_id)
 {
-    // Get latest req_id with cus_status > 13
-    $qry = $connect->query("
+$qry = $connect->prepare("
         SELECT a.doc_sts 
         FROM acknowlegement_documentation a
         JOIN request_creation r ON a.req_id = r.req_id
-        WHERE a.cus_id_doc = '$cus_id' AND r.cus_status > 13 AND a.doc_sts ='NO'
+       WHERE a.cus_id_doc = :cus_id AND r.cus_status > 13 AND a.doc_sts = 'NO'
     ");
+     $qry->bindValue(':cus_id', $cus_id, PDO::PARAM_STR);
+    $qry->execute();
 
     if ($qry->rowCount() > 0) {
-        // If pending status doc entry → treat as pending
-        return false; //pending
+        return false; // pending
     }
 
     return true; // completed
 }
-
 
 // Close the database connection
 $connect = null;

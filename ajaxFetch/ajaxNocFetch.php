@@ -8,82 +8,94 @@ $where = [];
 $params = [];
 $branch   = $_POST['branch'] ?? [];
 $sector   = $_POST['sector'] ?? [];
+$condition = '';
 
 /* =========================================================
    USER ACCESS
 ========================================================= */
+$userAllowedIds = null;
+$accessType = 0;
 
 if ($userid != 1) {
 
-    $stmt = $connect->prepare("
-        SELECT 
-            group_id,
-            line_id,
-            due_followup_lines,
-            noc_mapping_access
-        FROM user
-        WHERE user_id = ?
-    ");
+    $stmt = $connect->prepare("SELECT group_id, line_id, due_followup_lines, noc_mapping_access FROM user WHERE user_id = ?");
 
     $stmt->execute([$userid]);
 
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $rowuser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$user) {
+ if (!$rowuser) {
         echo json_encode([]);
         exit;
     }
-
+ $accessType = (int) $rowuser['noc_mapping_access'];
     $accessMap = [
-        1 => ['group_id', 'area_group_mapping_area', 'group_map_id', 'area_id', 'cr.area_confirm_area'],
-        2 => ['line_id', 'area_line_mapping_area', 'line_map_id', 'area_id', 'cr.area_confirm_area'],
-        3 => ['due_followup_lines', 'area_duefollowup_mapping_area', 'duefollowup_map_id', 'area_id', 'cr.area_confirm_area']
+         1 => [
+            'source' => 'group_id',
+            'join'   => "INNER JOIN area_group_mapping_area agma ON agma.area_id = cr.area_confirm_area",
+            'column' => 'agmsa.group_map_id'
+        ],
+        2 => [
+            'source' => 'line_id',
+            'join'   => '',
+            'column' => 'alm.map_id'
+        ],
+        3 => [
+            'source' => 'due_followup_lines',
+            'join'   => "INNER JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = cr.area_confirm_area",
+            'column' => 'adfma.duefollowup_map_id'
+        ]
     ];
 
-    $accessType = (int)$user['noc_mapping_access'];
+    $access = $accessMap[$accessType];
+    $userAllowedIds = array_filter(array_map('intval', explode(',', $rowuser[$access['source']] ?? '')));
 
-    if (!isset($accessMap[$accessType])) {
+      if (empty($userAllowedIds)) {
         echo json_encode([]);
         exit;
     }
-    if ($accessType == 3 && !empty($sector)) {
-        $condition =  "STRAIGHT_JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = ac.area_id
-                       STRAIGHT_JOIN area_duefollowup_mapping adfm ON adfm.map_id = adfma.duefollowup_map_id";
-    } else if ($accessType == 1  && !empty($sector)) {
-        $condition =  "JOIN area_group_mapping_area agma ON agma.area_id = ac.area_id
-                       JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id";
+    $condition = $access['join'];
+}
+
+    /* =========================================================
+   2. SECTOR FILTERING & PERMISSION MERGE
+========================================================= */
+$finalFilterIds = [];
+
+if (!empty($sector)) {
+    $selectedSectors = array_map('intval', (array)$sector);
+
+    if ($userid != 1) {
+        // Safe: Intersect selected sectors with user's allowed IDs
+        $finalFilterIds = array_values(array_intersect($userAllowedIds, $selectedSectors));
+        
+        // If user tries to access unauthorized sectors, return empty result
+        if (empty($finalFilterIds)) {
+            echo json_encode([]);
+            exit;
+        }
     } else {
-        $condition = "";
+        // Admin user selecting sectors directly
+        $finalFilterIds = $selectedSectors;
+    }
+} else {
+    // If sector filter is empty, fallback to user access mapping
+    if ($userid != 1) {
+        $finalFilterIds = $userAllowedIds;
+    }
     }
 
-    [$source, $table, $mapCol, $selCol, $filterCol] = $accessMap[$accessType];
-
-    $ids = array_filter(array_map('intval', explode(',', $user[$source] ?? '')));
-
-    if (!$ids) {
-        echo json_encode([]);
-        exit;
-    }
-
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
-
-    $stmt = $connect->prepare("
-        SELECT DISTINCT $selCol
-        FROM $table
-        WHERE $mapCol IN ($placeholders)
-    ");
-
-    $stmt->execute($ids);
-
-    $mappedIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-    if (!$mappedIds) {
-        echo json_encode([]);
-        exit;
-    }
-
-    $where[] = "$filterCol IN (" . implode(',', array_fill(0, count($mappedIds), '?')) . ")";
-    $params = array_merge($params, $mappedIds);
+/* Apply single WHERE condition */
+if (!empty($finalFilterIds)) {
+    $columnMap = [
+        1 => "agma.group_map_id",
+        2 => "alm.map_id",
+        3 => "adfma.duefollowup_map_id"
+    ];
+    $targetColumn = $columnMap[$accessType] ?? "agma.group_map_id";
+    $placeholders = implode(',', array_fill(0, count($finalFilterIds), '?'));
+    $where[] = "{$targetColumn} IN ($placeholders)";
+    $params = array_merge($params, $finalFilterIds);
 }
 
 /* =========================================================
@@ -116,34 +128,6 @@ if (!empty($branch)) {
     $params = array_merge($params, $branch);
 }
 
-/* Sector / Region / Zone Filter */
-if (!empty($sector)) {
-
-    $sector = array_map('intval', $sector);
-    switch ($accessType) {
-        // Sector
-        case 1:
-            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        // Region
-        case 2:
-            $where[] = "alm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        // Zone
-        case 3:
-            $where[] = "adfm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        default:
-            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-    }
-
-
-    $params = array_merge($params, $sector);
-}
-/* =========================================================
-   WHERE
-========================================================= */
 
 $whereSql = '';
 
@@ -200,8 +184,7 @@ if ($_POST['length'] != -1) {
    MAIN QUERY
 ========================================================= */
 
-$query = "
-SELECT
+$query = "SELECT STRAIGHT_JOIN
     MAX(cs.created_date) AS latest_date,
     cr.cus_id,
     cr.autogen_cus_id,
@@ -218,36 +201,20 @@ SELECT
             WHEN n.receive_status = 0 THEN 1
             ELSE 0
         END
-    ) AS pending_receive
+     ) AS pending_receive,
+    COUNT(*) OVER() AS filtered_count
 
 FROM in_issue ii
 
-JOIN customer_register cr
-    ON ii.cus_id = cr.cus_id
-
-JOIN area_list_creation ac
-    ON cr.area_confirm_area = ac.area_id
-
-JOIN area_line_mapping_area alma 
-    ON alma.area_id = ac.area_id
-
-JOIN area_line_mapping alm 
-    ON alm.map_id = alma.line_map_id
-
-JOIN branch_creation bc
-    ON alm.branch_id = bc.branch_id
+JOIN customer_register cr ON ii.cus_id = cr.cus_id
+JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
 $condition
-LEFT JOIN noc n
-    ON ii.req_id = n.req_id
-
-LEFT JOIN closed_status cs
-    ON cs.cus_id = cr.cus_id
-
-WHERE
-    ii.status = 0
-    AND ii.cus_status IN (21,22,23)
-    AND (n.receive_status = 0 OR n.req_id IS NULL)
-    $whereSql
+JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
+JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+JOIN branch_creation bc ON alm.branch_id = bc.branch_id
+LEFT JOIN noc n ON ii.req_id = n.req_id
+LEFT JOIN closed_status cs ON cs.cus_id = cr.cus_id
+WHERE ii.status = 0 AND ii.cus_status IN (21,22,23) AND (n.receive_status = 0 OR n.req_id IS NULL)$whereSql
 
 GROUP BY ii.cus_id
 
@@ -262,49 +229,12 @@ $stmt->execute($params);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 /* =========================================================
-   FILTER COUNT
+   FILTERED COUNT — from the window function, no second query
 ========================================================= */
 
-$countQuery = "
-SELECT COUNT(*) as total
-FROM (
-    SELECT ii.cus_id
-    FROM in_issue ii
-    LEFT JOIN noc n ON ii.req_id = n.req_id
-    JOIN customer_register cr ON ii.cus_id = cr.cus_id
-    JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id
-    JOIN area_line_mapping_area alma ON alma.area_id = ac.area_id
-    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-    $condition
-    JOIN branch_creation bc ON alm.branch_id = bc.branch_id
+$filtered = $result[0]['filtered_count'] ?? 0;
 
-    WHERE
-        ii.status = 0
-        AND ii.cus_status IN (21,22,23)
-        AND (n.receive_status = 0 OR n.req_id IS NULL)
-        $whereSql
-
-    GROUP BY ii.cus_id
-) x
-";
-
-$countStmt = $connect->prepare($countQuery);
-$countStmt->execute($params);
-
-$filtered = $countStmt->fetchColumn();
-
-/* =========================================================
-   TOTAL COUNT
-========================================================= */
-
-$totalStmt = $connect->query("
-    SELECT COUNT(DISTINCT cus_id)
-    FROM in_issue
-    WHERE status = 0
-    AND cus_status IN (21,22,23)
-");
-
-$total = $totalStmt->fetchColumn();
+// $total = $totalStmt->fetchColumn();
 
 /* =========================================================
    DATA
@@ -382,7 +312,6 @@ foreach ($result as $row) {
 
 echo json_encode([
     "draw" => intval($_POST['draw']),
-    "recordsTotal" => (int)$total,
     "recordsFiltered" => (int)$filtered,
     "data" => $data
 ]);

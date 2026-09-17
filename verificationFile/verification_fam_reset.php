@@ -20,7 +20,7 @@ include '../ajaxconfig.php';
         while ($fam = $famInfo->fetch()) {
         ?>
             <tr>
-                <td><?php echo $i; ?></td>
+                <td><?php echo $i++; ?></td>
                 <td><?php echo $fam["famname"]; ?></td>
                 <td><?php echo $fam["relationship"]; ?></td>
                 <td>
@@ -28,9 +28,7 @@ include '../ajaxconfig.php';
                     <a id="verification_fam_delete" value="<?php echo $fam['id']; ?>"> <span class='icon-trash-2'></span> </a>
                 </td>
             </tr>
-        <?php $i = $i + 1;
-        }
-        ?>
+        <?php } ?>
     </tbody>
 </table>
 
