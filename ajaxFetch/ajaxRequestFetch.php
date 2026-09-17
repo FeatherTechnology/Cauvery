@@ -10,6 +10,8 @@ $login_user_type = $_SESSION['role'] ?? 0;
 
 $where = [];
 $params = [];
+$condition = "";
+$accessType = 1;
 
 $branch   = $_POST['branch'] ?? [];
 $sector   = $_POST['sector'] ?? [];
@@ -135,6 +137,7 @@ $query = "SELECT DISTINCT
     STRAIGHT_JOIN branch_creation bc ON bc.branch_id = agm.branch_id
     STRAIGHT_JOIN area_line_mapping_area almsa ON almsa.area_id = a.area_id
     STRAIGHT_JOIN area_line_mapping alm ON alm.map_id = almsa.line_map_id
+    $condition
     STRAIGHT_JOIN loan_category_creation lcc ON lcc.loan_category_creation_id = rc.loan_category
     WHERE rc.status = 0 AND rc.cus_status < 14 AND rc.cus_status NOT IN (4,5,6,7,8,9)";
 
@@ -152,29 +155,18 @@ if (!empty($branch)) {
     $params = array_merge($params, $branch);
 }
 
-/* Sector / Region / Zone Filter */
+/* Sector Filter */
 if (!empty($sector)) {
 
-    $sector = array_map('intval', $sector);
-    switch ($accessType) {
-        // Sector
-        case 1:
-            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        // Region
-        case 2:
-            $where[] = "alm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        // Zone
-        case 3:
-            $where[] = "adfm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        default:
-            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-    }
-
-
+    $sector = array_map('intval', (array)$sector);
+    $columnMap = [
+        1 => "agm.map_id",
+        2 => "alm.map_id",
+        3 => "adfm.map_id"
+    ];
+    
+    $sectorCol = $columnMap[$accessType] ?? "agm.map_id";
+    $where[] = "$sectorCol IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
     $params = array_merge($params, $sector);
 }
 
@@ -235,12 +227,6 @@ $stmt->closeCursor();
 $stmt = $connect->prepare($query);
 $stmt->execute($params);
 $recordsFiltered = $stmt->rowCount();
-$stmt->closeCursor();
-
-/* ---------------- COUNT TOTAL ---------------- */
-$stmt = $connect->prepare("SELECT COUNT(*) FROM request_creation");
-$stmt->execute();
-$recordsTotal = $stmt->fetchColumn();
 $stmt->closeCursor();
 
 /* ---------------- DATA FORMAT ---------------- */
@@ -319,7 +305,6 @@ foreach ($result as $row) {
 /* ---------------- RESPONSE ---------------- */
 echo json_encode([
     "draw" => intval($_POST['draw']),
-    "recordsTotal" => $recordsTotal,
     "recordsFiltered" => $recordsFiltered,
     "data" => $data
 ]);

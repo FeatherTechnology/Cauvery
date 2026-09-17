@@ -12,10 +12,14 @@ $params = [];
 $branch   = $_POST['branch'] ?? [];
 $sector   = $_POST['sector'] ?? [];
 $loan_cat = $_POST['loan_cat'] ?? [];
+$condition = '';
 
 /* =========================================================
    USER ACCESS FILTER
 ========================================================= */
+
+$userAllowedIds = null;
+$accessType = 0;
 
 if ($userid != 1) {
 
@@ -27,58 +31,96 @@ if ($userid != 1) {
         echo json_encode([]);
         exit;
     }
-
+    $accessType = (int) $rowuser['noc_mapping_access'];
     $accessMap = [
-        1 => ['group_id', 'area_group_mapping_area', 'group_map_id', 'area_id', 'cr.area_confirm_area'],
-        2 => ['line_id', 'area_line_mapping_area', 'line_map_id', 'area_id', 'cr.area_confirm_area'],
-        3 => ['due_followup_lines', 'area_duefollowup_mapping_area', 'duefollowup_map_id', 'area_id', 'cr.area_confirm_area']
+         1 => [
+            'source' => 'group_id',
+            'join'   => "INNER JOIN area_group_mapping_area agmsa ON agmsa.area_id = cr.area_confirm_area",
+            'column' => 'agmsa.group_map_id'
+        ],
+        2 => [
+            'source' => 'line_id',
+            'join'   => '',
+            'column' => 'alm.map_id'
+        ],
+        3 => [
+            'source' => 'due_followup_lines',
+            'join'   => "INNER JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = cr.area_confirm_area",
+            'column' => 'adfma.duefollowup_map_id'
+        ]
     ];
-
-    $accessType = (int)$rowuser['noc_mapping_access'];
 
     if (!isset($accessMap[$accessType])) {
         echo json_encode([]);
         exit;
     }
 
-    if ($accessType == 3 && !empty($sector)) {
-        $condition =  "STRAIGHT_JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = ac.area_id
-                       STRAIGHT_JOIN area_duefollowup_mapping adfm ON adfm.map_id = adfma.duefollowup_map_id";
-    } else if ($accessType == 1  && !empty($sector)) {
-        $condition =  "JOIN area_group_mapping_area agma ON agma.area_id = ac.area_id
-                       JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id";
+$access = $accessMap[$accessType];
+    $userAllowedIds = array_filter(array_map('intval', explode(',', $rowuser[$access['source']] ?? '')));
+
+    if (empty($userAllowedIds)) {
+        echo json_encode([]);
+        exit;
+    }
+
+    $condition = $access['join'];
+}
+
+/* =========================================================
+   2. SECTOR FILTERING & PERMISSION MERGE
+========================================================= */
+$finalFilterIds = [];
+
+if (!empty($sector)) {
+    $selectedSectors = array_map('intval', (array)$sector);
+
+    if ($userid != 1) {
+        // Safe: Intersect selected sectors with user's allowed IDs
+        $finalFilterIds = array_values(array_intersect($userAllowedIds, $selectedSectors));
+        
+        // If user tries to access unauthorized sectors, return empty result
+        if (empty($finalFilterIds)) {
+            echo json_encode([]);
+            exit;
+        }
     } else {
-        $condition = "";
+        // Admin user selecting sectors directly
+        $finalFilterIds = $selectedSectors;
     }
-
-    [$source, $table, $mapCol, $selCol, $filterCol] = $accessMap[$accessType];
-
-    $ids = array_filter(array_map('intval', explode(',',$rowuser[$source] ?? '')));
-
-    if (!$ids) {
-        echo json_encode([]);
-        exit;
+} else {
+    // If sector filter is empty, fallback to user access mapping
+    if ($userid != 1) {
+        $finalFilterIds = $userAllowedIds;
     }
+}
 
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+/* Apply single WHERE condition */
+if (!empty($finalFilterIds)) {
+    $columnMap = [
+        1 => "agmsa.group_map_id",
+        2 => "alm.map_id",
+        3 => "adfma.duefollowup_map_id"
+    ];
+    $targetColumn = $columnMap[$accessType] ?? "agmsa.group_map_id";
 
-    $stmt = $connect->prepare("
-        SELECT DISTINCT $selCol
-        FROM $table
-        WHERE $mapCol IN ($placeholders)
-    ");
+    $placeholders = implode(',', array_fill(0, count($finalFilterIds), '?'));
+    $where[] = "{$targetColumn} IN ($placeholders)";
+    $params = array_merge($params, $finalFilterIds);
+}
+ 
+/* Branch Filter */
+if (!empty($branch)) {
+    $branch = array_map('intval', $branch);
 
-    $stmt->execute($ids);
+    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
+    $params = array_merge($params, $branch);
+}
+// Loan category Filter 
+if (!empty($loan_cat)) {
+    $loan_cat = array_map('intval', $loan_cat);
 
-    $mappedIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-    if (!$mappedIds) {
-        echo json_encode([]);
-        exit;
-    }
-
-    $where[] = "$filterCol IN (" . implode(',', array_fill(0, count($mappedIds), '?')) . ")";
-    $params = array_merge($params, $mappedIds);
+    $where[] = "iv.loan_category IN (" . implode(',', array_fill(0, count($loan_cat), '?')) . ")";
+    $params = array_merge($params, $loan_cat);
 }
 
 /* =========================================================
@@ -106,48 +148,6 @@ if (!empty($search)) {
         $params[] = "%$search%";
     }
 }
-/* Branch Filter */
-if (!empty($branch)) {
-    $branch = array_map('intval', $branch);
-
-    $where[] = "bc.branch_id IN (" . implode(',', array_fill(0, count($branch), '?')) . ")";
-    $params = array_merge($params, $branch);
-}
-
-/* Sector / Region / Zone Filter */
-if (!empty($sector)) {
-
-    $sector = array_map('intval', $sector);
-    switch ($accessType) {
-        // Sector
-        case 1:
-            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        // Region
-        case 2:
-            $where[] = "alm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        // Zone
-        case 3:
-            $where[] = "adfm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-        default:
-            $where[] = "agm.map_id IN (" . implode(',', array_fill(0, count($sector), '?')) . ")";
-            break;
-    }
-
-
-    $params = array_merge($params, $sector);
-}
-
-/* Loan Category Filter */
-if (!empty($loan_cat)) {
-    $loan_cat = array_map('intval', $loan_cat);
-
-    $where[] = "iv.loan_category IN (" . implode(',', array_fill(0, count($loan_cat), '?')) . ")";
-    $params = array_merge($params, $loan_cat);
-}
-
 
 /* =========================================================
    WHERE
@@ -209,13 +209,10 @@ if ($_POST['length'] != -1) {
     $limit = " LIMIT $start, $length ";
 }
 
-/* =========================================================
-   MAIN QUERY
-========================================================= */
 
 $query = "
-SELECT
-    cs.created_date AS latest_date,
+SELECT STRAIGHT_JOIN
+    MAX(cs.created_date) AS latest_date,
     cs.req_id,
     cr.cus_id,
     cr.autogen_cus_id,
@@ -231,47 +228,27 @@ SELECT
     COALESCE(n.receive_status,0) AS receive_status,
     n.receive_by,
 
-    u.user_name AS receive_person
+    u.user_name AS receive_person,
+    COUNT(*) OVER() AS filtered_count
 
 FROM closed_status cs
 
-JOIN in_issue ii
-    ON cs.req_id = ii.req_id
+INNER JOIN in_issue ii ON cs.req_id = ii.req_id
+INNER JOIN acknowlegement_documentation ad ON ii.req_id = ad.req_id
+INNER JOIN in_verification iv ON ii.req_id = iv.req_id
+INNER JOIN loan_category_creation lcc ON lcc.loan_category_creation_id = iv.loan_category
+INNER JOIN customer_register cr ON cs.cus_id = cr.cus_id
 
-JOIN acknowlegement_documentation ad
-    ON ii.req_id = ad.req_id
-
-JOIN in_verification iv
-    ON ii.req_id = iv.req_id
-
-JOIN customer_register cr
-    ON cs.cus_id = cr.cus_id
-
-JOIN area_list_creation ac
-    ON cr.area_confirm_area = ac.area_id
-
-JOIN area_line_mapping_area alma 
-    ON alma.area_id = ac.area_id
-
-JOIN area_line_mapping alm 
-    ON alm.map_id = alma.line_map_id
-
-JOIN branch_creation bc
-    ON alm.branch_id = bc.branch_id
 $condition
-JOIN loan_category_creation lcc
-    ON lcc.loan_category_creation_id = iv.loan_category
 
-LEFT JOIN noc n
-    ON n.req_id = cs.req_id
-
-LEFT JOIN user u
-    ON u.user_id = n.receive_by
-
-WHERE
-    cs.cus_sts = 23
-
-    $whereSql
+INNER JOIN area_list_creation ac ON cr.area_confirm_area = ac.area_id 
+INNER JOIN area_line_mapping_area alma  ON alma.area_id = ac.area_id
+INNER JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+INNER JOIN branch_creation bc ON alm.branch_id = bc.branch_id
+LEFT JOIN noc n ON n.req_id = cs.req_id AND n.cus_status = 23
+LEFT JOIN user u ON u.user_id = n.receive_by
+WHERE ii.cus_status = 23 $whereSql
+GROUP BY ii.req_id
 
 $orderBy
 
@@ -285,67 +262,9 @@ $stmt->execute($params);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 /* =========================================================
-   FILTERED COUNT
+    FILTERED COUNT — from the window function, no second query
 ========================================================= */
-
-$countQuery = "
-SELECT COUNT(*) FROM (
-    SELECT cs.req_id
-
-    FROM closed_status cs
-
-    JOIN in_issue ii
-        ON cs.req_id = ii.req_id
-
-    JOIN acknowlegement_documentation ad
-        ON ii.req_id = ad.req_id
-
-    JOIN in_verification iv
-        ON ii.req_id = iv.req_id
-
-    JOIN customer_register cr
-        ON cs.cus_id = cr.cus_id
-
-    JOIN area_list_creation ac
-        ON cr.area_confirm_area = ac.area_id
-
-    JOIN area_line_mapping_area alma 
-        ON alma.area_id = ac.area_id
-
-    JOIN area_line_mapping alm 
-        ON alm.map_id = alma.line_map_id
-    $condition
-    JOIN branch_creation bc
-        ON alm.branch_id = bc.branch_id
-
-    JOIN loan_category_creation lcc
-        ON lcc.loan_category_creation_id = iv.loan_category
-
-    WHERE
-        cs.cus_sts = 23
-
-        $whereSql
-
-) x
-";
-
-$countStmt = $connect->prepare($countQuery);
-
-$countStmt->execute($params);
-
-$filtered = $countStmt->fetchColumn();
-
-/* =========================================================
-   TOTAL COUNT
-========================================================= */
-
-$totalStmt = $connect->query("
-    SELECT COUNT(*)
-    FROM closed_status
-    WHERE cus_sts = 23
-");
-
-$total = $totalStmt->fetchColumn();
+$filtered = $result[0]['filtered_count'] ?? 0;
 
 /* =========================================================
    DATA
@@ -423,9 +342,9 @@ foreach ($result as $row) {
 
 echo json_encode([
     "draw" => intval($_POST['draw']),
-    "recordsTotal" => (int)$total,
     "recordsFiltered" => (int)$filtered,
     "data" => $data
 ]);
 
 $connect = null;
+?>

@@ -98,8 +98,7 @@ if ($_POST['length'] != -1) {
 $baseqry .= "$search GROUP BY cr.cus_id $order ";
 
 // Count query for filtering (use the same logic but without limit)
-$num_qry = $connect->query("SELECT COUNT(*) FROM (SELECT cr.cus_id  $baseqry) AS sub_qry");
-$num_qry->execute();
+$num_qry = $connect->query("SELECT COUNT(*) FROM (SELECT cr.cus_id $baseqry) AS sub_qry");
 $number_filter_row = $num_qry->fetchColumn();
 
 $sql = $connect->query("SELECT cr.req_ref_id as req_id, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) as cus_name, al.area_name, bc.branch_name, agm.group_name, alm.line_name, cr.mobile1, cs.closed_sts, cs.created_date, np.status AS followup_sts, np.follow_date, np.followup_type, rc.cus_status AS noc_cus_status $baseqry $limit");
@@ -157,15 +156,8 @@ while ($row = $sql->fetch()) {
     ];
 }
 
-function count_all_data($connect, $condition) {
-    $statement = $connect->prepare("SELECT COUNT(*) FROM closed_status cs WHERE $condition");
-    $statement->execute();
-    return (int) $statement->fetchColumn();
-}
-
 $output = array(
     'draw' => intval($_POST['draw']),
-    'recordsTotal' => count_all_data($connect, $condition),
     'recordsFiltered' => $number_filter_row,
     'data' => $data
 );

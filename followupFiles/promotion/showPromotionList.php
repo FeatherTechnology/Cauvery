@@ -17,11 +17,6 @@ $column = array(
     'cr.cus_id',
     'cr.autogen_cus_id',
     'CONCAT(cr.first_name, " ", cr.last_name)',
-    'al.area_name',
-    'bc.branch_name',
-    'agm.group_name',
-    'alm.line_name',
-    'cr.mobile1',
     'cr.cus_reg_id',
     'cs.consider_level',
     'cs.created_date',
@@ -48,14 +43,12 @@ $baseqry = "FROM  customer_register cr
         WHERE closed_sts = 1 
         GROUP BY cus_id $re_active
     ) cs ON cs.cus_id = cr.cus_id 
-    LEFT JOIN area_list_creation al ON cr.area_confirm_area = al.area_id  
-    LEFT JOIN area_group_mapping_area agma ON agma.area_id = al.area_id
-    LEFT JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id 
-    LEFT JOIN area_line_mapping_area alma ON alma.area_id = al.area_id
-    LEFT JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id 
-    LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
     LEFT JOIN new_promotion np ON np.cus_id = cs.cus_id AND np.created_date = (SELECT MAX(np1.created_date) FROM new_promotion np1 WHERE np1.cus_id = cs.cus_id)
     LEFT JOIN request_creation rc ON cr.cus_id = rc.cus_id
+    LEFT JOIN area_list_creation al ON al.area_id = cr.area_confirm_area
+    LEFT JOIN area_group_mapping_area agma ON agma.area_id = cr.area_confirm_area
+    LEFT JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
+    LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
     WHERE cr.area_confirm_area IN ($area_list) AND NOT EXISTS (SELECT 1 FROM closed_status cs2
     WHERE cs2.cus_id = cr.cus_id AND cs2.id = (SELECT MAX(cs3.id) FROM closed_status cs3 WHERE cs3.cus_id = cr.cus_id) AND cs2.closed_sts IN (2,3)
 ) AND NOT EXISTS ( SELECT 1 FROM request_creation r WHERE r.cus_id = cs.cus_id AND r.return_sts != 1 AND ((r.cus_status IN (4,5,6,7,8,9)) OR r.cus_status <= 20)) ";
@@ -69,6 +62,15 @@ if ($_POST['dateType']) {
     $date_type = $_POST['dateType']; //1=Closed date, 2=Followup date.
     $baseqry .= ($date_type == '1') ? "AND DATE(cs.created_date) BETWEEN '" . $_POST['followUpFromDate'] . "' AND '" . $_POST['followUpToDate'] . "' " : "AND DATE(np.follow_date) BETWEEN '" . $_POST['followUpFromDate'] . "' AND '" . $_POST['followUpToDate'] . "' ";
 }
+if ($_POST['branch_id']) {
+    $baseqry .= "AND bc.branch_id ='".$_POST['branch_id']."' ";
+}
+if ($_POST['group_id']) {
+        $baseqry .= "AND al.area_id ='".$_POST['area_id']."' ";
+}
+if ($_POST['area_id']) {
+     $baseqry .= "AND agm.map_id ='".$_POST['group_id']."' ";
+}
 
 $baseqry .= ($_POST['followupType']) ? "AND np.followup_type = '" . $_POST['followupType'] . "'" : "";
 
@@ -77,11 +79,6 @@ if (isset($_POST['search']) && $_POST['search'] != "") {
     $search = " AND (cr.cus_id LIKE '%" . $_POST['search'] . "%' 
     OR cr.autogen_cus_id LIKE '%" . $_POST['search'] . "%' 
     OR CONCAT(cr.first_name,' ', cr.last_name) LIKE '%" . $_POST['search'] . "%' 
-    OR al.area_name LIKE '%" . $_POST['search'] . "%'
-    OR bc.branch_name LIKE '%" . $_POST['search'] . "%' 
-    OR agm.group_name LIKE '%" . $_POST['search'] . "%' 
-    OR alm.line_name LIKE '%" . $_POST['search'] . "%' 
-    OR cr.mobile1 LIKE '%" . $_POST['search'] . "%'  
     OR np.status LIKE '%" . $_POST['search'] . "%' ) ";
 }
 
@@ -102,7 +99,8 @@ $num_qry = $connect->query("SELECT COUNT(*) FROM (SELECT cr.cus_id  $baseqry) AS
 $num_qry->execute();
 $number_filter_row = $num_qry->fetchColumn();
 
-$sql = $connect->query("SELECT cr.req_ref_id as req_id, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) as cus_name, al.area_name, bc.branch_name, agm.group_name, alm.line_name, cr.mobile1, cs.consider_level, cs.created_date, np.status AS followup_sts, np.follow_date, np.followup_type, rc.cus_status AS noc_cus_status $baseqry $limit");
+// $sql = $connect->query("SELECT cr.req_ref_id as req_id, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) as cus_name, al.area_name, bc.branch_name, agm.group_name, alm.line_name, cr.mobile1, cs.consider_level, cs.created_date, np.status AS followup_sts, np.follow_date, np.followup_type, rc.cus_status AS noc_cus_status $baseqry $limit");
+$sql = $connect->query("SELECT cr.req_ref_id as req_id, cr.cus_id, cr.autogen_cus_id, CONCAT(cr.first_name,' ', cr.last_name) as cus_name, cs.consider_level, cs.created_date, np.status AS followup_sts, np.follow_date, np.followup_type, rc.cus_status AS noc_cus_status $baseqry $limit");
 
 $sno = 1;
 $data = [];
@@ -146,33 +144,22 @@ while ($row = $sql->fetch()) {
         $row['cus_id'],
         $row['autogen_cus_id'],
         $row['cus_name'],
-        $row['area_name'],
-        $row['branch_name'],
-        $row['group_name'],
-        $row['line_name'],
-        $row['mobile1'],
         'Consider',
         $sub_status[$row['consider_level']], //fetched from closed status table above mentioned    
         $createddate,
         $cusstatus[$row['noc_cus_status']] ?? '',
         $charts,
         $actions,
+        "<a href='#'class='personal-info'data-toggle='modal'data-target='#personalInfoModal'data-cusid='" . $row['cus_id'] . "'><span class='icon-eye' style='font-size: 12px;position: relative;top: 2px;'></a>",
         $row['followup_sts'],
         $followupdate,
         $followup_type
     ];
 }
 
-function count_all_data($connect)
-{
-    $statement = $connect->prepare("SELECT COUNT(*) FROM closed_status cs WHERE cs.closed_sts = 1");
-    $statement->execute();
-    return (int) $statement->fetchColumn();
-}
 
 $output = array(
     'draw' => intval($_POST['draw']),
-    'recordsTotal' => count_all_data($connect),
     'recordsFiltered' => $number_filter_row,
     'data' => $data
 );

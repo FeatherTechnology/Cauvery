@@ -93,10 +93,6 @@ if (isset($_POST['order'])) {
     $orderBy .= " ORDER BY " . $column[$_POST['order']['0']['column']] . ' ' . $_POST['order']['0']['dir'];
 }
 
-/* ---------- TOTAL RECORDS ---------- */
-$totalStmt = $connect->prepare("SELECT COUNT(DISTINCT np.insert_login_id) FROM new_promotion np");
-$totalStmt->execute();
-$recordsTotal = (int) $totalStmt->fetchColumn();
 
 /* ---------- FILTERED RECORDS ---------- */
 $countStmt = $connect->prepare("SELECT COUNT(*) FROM (SELECT np.id $base_query $filter_group_by) AS sq");
@@ -324,7 +320,6 @@ foreach ($finalData as $row) {
 
 $output = array(
     'draw' => intval($_POST['draw']),
-    'recordsTotal' => $recordsTotal,
     'recordsFiltered' => $recordsFiltered,
     'data' => $data
 );

@@ -33,14 +33,14 @@ $(document).ready(function () {
       showPromotionList(
         "followupFiles/promotion/showPromotionList.php",
         "expromotion_list",
-        "17",
+        "12",
       );
     } else if (typevalue == "Re-active") {
       $(".re_active_card, .filter_card").show();
       showPromotionList(
         "followupFiles/promotion/showPromotionList.php",
         "re_active_promotion_list",
-        "17",
+        "12",
       );
     } else if (typevalue == "Events") {
       $(".event_card").show();
@@ -58,9 +58,10 @@ $(document).ready(function () {
       $(".enq_loan_amt").show();
     } else if (title.replaceAll(" ", "") == "NewPromotion") {
       $("#screen_name").val("2");
+      getUserBasedArea("");
     }
 
-    getUserBasedArea();
+    
   });
 
   $("#closeNewPromotionModal, .modalCloseBtn").click(function (e) {
@@ -72,7 +73,7 @@ $(document).ready(function () {
     }
 
     $(
-      "#cus_id, #cus_data, #first_names, #last_names, #cus_mob, #area, #enquiry_loan_amt, #screen_name",
+      "#cus_id, #cus_data, #first_names, #last_names, #cus_mob, #areaID, #enquiry_loan_amt, #screen_name,#remarks",
     ).val("");
   });
 
@@ -143,13 +144,13 @@ $(document).ready(function () {
       showPromotionList(
         "followupFiles/promotion/showPromotionList.php",
         "expromotion_list",
-        "17",
+        "12",
       );
     } else if (btnName == "Re-active") {
       showPromotionList(
         "followupFiles/promotion/showPromotionList.php",
         "re_active_promotion_list",
-        "17",
+        "12",
       );
     } else if (btnName == "New") {
       resetNewPromotionTable();
@@ -457,15 +458,46 @@ $(document).ready(function () {
       { cus_id },
       function (response) {
         let cusData = response.message == "Existing" ? "Existing" : "New";
+        
+             if (cusData == 'New') {
+                swarlErrorAlert("This section is only for existing customers.");
+                $('#cus_id').val('');
+                return;
+            }
+            $('#autogen_cus_id').val(response.autogen_cus_id);
         $("#cus_data").val(cusData);
+        $('#first_names').val(response.first_name);
+        $('#last_names').val(response.last_name);
+        $('#cus_mob').val(response.mobile1);
+        getUserBasedArea(response.area);
       },
       "json",
     );
   });
+    $('#sector').on('change', function () {
+        let sector = $(this).val();
+        if (sector == '') {
+            $('#area').html('<option value="">Select Area</option>');
+            return false;
+        } else {
+            getAreaList();
+        }
+    });
+
+    $(document).on('click', '.enq-remarks', function (e) {
+        e.preventDefault();
+        let remarks = $(this).data('remarks') || '';
+        let cus_id = $(this).attr('data-cusid') || '';
+        $('#enq_remarks').val(remarks);
+        $('#remarksTitle').text('Enquiry Remarks of Customer ID - ' + cus_id);
+    });
+
 }); //Document END.
 
 $(function () {
   getPromotionAccess();
+  getBranchList();
+  getGroupList();
   var formattedDate = getCurrentDate();
   $(".current_date").text(formattedDate);
 });
@@ -500,6 +532,67 @@ function getPromotionAccess() {
     },
     "json",
   );
+}
+function getBranchList() {
+    $.ajax({
+        url: 'followupFiles/promotion/getBranchList.php',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function (response) {
+
+        $('#branch').html('<option value="">Select Branch</option>');
+
+        $.each(response, function(index, value) {
+
+            $('#branch').append(
+                '<option value="' + value.branch_id + '">' +
+                value.branch_name +
+                '</option>'
+            );
+
+        });
+        }
+    });
+   
+}
+function getGroupList() {
+    $.ajax({
+        url: 'followupFiles/promotion/getGroupList.php',
+        type: 'post',
+        data: {},
+        dataType: 'json',
+        success: function (response) {
+
+        $('#sector').html('<option value="">Select Sector</option>');
+
+        $.each(response, function(index, value) {
+
+            $('#sector').append(
+                '<option value="' + value.group_id + '">' +
+                value.group_name +
+                '</option>'
+            );
+
+        });
+        }
+    });
+
+}
+
+function getAreaList() { 
+    let sector = $('#sector').val(); 
+    $.ajax({
+         url: 'followupFiles/promotion/getAreaList.php', 
+         type: 'POST', 
+         data: { sector: sector }, 
+         dataType: 'json', success: function(response) { 
+            $('#area').html('<option value="">Select Area</option>'); 
+            $.each(response, function(index, value) {
+                 $('#area').append( '<option value="' + value.area_id + '">' + value.area_name + '</option>' );
+            });
+        }
+    });
 }
 
 function searchCustomer() {
@@ -648,10 +741,13 @@ function resetEnquiryTable() {
   let followUpFromDate = $("#follow_up_fromdate").val();
   let followUpToDate = $("#follow_up_todate").val();
   let followupType = $("#followuptype").val();
+  let branch_id = $('#branch').val();
+  let group_id = $('#sector').val();
+  let area_id = $('#area').val();
 
   $.post(
     "followupFiles/promotion/resetEnquiryTable.php",
-    { followUpSts, dateType, followUpFromDate, followUpToDate, followupType },
+    { followUpSts, dateType, followUpFromDate, followUpToDate, followupType ,branch_id , group_id, area_id },
     function (html) {
       $("#enquiry_div").empty().html(html);
     },
@@ -667,8 +763,9 @@ function submitEnquiry() {
   let first_name = $("#first_names").val();
   let last_name = $("#last_names").val(); 
   let cus_mob = $("#cus_mob").val();
-  let area = $("#area").val();
-  let enquiry_loan_amt = $("#enquiry_loan_amt").val();
+  let area = $('#areaID').val();
+  let enquiry_loan_amt = $('#enquiry_loan_amt').val(); 
+  let remarks = $('#remarks').val();
   let args = {
     cus_id,
     cus_data,
@@ -676,7 +773,7 @@ function submitEnquiry() {
     last_name,
     cus_mob,
     area,
-    enquiry_loan_amt,
+    enquiry_loan_amt,remarks 
   };
   $.post(
     "followupFiles/promotion/submitEnquiry.php",
@@ -700,7 +797,7 @@ function validateNewCusAdd() {
   let first_names = $("#first_names").val();
   let last_names = $("#last_names").val();
   let cus_mob = $("#cus_mob").val();
-  let area = $("#area").val();
+  let area = $("#areaID").val();
   let enquiry_loan_amt = $("#enquiry_loan_amt").val();
   let screen_name = $("#screen_name").val();
 
@@ -813,28 +910,31 @@ function submitClosed() {
   );
 }
 
-function getUserBasedArea() {
+function getUserBasedArea(area_id) {
   $.ajax({
     url: "followupFiles/promotion/getAreaId.php",
     type: "post",
     dataType: "json",
     success: function (data) {
-      let $area = $("#area");
-      $area.empty().append('<option value="">Select Area</option>');
+        let $area = $("#areaID");
+
+            $area.empty().append( '<option value="">Select Area</option>');
+
       let options = "";
       $.each(data, function (i, item) {
-        options +=
-          '<option value="' +
-          item.area_id +
-          '">' +
-          item.area_name +
-          "</option>";
+          options += '<option value="' + item.area_id + '">' + item.area_name + '</option>';
       });
+
       let $options = $(options);
       $options.sort(function (a, b) {
         return $(a).text().localeCompare($(b).text());
       });
       $area.append($options);
+                  // Select customer area
+            if (area_id != '') {
+
+                $area.val(area_id);
+            }
     },
     error: function (xhr, status, error) {
       console.error("AJAX Error:", error);
@@ -999,6 +1099,9 @@ function showPromotionList(url, tableid, colNo) {
   let followUpFromDate = $("#follow_up_fromdate").val();
   let followUpToDate = $("#follow_up_todate").val();
   let followupType = $("#followuptype").val();
+  let branch_id = $('#branch').val();
+  let group_id = $('#sector').val();
+  let area_id = $('#area').val();
   let re_active = "";
   if (tableid === "re_active_promotion_list") {
     re_active = "re_active_table";
@@ -1013,6 +1116,7 @@ function showPromotionList(url, tableid, colNo) {
     displayStart: getDisplayStart(tableid),
     processing: true,
     serverSide: true,
+    infoCallback: customDataTableInfo,
     serverMethod: "post",
     ajax: {
       url: url,
@@ -1025,6 +1129,9 @@ function showPromotionList(url, tableid, colNo) {
         data.followUpToDate = followUpToDate;
         data.followupType = followupType;
         data.re_active = re_active;
+        data.branch_id = branch_id;
+        data.group_id = group_id;
+        data.area_id = area_id;
       },
     },
     dom: "lBfrtip",
@@ -1377,7 +1484,6 @@ function eventsTable() {
       data: tableData,
       columns: [
         { title: "S.No" },
-        { title: "Date" },
         { title: "Area Name" },
         { title: "Total Customer" },
         { title: "Action" },

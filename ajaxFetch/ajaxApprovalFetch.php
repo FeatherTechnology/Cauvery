@@ -165,12 +165,6 @@ $stmt->execute($params);
 $recordsFiltered = $stmt->rowCount();
 $stmt->closeCursor();
 
-/* ---------------- COUNT TOTAL ---------------- */
-$stmt = $connect->prepare("SELECT COUNT(*) FROM in_verification");
-$stmt->execute();
-$recordsTotal = $stmt->fetchColumn();
-$stmt->closeCursor();
-
 /* ---------------- DATA FORMAT ---------------- */
 $data = [];
 $sno = intval($_POST['start']) + 1;
@@ -238,7 +232,6 @@ foreach ($result as $row) {
 /* ---------------- RESPONSE ---------------- */
 echo json_encode([
     "draw"              => intval($_POST['draw']),
-    "recordsTotal"      => $recordsTotal,
     "recordsFiltered"   => $recordsFiltered,
     "data"              => $data
 ]);

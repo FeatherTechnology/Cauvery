@@ -16,7 +16,8 @@ $records = array();
 $result = $connect->query("SELECT * FROM customer_register where $where");
 if ($result->rowCount() > 0) {
     $row = $result->fetch();
-
+    
+    $records['autogen_cus_id'] = $row['autogen_cus_id'];
     $records['first_name'] = $row['first_name'];
     $records['last_name'] = $row['last_name'];
     $records['dob'] = $row['dob'];

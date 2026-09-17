@@ -1,5 +1,6 @@
 <?php
-include "C:/inetpub/wwwroot/test_mc_app/ajaxconfig.php";
+include '../ajaxconfig.php';
+
 session_start();
 if (isset($_POST['userid'])) {
     $userid = $_POST['userid'];
