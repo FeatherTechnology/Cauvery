@@ -16,21 +16,21 @@ $(document).ready(function () {
         let line_id = $("#region").val();
         let followup_id = $("#zone").val();
 
-         OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status,branch_id,line_id,followup_id);
+        OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status, branch_id, line_id, followup_id);
     });
 
     $(document).on('click', '.personal-info', function (e) {
         e.preventDefault();
         let cus_id = $(this).data('cusid');
-        $.post('followupFiles/promotion/getPersonalInfo.php',{cus_id: cus_id},function (html) {
-                $('#personalInfoDiv').html(html);
-            }
+        $.post('followupFiles/promotion/getPersonalInfo.php', { cus_id: cus_id }, function (html) {
+            $('#personalInfoDiv').html(html);
+        }
         ).fail(function (xhr, status, error) {
             console.log("AJAX Error:", error);
             console.log(xhr.responseText);
-        });   
-     });
-     let branchLoaded = false;
+        });
+    });
+    let branchLoaded = false;
     let regionLoaded = false;
     let zoneLoaded = false;
 
@@ -57,10 +57,24 @@ $(document).ready(function () {
             getFollowupList();
         }
     });
+
+    // Save whenever the user changes a dropdown
+    $('#branch, #region, #zone').on('change', function () {
+        saveDueFollowupFilters();
+    });
+
 });
 
 $(function () {
     getSubStsMapping(); //Call Customer status dropdown.
+
+      // Restore branch/region/zone so back-button/reload doesn't lose the selection
+    let savedDueFilters = getSavedDueFollowupFilters();
+    if (savedDueFilters) {
+        restoreSelectValue($('#branch'), savedDueFilters.branch);
+        restoreSelectValue($('#region'), savedDueFilters.region);
+        restoreSelectValue($('#zone'), savedDueFilters.zone);
+    }
 
     let cummDate = $("#cummDate").val();
     $("#comm_date").val(cummDate);
@@ -74,7 +88,7 @@ $(function () {
     let followup_id = $("#zone").val();
 
     if (cusSts != '') {
-        OnLoadFunctions(cusSts, cummDate, res_sts, comm_sts, call_status,branch_id,line_id,followup_id);
+        OnLoadFunctions(cusSts, cummDate, res_sts, comm_sts, call_status, branch_id, line_id, followup_id);
     }
 });
 
@@ -85,20 +99,22 @@ function getBranchList() {
         data: {},
         dataType: 'json',
         success: function (response) {
+            let currentVal = $('#branch').val(); // remember restored selection
 
-        $('#branch').html('<option value="">Select Branch</option>');
-        $.each(response, function(index, value) {
+            $('#branch').html('<option value="">Select Branch</option>');
+            $.each(response, function (index, value) {
+                $('#branch').append(
+                    '<option value="' + value.branch_id + '">' +
+                    value.branch_name +
+                    '</option>'
+                );
+            });
 
-            $('#branch').append(
-                '<option value="' + value.branch_id + '">' +
-                value.branch_name +
-                '</option>'
-            );
-
-        });
+            if (currentVal) {
+                $('#branch').val(currentVal); // re-apply it after the full list loads
+            }
         }
     });
-   
 }
 
 function getLineList() {
@@ -109,19 +125,27 @@ function getLineList() {
         dataType: 'json',
         success: function (response) {
 
-        $('#region').html('<option value="">Select Region</option>');
-        $.each(response, function(index, value) {
+            let currentVal = $('#region').val(); // remember restored/selected value
 
-            $('#region').append(
-                '<option value="' + value.line_id + '">' +
-                value.line_name +
-                '</option>'
-            );
+            $('#region').html('<option value="">Select Region</option>');
 
-        });
+            $.each(response, function(index, value) {
+
+                $('#region').append(
+                    '<option value="' + value.line_id + '">' +
+                    value.line_name +
+                    '</option>'
+                );
+
+            });
+
+            if (currentVal) {
+                $('#region').val(currentVal); // re-apply after full list loads
+            }
         }
     });
 }
+
 function getFollowupList() {
     $.ajax({
         url: 'followupFiles/promotion/getFollowupList.php',
@@ -130,21 +154,27 @@ function getFollowupList() {
         dataType: 'json',
         success: function (response) {
 
-        $('#zone').html('<option value="">Select Zone</option>');
+            let currentVal = $('#zone').val(); // remember restored/selected value
 
-        $.each(response, function(index, value) {
+            $('#zone').html('<option value="">Select Zone</option>');
 
-            $('#zone').append(
-                '<option value="' + value.due_followup_lines_id + '">' +
-                value.duefollowup_name +
-                '</option>'
-            );
+            $.each(response, function(index, value) {
 
-        });
+                $('#zone').append(
+                    '<option value="' + value.due_followup_lines_id + '">' +
+                    value.duefollowup_name +
+                    '</option>'
+                );
+
+            });
+
+            if (currentVal) {
+                $('#zone').val(currentVal); // re-apply after full list loads
+            }
         }
     });
-
 }
+
 function warningSwal(title, text) {
     Swal.fire({
         title: title,
@@ -156,15 +186,15 @@ function warningSwal(title, text) {
     });
 }
 
-function OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status,branch_id,line_id,followup_id) {
-     if (!cusSts) {
+function OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status, branch_id, line_id, followup_id) {
+    if (!cusSts) {
         warningSwal('Warning!', 'Select Customer Status.');
         return;
     }
 
     $('#due_followup_table').DataTable().destroy();
     var table = $('#due_followup_table').DataTable({
-        // ...getStateSaveConfig('due_followup_table'),
+        ...getStateSaveConfig('due_followup_table'),
         "order": [[0, "desc"]],
         "processing": true,
         "displayStart": getDisplayStart('due_followup_table'),
@@ -219,7 +249,7 @@ function OnLoadFunctions(cusSts, comm_date, res_sts, comm_sts, call_status,branc
             paginationFunction('due_followup_table');
         }
     });
-    // initColVisFeatures(table, 'due_followup_table');
+    initColVisFeatures(table, 'due_followup_table');
 }
 
 function enableDateColoring() {
@@ -267,7 +297,7 @@ function getSubStsMapping() {
 
 }
 
-$(document).on('click', 'a.customer-summary', async function(event) {
+$(document).on('click', 'a.customer-summary', async function (event) {
     event.preventDefault();
     try {
         let cus_id = $(this).data('value');
@@ -289,3 +319,41 @@ $(document).on('click', 'a.customer-summary', async function(event) {
         hideOverlay();
     }
 });
+
+const DUE_FOLLOWUP_FILTER_KEY = 'due_followup_filters';
+
+// Save value + visible label so we can restore without an AJAX call
+function saveDueFollowupFilters() {
+    function getSelected($el) {
+        let el = $el[0];
+        let label = (el && el.selectedIndex >= 0) ? el.options[el.selectedIndex].text : '';
+        return { value: $el.val() || '', label: label };
+    }
+
+    let filters = {
+        branch: getSelected($('#branch')),
+        region: getSelected($('#region')),
+        zone:   getSelected($('#zone'))
+    };
+    sessionStorage.setItem(DUE_FOLLOWUP_FILTER_KEY, JSON.stringify(filters));
+}
+
+function getSavedDueFollowupFilters() {
+    let saved = sessionStorage.getItem(DUE_FOLLOWUP_FILTER_KEY);
+    if (!saved) return null;
+    try {
+        return JSON.parse(saved);
+    } catch (e) {
+        return null;
+    }
+}
+
+// Injects the saved value/label directly as a selected <option> —
+// no AJAX needed, so it works immediately on page load.
+function restoreSelectValue($select, saved) {
+    if (!saved || !saved.value) return;
+    if ($select.find('option[value="' + saved.value + '"]').length === 0) {
+        $select.append($('<option>', { value: saved.value, text: saved.label || saved.value }));
+    }
+    $select.val(saved.value);
+}

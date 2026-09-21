@@ -143,12 +143,12 @@ foreach ($line_ids as $current_line_id) {
 
     // **5. Collection data retrieval**
     $collectionData = [];
-    $colStmt = $connect->prepare("
-        SELECT c.req_id, c.coll_date, c.due_amt_track
-        FROM collection c
-        WHERE c.req_id IN ($id_list) AND DATE(c.coll_date) <= ?
-        ORDER BY c.req_id, c.coll_date
-    ");
+       $colStmt = $connect->prepare("SELECT c.req_id, c.coll_date, c.trans_date, c.due_amt_track,
+        CASE WHEN c.trans_date IS NOT NULL AND c.trans_date <> '0000-00-00' THEN c.trans_date ELSE c.coll_date END AS effective_coll_date
+    FROM collection c
+    WHERE c.req_id IN ($id_list)
+    AND DATE( CASE WHEN c.trans_date IS NOT NULL AND c.trans_date <> '0000-00-00'THEN c.trans_date ELSE c.coll_date END) <= ?
+    ORDER BY c.req_id, effective_coll_date");
     $colStmt->execute([$from_date]);
     while ($col = $colStmt->fetch(PDO::FETCH_ASSOC)) {
         $collectionData[$col['req_id']][] = $col;
@@ -176,7 +176,7 @@ foreach ($line_ids as $current_line_id) {
         $collectedTillMonthStart = 0;
 
         foreach ($collList as $coll) {
-            if (strtotime($coll['coll_date']) < $start_month) {
+            if (strtotime($coll['effective_coll_date']) < $start_month) {
                 $collectedTillMonthStart += (int)$coll['due_amt_track'];
             }
         }
@@ -228,10 +228,9 @@ foreach ($line_ids as $current_line_id) {
             $commitmentData[$row['req_id']] = ['ftype' => $row['ftype'], 'fstatus' => (int)$row['fstatus']];
         }
 
-        $paymentStmt = $connect->prepare("
-            SELECT DISTINCT c.req_id FROM collection c
-            WHERE c.req_id IN ($balance_req_str) AND DATE(c.coll_date) BETWEEN ? AND ? AND c.due_amt_track > 0
-        ");
+    $paymentStmt = $connect->prepare("SELECT DISTINCT c.req_id FROM collection c
+    WHERE c.req_id IN ($balance_req_str) AND DATE( CASE WHEN c.trans_date IS NOT NULL  AND c.trans_date <> '0000-00-00' THEN c.trans_date ELSE c.coll_date END) BETWEEN ? AND ?
+    AND c.due_amt_track > 0");
         $paymentStmt->execute([$from_date, $to_date]);
         while ($row = $paymentStmt->fetch(PDO::FETCH_ASSOC)) {
             $payment_cache[$row['req_id']] = true;

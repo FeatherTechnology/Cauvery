@@ -34,6 +34,12 @@ if ($currentQry->rowCount() > 0) {
     /* ============================
        2. GET PREVIOUS ISSUED LOAN
     ============================ */
+     $sql = $connect->query("SELECT COUNT(*) AS loan_count
+        FROM request_creation req
+        WHERE req.cus_id = '$cus_id' AND req.cus_status >= 14 AND req.req_id < '$currentReqId'");
+
+        $info = $sql->fetch(PDO::FETCH_ASSOC);
+        $records['loan_count'] = !empty($info['loan_count']) ? $info['loan_count'] : 0;
 
     $loanQry = $connect->query(" SELECT req.req_id,req.cus_status,cs.created_date AS closed_date,cc.closing_date,cs1.sub_status,
             (SELECT MAX(c.coll_date) FROM collection c WHERE c.req_id = req.req_id AND c.coll_sub_status='Due Nil') AS due_nil_date
@@ -44,7 +50,6 @@ if ($currentQry->rowCount() > 0) {
         WHERE req.cus_id='$cus_id' AND req.cus_status >= 14 AND req.req_id < '$currentReqId'
         ORDER BY req.req_id DESC LIMIT 1");
 
-    $records['loan_count'] = $loanQry->rowCount();
     if ($loanQry->rowCount() > 0) {
         $loan = $loanQry->fetch(PDO::FETCH_ASSOC);
         $status = (int)$loan['cus_status'];
@@ -101,7 +106,7 @@ if ($currentQry->rowCount() > 0) {
 }
 
 if ($records['loan_count'] > 0) {
-    $result = $connect->query("SELECT created_date FROM `loan_issue` where cus_id='$cus_id' and balance_amount = 0 ORDER BY created_date LIMIT 1");
+    $result = $connect->query("SELECT created_date FROM `loan_issue` where cus_id = '$cus_id' and balance_amount = 0 ORDER BY created_date LIMIT 1");
     $res = $result->fetch();
     $first_loan_date = date('d-m-Y', strtotime($res['created_date']));
 
@@ -116,10 +121,8 @@ if ($records['loan_count'] > 0) {
     $months = $diff->m; // number of months in difference
 
     $records['travel'] = $months . ' Months,' . $years . ' Years.';
-} else {
-    $records['first_loan'] = '';
-    $records['travel'] = '';
 }
+
 echo json_encode($records);
 
 $connect = null;

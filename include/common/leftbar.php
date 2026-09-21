@@ -74,6 +74,7 @@ $modules = [
 		'edit_bank_clearance',
 		'finance_insight',
 		'hand_cash_balance_sheet',
+		'agent_balance_sheet',
 		'edit_accounts_loan_issue',
 		'accounts_loan_issue'
 	],
@@ -725,6 +726,11 @@ if (!empty($getUser) && is_array($getUser)) {
 								<?php if (($leftbar_hand_cash_balance_sheet ?? 1) == 0) { ?>
 									<li>
 										<a href="hand_cash_balance_sheet"><i class='icon-dollar-sign'></i>Hand Cash Balance Sheet</a>
+									</li>
+								<?php  } ?>
+								<?php if (($leftbar_agent_balance_sheet ?? 1) == 0) { ?>
+									<li>
+										<a href="agent_balance_sheet"><i class='icon-magnet'></i>Agent Balance Sheet</a>
 									</li>
 								<?php  } ?>
 								<?php if (($leftbar_accounts_loan_issue ?? 1) == 0) { ?>

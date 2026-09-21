@@ -1,5 +1,9 @@
-.card {
+.card:not(.ag_card) {
     min-height: 105vh;
+    margin: 12px 5px;
+}
+
+.ag_card {
     margin: 12px 5px;
 }
 
@@ -76,7 +80,7 @@ table tr td:not(:first-child) {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.toggle-button.active:not(#by_user) {
+.toggle-button.active:not(#by_user, #ag_view_type, #ag_namewise) {
     background-color: #0C70AB;
     color: white;
 }

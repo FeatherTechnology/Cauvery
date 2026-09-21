@@ -560,10 +560,7 @@ foreach ($allCollections as $row) {
         $loanFrom['due_method_scheme'] == '1'
     ) {
 
-        if (
-            ($collDate !== null && $collDate < $dueStartDate) ||
-            ($transDate !== null && $transDate < $dueStartDate)
-        ) {
+        if (($collDate !== null && getMonthKey($collDate) < getMonthKey($dueStartDate)) || ($transDate !== null && getMonthKey($transDate) < getMonthKey($dueStartDate))) {
             $includeBefore = true;
         }
     }
@@ -2326,7 +2323,7 @@ $pendingval =
     - $totalPreClose;
 
 
-echo $pendingval;
+echo max(0,$pendingval);
 
 ?>
 
@@ -2348,11 +2345,12 @@ $payableval =
  * don't collect more than balance
  */
 
-echo (
+$payable_val= (
     $payableval > $bal_amt
         ? $bal_amt
         : $payableval
 );
+echo max(0,$payable_val)
 
 ?>
 
@@ -2505,6 +2503,7 @@ echo moneyFormatIndia(
 
 <td></td>
 
+<td></td>
 <td></td>
 
 </tr>
