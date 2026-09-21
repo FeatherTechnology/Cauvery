@@ -131,7 +131,7 @@ if (!empty($call_status)) {
 $searchValue = $_POST['search'] ?? '';
 $search = '';
 if ($searchValue !== '') {
-    $search = "AND (ii.cus_id LIKE ? OR cr.autogen_cus_id LIKE ? OR cp.cus_name LIKE ? OR cr.mobile1  LIKE ? OR cr.mobile2  LIKE ? OR cs.sub_status LIKE ?)";
+    $search = "AND (ii.cus_id LIKE ? OR cr.autogen_cus_id LIKE ? OR CONCAT(cp.first_name,' ', cp.last_name) LIKE ? OR cr.mobile1  LIKE ? OR cr.mobile2  LIKE ? OR cs.sub_status LIKE ?)";
     $likeVal = '%' . $searchValue . '%';
     $queryParams[] = $likeVal;
     $queryParams[] = $likeVal;

@@ -1477,11 +1477,11 @@ $(document).on("click", "#submitFamInfoBtn", function () {
     //   $("#famaadharCheck").hide();
     // }
 
-    if (famData.relation_Mobile == "" || famData.relation_Mobile.length < 10) {
-      $("#fammobileCheck").show();
-    } else {
-      $("#fammobileCheck").hide();
-    }
+    // if (famData.relation_Mobile == "" || famData.relation_Mobile.length < 10) {
+    //   $("#fammobileCheck").show();
+    // } else {
+    //   $("#fammobileCheck").hide();
+    // }
 
     // if (famData.relation_dob == "") {
     //   $("#famdobCheck").show();
