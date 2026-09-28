@@ -68,24 +68,27 @@ if (isset($_POST["CustomerStatus"]) && $_POST["CustomerStatus"] !== '') {
     WHERE ii.status = 0 AND (ii.cus_status BETWEEN 14 AND 17) $line_cndtn $cussts_cndtn"; // Only Issued and all lines not relying on sub area// 14 and 17 means collection entries, 17 removed from issue list
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
-    $search         = $_POST['search'];
+
+    $search = $_POST['search'];
+
     $searchPrefix   = $search . '%';
     $searchContains = '%' . $search . '%';
 
-    $baseQuery .= " AND (cr.cus_id LIKE ?
+    $baseQuery .= " AND (
+        cr.cus_id LIKE ?
         OR cr.autogen_cus_id LIKE ?
         OR CONCAT(cr.first_name,' ', cr.last_name) LIKE ?
         OR alc.area_name LIKE ?
         OR alm.line_name LIKE ?
-        OR cr.mobile1 LIKE ? ) ";
+        OR cr.mobile1 LIKE ?
+    ) ";
 
-    $params[] = $searchPrefix;    // cr.cus_id: same prefix-only match as the original
-    $params[] = $searchPrefix;  // cr.autogen_cus_id
-    $params[] = $searchContains;  // CONCAT(cr.first_name,' ', cr.last_name)
-    $params[] = $searchContains;  // alc.area_name
-    $params[] = $searchContains;  
-    $params[] = $searchContains;  // alm.line_name
-    $params[] = $searchPrefix;  // cr.mobile1
+    $params[] = $searchPrefix;      // cr.cus_id
+    $params[] = $searchPrefix;      // cr.autogen_cus_id
+    $params[] = $searchContains;    // customer name
+    $params[] = $searchContains;    // area name
+    $params[] = $searchContains;    // line name
+    $params[] = $searchPrefix;      // mobile
 }
 
 // lightweight COUNT(*) over the grouped id list. ----
