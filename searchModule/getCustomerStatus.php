@@ -17,14 +17,11 @@ $sql = "SELECT base.*, lcc.loan_category_creation_name, cs.closed_sts, cs.consid
                 CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_category
                      WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.loan_category
                      ELSE req.loan_category END AS loan_category,
-                CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.sub_category
-                     WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.sub_category
-                     ELSE req.sub_category END AS sub_category,
                 CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_amt
                      WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.loan_amt
                      ELSE req.loan_amt END AS loan_amt,
-                CASE WHEN req.cus_status IN (12,2,6,7,3,13,14,15,16,17,20,21,22,23,24,25) THEN cp.cus_name
-                     ELSE req.cus_name END AS cus_name,
+                CASE WHEN req.cus_status IN (12,2,6,7,3,13,14,15,16,17,20,21,22,23,24,25) THEN CONCAT(cp.first_name, ' ', cp.last_name)
+                     ELSE  CONCAT(req.first_name, ' ', req.last_name) END AS cus_name,
                 req.created_date
             FROM request_creation req
             LEFT JOIN customer_profile cp ON req.req_id = cp.req_id
@@ -58,7 +55,6 @@ foreach ($rows as $i => $row) {
         'code'          => $row['code'],
         'doc_id'        => $row['doc_id'],
         'loan_category' => $row['loan_category_creation_name'],
-        'sub_category'  => $row['sub_category'],
         'loan_amt'      => $row['loan_amt'],
         'remark'        => $row['prompt_remark'] ?? '',
     ];
@@ -124,7 +120,6 @@ foreach ($rows as $i => $row) {
                 <td><?php echo $record['code']; ?></td>
                 <td><?php echo $record['doc_id']; ?></td>
                 <td><?php echo $record['loan_category']; ?></td>
-                <td><?php echo $record['sub_category']; ?></td>
                 <td><?php echo moneyFormatIndia($record['loan_amt']); ?></td>
                 <td><?php echo $record['status'] ?? ''; ?></td>
                 <td><?php echo $record['sub_status'] ?? ''; ?></td>
@@ -179,10 +174,12 @@ function getCollectionStatusMap($connect, $cus_id, $user_id)
     $od_sts      = array_map('boolFromPost', explodeOrEmpty($_POST["od_sts"] ?? ''));
     $due_nil_sts = array_map('boolFromPost', explodeOrEmpty($_POST["due_nil_sts"] ?? ''));
     $closed_sts  = array_map('boolFromPost', explodeOrEmpty($_POST["closed_sts"] ?? ''));
-    $bal_amt     = array_map(
-        fn($v) => trim($v) === '' ? 0.0 : (float) trim($v),
-        explodeOrEmpty($_POST["bal_amt"] ?? '')
-    );
+$bal_amt = array_map(
+    function ($v) {
+        return trim($v) === '' ? 0.0 : (float) trim($v);
+    },
+    explodeOrEmpty($_POST["bal_amt"] ?? '')
+);
 
     $consider_lvl_arr = [1 => 'Bronze', 2 => 'Silver', 3 => 'Gold', 4 => 'Platinum', 5 => 'Diamond'];
 
@@ -195,10 +192,12 @@ function getCollectionStatusMap($connect, $cus_id, $user_id)
     $stmt->execute([':cus_id' => $cus_id]);
     $loanRows = $stmt->fetchAll();
 
-    $closedReqIds = array_column(
-        array_filter($loanRows, fn($r) => (int) $r['cus_status'] > 20),
-        'req_id'
-    );
+$closedReqIds = array_column(
+    array_filter($loanRows, function ($r) {
+        return (int) $r['cus_status'] > 20;
+    }),
+    'req_id'
+);
     $closedMap = [];
     if ($closedReqIds) {
         $in = implode(',', array_fill(0, count($closedReqIds), '?'));
@@ -239,12 +238,14 @@ function getCollectionStatusMap($connect, $cus_id, $user_id)
         } else {
             $c = $closedMap[$req_id] ?? null;
             if ($c) {
-                $status = match ((string) $c['closed_sts']) {
-                    '1'     => 'Consider - ' . ($consider_lvl_arr[(int) $c['consider_level']] ?? ''),
-                    '2'     => 'Waiting List',
-                    '3'     => 'Block List',
-                    default => $status,
-                };
+               $closedSts = (string) $c['closed_sts'];
+                    if ($closedSts === '1') {
+                        $status = 'Consider - ' . ($consider_lvl_arr[(int) $c['consider_level']] ?? '');
+                    } elseif ($closedSts === '2') {
+                        $status = 'Waiting List';
+                    } elseif ($closedSts === '3') {
+                        $status = 'Block List';
+                    }
             }
         }
 
@@ -256,12 +257,15 @@ function getCollectionStatusMap($connect, $cus_id, $user_id)
 
 function statusByCusStatus($cus_status, $default)
 {
+    $cus_status = (string) $cus_status;
 
-return match ((string) $cus_status) {
-        '15'    => 'Error',
-        '16'    => 'Legal',
-        default => $default,
-    };
+    if ($cus_status === '15') {
+        return 'Error';
+    } elseif ($cus_status === '16') {
+        return 'Legal';
+    }
+
+    return $default;
 }
     function explodeOrEmpty($val)
 {
