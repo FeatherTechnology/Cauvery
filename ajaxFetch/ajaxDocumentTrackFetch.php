@@ -91,7 +91,7 @@ foreach ($result as $row) {
     $cus_name = $row['customer_name'];
     $track_status = $row['track_status'];
     
-    $doc_keeper_name = ($track_status == '1' || $userid != $row['insert_login_id']) ? $row['insert_login_name'] : 'Main Branch';
+    $doc_keeper_name = ($track_status == '1' || ($track_status == '2' && $userid != $row['insert_login_id'])) ? $row['insert_login_name'] : 'Main Branch';
 
     $replace_doc_action =[];
     $replace_doc_reqid =[];
@@ -157,6 +157,7 @@ foreach ($result as $row) {
         $row['line_name'], //line name column
         $doc_keeper_name, //document keeper name column
         !empty($replace_doc_action) ? implode('<br>', $replace_doc_action) : '',
+         "<a href='' data-reqid ='$req_id' data-cusid='$cus_id' data-autogencusid='".$row['autogen_cus_id']."' data-cusname='$cus_name' data-docid='".$row['doc_id']."' class='loan-calc' data-toggle='modal' data-target='.viewDocModal'><span class='icon-eye' style='font-size: 12px;position: relative;top: 2px;'></span></a>", //Loan Calculation form view only.
         $action
     ];
 }

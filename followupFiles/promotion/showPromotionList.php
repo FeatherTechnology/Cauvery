@@ -65,10 +65,10 @@ if ($_POST['dateType']) {
 if ($_POST['branch_id']) {
     $baseqry .= "AND bc.branch_id ='".$_POST['branch_id']."' ";
 }
-if ($_POST['group_id']) {
+if ($_POST['area_id']) {
         $baseqry .= "AND al.area_id ='".$_POST['area_id']."' ";
 }
-if ($_POST['area_id']) {
+if ($_POST['group_id']) {
      $baseqry .= "AND agm.map_id ='".$_POST['group_id']."' ";
 }
 

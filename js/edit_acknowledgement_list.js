@@ -65,10 +65,11 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('click', '.move_issue', function () {
-            var req_id = $(this).val();
-            var cus_id = $(this).data('cusid');
-            if (confirm('Do You want to Send this for Issue?')) {
+   $(document).on('click', '.move_issue', function () {
+        var req_id = $(this).val();
+        var cus_id = $(this).data('cusid');
+        if (confirm('Do You want to Send this for Issue?')) {
+            getSpamCustomerDetails(cus_id, function(){
                 $.ajax({
                     url: 'verificationFile/sendToIssue.php',
                     dataType: 'json',
@@ -97,13 +98,15 @@ $(document).ready(function () {
                                 title: response,
                                 icon: 'error',
                                 showConfirmButton: true,
-                                confirmButtonColor: '#0C70AB'
+                                confirmButtonColor: '#009688'
                             });
                         }
                     }
-                })
-            }
-        });
+                }); //ajax end.
+            }); //function end.
+        }
+    });
+
 
     $(document).on('click', '#sumit_add_lfollow', function () {
         if (validateLoanfollowup() == true) {
@@ -276,27 +279,6 @@ function getBranchDropdown(preselect = []) {
         });
         branchChoices.setChoices(items, 'value', 'label', true);
     }, 'json');
-}
-
-function getSectorDropdown(module, branch = [], preselect = []) {
-    sectorChoices.clearStore();
-    return $.ajax({
-        url: 'common_files/get_sector_name.php',
-        type: 'POST',
-        data: { module: module, branch: branch },
-        dataType: 'json',
-        success: function (response) {
-            let items = [];
-            $.each(response, function (i, val) {
-                items.push({
-                    value: val.id,
-                    label: val.name,
-                    selected: preselect.includes(String(val.id))
-                });
-            });
-            sectorChoices.setChoices(items, 'value', 'label', true);
-        }
-    });
 }
 
 function getLoanCatName(module, preselect = []) {

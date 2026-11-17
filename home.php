@@ -14,9 +14,8 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : null;
 
 include('api/main.php'); // Database Connection File   
 
-if (isset($getuserdetails['download_access'])) {
-	define('DACC', $getuserdetails['download_access']);
-}
+$dwldAcc = $getuserdetails['download_access'] ?? 0;
+define('DACC', $dwldAcc);
 ?>
 
 <!doctype html>
@@ -434,6 +433,11 @@ if (isset($getuserdetails['download_access'])) {
 				<?php include "include/templates/confirmation_followup.php" ?>
 			<?php } else ?>
 
+			<!-- Search-->
+			<?php if ($current_page == 'search_screen') { ?>
+				<?php include "include/templates/search_screen.php" ?>
+			<?php } else ?>
+
 			<!-- Reports -->
 			<!-- Ledger Report -->
 			<?php if ($current_page == 'ledger_report') { ?>
@@ -618,6 +622,11 @@ if (isset($getuserdetails['download_access'])) {
 			<!-- Back Office Count report -->
 			<?php if ($current_page == 'back_office_count_report') { ?>
 				<?php include "include/templates/back_office_count_report.php" ?>
+			<?php } else ?>
+			
+			<!-- Reactive Count report -->
+			<?php if ($current_page == 'reactive_count_report') { ?>
+				<?php include "include/templates/reactive_count_report.php" ?>
 			<?php } else ?>
 
 			<!-- Concern report -->

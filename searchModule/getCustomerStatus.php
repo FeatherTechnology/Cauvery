@@ -1,9 +1,16 @@
-<?php
-session_start();
-$user_id = $_SESSION["userid"];
-include('../ajaxconfig.php');
-include('../moneyFormatIndia.php');
+<style>
+    .img-show {
+        height: 150px;
+        width: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: white;
+    }
+</style>
 
+<?php
+include "../ajaxconfig.php";
+include "../moneyFormatIndia.php";
 
 if (isset($_POST['cus_id'])) {
     $cus_id = $_POST['cus_id'];
@@ -14,18 +21,26 @@ $sql = "SELECT base.*, lcc.loan_category_creation_name, cs.closed_sts, cs.consid
             SELECT req.req_id, req.prompt_remark, req.cus_status, req.cus_id, ad.doc_id,
                 CASE WHEN req.cus_status >= 14 THEN ii.updated_date ELSE req.dor END AS updated_date,
                 CASE WHEN req.cus_status >= 14 THEN ii.loan_id ELSE req.req_code END AS code,
-                CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_category
+                CASE WHEN req.cus_status IN (2,6,7,12) THEN vlc.loan_category
                      WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.loan_category
                      ELSE req.loan_category END AS loan_category,
-                CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.sub_category
-                     WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.sub_category
-                     ELSE req.sub_category END AS sub_category,
-                CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_amt
+                CASE WHEN req.cus_status IN (2,6,7,12) THEN vlc.loan_amt
                      WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.loan_amt
                      ELSE req.loan_amt END AS loan_amt,
-                CASE WHEN req.cus_status IN (12,2,6,7,3,13,14,15,16,17,20,21,22,23,24,25) THEN cp.cus_name
-                     ELSE req.cus_name END AS cus_name,
-                req.created_date
+                CASE WHEN req.cus_status IN (2,3,6,7,12,13,14,15,16,17,20,21,22,23,24,25) THEN CONCAT(cp.first_name, ' ', cp.last_name)
+                     ELSE CONCAT(req.first_name, ' ', req.last_name) END AS cus_name,
+                req.created_date,
+                cp.cus_status AS profile_cus_status,
+                vlc.cus_status AS verification_cus_status,
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1
+                        FROM verification_documentation vd
+                        WHERE vd.req_id = req.req_id
+                        AND vd.cus_status = 11
+                    ) THEN 1
+                    ELSE 0
+                END AS documentation_submitted
             FROM request_creation req
             LEFT JOIN customer_profile cp ON req.req_id = cp.req_id
             LEFT JOIN verification_loan_calculation vlc ON req.req_id = vlc.req_id
@@ -43,7 +58,7 @@ $stmt->execute([':cus_id' => $cus_id]);
 $rows = $stmt->fetchAll();
 
 // Precompute collection status for ALL of this customer's issued loans in one query
-$collectionStatusMap = getCollectionStatusMap($connect, $cus_id, $user_id);
+$collectionStatusMap = getCollectionStatusMap($connect, $cus_id);
 
 $closed_status_labels = ['', 'Consider', 'Waiting List', 'Block List'];
 $statusMapping = getStatusMapping();
@@ -58,7 +73,6 @@ foreach ($rows as $i => $row) {
         'code'          => $row['code'],
         'doc_id'        => $row['doc_id'],
         'loan_category' => $row['loan_category_creation_name'],
-        'sub_category'  => $row['sub_category'],
         'loan_amt'      => $row['loan_amt'],
         'remark'        => $row['prompt_remark'] ?? '',
     ];
@@ -73,8 +87,7 @@ foreach ($rows as $i => $row) {
         if ($cus_status >= 21) {
             $records[$i]['sub_status'] = $closed_status_labels[(int) ($row['closed_sts'] ?? 0)];
         }
-
-}
+    }
 
     if ($cus_status >= 14 && $cus_status < 21) {
         $records[$i]['doc_status'] = getDocumentStatus($connect, $req_id) === 'pending'
@@ -89,7 +102,7 @@ foreach ($rows as $i => $row) {
         $records[$i]['doc_status'] = '';
     }
 
-    $records[$i]['info_action']    = buildInfoActions($cus_id, $req_id, $cus_status);
+    $records[$i]['info_action']    = buildInfoActions($cus_id, $req_id, $cus_status, $row['profile_cus_status'], $row['verification_cus_status'], $row['documentation_submitted']);
     $records[$i]['chart_action']   = buildChartActions($cus_id, $req_id, $cus_status);
     $records[$i]['summary_action'] = buildSummaryActions($cus_id, $req_id, $cus_status, $row['cus_name']);
 }
@@ -109,8 +122,8 @@ foreach ($rows as $i => $row) {
         <tr>
             <th>Status</th>
             <th>Sub Status</th>
-            <th>Status</th>
             <th>Cancel/Revoke Remark</th>
+            <th>Status</th>
             <th>Info</th>
             <th>Chart</th>
             <th>Summary</th>
@@ -124,11 +137,10 @@ foreach ($rows as $i => $row) {
                 <td><?php echo $record['code']; ?></td>
                 <td><?php echo $record['doc_id']; ?></td>
                 <td><?php echo $record['loan_category']; ?></td>
-                <td><?php echo $record['sub_category']; ?></td>
                 <td><?php echo moneyFormatIndia($record['loan_amt']); ?></td>
                 <td><?php echo $record['status'] ?? ''; ?></td>
                 <td><?php echo $record['sub_status'] ?? ''; ?></td>
-                 <td><?php echo $record['remark'] ?? ''; ?></td>
+                <td><?php echo $record['remark'] ?? ''; ?></td>
                 <td><?php echo $record['doc_status']; ?></td>
                 <td><?php echo $record['info_action']; ?></td>
                 <td><?php echo $record['chart_action']; ?></td>
@@ -139,10 +151,11 @@ foreach ($rows as $i => $row) {
 </table>
 <input type="hidden" name="docSts" id="docSts">
 <div id="printcollection" style="display: none"></div>
+
 <?php
 function getStatusMapping()
 {
-        static $map = null;
+    static $map = null;
     if ($map === null) {
         $map = [
             0  => ['status' => 'Request', 'sub_status' => 'Requested'],
@@ -173,7 +186,8 @@ function getStatusMapping()
     }
     return $map;
 }
-function getCollectionStatusMap($connect, $cus_id, $user_id)
+
+function getCollectionStatusMap($connect, $cus_id)
 {
     $pending_sts = array_map('boolFromPost', explodeOrEmpty($_POST["pending_sts"] ?? ''));
     $od_sts      = array_map('boolFromPost', explodeOrEmpty($_POST["od_sts"] ?? ''));
@@ -212,11 +226,10 @@ function getCollectionStatusMap($connect, $cus_id, $user_id)
     $curdate = date('Y-m-d');
     $result = [];
 
-        foreach ($loanRows as $index => $row) {
+    foreach ($loanRows as $index => $row) {
         $req_id     = $row['req_id'];
         $cus_status = (int) $row['cus_status'];
         $currentBal = $bal_amt[$index] ?? 0;
-
         $isPending  = $pending_sts[$index] ?? false;
         $isOd       = $od_sts[$index] ?? false;
         $isDueNil   = $due_nil_sts[$index] ?? false;
@@ -256,14 +269,14 @@ function getCollectionStatusMap($connect, $cus_id, $user_id)
 
 function statusByCusStatus($cus_status, $default)
 {
-
-return match ((string) $cus_status) {
+    return match ((string) $cus_status) {
         '15'    => 'Error',
         '16'    => 'Legal',
         default => $default,
     };
 }
-    function explodeOrEmpty($val)
+
+function explodeOrEmpty($val)
 {
     return $val !== '' ? explode(',', $val) : [];
 }
@@ -272,42 +285,65 @@ function boolFromPost($value): bool
 {
     return in_array(strtolower(trim((string) $value)), ['1', 'true', 'yes'], true);
 }
+
 function getDocumentStatus($connect, $req_id)
 {
-    $response1 = 'completed';
-    $response2 = 'completed';
-    $response3 = 'completed';
-   $sts_qry = $connect->prepare("SELECT doc_sts FROM acknowlegement_documentation WHERE req_id = :req_id");
+    $response = 'completed';
+    $sts_qry = $connect->prepare("SELECT doc_sts FROM acknowlegement_documentation WHERE req_id = :req_id");
     $sts_qry->execute([':req_id' => $req_id]);
-    foreach ($sts_qry->fetchAll() as $sts_row) {
+    $sts_row = $sts_qry->fetch();
         if ($sts_row['doc_sts'] == 'NO') {
-            $response3 = 'pending';
+        $response = 'pending';
+    }
+
+    return ($response === 'completed') ? 'completed' : 'pending';
+}
+
+function buildInfoActions($cus_id, $req_id, $cus_status, $profile_cus_status = null, $verification_cus_status = null, $documentation_submitted = 0) {
+    $cus_id = htmlspecialchars((string)$cus_id, ENT_QUOTES);
+    $req_id = htmlspecialchars((string)$req_id, ENT_QUOTES);
+    $html = "<div class='dropdown'>
+                <button class='btn btn-outline-secondary'>
+                    <i class='fa'>&#xf107;</i>
+                </button>
+                <div class='dropdown-content'>";
+
+    // Always show Personal Info
+    $html .= "<a class='personal-info' data-toggle='modal' data-target='#personalInfoModal' data-cusid='{$cus_id}'><span>Personal Info</span></a>";
+    // Statuses that should show tabs CONDITIONALLY (only what was actually submitted)
+    $conditionalStatuses = [4, 5, 8, 9, 10,11,12];
+    /*Normal flow* Anything except Cancel / Revoke / status 10,11,12*/
+    if ($cus_status >= 2 && !in_array($cus_status, $conditionalStatuses, true)) {
+        $html .= "<a class='cust-profile' data-reqid='{$req_id}'data-cusid='{$cus_id}' data-cussts='{$cus_status}'><span>Customer Profile</span></a>";
+
+        $html .= "<a class='documentation' data-reqid='{$req_id}'data-cusid='{$cus_id}' data-cussts='{$cus_status}'><span>Documentation</span></a>";
+
+        $html .= "<a class='loan-calc' data-reqid='{$req_id}'data-cusid='{$cus_id}' data-cussts='{$cus_status}'><span>Loan Calculation</span></a>";
+    }
+    /* Cancel / Revoke / status 10 Show only the stages that were actually submitted */
+    if (in_array($cus_status, $conditionalStatuses, true)) {
+
+        // Customer Profile submitted
+        if ((int)$profile_cus_status === 10) {
+            $html .= "<a class='cust-profile' data-reqid='{$req_id}' data-cusid='{$cus_id}' data-cussts='{$cus_status}'><span>Customer Profile</span></a>";
+        }
+
+        // Documentation submitted
+        if ((int)$documentation_submitted === 1) {
+            $html .= "<a class='documentation' data-reqid='{$req_id}' data-cusid='{$cus_id}' data-cussts='{$cus_status}'><span>Documentation</span></a>";
+        }
+
+        // Loan Calculation submitted
+        if ((int)$verification_cus_status === 12) {
+            $html .= "<a class='loan-calc' data-reqid='{$req_id}' data-cusid='{$cus_id}' data-cussts='{$cus_status}'><span>Loan Calculation</span></a>";
         }
     }
 
-    $response4 = 'completed';
-     return ($response1 === 'completed' && $response2 === 'completed'
-        && $response3 === 'completed' && $response4 === 'completed')
-        ? 'completed' : 'pending';
-}
-
-function buildInfoActions($cus_id, $req_id, $cus_status)
-{
-    $cus_id = htmlspecialchars((string) $cus_id, ENT_QUOTES);
-    $req_id = htmlspecialchars((string) $req_id, ENT_QUOTES);
-
-    $html = "<div class='dropdown'><button class='btn btn-outline-secondary'><i class='fa'>&#xf107;</i></button><div class='dropdown-content'> ";
-    $html .= "<a class='personal-info' data-toggle='modal' data-target='#personalInfoModal' data-cusid='{$cus_id}'><span>Personal Info</span></a>";
-
-    if ($cus_status >= 2 && !in_array($cus_status, [4, 5, 8, 9], true)) {
-        $html .= "<a class='cust-profile' data-reqid='{$req_id}' data-cusid='{$cus_id}'><span>Customer Profile</span></a>
-            <a class='documentation' data-reqid='{$req_id}' data-cusid='{$cus_id}'><span>Documentation</span></a>
-            <a class='loan-calc' data-reqid='{$req_id}' data-cusid='{$cus_id}'><span>Loan Calculation</span></a>";
-    }
-
     $html .= "</div></div>";
+
     return $html;
 }
+
 function buildChartActions($cus_id, $req_id, $cus_status)
 {
     $cus_id = htmlspecialchars((string) $cus_id, ENT_QUOTES);
@@ -322,6 +358,9 @@ function buildChartActions($cus_id, $req_id, $cus_status)
     }
     if ($cus_status >= 14 && $cus_status <= 20) {
         $html .= "<a><span data-toggle='modal' data-target='#commitmentChart' class='commitment-chart' data-reqid='{$req_id}' data-cusid='{$cus_id}'> Commitment Chart </span></a>";
+    }
+    if ($cus_status > 20) {
+        $html .= "<a><span data-toggle='modal' data-target='#commitmentChart' class='commitment-count-chart' data-reqid='{$req_id}'> Commitment Count Chart </span></a>";
     }
 
     $html .= "</div></div>";
@@ -345,22 +384,10 @@ function buildSummaryActions($cus_id, $req_id, $cus_status, $cus_name)
     return $html;
 }
 
+// Close the database connection
+$connect = null;
 ?>
 
-
-<style>
-    .dropdown-content {
-        color: black;
-    }
-
-    .img-show {
-        height: 150px;
-        width: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        background-color: white;
-    }
-</style>
 <script>
     //datatable initialization and other link click
     var table = $('#custStatusTable').DataTable();
@@ -374,6 +401,7 @@ function buildSummaryActions($cus_id, $req_id, $cus_status, $cus_name)
             [10, 25, 50, -1],
             [10, 25, 50, "All"]
         ],
+        columnDefs: commonColumnDefs,
         dom: 'lBfrtip',
         buttons: [{
                 extend: 'excel',
@@ -403,8 +431,3 @@ function buildSummaryActions($cus_id, $req_id, $cus_status, $cus_name)
         customerStatusOnClickEvents();
     });
 </script>
-
-<?php
-// Close the database connection
-$connect = null;
-?>

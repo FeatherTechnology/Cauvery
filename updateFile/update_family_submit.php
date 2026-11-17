@@ -25,14 +25,15 @@ $relation_Income         = $_POST['relation_Income'];
 $relation_Blood          = $_POST['relation_Blood'];
 $famTableId              = $_POST['famTableId'];
 $authorize               = ($_POST['authorize'] == 1) ? 1 : 0;
+$fam_mem_mark_as_spam    = $_POST['fam_mem_mark_as_spam'];
 
 
 if($famTableId == ''){
 
- $insert_qry = $connect ->query("INSERT INTO `verification_family_info`(`cus_id`,`first_name`, `last_name`, `relationship`,`authorize`, `other_remark`, `other_address`, `relation_dob`, `relation_age`, `relation_live_deceased`, `relation_aadhar`, `relation_Mobile`, `relation_Occupation`, `relation_Income`, `relation_Blood`) VALUES ('$cus_id','$fam_first_name ','$fam_last_name ','$relationship','$authorize','$other_remark','$other_address ','$relation_dob','$relation_age','$relation_live_deceased','$relation_aadhar','$relation_Mobile','$relation_Occupation','$relation_Income','$relation_Blood')");
+ $insert_qry = $connect ->query("INSERT INTO `verification_family_info`(`cus_id`,`first_name`, `last_name`, `relationship`,`authorize`, `other_remark`, `other_address`, `relation_dob`, `relation_age`, `relation_live_deceased`, `relation_aadhar`, `relation_Mobile`, `relation_Occupation`, `relation_Income`, `relation_Blood`, `mark_as_spam`) VALUES ('$cus_id','$fam_first_name ','$fam_last_name ','$relationship','$authorize','$other_remark','$other_address ','$relation_dob','$relation_age','$relation_live_deceased','$relation_aadhar','$relation_Mobile','$relation_Occupation','$relation_Income','$relation_Blood','$fam_mem_mark_as_spam')");
 }
 else{
- $update = $connect->query("UPDATE `verification_family_info` SET `cus_id`='$cus_id',`first_name`='$fam_first_name', `last_name`='$fam_last_name',`relationship`='$relationship',`authorize`='$authorize',`other_remark`='$other_remark',`other_address`='$other_address',`relation_dob`='$relation_dob',`relation_age`='$relation_age',`relation_live_deceased`='$relation_live_deceased',`relation_aadhar`='$relation_aadhar',`relation_Mobile`='$relation_Mobile',`relation_Occupation`='$relation_Occupation',`relation_Income`='$relation_Income',`relation_Blood`='$relation_Blood' WHERE id = '$famTableId ' ");
+ $update = $connect->query("UPDATE `verification_family_info` SET `cus_id`='$cus_id',`first_name`='$fam_first_name', `last_name`='$fam_last_name',`relationship`='$relationship',`authorize`='$authorize',`other_remark`='$other_remark',`other_address`='$other_address',`relation_dob`='$relation_dob',`relation_age`='$relation_age',`relation_live_deceased`='$relation_live_deceased',`relation_aadhar`='$relation_aadhar',`relation_Mobile`='$relation_Mobile',`relation_Occupation`='$relation_Occupation',`relation_Income`='$relation_Income',`relation_Blood`='$relation_Blood',`mark_as_spam`='$fam_mem_mark_as_spam' WHERE id = '$famTableId ' ");
 
 }
 

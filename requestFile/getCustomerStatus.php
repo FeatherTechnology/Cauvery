@@ -15,7 +15,6 @@ $result = $connect->query("SELECT req.req_id, req.prompt_remark, req.cus_status,
     CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_category WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.loan_category ELSE req.loan_category END AS loan_category,
     CASE WHEN req.cus_status IN (12,2,6,7) THEN vlc.loan_amt WHEN req.cus_status IN (3,13,14,15,16,17,20,21,22,23,24,25) THEN alc.loan_amt ELSE req.loan_amt END AS loan_amt
 FROM request_creation req
-    LEFT JOIN customer_profile cp ON req.req_id = cp.req_id
     LEFT JOIN verification_loan_calculation vlc ON req.req_id = vlc.req_id
     LEFT JOIN acknowlegement_loan_calculation alc ON req.req_id = alc.req_id
     LEFT JOIN in_issue ii ON req.req_id = ii.req_id
@@ -210,6 +209,7 @@ if ($result->rowCount() > 0) {
             [10, 25, 50, -1],
             [10, 25, 50, "All"]
         ],
+        columnDefs: commonColumnDefs,
         "createdRow": function(row, data, dataIndex) {
             $(row).find('td:first').html(dataIndex + 1);
         },
@@ -219,19 +219,19 @@ if ($result->rowCount() > 0) {
             });
         },
         dom: 'lBfrtip',
-       buttons: [{
-        extend: 'excel',
-        action: function(e, dt, button, config) {
-            var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
-            var dynamic = curDateJs('Customer_status_List');
-            // or any base config.title = dynamic; // for versions that use title as filename
-            config.filename = dynamic; // for html5 filename
-            defaultAction.call(this, e, dt, button, config);
-        }
-        }, {
-            extend: 'colvis',
-            collectionLayout: 'fixed four-column',
-        }],
+        buttons: [{
+            extend: 'excel',
+            action: function(e, dt, button, config) {
+                var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
+                var dynamic = curDateJs('Customer_status_List');
+                // or any base config.title = dynamic; // for versions that use title as filename
+                config.filename = dynamic; // for html5 filename
+                defaultAction.call(this, e, dt, button, config);
+            }
+            }, {
+                extend: 'colvis',
+                collectionLayout: 'fixed four-column',
+            }],
     });
 
 </script>

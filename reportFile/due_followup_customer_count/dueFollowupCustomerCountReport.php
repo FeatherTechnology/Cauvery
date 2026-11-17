@@ -188,9 +188,9 @@ while ($userRow = $userQry->fetch()) {
         $id_list = implode(',', $filtered_ids);
 
         // ===== Collection Data =====
-         $colQry = $connect->query("SELECT c.req_id,c.coll_date,c.trans_date,c.payable_amt,c.due_amt_track,c.total_paid_track,
-        CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0
-            THEN c.trans_date ELSE c.coll_date END AS effective_coll_date
+        $collectionData = [];
+
+        $colQry = $connect->query("SELECT c.req_id, c.coll_date, c.trans_date, c.payable_amt, c.due_amt_track, c.total_paid_track, CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END AS effective_coll_date
     FROM collection c
     WHERE c.req_id IN ($id_list)
     AND DATE( CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END) <= '$to_date'
@@ -201,43 +201,37 @@ while ($userRow = $userQry->fetch()) {
 
         // ===== Paid Summary =====
         $paidSummary = [];
-        // $current_loanId = []; // For debugging purpose
-         $paidQry = $connect->query("SELECT c.req_id,SUM(c.due_amt_track) AS total_paid,MIN(c.due_amt) AS monthly_due,MIN(a.due_start_from) AS due_start_from,
-        MAX(CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END) AS last_paid_date,
-        COUNT(DISTINCT EXTRACT( YEAR_MONTH FROM CASE
-                    WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END)) AS paid_month_count,
-        COALESCE(SUM(CASE WHEN DATE(CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END) < DATE_FORMAT('$to_date', '%Y-%m-01')
-                    THEN c.due_amt_track ELSE 0 END
-            ),0) AS till_last_month_paid
+        $paidQry = $connect->query("SELECT c.req_id, SUM(c.due_amt_track) AS total_paid, MIN(c.due_amt) AS monthly_due, MIN(a.due_start_from) AS due_start_from, MAX(CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END) AS last_paid_date, COUNT(DISTINCT EXTRACT( YEAR_MONTH FROM CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END)) AS paid_month_count, COALESCE(SUM(CASE WHEN DATE(CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END) < DATE_FORMAT('$to_date', '%Y-%m-01') THEN c.due_amt_track ELSE 0 END),0) AS till_last_month_paid
     FROM collection c
     JOIN acknowlegement_loan_calculation a ON c.req_id = a.req_id
     WHERE DATE( CASE WHEN c.trans_date IS NOT NULL AND YEAR(c.trans_date) <> 0 THEN c.trans_date ELSE c.coll_date END) <= '$to_date'
     AND c.req_id IN ($id_list)
     GROUP BY c.req_id");
 
-        while ($row = $paidQry->fetch()) {
+        while ($row = $paidQry->fetch(PDO::FETCH_ASSOC)) {
             $start = new DateTime($row['due_start_from']);
             $end = new DateTime($to_date);
-            $months = ($end->format('Y') - $start->format('Y')) * 12 + ($end->format('m') - $start->format('m')) + 1;
+            $months = ($end->format('Y') - $start->format('Y')) * 12  + ($end->format('m') - $start->format('m')) + 1;
 
             $paidSummary[$row['req_id']] = [
-                'total_paid' => (float)$row['total_paid'],
-                'expected_due' => (float)($months * $row['monthly_due']),
-                'previous_due' => (float)(($months - 1) * $row['monthly_due']),
+                'total_paid' => (float) $row['total_paid'],
+                'expected_due' => (float) ($months * $row['monthly_due']),
+                'previous_due' => (float) (($months - 1) * $row['monthly_due']),
                 'last_paid_date' => $row['last_paid_date'],
-                'till_last_month_paid' => $row['till_last_month_paid'],
-                'paid_month_count' => $row['paid_month_count'],
-                'monthly_due' => (float)$row['monthly_due'],
+                'till_last_month_paid' => (float) $row['till_last_month_paid'],
+                'paid_month_count' => (int) $row['paid_month_count'],
+                'monthly_due' => (float) $row['monthly_due'],
                 'due_start_from' => $row['due_start_from'],
-                'future_due' => (float)(($months + 1) * $row['monthly_due'])
+                'future_due' => (float) (($months + 1) * $row['monthly_due'])
             ];
         }
 
         // ===== Classification =====
         foreach ($customers as $row) {
             $rid = $row['req_id'];
-            if (!in_array($rid, $filtered_ids)) continue;
-
+            if (!in_array($rid, $filtered_ids)) {
+                continue;
+            }
             $collList = $collectionData[$rid] ?? [];
             $end = strtotime(min($row['maturity_date'], $to_date));
             $start = strtotime($row['due_start_from']);
@@ -245,26 +239,40 @@ while ($userRow = $userQry->fetch()) {
             $pending_month = max(0, $months - 1);
             $start_month = strtotime(date('Y-m-01', strtotime($to_date)));
             $collectedTillMonthStart = 0;
-
+            // ===== Collection calculation =====
             foreach ($collList as $coll) {
-                $collDate = strtotime($coll['coll_date']);
-                if ($collDate < $start_month) $collectedTillMonthStart += (int)$coll['due_amt_track'];
+                // Use trans_date when valid,
+                // otherwise use coll_date
+                $effectiveDate = $coll['effective_coll_date'];
+                if (!empty($effectiveDate) && strtotime($effectiveDate) < $start_month) {
+                    $collectedTillMonthStart +=
+                        (int) $coll['due_amt_track'];
             }
-
+            }
             $payable_amount = ($months * $row['due_amt_cal']) - $collectedTillMonthStart;
             $pending_amount_atMonthStart = ($pending_month * $row['due_amt_cal']) - $collectedTillMonthStart;
-
             // ===== Determine current and balance customer =====
             $isCurrentCustomer = false;
             $isBalanceCustomer = false;
-
-            $iscurrentMonthStart  = $payable_amount <= $row['due_amt_cal']
-                && $pending_amount_atMonthStart <= 0
-                && (
-                    (($row['due_method_scheme'] === '1' || $row['due_method_calc'] === 'Monthly')
-                        && date('Y-m', strtotime($row['maturity_date'])) >= date('Y-m', $start_month))
-                    || (($row['due_method_scheme'] != '1' || $row['due_method_calc'] != 'Monthly')
-                        && strtotime($row['maturity_date']) > $start_month)
+            $iscurrentMonthStart =
+                $payable_amount <= $row['due_amt_cal'] && $pending_amount_atMonthStart <= 0 && ((
+                    (
+                        $row['due_method_scheme'] === '1'
+                        || $row['due_method_calc'] === 'Monthly'
+                    )
+                    && date(
+                        'Y-m',
+                        strtotime($row['maturity_date'])
+                    ) >= date('Y-m', $start_month)
+                )
+                    ||
+                    (
+                        (
+                            $row['due_method_scheme'] != '1'
+                            && $row['due_method_calc'] != 'Monthly'
+                        )
+                        && strtotime($row['maturity_date']) > $start_month
+                    )
                 );
 
             if ($iscurrentMonthStart) {

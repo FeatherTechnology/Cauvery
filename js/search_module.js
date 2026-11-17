@@ -4,10 +4,12 @@ $(document).ready(function () {
         value = value.replace(/\D/g, "").split(/(?:([\d]{4}))/g).filter(s => s.length > 0).join(" ");
         $(this).val(value);
     });
-
+    $('.search-input').on('input', function () {
+        $('.search-input').not(this).val('');
+    });
     $('#search').click(function () {
         let cus_id = $('#cus_id').val(); let autogen_cus_id = $('#autogen_cus_id').val(); let first_name = $('#first_name').val(); let last_name = $('#last_name').val(); let area = $('#cus_area').val();
-         let mobile = $('#mobile').val(); let fingerprint_person_id = $('#fingerprint_person_id').val();
+        let mobile = $('#mobile').val(); let fingerprint_person_id = $('#fingerprint_person_id').val();
         cus_id = cus_id.replace(/\s+/g, '');//removes spaces in adhar number
         if (validate()) {
             $.ajax({
@@ -28,13 +30,14 @@ $(document).ready(function () {
                                 <td>${val.branch}</td>
                                 <td>${val.line}</td>
                                 <td>${val.group}</td>
+                                <td>${val.duefollowup_name}</td>
                                 <td>${val.mobile1}</td>
                                 <td>${val.mobile2}</td>
                                 <td>${val.action}</td>
                                 </tr>`;
                         })
                     } else {
-                        appendData = `<tr><td colspan='11'>No Records available</td></tr>`;
+                       appendData = `<tr><td colspan='13'>No Records available</td></tr>`;
                     }
                     $('#custListTable tbody').html(appendData);
 
@@ -52,7 +55,7 @@ $(document).ready(function () {
                                 </tr>`;
                         })
                     } else {
-                        appendData = `<tr><td colspan='7'>No Records available</td></tr>`;
+                           appendData = `<tr><td colspan='8'>No Records available</td></tr>`;
                     }
                     $('#famlistTable tbody').html(appendData);
 
@@ -94,7 +97,7 @@ $(document).ready(function () {
     })
 
     //Get All fingerprint from db then scan for each one to find match.
-    $('.search_by_scan').click(async function(){
+    $('.search_by_scan').click(async function () {
 
         let response = await $.ajax({
             url: "searchModule/getAllFingerprints.php",
@@ -104,7 +107,7 @@ $(document).ready(function () {
 
         let fingerList = response.data || response;
 
-        commonCaptureFinger(function(capturedAnsi){
+        commonCaptureFinger(function (capturedAnsi) {
 
             let matched = false;
 
@@ -130,10 +133,10 @@ $(document).ready(function () {
                 } //if END.
             } //for loop END.
 
-            if(!matched){
+            if (!matched) {
                 Swal.fire({
-                    title:'No Match Found',
-                    icon:'error', 
+                    title: 'No Match Found',
+                    icon: 'error',
                     confirmButtonColor: '#0C70AB'
                 });
             }
@@ -143,13 +146,13 @@ $(document).ready(function () {
 
 });
 
-$(function(){
+$(function () {
     mantraInitDevice(); //to initialize the fingerprint scanner.
 });
 
 function validate() {
     let response = true;
-    let cus_id = $('#cus_id').val(); let autogen_cus_id = $('#autogen_cus_id').val(); let first_name = $('#first_name').val(); let last_name = $('#last_name').val(); let area = $('#cus_area').val();  let mobile = $('#mobile').val(); let fingerprint_person_id = $('#fingerprint_person_id').val();
+    let cus_id = $('#cus_id').val(); let autogen_cus_id = $('#autogen_cus_id').val(); let first_name = $('#first_name').val(); let last_name = $('#last_name').val(); let area = $('#cus_area').val(); let mobile = $('#mobile').val(); let fingerprint_person_id = $('#fingerprint_person_id').val();
 
     if (cus_id == '' && autogen_cus_id == '' && first_name == '' && last_name == '' && area == '' && mobile == '' && fingerprint_person_id == '') {
         response = false;
@@ -217,15 +220,21 @@ function callresetCustomerStatus(cus_id, callback) {
                 $('#bal_amt').val(bal_amt);
             };
 
-             // ✅ Call the callback properly here
-             if (typeof callback === 'function') {
+            // ✅ Call the callback properly here
+            if (typeof callback === 'function') {
                 callback();
             }
-            
+
         }
     });
 }
 
+function openCustomerStage(req_id, cus_sts, pageView) { 
+    cus_sts = parseInt(cus_sts, 10); 
+    // Statuses that should open search_screen
+      const searchScreenStatuses = [2, 4, 5, 6, 8, 9, 10, 11, 12];
+     let page = searchScreenStatuses.includes(cus_sts) ? 'search_screen' : 'due_followup_info'; window.open( page + '&upd=' + req_id + '&pgeView=' + pageView, '_blank' ); 
+    }
 function customerStatusOnClickEvents() {
     $('.personal-info').off('click').click(function () {
         let cus_id = $(this).data('cusid');
@@ -237,25 +246,28 @@ function customerStatusOnClickEvents() {
     })
     $('.cust-profile').off('click').click(function () {
         let req_id = $(this).data('reqid');
+        let cus_sts = $(this).data('cussts');
         // window.location.href = 'due_followup_info&upd='+req_id+'&pgeView=1';
-        window.open('due_followup_info&upd=' + req_id + '&pgeView=1', '_blank');
+       openCustomerStage(req_id, cus_sts, 1);
     })
     //Documentaion
     $('.documentation').off('click').click(function () {
         let req_id = $(this).data('reqid');
+        let cus_sts = $(this).data('cussts');
         // window.location.href = 'due_followup_info&upd='+req_id+'&pgeView=2';
-        window.open('due_followup_info&upd=' + req_id + '&pgeView=2', '_blank');
+        openCustomerStage(req_id, cus_sts, 2);
     })
     //Loan Calculation
     $('.loan-calc').off('click').click(function () {
         let req_id = $(this).data('reqid');
-        window.open('due_followup_info&upd=' + req_id + '&pgeView=3', '_blank');
+        let cus_sts = $(this).data('cussts');
+       openCustomerStage(req_id, cus_sts, 3);
     })
 
     $('.due-chart').off('click').click(function () {
         let req_id = $(this).attr('value');
         let cus_id = $(this).data('cusid');
-        dueChartList(req_id, cus_id, function(){
+        dueChartList(req_id, cus_id, function () {
             $('.print_due_coll').off('click').click(function () {
                 var id = $(this).attr('value');
                 Swal.fire({
@@ -313,9 +325,18 @@ function customerStatusOnClickEvents() {
         let req_id = $(this).data('reqid');
         let cus_id = $(this).data('cusid');
         $.post('followupFiles/dueFollowup/getCommitmentChart.php', { cus_id, req_id }, function (html) {
+             $('.commitment-chart-title').text(`Commitment Chart`);
             $('#commChartDiv').empty().html(html);
         })
     })
+    //Commitment count chart
+    $('.commitment-count-chart').off('click').click(function () {
+        let req_id = $(this).data('reqid');
+        $.post('followupFiles/dueFollowup/getCommitmentCountChart.php', { req_id }, function (html) {
+            $('.commitment-chart-title').text(`Commitment Count Chart`);
+            $('#commChartDiv').empty().html(html);
+        })
+    });
 
     $('.noc-summary').off('click').click(function (e) {
         e.preventDefault();
@@ -349,7 +370,7 @@ function dueChartList(req_id, cus_id, callback) {
             $('#dueChartTableDiv').empty()
             $('#dueChartTableDiv').html(response)
 
-            if(typeof callback === 'function'){
+            if (typeof callback === 'function') {
                 callback();
             }
         }

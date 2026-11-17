@@ -92,6 +92,30 @@ if (sizeof($getUser) > 0) {
 							</select>
 						</div>
 					</div>
+					<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
+						<div class="form-group">
+							<label for="branch">Branch</label>
+							<select class="form-control" name="branch" id="branch">
+								<option value="">Select Branch </option>
+							</select>
+						</div>
+					</div>
+					<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
+						<div class="form-group">
+							<label for="sector">Sector</label>
+							<select class="form-control" name="sector" id="sector">
+								<option value="">Select Sector</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
+						<div class="form-group">
+							<label for="filter_area">Area</label>
+							<select class="form-control" name="filter_area" id="filter_area">
+								<option value="">Select Area</option>
+							</select>
+						</div>
+					</div>
 					<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12" style="margin-top:20px">
 						<div class="form-group">
 							<button class="btn btn-primary" name="followup_search" id="followup_search">Search</button>
@@ -448,9 +472,10 @@ if (sizeof($getUser) > 0) {
 									<span class="text-danger" id='cus_idCheck' style="display: none;">Please Enter Aadhaar Number</span>
 								</div>
 							</div>
-							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 enq_loan_amt" style="display: none;">
 								<div class="form-group">
-									<label for="autogen_cus_id">Customer Id</label><span class="required">&nbsp;*</span>
+									<label for="autogen_cus_id">Customer ID</label><span class="required">&nbsp;*</span>
 									<input class='form-control' name="autogen_cus_id" id="autogen_cus_id" tabindex="2" readonly>
 								</div>
 							</div>
@@ -488,8 +513,8 @@ if (sizeof($getUser) > 0) {
 
 							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 								<div class="form-group">
-									<label for="areaID">Area</label>&nbsp;<span class="text-danger">*</span>
-									<select tabindex="7" type="text" class="form-control" id="areaID" name="areaID">
+									<label for="area">Area</label>&nbsp;<span class="text-danger">*</span>
+									<select tabindex="6" type="text" class="form-control" id="area" name="area">
 										<option value="">Select Area</option>
 									</select>
 									<span class="text-danger" style='display:none' id='areaCheck'>Please Select Area</span>
@@ -626,30 +651,6 @@ if (sizeof($getUser) > 0) {
 									<option value="1">Field</option>
 									<option value="2">Telecalling</option>
 								</select>
-							</div>
-							<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
-							<div class="form-group">
-									<label for="branch">Branch</label>
-									<select class="form-control" name="branch" id="branch">
-										<option value="">Select Branch </option>
-									</select>
-								</div>
-							</div>
-							<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
-								<div class="form-group">
-									<label for="sector">Sector</label>
-									<select class="form-control" name="sector" id="sector">
-										<option value="">Select Sector</option>
-									</select>
-								</div>
-							</div>
-							<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-12">
-								<div class="form-group">
-									<label for="area">Area</label>
-									<select class="form-control" name="area" id="area">
-										<option value="">Select Area</option>
-									</select>
-								</div>
 						</div>
 						</div>
 					</div>

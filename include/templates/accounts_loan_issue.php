@@ -1,14 +1,10 @@
 <?php
-session_start();
 require_once 'moneyFormatIndia.php';
 if (isset($_GET['upd'])) {
     $idupd = $_GET['upd'];
 }
-if (isset($_SESSION["userid"])) {
-    $user_id = $_SESSION["userid"];
-}
 
-$getBankDetails = $userObj->getBankDetails($mysqli,$user_id);
+$getBankDetails = $userObj->getBankDetails($mysqli,$userid);
 
 $getRequestData = $userObj->getRequestForVerification($mysqli, $idupd);
 if (sizeof($getRequestData) > 0) {
@@ -54,7 +50,6 @@ if (sizeof($getCustomerProfile) > 0) {
     $area_confirm_district = $getCustomerProfile['area_confirm_district'];
     $area_confirm_taluk = $getCustomerProfile['area_confirm_taluk'];
     $area_confirm_area = $getCustomerProfile['area_confirm_area'];
-    $verification_person = $getCustomerProfile['verification_person'];
 }
 
 $getcusInfoForDoc = $userObj->getAckcusInfoForDoc($mysqli, $idupd);
@@ -225,9 +220,6 @@ if (sizeof($getLoanCalculation) > 0) {
             <input type="hidden" name="area_upd" id="area_upd" value="<?php if (isset($area_confirm_area)) {
                                                                             echo $area_confirm_area;
                                                                         } ?>" />
-            <input type="hidden" name="verification_person_upd" id="verification_person_upd" value="<?php if (isset($verification_person)) {
-                                                                                                        echo $verification_person;
-                                                                                                    } ?>" />
             <input type="hidden" name="cus_Tableid" id="cus_Tableid" value="<?php if (isset($cus_Tableid)) {
                                                                                 echo $cus_Tableid;
                                                                             } ?>" />

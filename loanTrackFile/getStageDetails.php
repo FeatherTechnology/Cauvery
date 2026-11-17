@@ -5,18 +5,17 @@ include './getTrackDetails.php';
 
 $req_id = $_POST['req_id'] ?? '';
 $stage = $_POST['stage'] ?? '';
-$detail_arr = array();
+$detail_arr = [];
+$heading_arr = [];
 
 if ($stage == 'lc') { //Loan Calculation, So show verification info
 
-    $qry = $connect->query("SELECT cus_id_loan as cus_id,communication,com_audio,verification_person,verification_location from verification_loan_calculation where req_id = '" . strip_tags($req_id) . "' ");
+    $qry = $connect->query("SELECT cus_id_loan as cus_id, communication, com_audio, verification_person, verification_location FROM verification_loan_calculation WHERE req_id = '$req_id' ");
     if ($qry->rowCount() > 0) {
         $row = $qry->fetch();
 
         $detail_arr['communication'] = $row['communication'] == '0' ? 'Phone' : 'Direct';
         if ($row['com_audio'] != '') {
-            // $detail_arr['com_audio'] = "<a href='uploads/verification/verifyInfo_audio/" . $row['com_audio'] . "' target='_blank'>Audio File</a>";
-
             $upload = explode(',', $row['com_audio']) ?? '';
             $upd_name = '';
             foreach ($upload as $upd) {
@@ -26,6 +25,7 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
             } 
             
             $detail_arr['com_audio'] = rtrim($upd_name,', ');// to trim the comma at end; 
+
         } else {
             $detail_arr['com_audio'] = '';
         }
@@ -45,7 +45,7 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
     }
 } elseif ($stage == 'li') { //Loan Issue, So show Cash Acknowledgement info
 
-    $qry = $connect->query("SELECT cus_id,issued_to,cash_guarentor_name,cash_guarentor_name,agent_id from loan_issue where req_id = '" . strip_tags($req_id) . "' ");
+    $qry = $connect->query("SELECT cus_id, issued_to, cash_guarentor_name, cash_guarentor_name, agent_id FROM loan_issue WHERE req_id = '$req_id' AND cash_guarentor_name !=''");
     if ($qry->rowCount() > 0) {
 
         $row = $qry->fetch();
@@ -59,10 +59,11 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
             $detail_arr['relationship'] = $fam_row['relationship'] ?? '';
         } elseif (!empty($row['agent_id'])) { //if issued to an agent, take agent name
 
-            $ag_qry = $connect->query("SELECT ag_name from agent_creation where ag_id = '" . strip_tags($row['agent_id']) . "' ");
+            $ag_qry = $connect->query("SELECT ag_name FROM agent_creation WHERE ag_id = '" . strip_tags($row['agent_id']) . "' ");
             $ag_row = $ag_qry->fetch();
             $detail_arr['issued_to'] = $ag_row['ag_name'];
             $detail_arr['relationship'] = 'Agent';
+
         } else if ($row['cus_id'] == $row['cash_guarentor_name']) { //if issued and customer are same then direclty take values from issue table
 
             $detail_arr['issued_to'] = $row['issued_to'];
@@ -71,9 +72,10 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
 
         $heading_arr = ['Issued To', 'Relationship'];
     }
+
 } elseif ($stage == 'noc') { // NOC, So show NOC info
     $obj = new getTrackTableDetails;
-    $qry = $connect->query("SELECT noc_handover_date,noc_member,mem_name from noc where req_id = '" . strip_tags($req_id) . "'");
+    $qry = $connect->query("SELECT noc_handover_date, noc_member, mem_name FROM noc WHERE req_id = '$req_id'");
     $row = $qry->fetch();
     $response = $row;
     $detail_arr['noc_handover_date'] = !empty($response['noc_handover_date']) ? date('d-m-Y', strtotime($response['noc_handover_date'])) : '';
@@ -97,7 +99,6 @@ if ($stage == 'lc') { //Loan Calculation, So show verification info
         $detail_arr['noc_member'] = $fam_row['famname'];
         $detail_arr['noc_name']   = $fam_row['relationship'];
     }
-
 
     $heading_arr = ['Date of NOC', 'Member', 'Relationship'];
 }

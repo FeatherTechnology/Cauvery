@@ -67,56 +67,58 @@ $(document).ready(function () {
         let cus_id = $(this).data('cusid');
         let loan_amt = $(this).data('loan_amt');
         var button = $(this)
-        $.post('approveFile/check_customer_limit.php', { cus_id }, function (response) {
-            let cus_limit = response['cus_limit'];
-            if (cus_limit == '') {
-                alert('Customer Limit is not set');
-            } else if (cus_limit < loan_amt) {
-                alert('Customer Limit is Less than the Loan amount');
-            } else {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Customer Limit',
-                    text: `Customer Limit is set to ${moneyFormatIndia(cus_limit)}. Do you want to Approve?`,
-                    showCancelButton: true,
-                    confirmButtonColor: '#0C70AB',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'No',
-                    confirmButtonText: 'Yes'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        button.prop('disabled', true);
-                        $.ajax({
-                            url: 'approveFile/sendToAcknowledgement.php',
-                            dataType: 'json',
-                            type: 'post',
-                            data: { 'req_id': req_id },
-                            cache: false,
-                            success: function (response) {
+        getSpamCustomerDetails(cus_id, function(){
+            $.post('approveFile/check_customer_limit.php', { cus_id }, function (response) {
+                let cus_limit = response['cus_limit'];
+                if (cus_limit == '') {
+                    alert('Customer Limit is not set');
+                } else if (cus_limit < loan_amt) {
+                    alert('Customer Limit is Less than the Loan amount');
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Customer Limit',
+                        text: `Customer Limit is set to ${moneyFormatIndia(cus_limit)}. Do you want to Approve?`,
+                        showCancelButton: true,
+                        confirmButtonColor: '#0C70AB',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'No',
+                        confirmButtonText: 'Yes'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            button.prop('disabled', true);
+                            $.ajax({
+                                url: 'approveFile/sendToAcknowledgement.php',
+                                dataType: 'json',
+                                type: 'post',
+                                data: { 'req_id': req_id },
+                                cache: false,
+                                success: function (response) {
 
-                                if (response.includes('Approved')) {
-                                    Swal.fire({
-                                        title: response,
-                                        icon: 'success',
-                                        showConfirmButton: true,
-                                        confirmButtonColor: '#0C70AB',
-                                        confirmButtonText: 'OK'
-                                    }).then((result) => {
-                                        // Re-enable button regardless
-                                        button.prop('disabled', false);
+                                    if (response.includes('Approved')) {
+                                        Swal.fire({
+                                            title: response,
+                                            icon: 'success',
+                                            showConfirmButton: true,
+                                            confirmButtonColor: '#0C70AB',
+                                            confirmButtonText: 'OK'
+                                        }).then((result) => {
+                                            // Re-enable button regardless
+                                            button.prop('disabled', false);
 
-                                        // Redirect only if user clicks OK
-                                        if (result.isConfirmed) {
-                                            window.location = 'approval_list';
-                                        }
-                                    });
+                                            // Redirect only if user clicks OK
+                                            if (result.isConfirmed) {
+                                                window.location = 'approval_list';
+                                            }
+                                        });
+                                    }
                                 }
-                            }
-                        })
-                    }
-                })
-            }
-        }, 'json')
+                            })
+                        }
+                    })
+                }
+            }, 'json'); //ajax end.
+        }); //function end.
 
     });
 //Search Button Click Event
@@ -214,26 +216,6 @@ function getBranchDropdown(preselect = []) {
     }, 'json');
 }
 
-function getSectorDropdown(module, branch = [], preselect = []) {
-    sectorChoices.clearStore();
-    return $.ajax({
-        url: 'common_files/get_sector_name.php',
-        type: 'POST',
-        data: { module: module, branch: branch },
-        dataType: 'json',
-        success: function (response) {
-            let items = [];
-            $.each(response, function (i, val) {
-                items.push({
-                    value: val.id,
-                    label: val.name,
-                    selected: preselect.includes(String(val.id))
-                });
-            });
-            sectorChoices.setChoices(items, 'value', 'label', true);
-        }
-    });
-}
 
 function getLoanCatName(module, preselect = []) {
     return $.post('common_files/get_loan_category.php', { module: module }, function (response) {

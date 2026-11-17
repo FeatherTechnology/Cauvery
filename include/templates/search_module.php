@@ -32,38 +32,38 @@
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="cus_id">Aadhaar Number</label>
-											<input type="text" class="form-control" id="cus_id" name="cus_id" placeholder="Enter Aadhaar Number" maxlength="14">
+											<input type="text" class="form-control search-input" id="cus_id" name="cus_id" placeholder="Enter Aadhaar Number" maxlength="14">
 										</div>
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="autogen_cus_id">Customer ID</label>
-											<input type="number" class="form-control" id="autogen_cus_id" name="autogen_cus_id" placeholder="Enter Customer ID">
+											<input type="number" class="form-control search-input" id="autogen_cus_id" name="autogen_cus_id" placeholder="Enter Customer ID">
 										</div>
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="first_name">First Name</label>
-											<input type="text" class="form-control" id="first_name" name="first_name" oninput="formatFirstName(this)"  placeholder="Enter First Name">
+											<input type="text" class="form-control search-input" id="first_name" name="first_name" oninput="formatFirstName(this)"  placeholder="Enter First Name">
 										</div>
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="last_name">Last Name</label>
-											<input type="text" class="form-control" id="last_name" name="last_name" oninput="formatLastName(this)"
+											<input type="text" class="form-control search-input" id="last_name" name="last_name" oninput="formatLastName(this)"
 											placeholder="Enter Last Name">
 										</div>
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="cus_area">Area</label>
-											<input type="text" class="form-control" id="cus_area" name="cus_area" placeholder="Enter Area">
+											<input type="text" class="form-control search-input" id="cus_area" name="cus_area" placeholder="Enter Area">
 										</div>
 									</div>
 									<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
 										<div class="form-group">
 											<label for="mobile">Mobile Number</label>
-											<input type="text" class="form-control" id="mobile" name="mobile" placeholder="Enter Mobile Number" maxlength="10" oninput="validateInputNumber(this,'withOutDot')">
+											<input type="text" class="form-control search-input" id="mobile" name="mobile" placeholder="Enter Mobile Number" maxlength="10" oninput="validateInputNumber(this,'withOutDot')">
 										</div>
 									</div>
 									<div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12"></div>
@@ -113,6 +113,7 @@
 											<th>Branch</th>
 											<th>Region</th>
 											<th>Sector</th>
+											<th>Zone</th>
 											<th>Mobile 1</th>
 											<th>Mobile 2</th>
 											<th>Action</th>
@@ -260,7 +261,7 @@
 	<div class="modal-dialog modal-lg " role="document" style="height: 90vh;width:300vh;">
 		<div class="modal-content" style="background-color: white">
 			<div class="modal-header">
-				<h5 class="modal-title">Commitment Chart</h5>
+				<h5 class="modal-title commitment-chart-title">Commitment Chart</h5>
 				<button type="button" class="close" data-dismiss="modal" tabindex="1" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			</div>
 			<div class="modal-body">

@@ -21,15 +21,15 @@ $(document).ready(function () {
 
         if (typevalue == 'Repromotion') {
             $('.repromotion_card, .filter_card').show();
-            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '18');
+            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '17');
 
         } else if (typevalue == 'Waiting List') {
             $('.waiting_card, .filter_card').show();
-            showPromotionList('followupFiles/promotion/showWaitingList.php', 'waiting_list', '16');
+            showPromotionList('followupFiles/promotion/showWaitingList.php', 'waiting_list', '15');
 
         } else if (typevalue == 'Block List') {
             $('.block_card, .filter_card').show();
-            showPromotionList('followupFiles/promotion/showWaitingList.php', 'block_list', '16');
+            showPromotionList('followupFiles/promotion/showWaitingList.php', 'block_list', '15');
         }
 
     });
@@ -68,13 +68,13 @@ $(document).ready(function () {
         let btnName = $(".toggle-button.active").first().val();
 
         if (btnName == 'Repromotion') {
-            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '18');
+            showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '17');
 
         } else if (btnName == 'Waiting List') {
-            showPromotionList('followupFiles/promotion/showWaitingList.php', 'waiting_list', '16');
+            showPromotionList('followupFiles/promotion/showWaitingList.php', 'waiting_list', '15');
 
         } else if (btnName == 'Block List') {
-            showPromotionList('followupFiles/promotion/showWaitingList.php', 'block_list', '16');
+            showPromotionList('followupFiles/promotion/showWaitingList.php', 'block_list', '15');
 
         }
     });
@@ -132,7 +132,7 @@ $(document).ready(function () {
                         success: function (response) {
                             if (response.status == 1) {
                                 swarlSuccessAlert(response.message, function () {
-                                    showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '18');
+                                    showPromotionList('followupFiles/promotion/showRepromotionList.php', 'repromotion_list', '17');
                                 });
                             } else {
                                 swarlErrorAlert(response.message);
