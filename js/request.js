@@ -363,11 +363,10 @@ function getCustomerDetails(cus_id) {
         type: 'post',
         cache: false,
         success: function (response) {
+              if(response.mark_as_spam =='1'){ swalError('Warning', 'The Customer is marked as spam so kindly contact with Manager before process.'); $('#submit_request').prop('disabled', true); clearInputs(''); return; } else{ $('#submit_request').prop('disabled', false); }
             if (response['message'] == 'Existing') {
                 var message = response['message'];
-                $('#cus_data').removeAttr('value');
-                $('#cus_data').attr('value', message);
-                $('#cus_data').val(message);
+                $('#cus_data').val(response['message']);
                 $('#first_name').val(response['first_name']);
                 $('#last_name').val(response['last_name']);
                 $('#dob').val(response['dob']);
@@ -415,40 +414,22 @@ function getCustomerDetails(cus_id) {
                 $('#imgshow').attr('src', "uploads/request/customer/" + response['pic'] + " ");
                 $('#pic').hide()// hide pic input box on exisiting cus, because user will not upload again
             } else if (response['message'] == 'New') {
-                var message = response['message'];
-                $('#cus_data').removeAttr('value');
-                $('#cus_data').attr('value', message);
-                $('#cus_data').val(message);
-                $('#first_name').val('');
-                $('#last_name').val('');
-                $('#dob').val('');
-                $('#gender').val('');
-                $('#age').val('');
-                $('#state').val('SelectState');
-                $('#district1').val('');
-                $('#district').val('Select District');
-                $('#taluk1').val('');
-                $('#taluk').val('Select Taluk');
-                $('#area').val('');
-                $('#address').val('');
-                $('#mobile1').val('');
-                $('#mobile2').val('');
-                $('#whatsapp_no').val('');
-                $('#mobile1_radio').prop('checked', false);
-                $('#mobile2_radio').prop('checked', false);
-                $('#mobile_whatsapp').val('');
-                $('#father_name').val('');
-                $('#mother_name').val('');
-                $('#marital').val('');
-                $('#spouse_name').val('');
-                $('.spouse').hide();
-                $('#occupation_type').val('');
-                $('#occupation').val('');
-                $('#imgshow').attr('src', "img/avatar.png");
-                $('#pic').show()// show pic input box on edit again if new customer
+                  clearInputs('New');
+               
             }
         }
     });
+}
+
+function clearInputs(cusData){
+    $('#cus_data').val(cusData);
+    $('#state').val('SelectState');
+    $('#district').val('Select District');
+    $('#taluk').val('Select Taluk');
+    $('.spouse').hide();
+    $('#imgshow').attr('src', "img/avatar.png");
+    $('#cus_name, #dob, #gender, #age, #district1, #taluk1, #area, #sub_area, #address, #mobile1, #mobile2, #father_name, #mother_name, #marital, #spouse_name, #occupation_type, #occupation').val('');
+    $('#pic').show();// show pic input box on edit again if new customer
 }
 //Get Request Code 
 function getRequestCode() {

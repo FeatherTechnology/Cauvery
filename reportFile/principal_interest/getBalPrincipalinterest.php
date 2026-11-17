@@ -188,7 +188,7 @@ if (isset($_POST['search']) && $_POST['search'] != "") {
         cp.cus_id LIKE '%$search%' OR
         cr.autogen_cus_id LIKE '%$search%' OR
         CONCAT(cp.first_name, ' ', cp.last_name) LIKE '%$search%' OR
-        al.area_name LIKE '%$search%' OR
+        al.area_name LIKE '%$search%'
     )";
 }
 

@@ -205,6 +205,15 @@
 		.dropdown.active .dropbtn {
 			background-color: #3E8E41;
 		}
+		.dt-long-text {
+			display: inline-block;
+			max-width: 600px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			vertical-align: middle;
+			cursor: pointer;
+		}
 	</style>
 
 	<link rel="stylesheet" href="vendor/bs-select/bs-select.css" />

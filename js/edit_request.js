@@ -82,33 +82,35 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('click', '.sub_verification', function () {
+      $(document).on('click', '.sub_verification', function () {
         var req_id = $(this).val();
         var cus_id = $(this).attr('data-value');
-        if (confirm('Do You want to Send this Request for Verification?')) {
-            $.ajax({
-                url: 'requestFile/sendToVerificaiton.php',
-                dataType: 'json',
-                type: 'post',
-                data: { 'req_id': req_id, "cus_id": cus_id },
-                cache: false,
-                success: function (response) {
-                    if (response.includes('Moved')) {
-                        Swal.fire({
-                            title: response,
-                            icon: 'success',
-                            showConfirmButton: true,
-                            confirmButtonColor: '#0C70AB',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Redirect only when OK is clicked
-                                window.location = 'edit_request';
-                            }
-                        });
+        if (confirm('Do You want to Send this Request for Verification?')) { 
+            getSpamCustomerDetails(cus_id, function(){
+                $.ajax({
+                    url: 'requestFile/sendToVerificaiton.php',
+                    dataType: 'json',
+                    type: 'post',
+                    data: { 'req_id': req_id, "cus_id": cus_id },
+                    cache: false,
+                    success: function (response) {
+                        if (response.includes('Moved')) {
+                            Swal.fire({
+                                title: response,
+                                icon: 'success',
+                                showConfirmButton: true,
+                               confirmButtonColor: '#0C70AB',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirect only when OK is clicked
+                                    window.location = 'edit_request';
+                                }
+                            });
+                        }
                     }
-                }
-            })
+                }); //ajax end.
+            }); //function end.
         }
     });
 
@@ -207,26 +209,6 @@ function getBranchDropdown(preselect = []) {
     }, 'json');
 }
 
-function getSectorDropdown(module, branch = [], preselect = []) {
-    sectorChoices.clearStore();
-    return $.ajax({
-        url: 'common_files/get_sector_name.php',
-        type: 'POST',
-        data: { module: module, branch: branch },
-        dataType: 'json',
-        success: function (response) {
-            let items = [];
-            $.each(response, function (i, val) {
-                items.push({
-                    value: val.id,
-                    label: val.name,
-                    selected: preselect.includes(String(val.id))
-                });
-            });
-            sectorChoices.setChoices(items, 'value', 'label', true);
-        }
-    });
-}
 
 function getLoanCatName(module, preselect = []) {
     return $.post('common_files/get_loan_category.php', { module: module }, function (response) {

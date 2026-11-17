@@ -8,12 +8,12 @@ if (isset($_POST['cus_id'])) {
 }
 if (isset($_POST['autogen_cus_id'])) {
     $autogen_cus_id = $_POST['autogen_cus_id'];
-     $where =" autogen_cus_id = '" . strip_tags($autogen_cus_id) . "'";
+    $where =" autogen_cus_id = '$autogen_cus_id'";
 }
 
-$records = array();
+$records = [];
 
-$result = $connect->query("SELECT * FROM customer_register where $where");
+$result = $connect->query("SELECT autogen_cus_id, first_name, last_name, dob, age, gender, state, district, taluk, area, address, mobile1, mobile2, mobile_whatsapp, father_name, mother_name, marital, spouse, occupation_type, occupation, loan_limit, pic, mark_as_spam FROM customer_register where $where");
 if ($result->rowCount() > 0) {
     $row = $result->fetch();
     
@@ -39,6 +39,7 @@ if ($result->rowCount() > 0) {
     $records['occupation'] = $row['occupation'];
     $records['loan_limit'] = $row['loan_limit'];
     $records['pic'] = $row['pic'];
+    $records['mark_as_spam'] = $row['mark_as_spam'];
 
     $records['message'] = "Existing";
 
@@ -57,7 +58,7 @@ if ($result->rowCount() > 0) {
         $records['line_name'] = $linerow['line_name'];
     }
 
-    $area_list = $connect->query("SELECT area_name FROM area_list_creation where area_id = '" . $area . "' and status=0 and area_enable = 0");
+    $area_list = $connect->query("SELECT area_name FROM area_list_creation where area_id = '$area' AND status = 0 AND area_enable = 0");
     if ($area_list->rowCount() > 0) {
         $arearow = $area_list->fetch();
         $records['area_name'] = $arearow['area_name'];
@@ -65,6 +66,12 @@ if ($result->rowCount() > 0) {
 } else {
     $records['message'] = "New";
 }
+if (isset($_POST['cus_id'])) {
+    $result = $connect->query("SELECT mark_as_spam FROM verification_family_info WHERE relation_aadhar = '$cus_id'");
+    $famspam = $result->fetch()['mark_as_spam'] ?? '0';
+    if($famspam =='1') {$records['mark_as_spam'] = $famspam;}
+}
+
 
 echo json_encode($records);
 

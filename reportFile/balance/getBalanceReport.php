@@ -35,7 +35,7 @@ $column = [
     5  => 'lc.maturity_month',
     6  => 'cp.cus_id',
     7  => 'cr.autogen_cus_id',
-    8  => 'cp.cus_name',
+    8  => 'CONCAT(cp.first_name, " ", cp.last_name) AS cus_name',
     9  => 'al.area_name', 
     10 => 'lcc.loan_category_creation_name',
 ];
@@ -58,12 +58,13 @@ if (!empty($_POST['search'])) {
         ad.doc_id LIKE :search OR
         cp.cus_id LIKE :search OR
         cr.autogen_cus_id LIKE :search OR
-        cp.cus_name LIKE :search OR
-        al.area_name LIKE :search OR 
+        CONCAT(cp.first_name, ' ', cp.last_name) LIKE :search OR
+        al.area_name LIKE :search
     )";
      $params[':search'] = '%' . $_POST['search'] . '%';
 }
 
+$order_clause = "";
 $orderColumn = $_POST['order'][0]['column'] ?? null;
 $orderDir = (isset($_POST['order'][0]['dir']) && strtolower($_POST['order'][0]['dir']) === 'desc') ? 'DESC' : 'ASC';
 if ($orderColumn !== null && isset($column[$orderColumn])) {
@@ -97,10 +98,9 @@ $main_query = "
         cp.cus_id,
         cr.autogen_cus_id,
         cp.req_id,
-        cp.cus_name,
+        CONCAT(cp.first_name, ' ', cp.last_name) AS cus_name,
         al.area_name,
         lcc.loan_category_creation_name AS loan_cat_name,
-        lc.sub_category,
         ac.ag_name,
         lc.loan_amt_cal,
         lc.due_amt_cal,
@@ -169,7 +169,6 @@ $main_query = "
     WHERE lc.due_type != 'Interest' $where_filters
     $order_clause
 ";
-
 // Count records
 $stmt = $connect->prepare($main_query);
 $stmt->execute($params);
@@ -266,7 +265,6 @@ foreach ($result as $row) {
         $row['cus_name'],
         $row['area_name'],
         $row['loan_cat_name'],
-        $row['sub_category'],
         $row['ag_name'],
         moneyFormatIndia($row['loan_amt_cal']),
         moneyFormatIndia($row['due_amt_cal']),

@@ -129,6 +129,7 @@ $modules = [
 		'promotion_count_report',
 		'duefollowup_count_report',
 		'back_office_count_report',
+		'reactive_count_report',
 		'branch_request_count_report',
 		'location_track_report',
 		'outstanding_report'
@@ -947,6 +948,11 @@ if (!empty($getUser) && is_array($getUser)) {
 														<a href="back_office_count_report"><i class='icon-area-graph'></i>Back Office Count</a>
 													</li>
 												<?php  } ?>
+												<?php if (($leftbar_reactive_count_report ?? 1) == 0) { ?>
+												<li>
+													<a href="reactive_count_report"><i class='icon-area-graph'></i>Renewal To Reactive</a>
+												</li>
+											<?php  } ?>
 											</ul>
 										</div>
 									</li>

@@ -13,61 +13,55 @@ $due_followup_lines = $userRow['due_followup_lines'];
 $promotion_activity_mapping_access = $userRow['promotion_activity_mapping_access'];
 
 if ($promotion_activity_mapping_access == 1) {
-    $condition = "agm.map_id IN ($group_id)";
+    $condition = "AND agm.map_id IN ($group_id)";
 } elseif ($promotion_activity_mapping_access == 2) {
-    $condition = "alm.map_id IN ($line_id)";
+    $condition = "AND alm.map_id IN ($line_id)";
 } elseif ($promotion_activity_mapping_access == 3) {
-    $condition = "adfm.map_id IN ($due_followup_lines)";
+    $condition = "AND adfm.map_id IN ($due_followup_lines)";
 }
 
 // Step 2: Apply logic for fetching data
-if ($role_type == 7 || $role_type == 3) {
-    // Role 7 (Admin) and 3(Manager)→ See all records
-    $sql = "
-        SELECT ncp.cus_id, CONCAT(ncp.first_name,' ',ncp.last_name) AS customer_name, ncp.mobile, ncp.insert_login_id, ncp.created_date, a.area_name, agm.group_name, alm.line_name, u.fullname, np.status AS followup_sts, np.follow_date, np.followup_type 
-        FROM new_cus_promo ncp JOIN area_list_creation a ON ncp.area = a.area_id
-        JOIN area_group_mapping_area agma ON agma.area_id = a.area_id
-        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
-        JOIN area_line_mapping_area alma ON alma.area_id = a.area_id
-        JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-        JOIN user u ON ncp.insert_login_id = u.user_id
-        LEFT JOIN new_promotion np ON ncp.cus_id = np.cus_id AND np.created_date = (SELECT MAX(np1.created_date) FROM new_promotion np1 WHERE np1.cus_id = ncp.cus_id)
-        WHERE ncp.cus_id NOT IN (SELECT cus_id FROM customer_register)
-    ";
-} else {
+$sql = "
+    SELECT ncp.cus_id, CONCAT(ncp.first_name,' ',ncp.last_name) AS customer_name, ncp.mobile, ncp.insert_login_id, ncp.created_date, a.area_name, agm.group_name, alm.line_name, u.fullname, np.status AS followup_sts, np.follow_date, np.followup_type 
+    FROM new_cus_promo ncp 
+    JOIN area_list_creation a ON ncp.area = a.area_id
+    JOIN area_group_mapping_area agma ON agma.area_id = a.area_id
+    JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
+    JOIN area_line_mapping_area alma ON alma.area_id = a.area_id
+    JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
+    LEFT JOIN branch_creation bc ON agm.branch_id = bc.branch_id 
+    JOIN user u ON ncp.insert_login_id = u.user_id
+    LEFT JOIN new_promotion np ON ncp.cus_id = np.cus_id AND np.created_date = (SELECT MAX(np1.created_date) FROM new_promotion np1 WHERE np1.cus_id = ncp.cus_id)
+    WHERE ncp.cus_id NOT IN (SELECT cus_id FROM customer_register)
+";
+
+// Step 2: Apply logic for fetching data
+// Role 7 (Admin) and 3(Manager)→ See all records
+if ($role_type != 7 && $role_type != 3) {
     // Other roles → See only their own records
-    $sql = "
-        SELECT ncp.cus_id, CONCAT(ncp.first_name,' ',ncp.last_name) AS customer_name, ncp.mobile, ncp.insert_login_id, ncp.created_date, a.area_name, agm.group_name, alm.line_name, u.fullname, np.status AS followup_sts, np.follow_date, np.followup_type
-        FROM new_cus_promo ncp 
-        JOIN area_list_creation a ON ncp.area = a.area_id
-        JOIN area_group_mapping_area agma ON agma.area_id = a.area_id
-        JOIN area_group_mapping agm ON agm.map_id = agma.group_map_id
-        JOIN area_line_mapping_area alma ON alma.area_id = a.area_id
-        JOIN area_line_mapping alm ON alm.map_id = alma.line_map_id
-        JOIN area_duefollowup_mapping_area adfma ON adfma.area_id = a.area_id
-        JOIN area_duefollowup_mapping adfm ON adfm.map_id = adfma.duefollowup_map_id
-        JOIN user u ON ncp.insert_login_id = u.user_id
-        LEFT JOIN new_promotion np ON ncp.cus_id = np.cus_id AND np.created_date = (SELECT MAX(np1.created_date) FROM new_promotion np1 WHERE np1.cus_id = ncp.cus_id)
-        WHERE ncp.cus_id NOT IN (SELECT cus_id FROM customer_register)
-        AND $condition 
-    ";
+    $sql .= "$condition";
 }
 
-if($_POST['followUpSts']){
+if ($_POST['followUpSts']) {
     $follow_up_sts = $_POST['followUpSts'];
-    $sql .= ($follow_up_sts =='tofollow') ? " AND np.status IS NULL " : " AND TRIM(REPLACE(np.status,' ','')) = '$follow_up_sts' ";
+    $sql .= ($follow_up_sts == 'tofollow') ? " AND np.status IS NULL " : " AND TRIM(REPLACE(np.status,' ','')) = '$follow_up_sts' ";
 }
 
-if($_POST['dateType']){
-    $sql .= " AND (DATE(np.follow_date) BETWEEN '".$_POST['followUpFromDate']."' AND '".$_POST['followUpToDate']."') ";
-}  
+if ($_POST['dateType']) {
+    $sql .= " AND (DATE(np.follow_date) BETWEEN '" . $_POST['followUpFromDate'] . "' AND '" . $_POST['followUpToDate'] . "') ";
+}
 
-    $sql .= ($_POST['followupType']) ? " AND np.followup_type = '". $_POST['followupType'] ."'" : "";   
+$sql .= ($_POST['followupType']) ? " AND np.followup_type = '" . $_POST['followupType'] . "'" : "";
+$sql .= ($_POST['branch_id']) ? " AND bc.branch_id = '" . $_POST['branch_id'] . "'" : "";
+$sql .= ($_POST['group_id']) ? " AND agm.map_id = '" . $_POST['group_id'] . "'" : "";
+$sql .= ($_POST['area_id']) ? " AND a.area_id = '" . $_POST['area_id'] . "'" : "";
 
-    ($role_type != 7 || $role_type != 3) ? " GROUP BY ncp.cus_id" : "";
-    
-    $info = $connect->query($sql);
-// $sql = $connect->query("SELECT a.*,b.area_name,c.sub_area_name  FROM new_promotion a JOIN area_list_creation b ON a.area = b.area_id JOIN sub_area_list_creation c ON a.sub_area = c.sub_area_id WHERE 1 ");
+if ($role_type != 7 && $role_type != 3) {
+    $sql .= " GROUP BY ncp.cus_id";
+}
+$sql .= " ORDER BY ncp.created_date DESC";
+$info = $connect->query($sql);
+$connect = null;
 ?>
 
 
@@ -97,39 +91,39 @@ if($_POST['dateType']){
                 <td><?php echo $row['area_name']; ?></td>
                 <td><?php echo $row['line_name']; ?></td>
                 <td><?php echo $row['group_name']; ?></td>
-                <td><?php echo $row['fullname']; ?></td>               
+                <td><?php echo $row['fullname']; ?></td>
                 <td>
                     <?php
-                        $action = "<div class='dropdown'><button class='btn btn-outline-secondary'><i class='fa'>&#xf107;</i></button><div class='dropdown-content'> ";
+                    $action = "<div class='dropdown'><button class='btn btn-outline-secondary'><i class='fa'>&#xf107;</i></button><div class='dropdown-content'> ";
 
-                        $action .= "<a class='intrest' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Interested</span></a>
+                    $action .= "<a class='intrest' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Interested</span></a>
                                 <a class='not-intrest' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Not Interested</span></a>
                                 <a class='un-available' data-toggle='modal' data-target='#addPromotion' data-id='" . $row['cus_id'] . "'><span>Unavailable</span></a>";
-                        $action .= "</div></div>";
-                        echo $action;
+                    $action .= "</div></div>";
+                    echo $action;
                     ?>
                 </td>
                 <td>
                     <?php //for promotion chart
-                        echo "<input type='button' class='btn btn-primary promo-chart' data-id='" . $row['cus_id'] . "' data-toggle='modal' data-target='#promoChartModal' value='View'/>";
+                    echo "<input type='button' class='btn btn-primary promo-chart' data-id='" . $row['cus_id'] . "' data-toggle='modal' data-target='#promoChartModal' value='View'/>";
                     ?>
                 </td>
-                <td><?php echo $row['followup_sts']; ?></td> 
+                <td><?php echo $row['followup_sts']; ?></td>
                 <td>
                     <?php
-                        echo ($row['follow_date'] !='') ? date('d-m-Y', strtotime($row['follow_date'])) : '';
+                    echo ($row['follow_date'] != '') ? date('d-m-Y', strtotime($row['follow_date'])) : '';
                     ?>
                 </td>
                 <td>
                     <?php
-                        $followuptype = $row['followup_type'] ?? '';
-                        $followup_type =''; 
-                        if($followuptype =='1'){
-                            $followup_type = 'Field';  
-                        }else if($followuptype =='2'){
-                            $followup_type = 'Telecalling';  
-                        } 
-                        echo $followup_type;
+                    $followuptype = $row['followup_type'] ?? '';
+                    $followup_type = '';
+                    if ($followuptype == '1') {
+                        $followup_type = 'Field';
+                    } else if ($followuptype == '2') {
+                        $followup_type = 'Telecalling';
+                    }
+                    echo $followup_type;
                     ?>
                 </td>
             </tr>
@@ -142,25 +136,26 @@ if($_POST['dateType']){
     // Declare table variable to store the DataTable instance
     var new_promo_table = $('#new_promo_table').DataTable({
         ...getStateSaveConfig('new_promo_table'),
+        'order': [],
         'iDisplayLength': 10,
         "lengthMenu": [
             [10, 25, 50, -1],
             [10, 25, 50, "All"]
         ],
         dom: 'lBfrtip',
-        buttons: [{ 
+        buttons: [{
                 extend: 'excel',
-                action: function (e, dt, button, config) {
+                action: function(e, dt, button, config) {
                     var defaultAction = $.fn.dataTable.ext.buttons.excelHtml5.action;
                     var dynamic = curDateJs('New_Promotion'); // or any base
-                    config.title = dynamic;      // for versions that use title as filename
-                    config.filename = dynamic;   // for html5 filename
+                    config.title = dynamic; // for versions that use title as filename
+                    config.filename = dynamic; // for html5 filename
                     defaultAction.call(this, e, dt, button, config);
                 }
             },
-            { 
-                extend: 'colvis', 
-                collectionLayout: 'fixed four-column' 
+            {
+                extend: 'colvis',
+                collectionLayout: 'fixed four-column'
             }
         ],
         'drawCallback': function() {
@@ -168,7 +163,7 @@ if($_POST['dateType']){
 
             // apply color coding on every redraw
             $('#new_promo_table tbody tr').each(function() {
-                let tddate = $(this).find('td:eq(11)').text().trim(); 
+                let tddate = $(this).find('td:eq(11)').text().trim();
                 if (tddate === '') return;
 
                 // normalize DD-MM-YYYY to YYYY-MM-DD
@@ -187,11 +182,20 @@ if($_POST['dateType']){
 
                 if (!isNaN(values)) {
                     if (values < curDate) {
-                        $(this).find('td:eq(11)').css({'background-color': colors.past, 'color': 'white'});
+                        $(this).find('td:eq(11)').css({
+                            'background-color': colors.past,
+                            'color': 'white'
+                        });
                     } else if (values > curDate) {
-                        $(this).find('td:eq(11)').css({'background-color': colors.future, 'color': 'white'});
+                        $(this).find('td:eq(11)').css({
+                            'background-color': colors.future,
+                            'color': 'white'
+                        });
                     } else {
-                        $(this).find('td:eq(11)').css({'background-color': colors.current, 'color': 'white'});
+                        $(this).find('td:eq(11)').css({
+                            'background-color': colors.current,
+                            'color': 'white'
+                        });
                     }
                 }
             });
@@ -203,18 +207,9 @@ if($_POST['dateType']){
 </script>
 
 <style>
-    .dropdown-content {
-        color: black;
-    }
-
     @media (max-width: 598px) {
         #new_promo_div {
             overflow: auto;
         }
     }
 </style>
-
-<?php
-// Close the database connection
-$connect = null;
-?>
