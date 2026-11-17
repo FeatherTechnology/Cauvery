@@ -68,10 +68,13 @@ if (isset($_POST["CustomerStatus"]) && $_POST["CustomerStatus"] !== '') {
     WHERE ii.status = 0 AND (ii.cus_status BETWEEN 14 AND 17) $line_cndtn $cussts_cndtn"; // Only Issued and all lines not relying on sub area// 14 and 17 means collection entries, 17 removed from issue list
 
 if (isset($_POST['search']) && $_POST['search'] != "") {
-    $search         = $_POST['search'];
+
+    $search = $_POST['search'];
+
     $searchPrefix   = $search . '%';
 
-    $baseQuery .= " AND (cr.cus_id LIKE ?
+    $baseQuery .= " AND (
+        cr.cus_id LIKE ?
         OR cr.autogen_cus_id LIKE ?
         OR CONCAT(cr.first_name,' ', cr.last_name) LIKE ?
         OR alc.area_name LIKE ?

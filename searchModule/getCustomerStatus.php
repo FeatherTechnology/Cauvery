@@ -193,10 +193,12 @@ function getCollectionStatusMap($connect, $cus_id)
     $od_sts      = array_map('boolFromPost', explodeOrEmpty($_POST["od_sts"] ?? ''));
     $due_nil_sts = array_map('boolFromPost', explodeOrEmpty($_POST["due_nil_sts"] ?? ''));
     $closed_sts  = array_map('boolFromPost', explodeOrEmpty($_POST["closed_sts"] ?? ''));
-    $bal_amt     = array_map(
-        fn($v) => trim($v) === '' ? 0.0 : (float) trim($v),
-        explodeOrEmpty($_POST["bal_amt"] ?? '')
-    );
+$bal_amt = array_map(
+    function ($v) {
+        return trim($v) === '' ? 0.0 : (float) trim($v);
+    },
+    explodeOrEmpty($_POST["bal_amt"] ?? '')
+);
 
     $consider_lvl_arr = [1 => 'Bronze', 2 => 'Silver', 3 => 'Gold', 4 => 'Platinum', 5 => 'Diamond'];
 
@@ -209,10 +211,12 @@ function getCollectionStatusMap($connect, $cus_id)
     $stmt->execute([':cus_id' => $cus_id]);
     $loanRows = $stmt->fetchAll();
 
-    $closedReqIds = array_column(
-        array_filter($loanRows, fn($r) => (int) $r['cus_status'] > 20),
-        'req_id'
-    );
+$closedReqIds = array_column(
+    array_filter($loanRows, function ($r) {
+        return (int) $r['cus_status'] > 20;
+    }),
+    'req_id'
+);
     $closedMap = [];
     if ($closedReqIds) {
         $in = implode(',', array_fill(0, count($closedReqIds), '?'));
@@ -252,12 +256,14 @@ function getCollectionStatusMap($connect, $cus_id)
         } else {
             $c = $closedMap[$req_id] ?? null;
             if ($c) {
-                $status = match ((string) $c['closed_sts']) {
-                    '1'     => 'Consider - ' . ($consider_lvl_arr[(int) $c['consider_level']] ?? ''),
-                    '2'     => 'Waiting List',
-                    '3'     => 'Block List',
-                    default => $status,
-                };
+               $closedSts = (string) $c['closed_sts'];
+                    if ($closedSts === '1') {
+                        $status = 'Consider - ' . ($consider_lvl_arr[(int) $c['consider_level']] ?? '');
+                    } elseif ($closedSts === '2') {
+                        $status = 'Waiting List';
+                    } elseif ($closedSts === '3') {
+                        $status = 'Block List';
+                    }
             }
         }
 
