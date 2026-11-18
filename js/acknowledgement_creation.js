@@ -17,6 +17,18 @@ const replaceDOCMultiselect = new Choices("#replace_doc_id", {
 let storeDocInfo = {};
 
 $(document).ready(function () {
+
+  $('input[data-type="adhaar-number"]:not(#cus_id)').keyup(function () {
+    /// AAdhar Validation
+    var value = $(this).val();
+    value = value
+      .replace(/\D/g, "")
+      .split(/(?:([\d]{4}))/g)
+      .filter((s) => s.length > 0)
+      .join(" ");
+    $(this).val(value);
+  });
+
   {
     // Get today's date
     var today = new Date().toISOString().split("T")[0];
@@ -1468,12 +1480,12 @@ function resetFamDetails() {
         }
         $("#guarentor_name").append(
           "<option value='" +
-            fam_id +
-            "' " +
-            selected +
-            ">" +
-            fam_name +
-            "</option>",
+          fam_id +
+          "' " +
+          selected +
+          ">" +
+          fam_name +
+          "</option>",
         );
       }
       // Sort guarentor_name dropdown
@@ -1481,7 +1493,276 @@ function resetFamDetails() {
     },
   });
 }
+$(document).on("click", "#submitFamInfoBtn", function () {
+  let famData = {
+    reqId: $("#req_id").val(),
+    cus_id: $("#cus_id").val(),
+    fam_first_name: $("#fam_first_name").val(),
+    fam_last_name: $("#fam_last_name").val(),
+    relationship: $("#relationship").val(),
+    other_remark: $("#other_remark").val(),
+    other_address: $("#other_address").val(),
+    relation_dob: $("#relation_dob").val(),
+    relation_age: $("#relation_age").val(),
+    relation_live_deceased: $("#relation_live_deceased").val(),
+    relation_aadhar: $("#relation_aadhar").val(),
+    relation_Mobile: $("#relation_Mobile").val(),
+    relation_Occupation: $("#relation_Occupation").val(),
+    relation_Income: $("#relation_Income").val(),
+    relation_Blood: $("#relation_Blood").val(),
+    famTableId: $("#famID").val(),
+    authorize: $("#authorize").val()
+  }
 
+  if (
+    famData.fam_first_name != "" &&
+    famData.fam_last_name != "" &&
+    famData.relationship != "" &&
+    famData.relation_live_deceased != "" &&
+    famData.reqId != ""
+  ) {
+    $.ajax({
+      url: "verificationFile/verification_family_submit.php",
+      type: "POST",
+      data: famData,
+      cache: false,
+      success: function (response) {
+        var insresult = response.includes("Inserted");
+        var updresult = response.includes("Updated");
+        if (insresult) {
+          $("#FamInsertOk").show();
+          setTimeout(function () {
+            $("#FamInsertOk").fadeOut("fast");
+          }, 2000);
+        } else if (updresult) {
+          $("#famUpdateok").show();
+          setTimeout(function () {
+            $("#famUpdateok").fadeOut("fast");
+          }, 2000);
+        } else {
+          $("#NotOk").show();
+          setTimeout(function () {
+            $("#NotOk").fadeOut("fast");
+          }, 2000);
+        }
+
+        resetFamInfo();
+      },
+    });
+  } else {
+    if (famData.fam_first_name == "") {
+      $("#famFirstnameCheck").show();
+    } else {
+      $("#famFirstnameCheck").hide();
+    }
+
+    if (famData.fam_last_name == "") {
+      $("#famLastnameCheck").show();
+    } else {
+      $("#famLastnameCheck").hide();
+    }
+
+    if (famData.relationship == "") {
+      $("#famrelationCheck").show();
+    } else {
+      $("#famrelationCheck").hide();
+    }
+
+    if (famData.relationship == "Other" && famData.other_remark == "") {
+      $("#famremarkCheck").show();
+    } else {
+      $("#famremarkCheck").hide();
+    }
+
+    if (famData.relationship == "Other" && famData.other_address == "") {
+      $("#famaddressCheck").show();
+    } else {
+      $("#famaddressCheck").hide();
+    }
+
+    // if (famData.relation_aadhar == "") {
+    //   $("#famaadharCheck").show();
+    // } else {
+    //   $("#famaadharCheck").hide();
+    // }
+
+    // if (famData.relation_Mobile == "" || famData.relation_Mobile.length < 10) {
+    //   $("#fammobileCheck").show();
+    // } else {
+    //   $("#fammobileCheck").hide();
+    // }
+
+    // if (famData.relation_dob == "") {
+    //   $("#famdobCheck").show();
+    // } else {
+    //   $("#famdobCheck").hide();
+    // }
+
+    if (famData.relation_live_deceased == "") {
+      $("#famLiveDeceasedCheck").show();
+    } else {
+      $("#famLiveDeceasedCheck").hide();
+    }
+  }
+});
+//Show Remark and Address when select other in Relationship.
+$("#relationship").on("change", function () {
+  var relation = $("#relationship").val();
+
+  if (relation == "Other") {
+    $("#remark").show();
+    $("#address").show();
+  } else if (relation != "Other") {
+    $("#remark").hide();
+    $("#address").hide();
+  }
+});
+$(document).on("click", "#add_group", function () {
+  $("#relationship, #relation_live_deceased,#authorize").prop(
+    "disabled",
+    false,
+  );
+  $("#fam_first_name, #fam_last_name, #other_remark, #other_address, #relation_dob, #relation_age, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID").prop(
+    "readonly",
+    false,
+  );
+
+});
+function resetFamInfo() {
+  let cus_id = $("#cus_id").val();
+
+  $.ajax({
+    url: "verificationFile/verification_fam_reset.php",
+    type: "POST",
+    data: { cus_id: cus_id },
+    cache: false,
+    success: function (html) {
+      $("#updatedFamTable").html(html);
+
+      $("#relation_aadhar").prop('readonly', false);
+      $("#fam_first_name, #fam_last_name, #relationship, #other_remark, #other_address, #relation_dob, #relation_age, #relation_live_deceased, #relation_aadhar, #relation_Mobile, #relation_Occupation, #relation_Income, #relation_Blood, #famID, #authorize").val("");
+      $("#famFirstnameCheck, #famLastnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
+    },
+  });
+}
+
+$("body").on("click", "#verification_fam_edit", function () {
+  let id = $(this).attr("value");
+
+  $.ajax({
+    url: "verificationFile/verification_fam_edit.php",
+    type: "POST",
+    data: { id: id },
+    dataType: "json",
+    cache: false,
+    success: function (result) {
+      $("#famID").val(result["id"]);
+      $("#fam_first_name").val(result["first_name"]);
+      $("#fam_last_name").val(result["last_name"]);
+      $("#relationship").val(result["relation"]);
+      $("#other_remark").val(result["remark"]);
+      $("#other_address").val(result["address"]);
+      $("#relation_dob").val(result["dob"]);
+      $("#relation_age").val(result["age"]);
+      $("#relation_live_deceased").val(result["live_deceased"]);
+      $("#relation_aadhar").val(result["aadhar"]);
+      $("#relation_Mobile").val(result["mobileno"]);
+      $("#relation_Occupation").val(result["occ"]);
+      $("#relation_Income").val(result["income"]);
+      $("#relation_Blood").val(result["bg"]);
+      $("#authorize").val(result["authorize"]);
+      if (result["relation"] == "Other") {
+        $("#remark, #address").show();
+      } else {
+        $("#remark, #address").hide();
+      }
+
+      (result["aadhar"] != '') ? $("#relation_aadhar").prop('readonly', true) : $("#relation_aadhar").prop('readonly', false);
+
+      $("#famFirstnameCheck,#famLastnameCheck, #famrelationCheck, #famremarkCheck, #famaddressCheck, #famdobCheck, #famageCheck, #famLiveDeceasedCheck, #famaadharCheck, #fammobileCheck, #famoccCheck, #famincomeCheck").hide();
+    },
+  });
+});
+
+$("body").on("click", "#verification_fam_delete", function () {
+  var isok = confirm("Do you want delete this Family Info?");
+  if (isok == false) {
+    return false;
+  } else {
+    var famid = $(this).attr("value");
+
+    $.ajax({
+      url: "verificationFile/verification_fam_delete.php",
+      type: "POST",
+      data: { famid: famid },
+      cache: false,
+      success: function (response) {
+        var delresult = response.includes("Deleted");
+        if (delresult) {
+          $("#FamDeleteOk").show();
+          setTimeout(function () {
+            $("#FamDeleteOk").fadeOut("fast");
+          }, 2000);
+
+        } else if (response.includes("Guarantor")) {
+          $('#FamDeleteValidateFail').show();
+          setTimeout(function () {
+            $('#FamDeleteValidateFail').fadeOut('slow');
+          }, 5000);
+
+        } else {
+          $("#FamDeleteNotOk").show();
+          setTimeout(function () {
+            $("#FamDeleteNotOk").fadeOut("fast");
+          }, 2000);
+        }
+
+        resetFamInfo();
+      },
+    });
+  }
+});
+
+//FamilyModal Close
+function closeFamModal() {
+  let cus_id = $("#cus_id").val();
+  var guarentor_name = $("#guarentor_name_upd").val();
+  $.ajax({
+    url: "verificationFile/verificationFam.php",
+    type: "post",
+    data: { cus_id: cus_id },
+    dataType: "json",
+    success: function (response) {
+      var len = response.length;
+      $("#guarentor_name").empty();
+      $("#guarentor_name").append(
+        "<option value=''>" + "Select Guarantor" + "</option>"
+      );
+      for (var i = 0; i < len - 1; i++) {
+        // -1 because this ajax's response will contain customer value at the last of the response for verification person
+        var fam_name = response[i]["fam_name"];
+        var fam_id = response[i]["fam_id"];
+        var selected = "";
+        if (guarentor_name != "" && guarentor_name == fam_id) {
+          selected = "selected";
+        }
+        $("#guarentor_name").append(
+          "<option value='" +
+          fam_id +
+          "' " +
+          selected +
+          ">" +
+          fam_name +
+          "</option>"
+        );
+      }
+      // Sort guarentor_name dropdown
+      sortDropdownAlphabetically("#guarentor_name");
+
+      resetFamDetails();
+    },
+  });
+}
 // Verification Info Person
 function verificationPerson() {
   let cus_id = $("#cus_id").val();
@@ -2225,12 +2506,12 @@ function getTalukBasedArea(talukselected) {
         }
         $("#area").append(
           "<option value='" +
-            area_id +
-            "' " +
-            selected +
-            ">" +
-            area_name +
-            "</option>",
+          area_id +
+          "' " +
+          selected +
+          ">" +
+          area_name +
+          "</option>",
         );
       }
 
@@ -2497,7 +2778,7 @@ function docHistoryTable() {
     dataType: "json",
     type: "post",
     cache: false,
-    success: function (response) {},
+    success: function (response) { },
   });
 }
 
@@ -2513,8 +2794,8 @@ function getDocumentHistory() {
     url: "verificationFile/documentation/getDocumentHistory.php",
     cache: false,
     success: function (response) {
-        $("#docHistoryDiv").html(response);
-      },
+      $("#docHistoryDiv").html(response);
+    },
   });
 }
 //Get DOC id
@@ -2681,12 +2962,12 @@ function signTypeRelation() {
         var relationship = response[i]["relationship"];
         $("#signType_relationship").append(
           "<option value='" +
-            fam_id +
-            "'>" +
-            fam_name +
-            " - " +
-            relationship +
-            "</option>",
+          fam_id +
+          "'>" +
+          fam_name +
+          " - " +
+          relationship +
+          "</option>",
         );
       }
       // Sort signType_relationship dropdown
@@ -3674,50 +3955,50 @@ $(document).on("click", "#hide_loan_history", function () {
 });
 //loan history table contents get from closed file loan lists
 function getLoanHistory() {
-    $("#show_loan_history").hide();
-    $("#hide_loan_history").show();
-    let cus_id = $("#cus_id_loan").val();
-    $.ajax({
-  //in this file, details gonna fetch by customer ID, Not by req id (Because we need all loans from customer)
-        type: "POST",
-        data: { cus_id },
-        url: "verificationFile/LoanCalculation/getLoanHistory.php",
-        cache: false,
-        success: function (response) {
-            $("#loanHistoryDiv").html(response);
-        },
-    }).then(function () {
-             $(document).on("click", ".due-chart", function () {
-            var req_id = $(this).data("reqid");
-            var cus_id = $(this).data("cusid");
-            dueChartList(req_id, cus_id);
-        });
+  $("#show_loan_history").hide();
+  $("#hide_loan_history").show();
+  let cus_id = $("#cus_id_loan").val();
+  $.ajax({
+    //in this file, details gonna fetch by customer ID, Not by req id (Because we need all loans from customer)
+    type: "POST",
+    data: { cus_id },
+    url: "verificationFile/LoanCalculation/getLoanHistory.php",
+    cache: false,
+    success: function (response) {
+      $("#loanHistoryDiv").html(response);
+    },
+  }).then(function () {
+    $(document).on("click", ".due-chart", function () {
+      var req_id = $(this).data("reqid");
+      var cus_id = $(this).data("cusid");
+      dueChartList(req_id, cus_id);
+    });
 
-        $(document).on("click", ".penalty-chart", function () {
-            var req_id = $(this).data("reqid");
-            var cus_id = $(this).data("cusid");
-            penaltyChartList(req_id, cus_id);
-        });
+    $(document).on("click", ".penalty-chart", function () {
+      var req_id = $(this).data("reqid");
+      var cus_id = $(this).data("cusid");
+      penaltyChartList(req_id, cus_id);
+    });
 
-        $(document).on("click", ".collcharge-chart", function () {
-            var req_id = $(this).data("reqid");
-            collectionChargeChartList(req_id);
-        });
+    $(document).on("click", ".collcharge-chart", function () {
+      var req_id = $(this).data("reqid");
+      collectionChargeChartList(req_id);
+    });
 
-        $(document).on("click", ".loansummary-chart", function () {
-            var req_id = $(this).data("reqid");
-            var cus_id = $(this).data("cusid");
-            loanSummaryList(req_id, cus_id);
-        });
+    $(document).on("click", ".loansummary-chart", function () {
+      var req_id = $(this).data("reqid");
+      var cus_id = $(this).data("cusid");
+      loanSummaryList(req_id, cus_id);
+    });
 
-        $(document).on("click", ".commitment-chart", function () {
-            //Commitment chart
-            let req_id = $(this).data("reqid");
-            let cus_id = $(this).data("cusid");
-            $.post("followupFiles/dueFollowup/getCommitmentChart.php", { cus_id, req_id }, function (html) {
-                $("#commChartDiv").empty().html(html);
-            });
+    $(document).on("click", ".commitment-chart", function () {
+      //Commitment chart
+      let req_id = $(this).data("reqid");
+      let cus_id = $(this).data("cusid");
+      $.post("followupFiles/dueFollowup/getCommitmentChart.php", { cus_id, req_id }, function (html) {
+        $("#commChartDiv").empty().html(html);
       });
+    });
 
   });
 }
@@ -3961,12 +4242,12 @@ function getUserBasedLoanCategory() {
 
         $("#loan_category").append(
           "<option value='" +
-            response[i]["loan_category_id"] +
-            "' " +
-            selected +
-            " >" +
-            response[i]["loan_category_name"] +
-            " </option>",
+          response[i]["loan_category_id"] +
+          "' " +
+          selected +
+          " >" +
+          response[i]["loan_category_name"] +
+          " </option>",
         );
       }
     },
@@ -3992,25 +4273,25 @@ function getCategoryInfo() {
         for (var i = 0; i < response.length; i++) {
           $("#moduleTable tbody tr").append(
             `<td><label for="disabledInput">` +
-              response[i]["loan_category_ref_name"] +
-              `</label><span class="required">&nbsp;*</span><input type="text" class="form-control" id="category_info" name="category_info[]" 
+            response[i]["loan_category_ref_name"] +
+            `</label><span class="required">&nbsp;*</span><input type="text" class="form-control" id="category_info" name="category_info[]" 
                     value='` +
-              category_info +
-              `' tabindex='` +
-              tb +
-              `' placeholder='Enter ` +
-              response[i]["loan_category_ref_name"] +
-              `'readonly ></td>`,
+            category_info +
+            `' tabindex='` +
+            tb +
+            `' placeholder='Enter ` +
+            response[i]["loan_category_ref_name"] +
+            `'readonly ></td>`,
           );
           // tb++;
         }
         $("#moduleTable tbody tr").append(
           `<td><button type="button" tabindex='` +
-            tb +
-            `' id="add_category_info[]" name="add_category_info" 
+          tb +
+          `' id="add_category_info[]" name="add_category_info" 
                 class="btn btn-primary add_category_info" disabled>Add</button> </td><td><span class='icon-trash-2 ' id='' tabindex='` +
-            tb +
-            `'></span></td>
+          tb +
+          `'></span></td>
                 </tr></tbody></table>`,
         );
         // $('#moduleTable tbody tr').append(`</tr></tbody></table>`);
@@ -4279,12 +4560,12 @@ function profitCalAjax(profit_type, loan_cat) {
             }
             $("#profit_method").append(
               `<option value='` +
-                profit_method[i] +
-                `' ` +
-                selected +
-                `>` +
-                valuee +
-                `</option>`,
+              profit_method[i] +
+              `' ` +
+              selected +
+              `>` +
+              valuee +
+              `</option>`,
             );
           }
           $("#calc_method").val("");
@@ -4292,10 +4573,10 @@ function profitCalAjax(profit_type, loan_cat) {
           //To set min and maximum
           $(".min-max-int").text(
             "* (" +
-              response["intrest_rate_min"] +
-              "% - " +
-              response["intrest_rate_max"] +
-              "%) ",
+            response["intrest_rate_min"] +
+            "% - " +
+            response["intrest_rate_max"] +
+            "%) ",
           );
 
           $("#int_rate").attr(
@@ -4307,10 +4588,10 @@ function profitCalAjax(profit_type, loan_cat) {
 
           $(".min-max-due").text(
             "* (" +
-              response["due_period_min"] +
-              " - " +
-              response["due_period_max"] +
-              ") ",
+            response["due_period_min"] +
+            " - " +
+            response["due_period_max"] +
+            ") ",
           );
 
           $("#due_period").attr(
@@ -4324,23 +4605,23 @@ function profitCalAjax(profit_type, loan_cat) {
             type = "₹";
             $(".min-max-doc").text(
               "* (" +
-                type +
-                response["document_charge_min"] +
-                " - " +
-                type +
-                response["document_charge_max"] +
-                ") ",
+              type +
+              response["document_charge_min"] +
+              " - " +
+              type +
+              response["document_charge_max"] +
+              ") ",
             ); // Set min-max values with ₹ symbol before the numbers
           } else if (response["doc_charge_type"] == "percentage") {
             type = "%";
             $(".min-max-doc").text(
               "* (" +
-                response["document_charge_min"] +
-                type +
-                " - " +
-                response["document_charge_max"] +
-                type +
-                ") ",
+              response["document_charge_min"] +
+              type +
+              " - " +
+              response["document_charge_max"] +
+              type +
+              ") ",
             ); // Set min-max values with % symbol after the numbers
           }
 
@@ -4357,23 +4638,23 @@ function profitCalAjax(profit_type, loan_cat) {
             type = "₹";
             $(".min-max-proc").text(
               "* (" +
-                type +
-                response["processing_fee_min"] +
-                " - " +
-                type +
-                response["processing_fee_max"] +
-                ") ",
+              type +
+              response["processing_fee_min"] +
+              " - " +
+              type +
+              response["processing_fee_max"] +
+              ") ",
             ); // Set min-max values with ₹ symbol before the numbers
           } else if (response["proc_fee_type"] == "percentage") {
             type = "%";
             $(".min-max-proc").text(
               "* (" +
-                response["processing_fee_min"] +
-                type +
-                " - " +
-                response["processing_fee_max"] +
-                type +
-                ") ",
+              response["processing_fee_min"] +
+              type +
+              " - " +
+              response["processing_fee_max"] +
+              type +
+              ") ",
             ); // Set min-max values with % symbol after the numbers
           }
 
@@ -4401,10 +4682,10 @@ function profitCalAjax(profit_type, loan_cat) {
           //To set min and maximum
           $(".min-max-int").text(
             "* (" +
-              response["intrest_rate_min"] +
-              "% - " +
-              response["intrest_rate_max"] +
-              "%) ",
+            response["intrest_rate_min"] +
+            "% - " +
+            response["intrest_rate_max"] +
+            "%) ",
           );
 
           $("#int_rate").attr(
@@ -4416,10 +4697,10 @@ function profitCalAjax(profit_type, loan_cat) {
 
           $(".min-max-due").text(
             "* (" +
-              response["due_period_min"] +
-              " - " +
-              response["due_period_max"] +
-              ") ",
+            response["due_period_min"] +
+            " - " +
+            response["due_period_max"] +
+            ") ",
           );
 
           $("#due_period").attr(
@@ -4433,23 +4714,23 @@ function profitCalAjax(profit_type, loan_cat) {
             type = "₹";
             $(".min-max-doc").text(
               "* (" +
-                type +
-                response["document_charge_min"] +
-                " - " +
-                type +
-                response["document_charge_max"] +
-                ") ",
+              type +
+              response["document_charge_min"] +
+              " - " +
+              type +
+              response["document_charge_max"] +
+              ") ",
             ); // Set min-max values with ₹ symbol before the numbers
           } else if (response["doc_charge_type"] == "percentage") {
             type = "%";
             $(".min-max-doc").text(
               "* (" +
-                response["document_charge_min"] +
-                type +
-                " - " +
-                response["document_charge_max"] +
-                type +
-                ") ",
+              response["document_charge_min"] +
+              type +
+              " - " +
+              response["document_charge_max"] +
+              type +
+              ") ",
             ); // Set min-max values with % symbol after the numbers
           }
 
@@ -4464,23 +4745,23 @@ function profitCalAjax(profit_type, loan_cat) {
             type = "₹"; // Set ₹ symbol before the numbers
             $(".min-max-proc").text(
               "* (" +
-                type +
-                response["processing_fee_min"] +
-                " - " +
-                type +
-                response["processing_fee_max"] +
-                ") ",
+              type +
+              response["processing_fee_min"] +
+              " - " +
+              type +
+              response["processing_fee_max"] +
+              ") ",
             ); // Set min-max values with ₹ symbol before the numbers
           } else if (response["proc_fee_type"] == "percentage") {
             type = "%"; // Set % symbol after the numbers
             $(".min-max-proc").text(
               "* (" +
-                response["processing_fee_min"] +
-                type +
-                " - " +
-                response["processing_fee_max"] +
-                type +
-                ") ",
+              response["processing_fee_min"] +
+              type +
+              " - " +
+              response["processing_fee_max"] +
+              type +
+              ") ",
             ); // Set min-max values with % symbol after the numbers
           }
 
@@ -4530,12 +4811,12 @@ function schemeAjax(due_method, loan_cat) {
         }
         $("#scheme_name").append(
           `<option value='` +
-            response[i]["scheme_id"] +
-            `' ` +
-            selected +
-            `>` +
-            response[i]["scheme_name"] +
-            `</option>`,
+          response[i]["scheme_id"] +
+          `' ` +
+          selected +
+          `>` +
+          response[i]["scheme_name"] +
+          `</option>`,
         );
       }
     },
@@ -4596,12 +4877,12 @@ function schemeCalAjax(scheme_id) {
           }
           $("#scheme_profit_method").append(
             `<option value='` +
-              profit_method[i] +
-              `' ` +
-              selected +
-              `>` +
-              valuee +
-              `</option>`,
+            profit_method[i] +
+            `' ` +
+            selected +
+            `>` +
+            valuee +
+            `</option>`,
           );
         }
         // $('#int_rate').val(response['intrest_rate']); $('#int_rate').attr('readonly', true); // setting readonly due to fixed interest
@@ -4617,14 +4898,14 @@ function schemeCalAjax(scheme_id) {
 
         $(".min-max-int").text(
           "* (" +
-            response["intreset_min"] +
-            " " +
-            type +
-            " - " +
-            response["intreset_max"] +
-            " " +
-            type +
-            ") ",
+          response["intreset_min"] +
+          " " +
+          type +
+          " - " +
+          response["intreset_max"] +
+          " " +
+          type +
+          ") ",
         ); //setting min max values in span
 
         $("#int_rate").attr(
@@ -4642,14 +4923,14 @@ function schemeCalAjax(scheme_id) {
 
         $(".min-max-doc").text(
           "* (" +
-            response["doc_charge_min"] +
-            " " +
-            type +
-            " - " +
-            response["doc_charge_max"] +
-            " " +
-            type +
-            ") ",
+          response["doc_charge_min"] +
+          " " +
+          type +
+          " - " +
+          response["doc_charge_max"] +
+          " " +
+          type +
+          ") ",
         ); //setting min max values in span
 
         $("#doc_charge").attr(
@@ -4667,14 +4948,14 @@ function schemeCalAjax(scheme_id) {
 
         $(".min-max-proc").text(
           "* (" +
-            response["proc_fee_min"] +
-            " " +
-            type +
-            " - " +
-            response["proc_fee_max"] +
-            " " +
-            type +
-            ") ",
+          response["proc_fee_min"] +
+          " " +
+          type +
+          " - " +
+          response["proc_fee_max"] +
+          " " +
+          type +
+          ") ",
         ); //setting min max values in span
 
         $("#proc_fee").attr(
