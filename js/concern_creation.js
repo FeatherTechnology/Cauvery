@@ -242,11 +242,68 @@ $(document).ready(function () {
   });
 
   //Submit Validation
-  $("#submit_concern").click(function () {
-    if (!submitValidation()) {
-      event.preventDefault();
-      scrollToFirstError("#concern_form"); // your form id
+ let isSubmitting = false;
+
+  $("#concern_form").on("submit", function (e) {
+    e.preventDefault();
+    if (isSubmitting) {
+      return false;
     }
+    if (!submitValidation()) {
+      scrollToFirstError("#concern_form");
+      return false;
+    }
+
+    isSubmitting = true;
+    let submitBtn = $("#submit_concern");
+
+    submitBtn.prop("disabled", true);
+
+    let formData = new FormData(this);
+
+    $.ajax({
+      url: "concernFile/submit_concern.php",
+      type: "POST",
+      data: formData,
+      cache: false,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+
+      success: function (response) {
+        if (response.status === "success") {
+          Swal.fire({
+            title: 'Concern Submitted Successfully!',
+            icon: 'success',
+            showConfirmButton: true,
+            confirmButtonColor: '#0C70AB',
+            confirmButtonText: 'OK'
+          }).then((swalResult) => {
+            // Redirect only when OK is clicked
+            if (swalResult.isConfirmed) {
+              window.location.href = "edit_concern_creation&msc=1";
+            }
+          });
+
+        } else {
+          swalError(response.message || "Something went wrong while submitting the concern.");
+
+          isSubmitting = false;
+          submitBtn.prop("disabled", false);
+        }
+      },
+
+      error: function (xhr) {
+        console.log(xhr.responseText);
+
+        swalError("Something went wrong while submitting the concern.");
+
+        isSubmitting = false;
+        submitBtn.prop("disabled", false);
+      }
+    });
+
+    return false;
   });
   $(document).on("click", ".editDepName", function () {
     var id = $(this).data("id");
