@@ -16,11 +16,60 @@ $(document).ready(function () {
         }
     });
 
-    $('#submit_concern_solution').click(function () {
-        if (!solutionSubmitValidation()){
-            event.preventDefault();
+  $('#submit_concern_solution').click(function (e) {
+        e.preventDefault();
+
+        if (!solutionSubmitValidation()) {
             scrollToFirstError('#concern_form');
+            return false;
         }
+
+        let submitBtn = $(this);
+        if (submitBtn.prop('disabled')) {
+            return false;
+        }
+
+        submitBtn.prop('disabled', true);
+
+        let formData = new FormData($('#concern_form')[0]);
+
+        $.ajax({
+            url: "concernFile/submit_concern_solution.php",
+            type: "POST",
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+
+            success: function (response) {
+                if (response.status === "success") {
+                    let pg_id = $('#pg_id').val();
+                    let msc = (pg_id == '1') ? 1 : 2;
+
+                    Swal.fire({
+                        title: (pg_id == '1') ? 'Concern Assigned Successfully!' : 'Concern Solution Submitted Successfully!',
+                        icon: 'success',
+                        showConfirmButton: true,
+                        confirmButtonColor: '#0C70AB',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "edit_concern_solution&msc=" + msc;
+                        }
+                    });
+                } else {
+                    swalError(response.message || "Something went wrong while submitting the solution.");
+                    submitBtn.prop('disabled', false);
+                }
+            },
+
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                swalError("Something went wrong while submitting the solution.");
+                submitBtn.prop('disabled', false);
+            }
+        });
     });
 
     // $('#to_dept_name').change(function () { // To Staff list based on department
